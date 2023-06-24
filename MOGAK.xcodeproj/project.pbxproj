@@ -7,23 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
-		9CFA7D092A458109003E80A7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* ViewController.swift */; };
+		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
 		9CFA7D0E2A45810B003E80A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */; };
 		9CFA7D112A45810B003E80A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0F2A45810B003E80A7 /* LaunchScreen.storyboard */; };
+		9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D192A458C91003E80A7 /* Font+Ext.swift */; };
+		9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */; };
+		9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */; };
+		9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */; };
+		9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */; };
+		9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */; };
+		9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D272A459424003E80A7 /* BaseViewController.swift */; };
 		A165D545DF550574C320791C /* Pods_MOGAK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D4C939577FBCDF4C6293DD /* Pods_MOGAK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
+		9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		9CFA7D082A458109003E80A7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		9CFA7D082A458109003E80A7 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9CFA7D102A45810B003E80A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9CFA7D122A45810B003E80A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9CFA7D192A458C91003E80A7 /* Font+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Ext.swift"; sourceTree = "<group>"; };
+		9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
+		9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingViewController.swift; sourceTree = "<group>"; };
+		9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineStartViewController.swift; sourceTree = "<group>"; };
+		9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineRegisterViewController.swift; sourceTree = "<group>"; };
+		9CFA7D272A459424003E80A7 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		B9D4C939577FBCDF4C6293DD /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE13475512A8DB088F2EF325 /* Pods-MOGAK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.debug.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -46,7 +62,6 @@
 				FE13475512A8DB088F2EF325 /* Pods-MOGAK.debug.xcconfig */,
 				98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -73,12 +88,44 @@
 			children = (
 				9CFA7D042A458109003E80A7 /* AppDelegate.swift */,
 				9CFA7D062A458109003E80A7 /* SceneDelegate.swift */,
-				9CFA7D082A458109003E80A7 /* ViewController.swift */,
+				9CFA7D1E2A458D60003E80A7 /* Service */,
+				9CFA7D1D2A458D25003E80A7 /* Scene */,
+				9CFA7D182A458C6E003E80A7 /* Extension */,
 				9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */,
 				9CFA7D0F2A45810B003E80A7 /* LaunchScreen.storyboard */,
 				9CFA7D122A45810B003E80A7 /* Info.plist */,
 			);
 			path = MOGAK;
+			sourceTree = "<group>";
+		};
+		9CFA7D182A458C6E003E80A7 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D192A458C91003E80A7 /* Font+Ext.swift */,
+				9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		9CFA7D1D2A458D25003E80A7 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D082A458109003E80A7 /* FeedViewController.swift */,
+				9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */,
+				9CFA7D272A459424003E80A7 /* BaseViewController.swift */,
+				9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */,
+				9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */,
+				9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */,
+				9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
+		9CFA7D1E2A458D60003E80A7 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 		EACA3C21DD78B14DAFA5675B /* Frameworks */ = {
@@ -203,8 +250,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CFA7D092A458109003E80A7 /* ViewController.swift in Sources */,
+				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
+				9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */,
+				9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */,
+				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
+				9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */,
+				9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */,
+				9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */,
+				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
+				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

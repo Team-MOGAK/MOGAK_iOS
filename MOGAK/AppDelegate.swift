@@ -14,17 +14,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        if #available(iOS 13.0, *) {
-            return true
-        }
-        
-        // 13이전의 경우에는 SceneDelegate에서 해주었던 작업을 그대로 진행해주면 된다.
-        window = UIWindow()
-        window?.rootViewController = ViewController() // 시작 VC 작성해주기
-        window?.makeKeyAndVisible()
-        return true
-        
+//        if #available(iOS 13.0, *) {
+//            return true
+//        }
+//
+//        // 13이전의 경우에는 SceneDelegate에서 해주었던 작업을 그대로 진행해주면 된다.
+//        window = UIWindow()
+//        window?.rootViewController = ViewController() // 시작 VC 작성해주기
+//        window?.makeKeyAndVisible()
 //        return true
+        
+        return true
     }
     
     // MARK: UISceneSession Lifecycle
