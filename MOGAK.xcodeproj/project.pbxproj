@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
+		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
+		9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB52A46E63D002AB791 /* AccountAPI.swift */; };
+		9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB72A46E66A002AB791 /* AccountRequest.swift */; };
+		9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB92A46E686002AB791 /* AccountResponse.swift */; };
+		9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638ABB2A46E6CD002AB791 /* WebLink.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -28,6 +33,11 @@
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
 		9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		9C638AAF2A46DC75002AB791 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
+		9C638AB52A46E63D002AB791 /* AccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAPI.swift; sourceTree = "<group>"; };
+		9C638AB72A46E66A002AB791 /* AccountRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRequest.swift; sourceTree = "<group>"; };
+		9C638AB92A46E686002AB791 /* AccountResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountResponse.swift; sourceTree = "<group>"; };
+		9C638ABB2A46E6CD002AB791 /* WebLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLink.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +117,40 @@
 			path = MyPage;
 			sourceTree = "<group>";
 		};
+		9C638AB32A46E5F7002AB791 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				9C638AB42A46E61A002AB791 /* Account */,
+				9C638ABB2A46E6CD002AB791 /* WebLink.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		9C638AB42A46E61A002AB791 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				9C638AB52A46E63D002AB791 /* AccountAPI.swift */,
+				9C638AB72A46E66A002AB791 /* AccountRequest.swift */,
+				9C638AB92A46E686002AB791 /* AccountResponse.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		9C638ABD2A46E7C2002AB791 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9C638ABE2A46E7C8002AB791 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9C638ABE2A46E7C8002AB791 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		9CFA7CF82A458109003E80A7 = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +174,8 @@
 			children = (
 				9CFA7D042A458109003E80A7 /* AppDelegate.swift */,
 				9CFA7D062A458109003E80A7 /* SceneDelegate.swift */,
+				9C638ABD2A46E7C2002AB791 /* Resources */,
+				9C638AB32A46E5F7002AB791 /* Domain */,
 				9CFA7D1E2A458D60003E80A7 /* Service */,
 				9CFA7D1D2A458D25003E80A7 /* Scene */,
 				9CFA7D182A458C6E003E80A7 /* Extension */,
@@ -167,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				9C638AAD2A46C6AA002AB791 /* NetworkService.swift */,
+				9C638AAF2A46DC75002AB791 /* KeyChainService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -294,6 +341,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
+				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
 				9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
@@ -303,7 +351,11 @@
 				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
+				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
+				9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */,
 				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
+				9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */,
+				9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
