@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */; };
+		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
 		9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
+		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -63,6 +65,46 @@
 				98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		9C638AA82A46C5E9002AB791 /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D082A458109003E80A7 /* FeedViewController.swift */,
+			);
+			path = Feed;
+			sourceTree = "<group>";
+		};
+		9C638AA92A46C609002AB791 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		9C638AAA2A46C614002AB791 /* RoutineStart */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */,
+			);
+			path = RoutineStart;
+			sourceTree = "<group>";
+		};
+		9C638AAB2A46C623002AB791 /* RoutineRegister */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */,
+			);
+			path = RoutineRegister;
+			sourceTree = "<group>";
+		};
+		9C638AAC2A46C632002AB791 /* MyPage */ = {
+			isa = PBXGroup;
+			children = (
+				9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */,
+			);
+			path = MyPage;
 			sourceTree = "<group>";
 		};
 		9CFA7CF82A458109003E80A7 = {
@@ -110,13 +152,13 @@
 		9CFA7D1D2A458D25003E80A7 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA7D082A458109003E80A7 /* FeedViewController.swift */,
+				9C638AA82A46C5E9002AB791 /* Feed */,
 				9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */,
 				9CFA7D272A459424003E80A7 /* BaseViewController.swift */,
-				9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */,
-				9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */,
-				9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */,
-				9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */,
+				9C638AA92A46C609002AB791 /* Networking */,
+				9C638AAA2A46C614002AB791 /* RoutineStart */,
+				9C638AAB2A46C623002AB791 /* RoutineRegister */,
+				9C638AAC2A46C632002AB791 /* MyPage */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -124,6 +166,7 @@
 		9CFA7D1E2A458D60003E80A7 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				9C638AAD2A46C6AA002AB791 /* NetworkService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -260,6 +303,7 @@
 				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
+				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
