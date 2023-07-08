@@ -17,8 +17,7 @@ class BaseViewController: UIViewController {
         setupBackButton()
     }
     
-    
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         self.tabBarController?.tabBar.isHidden = false
