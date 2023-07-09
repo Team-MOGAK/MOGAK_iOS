@@ -8,6 +8,7 @@ target 'MOGAK' do
   # Pods for MOGAK
 pod 'SnapKit', '~> 5.6.0'
 pod 'Then'
+pod 'Alamofire'
 
 
 

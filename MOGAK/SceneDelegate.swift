@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AuthenticationServices
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -16,13 +17,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         
         var firstVC: UIViewController = TabBarViewController()
-//        let isFirst = UserDefaults.isFirstAppLauch()
+        //        let isFirst = UserDefaults.isFirstAppLauch()
         
-//        if isFirst {
-//            firstVC = UINavigationController(rootViewController: AppGuideViewController())
-//        } else if !UserDefaults.standard.isPermAgreed {
-//            firstVC = PermAgreeViewController()
-//        }
+        //        if isFirst {
+        //            firstVC = UINavigationController(rootViewController: AppGuideViewController())
+        //        } else if !UserDefaults.standard.isPermAgreed {
+        //            firstVC = PermAgreeViewController()
+        //        }
         
         firstVC = UINavigationController(rootViewController: AppGuideViewController())
         
@@ -44,8 +45,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        appleIDProvider.getCredentialState(forUserID: "/*user의 고유 ID값(xxxxx.xxxxxxxxxx.xxxx)*/") { (credentialState, error) in
+            switch credentialState {
+            case .authorized:
+                print("authorized")
+                // The Apple ID credential is valid.
+                DispatchQueue.main.async {
+                    //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
+                    self.window?.rootViewController = TabBarViewController()
+                }
+            case .revoked:
+                print("revoked")
+            case .notFound:
+                // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
+                print("notFound")
+                
+            default:
+                break
+            }
+        }
     }
     
     func sceneWillResignActive(_ scene: UIScene) {

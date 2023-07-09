@@ -29,6 +29,9 @@
 		9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E42A5A3976001629DC /* ViewController1.swift */; };
 		9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E62A5A3A4F001629DC /* ViewController2.swift */; };
 		9CE426E92A5A3A58001629DC /* ViewController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E82A5A3A58001629DC /* ViewController3.swift */; };
+		9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426EB2A5AA9B0001629DC /* MOGAKAPI.swift */; };
+		9CE426EE2A5AAA0C001629DC /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426ED2A5AAA0C001629DC /* API.swift */; };
+		9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -69,6 +72,9 @@
 		9CE426E42A5A3976001629DC /* ViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController1.swift; sourceTree = "<group>"; };
 		9CE426E62A5A3A4F001629DC /* ViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController2.swift; sourceTree = "<group>"; };
 		9CE426E82A5A3A58001629DC /* ViewController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController3.swift; sourceTree = "<group>"; };
+		9CE426EB2A5AA9B0001629DC /* MOGAKAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MOGAKAPI.swift; sourceTree = "<group>"; };
+		9CE426ED2A5AAA0C001629DC /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAgreeViewController.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -214,8 +220,18 @@
 			isa = PBXGroup;
 			children = (
 				9CE426C22A594C47001629DC /* LoginViewController.swift */,
+				9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		9CE426EA2A5AA98E001629DC /* API */ = {
+			isa = PBXGroup;
+			children = (
+				9CE426EB2A5AA9B0001629DC /* MOGAKAPI.swift */,
+				9CE426ED2A5AAA0C001629DC /* API.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 		9CFA7CF82A458109003E80A7 = {
@@ -239,6 +255,7 @@
 		9CFA7D032A458109003E80A7 /* MOGAK */ = {
 			isa = PBXGroup;
 			children = (
+				9CE426EA2A5AA98E001629DC /* API */,
 				9CC1AE812A4718B000B484DD /* MOGAK.entitlements */,
 				9CFA7D042A458109003E80A7 /* AppDelegate.swift */,
 				9CFA7D062A458109003E80A7 /* SceneDelegate.swift */,
@@ -429,6 +446,7 @@
 				9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */,
 				9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */,
 				9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */,
+				9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */,
 				9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
@@ -437,9 +455,11 @@
 				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
 				9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* ViewController3.swift in Sources */,
+				9CE426EE2A5AAA0C001629DC /* API.swift in Sources */,
 				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
 				9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */,
 				9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */,
+				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */,
 			);
