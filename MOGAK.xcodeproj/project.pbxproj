@@ -14,7 +14,6 @@
 		9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB72A46E66A002AB791 /* AccountRequest.swift */; };
 		9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB92A46E686002AB791 /* AccountResponse.swift */; };
 		9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638ABB2A46E6CD002AB791 /* WebLink.swift */; };
-		9CE426A72A593338001629DC /* OnboardingContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426A62A593338001629DC /* OnboardingContainerViewController.swift */; };
 		9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426A92A594049001629DC /* Pretendard-Bold.otf */; };
 		9CE426B02A59404A001629DC /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */; };
 		9CE426B12A59404A001629DC /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AB2A59404A001629DC /* Pretendard-Light.otf */; };
@@ -24,9 +23,12 @@
 		9CE426B82A594062001629DC /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B52A594062001629DC /* Pretendard-ExtraBold.otf */; };
 		9CE426B92A594062001629DC /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B62A594062001629DC /* Pretendard-Regular.otf */; };
 		9CE426BA2A594062001629DC /* Pretendard-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B72A594062001629DC /* Pretendard-Thin.otf */; };
-		9CE426BC2A5941FE001629DC /* ViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426BB2A5941FE001629DC /* ViewController1.swift */; };
-		9CE426BE2A594226001629DC /* ViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426BD2A594226001629DC /* ViewController2.swift */; };
-		9CE426C02A594240001629DC /* ViewController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426BF2A594240001629DC /* ViewController3.swift */; };
+		9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426C22A594C47001629DC /* LoginViewController.swift */; };
+		9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426C42A59573F001629DC /* UserDefaults+Ext.swift */; };
+		9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426D92A59C559001629DC /* AppGuideViewController.swift */; };
+		9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E42A5A3976001629DC /* ViewController1.swift */; };
+		9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E62A5A3A4F001629DC /* ViewController2.swift */; };
+		9CE426E92A5A3A58001629DC /* ViewController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426E82A5A3A58001629DC /* ViewController3.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -52,7 +54,6 @@
 		9C638AB92A46E686002AB791 /* AccountResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountResponse.swift; sourceTree = "<group>"; };
 		9C638ABB2A46E6CD002AB791 /* WebLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLink.swift; sourceTree = "<group>"; };
 		9CC1AE812A4718B000B484DD /* MOGAK.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MOGAK.entitlements; sourceTree = "<group>"; };
-		9CE426A62A593338001629DC /* OnboardingContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingContainerViewController.swift; sourceTree = "<group>"; };
 		9CE426A92A594049001629DC /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
 		9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		9CE426AB2A59404A001629DC /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
@@ -62,9 +63,12 @@
 		9CE426B52A594062001629DC /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
 		9CE426B62A594062001629DC /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
 		9CE426B72A594062001629DC /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Thin.otf"; sourceTree = "<group>"; };
-		9CE426BB2A5941FE001629DC /* ViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController1.swift; sourceTree = "<group>"; };
-		9CE426BD2A594226001629DC /* ViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController2.swift; sourceTree = "<group>"; };
-		9CE426BF2A594240001629DC /* ViewController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController3.swift; sourceTree = "<group>"; };
+		9CE426C22A594C47001629DC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		9CE426C42A59573F001629DC /* UserDefaults+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Ext.swift"; sourceTree = "<group>"; };
+		9CE426D92A59C559001629DC /* AppGuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGuideViewController.swift; sourceTree = "<group>"; };
+		9CE426E42A5A3976001629DC /* ViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController1.swift; sourceTree = "<group>"; };
+		9CE426E62A5A3A4F001629DC /* ViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController2.swift; sourceTree = "<group>"; };
+		9CE426E82A5A3A58001629DC /* ViewController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController3.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -182,10 +186,10 @@
 		9CE426A32A5932F1001629DC /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				9CE426A62A593338001629DC /* OnboardingContainerViewController.swift */,
-				9CE426BB2A5941FE001629DC /* ViewController1.swift */,
-				9CE426BD2A594226001629DC /* ViewController2.swift */,
-				9CE426BF2A594240001629DC /* ViewController3.swift */,
+				9CE426D92A59C559001629DC /* AppGuideViewController.swift */,
+				9CE426E42A5A3976001629DC /* ViewController1.swift */,
+				9CE426E62A5A3A4F001629DC /* ViewController2.swift */,
+				9CE426E82A5A3A58001629DC /* ViewController3.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -204,6 +208,14 @@
 				9CE426AE2A59404A001629DC /* Pretendard-SemiBold.otf */,
 			);
 			path = Pretendard;
+			sourceTree = "<group>";
+		};
+		9CE426C12A594C2C001629DC /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				9CE426C22A594C47001629DC /* LoginViewController.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 		9CFA7CF82A458109003E80A7 = {
@@ -247,6 +259,7 @@
 			children = (
 				9CFA7D192A458C91003E80A7 /* Font+Ext.swift */,
 				9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */,
+				9CE426C42A59573F001629DC /* UserDefaults+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -254,6 +267,7 @@
 		9CFA7D1D2A458D25003E80A7 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				9CE426C12A594C2C001629DC /* Login */,
 				9CE426A32A5932F1001629DC /* Onboarding */,
 				9C638AA82A46C5E9002AB791 /* Feed */,
 				9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */,
@@ -406,26 +420,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
-				9CE426A72A593338001629DC /* OnboardingContainerViewController.swift in Sources */,
+				9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
 				9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */,
-				9CE426C02A594240001629DC /* ViewController3.swift in Sources */,
-				9CE426BE2A594226001629DC /* ViewController2.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
+				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
 				9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */,
 				9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */,
-				9CE426BC2A5941FE001629DC /* ViewController1.swift in Sources */,
+				9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */,
 				9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
+				9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */,
 				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
 				9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */,
+				9CE426E92A5A3A58001629DC /* ViewController3.swift in Sources */,
 				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
 				9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */,
 				9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
+				9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
