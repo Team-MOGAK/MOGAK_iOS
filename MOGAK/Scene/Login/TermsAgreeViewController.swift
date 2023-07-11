@@ -195,11 +195,12 @@ class TermsAgreeViewController: UIViewController {
         return stackView
     }()
     
-    private let nextButton : UIButton = {
+    private lazy var nextButton : UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
         button.backgroundColor = .black
         button.titleLabel?.textColor = .white
+        button.addTarget(self, action: #selector(nextButtonIsClicked), for: .touchUpInside)
         return button
     }()
 
@@ -325,5 +326,10 @@ class TermsAgreeViewController: UIViewController {
             $0.height.equalTo(53)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-53)
         })
+    }
+    
+    @objc private func nextButtonIsClicked() {
+        let nicknameVC = NicknameViewController()
+        self.navigationController?.pushViewController(nicknameVC, animated: true)
     }
 }

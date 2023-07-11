@@ -32,6 +32,8 @@
 		9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426EB2A5AA9B0001629DC /* MOGAKAPI.swift */; };
 		9CE426EE2A5AAA0C001629DC /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426ED2A5AAA0C001629DC /* API.swift */; };
 		9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */; };
+		9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F12A5D24A5001629DC /* NicknameViewController.swift */; };
+		9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -75,6 +77,8 @@
 		9CE426EB2A5AA9B0001629DC /* MOGAKAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MOGAKAPI.swift; sourceTree = "<group>"; };
 		9CE426ED2A5AAA0C001629DC /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAgreeViewController.swift; sourceTree = "<group>"; };
+		9CE426F12A5D24A5001629DC /* NicknameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameViewController.swift; sourceTree = "<group>"; };
+		9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseJobViewController.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -221,6 +225,8 @@
 			children = (
 				9CE426C22A594C47001629DC /* LoginViewController.swift */,
 				9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */,
+				9CE426F12A5D24A5001629DC /* NicknameViewController.swift */,
+				9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -439,6 +445,7 @@
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
 				9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
+				9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */,
 				9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
@@ -461,6 +468,7 @@
 				9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */,
 				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
 				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
+				9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
