@@ -129,8 +129,8 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             }
             
             print("useridentifier: \(userIdentifier)")
-            print("fullName: \(fullName)")
-            print("email: \(email)")
+//            print("fullName: \(fullName)")
+//            print("email: \(email)")
             
             //Move to NextPage
             let validVC = TermsAgreeViewController()

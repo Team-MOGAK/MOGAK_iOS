@@ -34,6 +34,7 @@
 		9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */; };
 		9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F12A5D24A5001629DC /* NicknameViewController.swift */; };
 		9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */; };
+		9CE426F62A5EA04F001629DC /* NameCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F52A5EA04F001629DC /* NameCell.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
@@ -79,6 +80,7 @@
 		9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAgreeViewController.swift; sourceTree = "<group>"; };
 		9CE426F12A5D24A5001629DC /* NicknameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameViewController.swift; sourceTree = "<group>"; };
 		9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseJobViewController.swift; sourceTree = "<group>"; };
+		9CE426F52A5EA04F001629DC /* NameCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCell.swift; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */,
 				9CE426F12A5D24A5001629DC /* NicknameViewController.swift */,
 				9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */,
+				9CE426F52A5EA04F001629DC /* NameCell.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
+				9CE426F62A5EA04F001629DC /* NameCell.swift in Sources */,
 				9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */,
 				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
 				9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */,
