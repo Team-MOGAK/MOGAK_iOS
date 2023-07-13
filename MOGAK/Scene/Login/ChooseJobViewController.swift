@@ -13,6 +13,9 @@ class ChooseJobViewController: UIViewController {
     private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
     // 검색 결과를 담는 배열
     private var filteredItems: [String] = []
+    // checkButton 선택 셀 index
+    private var previousIndexPath: IndexPath?
+    private var selectedIndexPath: IndexPath?
     
     private let mogakLabel : UILabel = {
         let label = UILabel()
@@ -50,10 +53,26 @@ class ChooseJobViewController: UIViewController {
         return search
     }()
     
+    private let searchBarLine : UIView = {
+        let view = UIView()
+        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.borderWidth = 1
+        return view
+    }()
+    
     private let tableView : UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
         return tableView
+    }()
+    
+    private lazy var nextButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("다음", for: .normal)
+        button.backgroundColor = .black
+        button.titleLabel?.textColor = .white
+        button.addTarget(self, action: #selector(nextButtonIsClicked), for: .touchUpInside)
+        return button
     }()
     
     override func viewDidLoad() {
@@ -63,6 +82,7 @@ class ChooseJobViewController: UIViewController {
         self.configureNavBar()
         self.configureLabel()
         self.configureSearchBar()
+        self.configureButton()
         self.configureTableView()
         
         self.reload()
@@ -94,11 +114,18 @@ class ChooseJobViewController: UIViewController {
     
     private func configureSearchBar() {
         self.view.addSubview(searchBar)
+        self.view.addSubview(searchBarLine)
         
         searchBar.snp.makeConstraints({
             $0.top.equalTo(subLabel.snp.bottom).offset(48)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(33)
+        })
+        
+        searchBarLine.snp.makeConstraints({
+            $0.top.equalTo(searchBar.snp.bottom)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(1)
         })
     }
     
@@ -107,21 +134,40 @@ class ChooseJobViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(NameCell.self, forCellReuseIdentifier: "cell")
         
         self.view.addSubview(tableView)
         
-        
         tableView.snp.makeConstraints({
-            $0.top.equalTo(searchBar.snp.bottom)
+            $0.top.equalTo(searchBarLine.snp.bottom)
             $0.leading.trailing.equalToSuperview().inset(21)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-118)
+            $0.bottom.equalTo(nextButton.snp.top).offset(-12)
         })
     }
     
     private func reload() {
         self.tableView.reloadData()
+    }
+    
+    private func configureButton() {
+        self.view.addSubview(nextButton)
+        
+        nextButton.snp.makeConstraints({
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(53)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-53)
+        })
+    }
+    
+    @objc private func nextButtonIsClicked() {
+        if let _ = selectedIndexPath {
+            let regionVC = ChooseRegionViewController()
+            self.navigationController?.pushViewController(regionVC, animated: true)
+        } else {
+            let alert = UIAlertController(title: "경고", message: "직군을 선택하셔야 합니다.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "다시 돌아가기", style: .cancel))
+            present(alert, animated: true)
+        }
     }
 }
 
@@ -177,16 +223,41 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCell
         
-        let sectionTitles = getSectionTitles()
-        let sectionTitle = sectionTitles[indexPath.section]
         let filteredItemsInSection = getFilteredItemsInSection(indexPath.section)
         
         let item = filteredItemsInSection[indexPath.row]
         cell.textLabel?.text = item
         
+        if let selectedIndexPath = selectedIndexPath, selectedIndexPath == indexPath {
+            cell.checkButton.isHidden = false
+        } else {
+            cell.checkButton.isHidden = true
+        }
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let previousIndexPath = selectedIndexPath  // 이전에 선택된 셀의 인덱스 저장
+        selectedIndexPath = indexPath  // 선택된 셀의 인덱스 업데이트
+        
+        // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 같으면 체크 버튼을 숨깁니다.
+        if previousIndexPath == indexPath {
+            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
+                cell.checkButton.isHidden = true
+            }
+            selectedIndexPath = nil  // 선택된 셀의 인덱스를 nil로 설정하여 선택 해제
+        } else {
+            // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 다르면 이전에 선택된 셀을 업데이트합니다.
+            if let previousIndexPath = previousIndexPath, let cell = tableView.cellForRow(at: previousIndexPath) as? NameCell {
+                cell.checkButton.isHidden = true
+            }
+            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
+                cell.checkButton.isHidden = false
+            }
+        }
     }
     
     
