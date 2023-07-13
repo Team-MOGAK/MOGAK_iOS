@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
 		9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB52A46E63D002AB791 /* AccountAPI.swift */; };
@@ -54,7 +53,6 @@
 
 /* Begin PBXFileReference section */
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
-		9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9C638AAF2A46DC75002AB791 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		9C638AB52A46E63D002AB791 /* AccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAPI.swift; sourceTree = "<group>"; };
@@ -154,14 +152,6 @@
 				9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */,
 			);
 			path = ScheduleReport;
-			sourceTree = "<group>";
-		};
-		9C638AAC2A46C632002AB791 /* MyPage */ = {
-			isa = PBXGroup;
-			children = (
-				9C638AA62A46C0F3002AB791 /* MyPageViewController.swift */,
-			);
-			path = MyPage;
 			sourceTree = "<group>";
 		};
 		9C638AB32A46E5F7002AB791 /* Domain */ = {
@@ -307,7 +297,6 @@
 				9C638AA92A46C609002AB791 /* ScheduleList */,
 				9C638AAA2A46C614002AB791 /* Networking */,
 				9C638AAB2A46C623002AB791 /* ScheduleReport */,
-				9C638AAC2A46C632002AB791 /* MyPage */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -464,7 +453,6 @@
 				9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */,
 				9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */,
 				9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */,
-				9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
