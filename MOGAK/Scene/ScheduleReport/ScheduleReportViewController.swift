@@ -1,5 +1,5 @@
 //
-//  RoutineStartViewController.swift
+//  RoutineRegisterViewController.swift
 //  MOGAK
 //
 //  Created by 김강현 on 2023/06/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NetworkingViewController: UIViewController {
+class ScheduleReportViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,7 +15,6 @@ class NetworkingViewController: UIViewController {
         view.backgroundColor = UIColor(hex: "F1F3FA")
     }
     
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         

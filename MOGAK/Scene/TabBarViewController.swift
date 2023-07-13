@@ -21,17 +21,17 @@ class TabBarViewController: UITabBarController {
     
     private func setupViews() {
         
-        let homeTabBarItem = UITabBarItem(title: "피드", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
-        let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
-        let routineStartTabBarItem = UITabBarItem(title: "루틴시작", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
-        let routineRegisterTabBarItem = UITabBarItem(title: "루틴등록", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
+        let homeTabBarItem = UITabBarItem(title: "조각시작", image: UIImage(named: "start"), selectedImage: UIImage(named: "selectedStart"))
+        let listTabBarItem = UITabBarItem(title: "조각관리", image: UIImage(named: "list"), selectedImage: UIImage(named: "selectedList"))
+        let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(named: "networking"), selectedImage: UIImage(named: "selectedNetworking"))
+        let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
         
-        let homeVC = generateNavController(vc: FeedViewController(), tabBarItem: homeTabBarItem)
+        let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
+        let listVC = generateNavController(vc: ScheduleListViewController(), tabBarItem: listTabBarItem)
         let networkingVC = generateNavController(vc: NetworkingViewController(), tabBarItem: networkingTabBarItem)
-        let RoutineStartVC = generateNavController(vc: RoutineStartViewController(), tabBarItem: routineStartTabBarItem)
-        let RoutineRegisterVC = generateNavController(vc: RoutineRegisterViewController(), tabBarItem: routineRegisterTabBarItem)
+        let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
         
-        self.viewControllers = [homeVC, networkingVC, RoutineStartVC, RoutineRegisterVC]
+        self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
         self.selectedIndex = 0
         
     }

@@ -39,15 +39,15 @@
 		9CE426FA2A5FE50F001629DC /* UITextField+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F92A5FE50F001629DC /* UITextField+Ext.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
 		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
-		9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* FeedViewController.swift */; };
+		9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */; };
 		9CFA7D0E2A45810B003E80A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */; };
 		9CFA7D112A45810B003E80A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0F2A45810B003E80A7 /* LaunchScreen.storyboard */; };
 		9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D192A458C91003E80A7 /* Font+Ext.swift */; };
 		9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */; };
 		9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */; };
-		9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */; };
-		9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */; };
-		9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */; };
+		9CFA7D222A4590F9003E80A7 /* ScheduleListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */; };
+		9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */; };
+		9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */; };
 		9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D272A459424003E80A7 /* BaseViewController.swift */; };
 		A165D545DF550574C320791C /* Pods_MOGAK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D4C939577FBCDF4C6293DD /* Pods_MOGAK.framework */; };
 /* End PBXBuildFile section */
@@ -88,16 +88,16 @@
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CFA7D042A458109003E80A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9CFA7D062A458109003E80A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		9CFA7D082A458109003E80A7 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
+		9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleStartViewController.swift; sourceTree = "<group>"; };
 		9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9CFA7D102A45810B003E80A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9CFA7D122A45810B003E80A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CFA7D192A458C91003E80A7 /* Font+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Ext.swift"; sourceTree = "<group>"; };
 		9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 		9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
-		9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingViewController.swift; sourceTree = "<group>"; };
-		9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineStartViewController.swift; sourceTree = "<group>"; };
-		9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineRegisterViewController.swift; sourceTree = "<group>"; };
+		9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListViewController.swift; sourceTree = "<group>"; };
+		9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingViewController.swift; sourceTree = "<group>"; };
+		9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleReportViewController.swift; sourceTree = "<group>"; };
 		9CFA7D272A459424003E80A7 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		B9D4C939577FBCDF4C6293DD /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE13475512A8DB088F2EF325 /* Pods-MOGAK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.debug.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.debug.xcconfig"; sourceTree = "<group>"; };
@@ -124,36 +124,36 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		9C638AA82A46C5E9002AB791 /* Feed */ = {
+		9C638AA82A46C5E9002AB791 /* ScheduleStart */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA7D082A458109003E80A7 /* FeedViewController.swift */,
+				9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */,
 			);
-			path = Feed;
+			path = ScheduleStart;
 			sourceTree = "<group>";
 		};
-		9C638AA92A46C609002AB791 /* Networking */ = {
+		9C638AA92A46C609002AB791 /* ScheduleList */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA7D212A4590F9003E80A7 /* NetworkingViewController.swift */,
+				9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */,
+			);
+			path = ScheduleList;
+			sourceTree = "<group>";
+		};
+		9C638AAA2A46C614002AB791 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
 		};
-		9C638AAA2A46C614002AB791 /* RoutineStart */ = {
+		9C638AAB2A46C623002AB791 /* ScheduleReport */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA7D232A45915B003E80A7 /* RoutineStartViewController.swift */,
+				9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */,
 			);
-			path = RoutineStart;
-			sourceTree = "<group>";
-		};
-		9C638AAB2A46C623002AB791 /* RoutineRegister */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D252A4591AB003E80A7 /* RoutineRegisterViewController.swift */,
-			);
-			path = RoutineRegister;
+			path = ScheduleReport;
 			sourceTree = "<group>";
 		};
 		9C638AAC2A46C632002AB791 /* MyPage */ = {
@@ -301,12 +301,12 @@
 			children = (
 				9CE426C12A594C2C001629DC /* Login */,
 				9CE426A32A5932F1001629DC /* Onboarding */,
-				9C638AA82A46C5E9002AB791 /* Feed */,
+				9C638AA82A46C5E9002AB791 /* ScheduleStart */,
 				9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */,
 				9CFA7D272A459424003E80A7 /* BaseViewController.swift */,
-				9C638AA92A46C609002AB791 /* Networking */,
-				9C638AAA2A46C614002AB791 /* RoutineStart */,
-				9C638AAB2A46C623002AB791 /* RoutineRegister */,
+				9C638AA92A46C609002AB791 /* ScheduleList */,
+				9C638AAA2A46C614002AB791 /* Networking */,
+				9C638AAB2A46C623002AB791 /* ScheduleReport */,
 				9C638AAC2A46C632002AB791 /* MyPage */,
 			);
 			path = Scene;
@@ -455,17 +455,17 @@
 				9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
 				9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */,
-				9CFA7D222A4590F9003E80A7 /* NetworkingViewController.swift in Sources */,
+				9CFA7D222A4590F9003E80A7 /* ScheduleListViewController.swift in Sources */,
 				9CE426FA2A5FE50F001629DC /* UITextField+Ext.swift in Sources */,
-				9CFA7D092A458109003E80A7 /* FeedViewController.swift in Sources */,
+				9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
 				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
-				9CFA7D262A4591AB003E80A7 /* RoutineRegisterViewController.swift in Sources */,
+				9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */,
 				9CFA7D282A459424003E80A7 /* BaseViewController.swift in Sources */,
 				9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */,
 				9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */,
 				9C638AA72A46C0F3002AB791 /* MyPageViewController.swift in Sources */,
-				9CFA7D242A45915B003E80A7 /* RoutineStartViewController.swift in Sources */,
+				9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
