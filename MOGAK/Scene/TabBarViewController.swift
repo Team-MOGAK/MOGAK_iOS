@@ -6,12 +6,21 @@
 //
 
 import UIKit
+import SnapKit
+import FSCalendar
 
 class TabBarViewController: UITabBarController {
     
+    
+    let upperView : UIView = {
+        let upperView = UIView()
+        upperView.backgroundColor = .white
+        return upperView
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.addSubview(upperView)
         self.setupViews()
         
         UITabBar.appearance().tintColor = UIColor.black
@@ -34,6 +43,11 @@ class TabBarViewController: UITabBarController {
         self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
         self.selectedIndex = 0
         
+        upperView.snp.makeConstraints{make in
+            make.height.equalToSuperview().inset(300)
+            make.top.leading.trailing.equalToSuperview()
+        }
+        
     }
     
     fileprivate func generateNavController(vc: UIViewController, tabBarItem: UITabBarItem) -> UINavigationController {
@@ -46,7 +60,69 @@ class TabBarViewController: UITabBarController {
         return navController
     }
     
-    
-    
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Preview code
+#if DEBUG
+import SwiftUI
+struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
+    
+func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+}
+@available(iOS 13.0.0, *)
+func makeUIViewController(context: Context) -> UIViewController{
+    TabBarViewController()
+    }
+}
+@available(iOS 13.0, *)
+struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                TabBarViewControllerRepresentable()
+                    .ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+        
+    }
+} #endif
