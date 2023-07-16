@@ -10,6 +10,10 @@ import SnapKit
 
 class ScheduleListViewController: UIViewController {
     
+    private var progressCount = 3
+    private var failCount = 3
+    private var successCount = 5
+    
     // MARK: - Top
     private let topView : UIView = {
         let view = UIView()
@@ -59,15 +63,20 @@ class ScheduleListViewController: UIViewController {
     
     private lazy var segmentControl: UISegmentedControl = {
         let segment = UISegmentedControl()
+        
         segment.selectedSegmentTintColor = .clear
         // 배경 색 제거
         segment.setBackgroundImage(UIImage(), for: .normal, barMetrics: .default)
         // Segment 구분 라인 제거
         segment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
         
-        segment.insertSegment(withTitle: "진행중", at: 0, animated: true)
-        segment.insertSegment(withTitle: "실패", at: 1, animated: true)
-        segment.insertSegment(withTitle: "성공", at: 2, animated: true)
+        let progressTitle = progressCount == 0 ? "진행중" : "진행중 \(progressCount)"
+        let failTitle = failCount == 0 ? "실패" : "실패 \(failCount)"
+        let successTitle = successCount == 0 ? "성공" : "성공 \(successCount)"
+        
+        segment.insertSegment(withTitle: progressTitle, at: 0, animated: true)
+        segment.insertSegment(withTitle: failTitle, at: 1, animated: true)
+        segment.insertSegment(withTitle: successTitle, at: 2, animated: true)
         
         segment.selectedSegmentIndex = 0
         
@@ -100,6 +109,24 @@ class ScheduleListViewController: UIViewController {
         return underLineView.leadingAnchor.constraint(equalTo: segmentControl.leadingAnchor)
     }()
     
+    // MARK: - tableView
+    private lazy var listTableView : UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = UIColor(hex: "F1F3FA")
+        return tableView
+    }()
+    
+    private lazy var floatingButton : UIButton = {
+        let button = UIButton()
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = UIColor(hex: "475FFD")
+        config.cornerStyle = .capsule
+        config.image = UIImage(systemName: "plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 24, weight: .regular))
+        button.configuration = config
+        button.layer.cornerRadius = 10
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,6 +135,9 @@ class ScheduleListViewController: UIViewController {
         
         self.configureTop()
         self.configureSegment()
+        self.configureTableView()
+        self.configureButton()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -130,6 +160,20 @@ class ScheduleListViewController: UIViewController {
             self?.leadingDistance.constant = leadingDistance
             self?.view.layoutIfNeeded()
         })
+        self.listTableView.reloadData()
+    }
+    
+    @objc private func segmentSelected() {
+        switch(segmentControl.selectedSegmentIndex) {
+        case 0:
+            listTableView.reloadData()
+        case 1:
+            listTableView.reloadData()
+        case 2:
+            listTableView.reloadData()
+        default:
+            break
+        }
     }
     
     private func configureTop() {
@@ -188,6 +232,73 @@ class ScheduleListViewController: UIViewController {
             underLineView.heightAnchor.constraint(equalToConstant: 2),
             leadingDistance,
             underLineView.widthAnchor.constraint(equalTo: segmentControl.widthAnchor, multiplier: 1 / CGFloat(segmentControl.numberOfSegments))
-        ])    }
+        ])
+        
+    }
+    
+    private func configureTableView() {
+        listTableView.delegate = self
+        listTableView.dataSource = self
+        
+        listTableView.register(ListTableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        self.view.addSubview(listTableView)
+        
+        listTableView.snp.makeConstraints({
+            $0.top.equalTo(self.containerView.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        })
+        
+    }
+    
+    private func configureButton() {
+        view.addSubview(floatingButton)
+        
+        floatingButton.snp.makeConstraints({
+            $0.bottom.equalTo(listTableView.snp.bottom).offset(-25)
+            $0.trailing.equalTo(listTableView.snp.trailing).offset(-20)
+        })
+    }
     
 }
+
+extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            return progressCount == 0 ? 1 : progressCount
+        case 1:
+            return failCount == 0 ? 1 : failCount
+        case 2:
+            return successCount == 0 ? 1 : successCount
+        default:
+            break
+        }
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? ListTableViewCell else {return UITableViewCell()}
+        cell.selectionStyle = .none
+        
+        switch segmentControl.selectedSegmentIndex {
+        case 0:
+            cell.configure(backColor: UIColor(hex: "E8EBFE"), titleText: "progress", statusText: "진행중", categoryText: "자격증", statusTextColor: UIColor(hex: "475FFD"))
+        case 1:
+            cell.configure(backColor: UIColor(hex: "FFDEDE"), titleText: "fail", statusText: "실패", categoryText: "공모전", statusTextColor: UIColor(hex: "FF2323"))
+        case 2:
+            cell.configure(backColor: UIColor(hex: "E7F9F3"), titleText: "success", statusText: "성공", categoryText: "자격증", statusTextColor: UIColor(hex: "009967"))
+        default:
+            break
+        }
+
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+    
+}
+
