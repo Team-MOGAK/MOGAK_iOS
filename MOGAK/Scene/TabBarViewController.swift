@@ -6,21 +6,12 @@
 //
 
 import UIKit
-import SnapKit
-import FSCalendar
 
-class TabBarViewController: UITabBarController {
+class TabBarViewController: UITabBarController{
     
     
-    let upperView : UIView = {
-        let upperView = UIView()
-        upperView.backgroundColor = .white
-        return upperView
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(upperView)
         self.setupViews()
         
         UITabBar.appearance().tintColor = UIColor.black
@@ -42,11 +33,6 @@ class TabBarViewController: UITabBarController {
         
         self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
         self.selectedIndex = 0
-        
-        upperView.snp.makeConstraints{make in
-            make.height.equalToSuperview().inset(300)
-            make.top.leading.trailing.equalToSuperview()
-        }
         
     }
     
@@ -102,12 +88,12 @@ class TabBarViewController: UITabBarController {
 import SwiftUI
 struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
     
-func updateUIViewController(_ uiView: UIViewController,context: Context) {
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
         // leave this empty
-}
-@available(iOS 13.0.0, *)
-func makeUIViewController(context: Context) -> UIViewController{
-    TabBarViewController()
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        TabBarViewController()
     }
 }
 @available(iOS 13.0, *)
