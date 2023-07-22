@@ -9,8 +9,7 @@ import UIKit
 
 class TabBarViewController: UITabBarController{
     
-    
-    override func viewDidLoad() {
+    override func viewDidLoad(){
         super.viewDidLoad()
         self.setupViews()
         
@@ -104,7 +103,7 @@ struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
                 TabBarViewControllerRepresentable()
                     .ignoresSafeArea()
                     .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
             } else {
                 // Fallback on earlier versions
             }
