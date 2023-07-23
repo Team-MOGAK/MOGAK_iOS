@@ -66,6 +66,7 @@ class ScheduleListViewController: UIViewController {
         label.text = "MOGAKEE 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
+//        label.textColor = UIColor(hex: "000000")
         return label
     }()
     
@@ -148,6 +149,7 @@ class ScheduleListViewController: UIViewController {
         config.image = UIImage(systemName: "plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 24, weight: .regular))
         button.configuration = config
         button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -197,6 +199,11 @@ class ScheduleListViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    @objc private func floatingButtonTapped() {
+        let mogakVC = MogakInitViewController()
+        self.navigationController?.pushViewController(mogakVC, animated: true)
     }
     
     private func configureTop() {
