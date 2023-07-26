@@ -103,6 +103,51 @@ class MogakInitViewController: UIViewController {
         $0.register(Reusable.repeatCell)
     }
     
+    // MARK: - 날짜선택
+
+    private let choiceDateLabel = UILabel().then {
+        $0.text = "날짜 선택"
+        $0.textColor = UIColor(hex: "24252E")
+        $0.font = UIFont.pretendard(.semiBold, size: 14)
+    }
+    
+    private let startLabel = UILabel().then {
+        $0.text = "시작"
+        $0.textColor = UIColor(hex: "000000")
+        $0.font = UIFont.pretendard(.medium, size: 16)
+    }
+    
+    private let startTextField : UITextField = {
+        let textField = UITextField()
+        textField.borderStyle = .line
+        textField.layer.borderWidth = 1
+        textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
+        textField.leftViewMode = .unlessEditing
+        textField.font = UIFont.pretendard(.medium, size: 16)
+        textField.textColor = UIColor(hex: "475FFD")
+        textField.layer.borderColor = UIColor(hex: "EEF0F8").cgColor
+        textField.attributedPlaceholder = NSAttributedString(string: "yyyy/mm/dd(요일)", attributes: [NSAttributedString.Key.foregroundColor: UIColor(hex: "BFC3D4"), .font: UIFont.pretendard(.medium, size: 16)])
+        return textField
+    }()
+    
+    private let endLabel = UILabel().then {
+        $0.text = "종료"
+        $0.textColor = UIColor(hex: "000000")
+        $0.font = UIFont.pretendard(.medium, size: 16)
+    }
+    
+    private let endTextField : UITextField = {
+        let textField = UITextField()
+        textField.borderStyle = .line
+        textField.layer.borderWidth = 1
+        textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
+        textField.leftViewMode = .unlessEditing
+        textField.font = UIFont.pretendard(.medium, size: 16)
+        textField.layer.borderColor = UIColor(hex: "EEF0F8").cgColor
+        textField.placeholder = "yyyy/mm/dd(요일)"
+        textField.attributedPlaceholder = NSAttributedString(string: "yyyy/mm/dd(요일)", attributes: [NSAttributedString.Key.foregroundColor: UIColor(hex: "BFC3D4"), .font: UIFont.pretendard(.medium, size: 16)])
+        return textField
+    }()
     
     // MARK: - ViewDidLoad
     
@@ -113,6 +158,7 @@ class MogakInitViewController: UIViewController {
         self.configureMogakTop()
         self.configureCategory()
         self.configureRepeat()
+        self.configureDate()
     }
     
     private func configureNavBar() {
@@ -191,6 +237,39 @@ class MogakInitViewController: UIViewController {
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-99)
             $0.height.equalTo(110)
+        })
+    }
+    
+    private func configureDate() {
+        [choiceDateLabel, startLabel, endLabel, startTextField, endTextField].forEach({view.addSubview($0)})
+        
+        choiceDateLabel.snp.makeConstraints({
+            $0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
+            $0.leading.equalToSuperview().offset(20)
+        })
+        
+        startLabel.snp.makeConstraints({
+            $0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(30)
+            $0.leading.equalToSuperview().offset(20)
+        })
+        
+        startTextField.snp.makeConstraints({
+            $0.centerY.equalTo(self.startLabel.snp.centerY)
+            $0.leading.equalTo(self.startLabel.snp.trailing).offset(19)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.height.equalTo(52)
+        })
+        
+        endLabel.snp.makeConstraints({
+            $0.top.equalTo(self.startLabel.snp.bottom).offset(52)
+            $0.leading.equalToSuperview().offset(20)
+        })
+        
+        endTextField.snp.makeConstraints({
+            $0.centerY.equalTo(self.endLabel.snp.centerY)
+            $0.leading.equalTo(self.endLabel.snp.trailing).offset(19)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.height.equalTo(52)
         })
     }
     
