@@ -203,6 +203,7 @@ class ScheduleListViewController: UIViewController {
     
     @objc private func floatingButtonTapped() {
         let mogakVC = MogakInitViewController()
+//        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }
     
