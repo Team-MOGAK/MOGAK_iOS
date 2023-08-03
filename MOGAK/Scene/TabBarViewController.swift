@@ -96,7 +96,7 @@ struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
     }
 }
 @available(iOS 13.0, *)
-struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
+struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
     static var previews: some View {
         Group {
             if #available(iOS 14.0, *) {
