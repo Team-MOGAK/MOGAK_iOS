@@ -14,6 +14,11 @@
 		6582BDE72A6A786200C87FDE /* NetworkingFeedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */; };
 		65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */; };
 		9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */; };
+		6C3502362A6EC24E00080017 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */; };
+		6C4EE4E62A7AA15100DE0D5C /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */; };
+		6CB3DEA92A7B7F850056C596 /* ScheduleModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* ScheduleModalVC.swift */; };
+		6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
+		6CFAA54D2A6999AB002666F7 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
 		9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB52A46E63D002AB791 /* AccountAPI.swift */; };
@@ -44,13 +49,11 @@
 		9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F72A5FD9CD001629DC /* ChooseRegionViewController.swift */; };
 		9CE426FA2A5FE50F001629DC /* UITextField+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE426F92A5FE50F001629DC /* UITextField+Ext.swift */; };
 		9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D042A458109003E80A7 /* AppDelegate.swift */; };
-		9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */; };
 		9CFA7D0E2A45810B003E80A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0D2A45810B003E80A7 /* Assets.xcassets */; };
 		9CFA7D112A45810B003E80A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CFA7D0F2A45810B003E80A7 /* LaunchScreen.storyboard */; };
 		9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D192A458C91003E80A7 /* Font+Ext.swift */; };
 		9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */; };
-		9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */; };
 		9CFA7D222A4590F9003E80A7 /* ScheduleListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */; };
 		9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */; };
 		9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */; };
@@ -64,6 +67,9 @@
 		656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingFeedTableViewCell.swift; sourceTree = "<group>"; };
 		65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterSheetView.swift; sourceTree = "<group>"; };
+		6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
+		6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		6CB3DEA82A7B7F850056C596 /* ScheduleModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModalVC.swift; sourceTree = "<group>"; };
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
 		9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -156,6 +162,9 @@
 			isa = PBXGroup;
 			children = (
 				9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */,
+				6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */,
+				6CB3DEA82A7B7F850056C596 /* ScheduleModalVC.swift */,
+				6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */,
 			);
 			path = ScheduleStart;
 			sourceTree = "<group>";
@@ -477,6 +486,7 @@
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
 				9CE426E52A5A3976001629DC /* ViewController1.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
+				6CB3DEA92A7B7F850056C596 /* ScheduleModalVC.swift in Sources */,
 				9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */,
 				9CFA7D222A4590F9003E80A7 /* ScheduleListViewController.swift in Sources */,
 				9CE426FA2A5FE50F001629DC /* UITextField+Ext.swift in Sources */,
@@ -488,14 +498,16 @@
 				9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */,
 				9CE426C32A594C47001629DC /* LoginViewController.swift in Sources */,
 				9CE426EC2A5AA9B0001629DC /* MOGAKAPI.swift in Sources */,
+				6C4EE4E62A7AA15100DE0D5C /* SettingViewController.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
-				9CFA7D202A458E89003E80A7 /* TabBarViewController.swift in Sources */,
+				6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */,
 				9CE426F62A5EA04F001629DC /* NameCell.swift in Sources */,
 				652C05DA2A73AB34004CE9C4 /* LocationFilterTableViewCell.swift in Sources */,
 				6582BDE72A6A786200C87FDE /* NetworkingFeedTableViewCell.swift in Sources */,
 				9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */,
+				6CFAA54D2A6999AB002666F7 /* TabBarViewController.swift in Sources */,
 				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
 				656A53E02A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift in Sources */,
 				65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */,
@@ -506,8 +518,8 @@
 				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
 				9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */,
 				9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */,
+				6C3502362A6EC24E00080017 /* ScheduleTableViewCell.swift in Sources */,
 				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
-				9CFA7D072A458109003E80A7 /* SceneDelegate.swift in Sources */,
 				9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* ViewController2.swift in Sources */,
 			);
