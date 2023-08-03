@@ -1,34 +1,35 @@
 PODS:
   - Alamofire (5.7.1)
-  - FSCalendar (2.8.4)
   - ReusableKit (4.0.0):
     - ReusableKit/Core (= 4.0.0)
   - ReusableKit/Core (4.0.0)
+  - FSCalendar (2.8.4)
   - SnapKit (5.6.0)
   - Then (3.0.0)
 
 DEPENDENCIES:
   - Alamofire
-  - FSCalendar
   - ReusableKit
+  - FSCalendar
   - SnapKit (~> 5.6.0)
   - Then
 
 SPEC REPOS:
   trunk:
     - Alamofire
-    - FSCalendar
     - ReusableKit
+    - FSCalendar
     - SnapKit
     - Then
 
 SPEC CHECKSUMS:
   Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
-  FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   ReusableKit: 8caaff6dc6e2d4c12beb395010086930454b12c3
+  FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 76411e862361f7ad7246038a879578de344b2964
+PODFILE CHECKSUM: f169d83358e2146b9bd30cff426805b5993d5925
+PODFILE CHECKSUM: ce89ff0c12ecbbfbeabc91f4da3d7d1aa33b9f89
 
 COCOAPODS: 1.12.1
