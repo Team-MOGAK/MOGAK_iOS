@@ -142,16 +142,33 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
     
     private lazy var ScheduleTableView : UITableView = {
         let ScheduleTableView = UITableView()
+        ScheduleTableView.layer.cornerRadius = 10
         return ScheduleTableView
     }()
     
-    private lazy var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
+    private lazy var startButton : UIButton = {
+        let startbutton = UIButton()
+        startbutton.setTitle("시작하기",for : .normal) //타이틀
+        startbutton.setTitleColor(.white, for : .normal) //글자 색
+        startbutton.backgroundColor = UIColor(hex: "475FFD")//백그라운드색
+        startbutton.titleLabel?.font = UIFont(name: "Pretendard", size: 18)
+        startbutton.layer.cornerRadius = 10 //둥글기
+        startbutton.addTarget(self, action: #selector(goStart), for: .touchUpInside)
+        return startbutton
+    }()
+    
+    //MARK: - CellAarray
+    
+    //var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
+    
+    var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀","12","123","53445","435345234","57493"]
     
     //MARK: - viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
+        self.startButton.isHidden = true
         self.motiveLabel.isHidden = true
         self.ScheduleTableView.isHidden = true
         view.backgroundColor = UIColor(hex: "F1F3FA")
@@ -188,7 +205,7 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         headerLabel.text = headerDataFormatter.string(from: currentPage)
     }
     
-
+    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
         ScheduleTableView.reloadData()
@@ -196,19 +213,19 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         blankimage.isHidden = false
         blankLabel.isHidden = false
         blankButton.isHidden = false
+        startButton.isHidden = true
         
         ScheduleTableView.isHidden = true
-        
         motiveLabel.isHidden = true
         
-        print(headerDataFormatter.string(from: date) + " 날짜가 선택되었습니다.")
+        
     }
     
     // 날짜 선택 해제 콜백 메소드
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        
-        //    ScheduleTableView.reloadData()
+    
     }
+    
     
     //MARK: - configureUI
     private func configureUI(){
@@ -240,13 +257,13 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         }
         
         
-        [upperView,alarmButton,calendarView,motiveLabel,toggleButton,profileStackView,headerStackView,underView,blankimage,blankLabel,blankButton].forEach{view.addSubview($0)}
+        [upperView,alarmButton,calendarView,motiveLabel,toggleButton,profileStackView,headerStackView,underView,blankimage,blankLabel,blankButton,startButton].forEach{view.addSubview($0)}
         
         
         profileStackView.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(6)
             $0.leading.equalTo(calendarView.collectionView)
-            //$0.bottom.equalTo(headerStackView.snp.top).offset(-20)
+            
         }
         
         alarmButton.snp.makeConstraints{
@@ -305,6 +322,11 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
             $0.top.equalTo(blankLabel.snp.bottom).offset(10)
             $0.width.equalTo(129)
             $0.height.equalTo(30)
+            $0.centerX.equalToSuperview()
+        }
+        startButton.snp.makeConstraints{
+            $0.leading.trailing.equalTo(calendarView.collectionView)
+            $0.bottom.equalToSuperview().inset(100)
             $0.centerX.equalToSuperview()
         }
     }
@@ -370,7 +392,10 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         }
     }
     
-    @objc func goSetting(_ sender : UIButton){
+    @objc func goSetting(_ sender : Any){
+        let settingVC = SettingViewController()
+        
+        navigationController?.pushViewController(settingVC, animated: true)
         print("go setting")
     }
     
@@ -382,6 +407,14 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
     
     @objc func goAlarm(_ sender : UIButton){
         print("go alarm")
+    }
+    
+    @objc func goStart(_ sender : UIButton){
+        let startVC = ScheduleModalVC()
+        startVC.modalPresentationStyle = .automatic
+        self.present(startVC,animated: true)
+        
+        print("timer Start")
     }
     
     @objc func tapNextWeek(_ sender : UIButton){
@@ -418,13 +451,14 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
         ScheduleTableView.isHidden = true
+        
         underView.isHidden = true
         underView.addSubview(motiveLabel)
         underView.addSubview(ScheduleTableView)
         ScheduleTableView.snp.makeConstraints{
             $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalToSuperview().inset(50)
+            $0.bottom.equalToSuperview().inset(150)
         }
     }
     
@@ -432,6 +466,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         blankimage.isHidden = true
         blankButton.isHidden = true
         blankLabel.isHidden = true
+        
         ScheduleTableView.reloadData()
 
         self.ScheduleTableView.rowHeight = 80 //셀 높이
@@ -442,31 +477,36 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         underView.isHidden = false
     }
     
-//MARK: -  Cell설정
+    //MARK: -  Cell설정
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { //셀 클릭시 이벤트
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
-            if cell.contentView.backgroundColor == UIColor.white &&
-                cell.cellImage.image == UIImage(named: "ScheduleDefault"){
-                cell.contentView.backgroundColor = UIColor(hex: "E7F9F3")
-                cell.cellImage.image = UIImage(named: "ScheduleVariant")
-            } else{
-                cell.contentView.backgroundColor = UIColor.white
-                cell.cellImage.image = UIImage(named: "ScheduleDefault")
-            }
+        if cell.contentView.backgroundColor == UIColor.white &&
+            cell.cellImage.image == UIImage(named: "ScheduleDefault"){
+            cell.contentView.backgroundColor = UIColor(hex: "E7F9F3")
+            cell.cellImage.image = UIImage(named: "ScheduleVariant")
+            startButton.isHidden = false
+        } else{
+            cell.contentView.backgroundColor = UIColor.white
+            cell.cellImage.image = UIImage(named: "ScheduleDefault")
+            startButton.isHidden = true
+            
+        }
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { //셀을 땟을때 이벤트
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
-            cell.contentView.backgroundColor = .white
-            cell.cellImage.image = UIImage(named: "ScheduleDefault")
-            ScheduleTableView.deselectRow(at: indexPath, animated: true)
+        
+        cell.contentView.backgroundColor = .white
+        cell.cellImage.image = UIImage(named: "ScheduleDefault")
+        
+        ScheduleTableView.deselectRow(at: indexPath, animated: true)
     }
     
-//MARK: - Cell Selction
+    //MARK: - Cell Selction
     func numberOfSections(in tableView: UITableView) -> Int {
         
         return 1
@@ -477,7 +517,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         return cellArray.count
     }
     
-//MARK: - cellUI
+    //MARK: - cellUI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { //cell 재활용
         
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
