@@ -53,6 +53,30 @@ class ScheduleListViewController: UIViewController {
         return label
     }()
     
+    private let mogakerLabel : UILabel = {
+        let label = UILabel()
+        label.text = "MOGAKER 2"
+        label.font = UIFont.pretendard(.medium, size: 16)
+        label.textColor = UIColor(hex: "FFFFFF")
+        return label
+    }()
+    
+    private let mogakeeLabel : UILabel = {
+        let label = UILabel()
+        label.text = "MOGAKEE 5"
+        label.font = UIFont.pretendard(.medium, size: 16)
+        label.textColor = UIColor(hex: "FFFFFF")
+//        label.textColor = UIColor(hex: "000000")
+        return label
+    }()
+    
+    private let followLineView : UIView = {
+        let view = UIView()
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor(hex: "FFFFFF").cgColor
+        return view
+    }()
+    
     // MARK: - segment
     private lazy var containerView : UIView = {
         let container = UIView()
@@ -125,6 +149,7 @@ class ScheduleListViewController: UIViewController {
         config.image = UIImage(systemName: "plus")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 24, weight: .regular))
         button.configuration = config
         button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -176,9 +201,15 @@ class ScheduleListViewController: UIViewController {
         }
     }
     
+    @objc private func floatingButtonTapped() {
+        let mogakVC = MogakInitViewController()
+//        let testVC = TestViewController()
+        self.navigationController?.pushViewController(mogakVC, animated: true)
+    }
+    
     private func configureTop() {
         self.view.addSubview(topView)
-        self.topView.addSubviews(settingButton, profileImage, profileName, profileJob)
+        self.topView.addSubviews(settingButton, profileImage, profileName, profileJob, mogakerLabel, mogakeeLabel, followLineView)
         
         topView.backgroundColor = UIColor(hex: "475FFD")
         
@@ -209,6 +240,24 @@ class ScheduleListViewController: UIViewController {
         profileJob.snp.makeConstraints({
             $0.top.equalTo(profileName.snp.bottom).offset(8)
             $0.leading.equalTo(profileImage.snp.trailing).offset(11)
+        })
+        
+        mogakerLabel.snp.makeConstraints({
+            $0.top.equalTo(profileJob.snp.bottom).offset(12)
+            $0.leading.equalTo(topView.snp.leading).offset(85)
+        })
+        
+        mogakeeLabel.snp.makeConstraints({
+            $0.top.equalTo(profileJob.snp.bottom).offset(12)
+            $0.trailing.equalTo(topView.snp.trailing).offset(-94)
+        })
+        
+        followLineView.snp.makeConstraints({
+            $0.centerY.equalTo(mogakerLabel.snp.centerY)
+            $0.leading.equalTo(mogakerLabel.snp.trailing).offset(16)
+            $0.trailing.equalTo(mogakeeLabel.snp.leading).offset(-16)
+            $0.height.equalTo(12)
+            $0.width.equalTo(1)
         })
     }
     
@@ -253,10 +302,10 @@ class ScheduleListViewController: UIViewController {
     }
     
     private func configureButton() {
-        view.addSubview(floatingButton)
+        self.view.addSubview(floatingButton)
         
         floatingButton.snp.makeConstraints({
-            $0.bottom.equalTo(listTableView.snp.bottom).offset(-25)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-75)
             $0.trailing.equalTo(listTableView.snp.trailing).offset(-20)
         })
     }
