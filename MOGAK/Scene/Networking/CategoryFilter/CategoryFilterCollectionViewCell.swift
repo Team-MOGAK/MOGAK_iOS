@@ -6,8 +6,17 @@
 //
 
 import UIKit
+import SnapKit
 
 class CategoryFilterCollectionViewCell: UICollectionViewCell {
+    
+    var isClicked = false
+    
+    let textLabel = UILabel().then {
+        $0.font = UIFont.pretendard(.medium, size: 14)
+        $0.textColor = UIColor(hex: "24252E")
+        $0.text = ""
+    }
     
     let categoryButton: UIButton = {
         let button = UIButton()
@@ -18,12 +27,24 @@ class CategoryFilterCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        //setupButtonConstraints()
+        self.contentView.backgroundColor = UIColor(hex: "F1F3FA")
+        self.contentView.layer.masksToBounds = true
+        self.contentView.layer.cornerRadius = 20
+        
+        self.configureUI()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         //setupButtonConstraints()
+    }
+    
+    private func configureUI() {
+        self.contentView.addSubview(textLabel)
+        
+        textLabel.snp.makeConstraints({
+            $0.center.equalToSuperview()
+        })
     }
     
     private lazy var locationFilterButton: UIButton = {

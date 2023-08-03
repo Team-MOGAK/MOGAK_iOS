@@ -12,6 +12,7 @@
 		652C05DE2A740667004CE9C4 /* LocationFilterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */; };
 		656A53E02A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */; };
 		6582BDE72A6A786200C87FDE /* NetworkingFeedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */; };
+		65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */; };
 		9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
@@ -62,6 +63,7 @@
 		652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterSheetView.swift; sourceTree = "<group>"; };
 		656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingFeedTableViewCell.swift; sourceTree = "<group>"; };
+		65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterSheetView.swift; sourceTree = "<group>"; };
 		98EE4B11BFA59DE1943DE4F3 /* Pods-MOGAK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.release.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.release.xcconfig"; sourceTree = "<group>"; };
 		9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -123,6 +125,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		65C119ED2A7A76320040DFFB /* LocationFilter */ = {
+			isa = PBXGroup;
+			children = (
+				652C05D92A73AB34004CE9C4 /* LocationFilterTableViewCell.swift */,
+				652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */,
+			);
+			path = LocationFilter;
+			sourceTree = "<group>";
+		};
+		65C119EE2A7A76530040DFFB /* CategoryFilter */ = {
+			isa = PBXGroup;
+			children = (
+				656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */,
+				65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */,
+			);
+			path = CategoryFilter;
+			sourceTree = "<group>";
+		};
 		6A1C03A268A96BF0F17C707F /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,10 +174,9 @@
 			children = (
 				9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */,
 				6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */,
-				652C05D92A73AB34004CE9C4 /* LocationFilterTableViewCell.swift */,
+				65C119ED2A7A76320040DFFB /* LocationFilter */,
+				65C119EE2A7A76530040DFFB /* CategoryFilter */,
 				652C05DB2A7404B4004CE9C4 /* Data.swift */,
-				652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */,
-				656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -479,6 +498,7 @@
 				9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */,
 				9C638AB82A46E66A002AB791 /* AccountRequest.swift in Sources */,
 				656A53E02A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift in Sources */,
+				65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */,
 				9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */,
 				9C638ABA2A46E686002AB791 /* AccountResponse.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* ViewController3.swift in Sources */,

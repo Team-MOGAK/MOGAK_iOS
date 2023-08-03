@@ -171,13 +171,29 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         return feedText
     }()
     
+    var isHeartFilled: Bool = false
+    
     private let heartButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        button.tintColor = UIColor(hex: "FF4D77")
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        button.tintColor = UIColor(hex: "24252E")
+        button.isEnabled = true
+        
+        button.addTarget(self, action: #selector(heartButtonTapped), for: .touchUpInside)
         
         return button
     }()
+    
+    @objc private func heartButtonTapped() {
+        isHeartFilled.toggle()
+        
+        if isHeartFilled {
+            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            
+        } else {
+            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        }
+    }
     
     private let heartRate: UILabel = {
         let label = UILabel()
@@ -250,6 +266,14 @@ class NetworkingFeedTableViewCell: UITableViewCell {
             $0.top.equalTo(feedText.snp.bottom).offset(21)
             $0.bottom.equalTo(contentView.snp.bottom).inset(16)
         })
+    }
+    
+    func configure(nameText: String, categoryText: String, profileImageName: UIImage, feedImageName: UIImage, feedText: String) {
+        self.nameLabel.text = nameText
+        self.categoryLabel.text = categoryText
+        self.profileImageView.image = profileImageName
+        self.feedImage.image = feedImageName
+        self.feedText.text = feedText
     }
     
     /*

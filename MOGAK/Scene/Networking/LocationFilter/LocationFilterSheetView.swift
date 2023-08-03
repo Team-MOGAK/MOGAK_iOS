@@ -89,6 +89,7 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
                 sheet.delegate = self
                 ///
                 sheet.presentingViewController.navigationController?.setNavigationBarHidden(true, animated: false)
+                //sheet.presentingViewController.navigationController?.isNavigationBarHidden = true
 
             }
         }

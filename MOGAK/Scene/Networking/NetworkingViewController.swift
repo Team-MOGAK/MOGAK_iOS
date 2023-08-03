@@ -149,6 +149,17 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         button.semanticContentAttribute = .forceRightToLeft
         button.tintColor = UIColor(hex: "808497")
         
+        // 버튼 탭할 시 메뉴 생성
+        
+        let newest = UIAction(title: "최신순", handler: { _ in print("최신순")})
+        
+        let popular = UIAction(title: "인기순", handler: { _ in print("인기순")})
+        
+        button.menu = UIMenu(identifier: nil, options: .singleSelection, children: [newest, popular])
+        button.showsMenuAsPrimaryAction = true
+        button.changesSelectionAsPrimaryAction = true
+        
+        
         return button
     }()
     
@@ -189,7 +200,7 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
             self?.leadingDistance.constant = leadingDistance
             self?.view.layoutIfNeeded()
         })
-        //self.listTableView.reloadData()
+        self.listTableView.reloadData()
     }
     
     // MARK: - configure segment
@@ -265,6 +276,12 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         
     }
     
+    enum SegmentCurrent {
+        case All
+        case Pacemakers
+    }
+    var selectedSegment = SegmentCurrent.All
+    
     
     // MARK: - BottomSheet
     @objc private func showLocationFilterSheetView(_ sender: UIButton) {
@@ -280,14 +297,22 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
             cell.profileImageView.tintColor = UIColor.systemBlue
             
         }
-        
         present(navigationController, animated: true, completion: nil)
     }
 }
 
+
 extension NetworkingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        switch (segmentControl.selectedSegmentIndex) {
+        case 0:
+            return 2
+        case 1:
+            return 3
+        default:
+            break
+        }
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -342,3 +367,33 @@ struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
 } #endif
 
 
+/*
+ switch (segment.selectedSegmentIndex) {
+ case 0:
+     //First segment tapped
+     print("전체 Tapped")
+     selectedSegment = .All
+     //self.listTableView.reloadData()
+     self.listTableView.reloadData()
+     
+ case 1:
+     //Second segment tapped
+     print("페이스메이커 Tapped")
+     selectedSegment = .Pacemakers
+     self.listTableView.reloadData()
+     
+ default:
+     break
+ }
+ */
+
+/*
+ switch (selectedSegment) {
+ case .All:
+     // First segment tapped
+     return 3
+ case .Pacemakers:
+     // Second segment tapped
+     return 2
+ }
+ */
