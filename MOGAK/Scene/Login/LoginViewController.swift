@@ -13,34 +13,27 @@ class LoginViewController: UIViewController {
     
     private let mogakLabel : UILabel = {
         let label = UILabel()
-        label.text = "MOGAK"
-        label.font = UIFont.pretendard(.regular, size: 28)
+        label.text = "모두가 각자의 성장을\n응원하기 위한\n여정을 시작해볼까요?"
+        label.numberOfLines = 3
+        label.font = UIFont.pretendard(.medium, size: 32)
+        label.asFont(targetString: "모두가 각자의 성장을", font: UIFont.pretendard(.bold, size: 32))
         return label
     }()
     
-    private let loginLabel : UILabel = {
-        let label = UILabel()
-        label.text = "로그인 하기"
-        label.font = UIFont.pretendard(.regular, size: 28)
-        return label
-    }()
-    
-    private let subLabel : UILabel = {
-        let label = UILabel()
-        label.text = "모두가 각자의 성장을 응원하기위한 여정을 시작해 볼까요?"
-        label.font = UIFont.pretendard(.regular, size: 14)
-        return label
-    }()
+    private let loginImage = UIImageView().then {
+        $0.image = UIImage(named: "LoginLogo")
+    }
     
     private lazy var appleLoginButton : UIButton = {
         let button = UIButton()
-        button.layer.cornerRadius = 25
-        button.backgroundColor = .white
-        button.setImage(UIImage(systemName: "applelogo"), for: .normal)
-        button.setTitle("  Sign in with Apple", for: .normal)
-        button.setTitleColor(.label, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.bold, size: 17)
-        button.imageView?.tintColor = .black
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .black
+        button.setImage(UIImage(systemName: "apple.logo"), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        button.setTitle("Apple로 로그인", for: .normal)
+        button.setTitleColor(UIColor(hex: "ffffff"), for: .normal)
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        button.imageView?.tintColor = .white
         button.layer.borderWidth = 0.5
         button.addTarget(self, action: #selector(appleLoginClicked), for: .touchUpInside)
         return button
@@ -48,44 +41,68 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: "f9f9f9")
-        self.configureNavBar()
+//        self.navigationController?.navigationBar.isHidden = true
+        view.backgroundColor = UIColor(hex: "FFFFFF")
+//        self.configureNavBar()
         self.configureLabel()
         self.configureButton()
+        self.configureImage()
         
     }
     
-    private func configureNavBar() {
-        self.navigationController?.navigationBar.topItem?.title = ""
-        self.navigationController?.navigationBar.tintColor = .gray
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
     }
+    
+//    override func viewDidDisappear(_ animated: Bool) {
+//        super.viewDidDisappear(animated)
+//        self.navigationController?.navigationBar.isHidden = false
+//    }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        self.navigationController?.navigationBar.isHidden = true
+//    }
+//
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        self.navigationController?.navigationBar.isHidden = false
+//    }
+    
+//    private func configureNavBar() {
+//        self.navigationController?.navigationBar.topItem?.title = ""
+//        self.navigationController?.navigationBar.tintColor = .gray
+//    }
     
     private func configureLabel() {
-        self.view.addSubviews(mogakLabel, loginLabel, subLabel)
+        self.view.addSubview(mogakLabel)
         
-        mogakLabel.snp.makeConstraints{ make in
-            make.leading.equalTo(view).offset(20)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(48)
-        }
+        mogakLabel.snp.makeConstraints({
+            $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(48)
+            $0.centerX.equalToSuperview()
+        })
         
-        loginLabel.snp.makeConstraints{ make in
-            make.leading.equalTo(view).offset(20)
-            make.top.equalTo(mogakLabel.snp.bottom).offset(16)
-        }
+    }
+    
+    private func configureImage() {
+        self.view.addSubview(loginImage)
         
-        subLabel.snp.makeConstraints{ make in
-            make.leading.equalTo(view).offset(20)
-            make.top.equalTo(loginLabel.snp.bottom).offset(8)
-        }
+        loginImage.snp.makeConstraints({
+            $0.top.equalTo(self.mogakLabel.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(6)
+//            $0.bottom.equalTo(self.appleLoginButton.snp.top).offset(-129)
+            $0.height.equalToSuperview().multipliedBy(0.53)
+        })
     }
     
     private func configureButton() {
         self.view.addSubviews(appleLoginButton)
         
         appleLoginButton.snp.makeConstraints({
-            $0.leading.trailing.equalToSuperview().inset(61)
-            $0.top.equalTo(self.subLabel.snp.bottom).offset(328)
-            $0.height.equalTo(50)
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-26)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalToSuperview().multipliedBy(0.057)
         })
     }
     

@@ -23,23 +23,12 @@ class AppGuideViewController: UIViewController {
         return pageControl
     }()
     
-    private let skipLabel : UILabel = {
-        let label = UILabel()
-        label.font = UIFont.pretendard(.regular, size: 14)
-        label.text = "건너뛰기"
-        return label
-    }()
-    
-    private lazy var skipButton : UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(skipButtonIsClicked), for: .touchUpInside)
-        return button
-    }()
-    
     private lazy var nextButton : UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.backgroundColor = .blue
+        button.backgroundColor = UIColor(hex: "475FFD")
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(nextButtonIsClikced), for: .touchUpInside)
         return button
     }()
@@ -50,7 +39,7 @@ class AppGuideViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(hex: "f9f9f9")
+        view.backgroundColor = UIColor(hex: "ffffff")
         
         self.scrollView.delegate = self
         
@@ -72,16 +61,12 @@ class AppGuideViewController: UIViewController {
     private func setupViews() {
         
         pageControl.translatesAutoresizingMaskIntoConstraints = false
-        skipLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         nextButton.translatesAutoresizingMaskIntoConstraints = false
-        skipButton.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(skipLabel)
         self.view.addSubview(pageControl)
         self.view.addSubview(scrollView)
         self.view.addSubview(nextButton)
-        self.view.addSubview(skipButton)
         
         
         pageControl.currentPage = 0
@@ -103,24 +88,21 @@ class AppGuideViewController: UIViewController {
     private func setupAutoLayout() {
         NSLayoutConstraint.activate([
             
-            skipLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            skipLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 21),
-            
-            skipButton.centerXAnchor.constraint(equalTo: skipLabel.centerXAnchor),
-            skipButton.centerYAnchor.constraint(equalTo: skipLabel.centerYAnchor),
-            
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+//            pageControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -128),
             
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.topAnchor.constraint(equalTo: pageControl.bottomAnchor, constant: 20),
-            scrollView.bottomAnchor.constraint(equalTo: nextButton.topAnchor),
+//            scrollView.topAnchor.constraint(equalTo: pageControl.bottomAnchor, constant: 20),
+            scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor),
             
             nextButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
-            nextButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            nextButton.heightAnchor.constraint(equalToConstant: 53),
+            nextButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
+//            nextButton.heightAnchor.constraint(equalToConstant: 53),
+            nextButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.061)
         ])
         
         var previousView: UIView?
@@ -155,11 +137,11 @@ class AppGuideViewController: UIViewController {
     private func getContentViewController(index: Int) -> UIViewController {
         switch index {
         case 0:
-            return ViewController1()
+            return OnBoardingFirstViewController()
         case 1:
-            return ViewController2()
+            return OnBoardingSecondViewController()
         case 2:
-            return ViewController3()
+            return OnBoardingThirdViewController()
         default:
             return UIViewController()
         }

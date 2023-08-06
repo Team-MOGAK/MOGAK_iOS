@@ -10,68 +10,61 @@ import SnapKit
 
 class ChooseJobViewController: UIViewController {
     
-    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
+//    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
+    private var items = ["기획/전략", "법무,사무,총무", "인사/HR", "회계/세무", "마케팅/광고/MD", "개발/데이터", "디자인", "물류/무역", "운전/운송/배송", "영업", "고객상담/TM", "금융/보험", "식/음료", "고객서비스/리테일", "엔지니어링/설계", "제조/생산", "교육", "건축/시설", "의료/바이오", "미디어/문화", "스포츠", "공공복지", "자영업", "군인", "의료", "회계사", "법무사", "노무사", "세무사", "관세사", "교사", "디지털노마드", "영상제작자", "크리에이터"]
     // 검색 결과를 담는 배열
     private var filteredItems: [String] = []
     // checkButton 선택 셀 index
     private var previousIndexPath: IndexPath?
     private var selectedIndexPath: IndexPath?
     
-    private let mogakLabel : UILabel = {
-        let label = UILabel()
-        label.text = "MOGAK"
-        return label
-    }()
-    
     private let titleLabel : UILabel = {
         let label = UILabel()
         label.text = "희망/현직 직무 선택"
+        label.textColor = .black
+        label.font = UIFont.pretendard(.bold, size: 24)
         return label
     }()
     
     private let subLabel : UILabel = {
         let label = UILabel()
         label.text = "어떤 목표를 가진 모각러들과 함께 성장하고 싶으신가요?"
+        label.textColor = UIColor(hex: "808497")
+        label.font = UIFont.pretendard(.medium, size: 16)
         return label
     }()
     
     private lazy var searchBar : UISearchBar = {
         let search = UISearchBar()
-        let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.medium, size: 15), NSAttributedString.Key.foregroundColor : UIColor.gray]
-        let placeholderText = "직무 입력"
-        
+        let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.bold, size: 16), NSAttributedString.Key.foregroundColor : UIColor(hex: "BFC3D4")]
+        let placeholderText = "직무를 입력해주세요."
         search.delegate = self
-        
         search.searchBarStyle = .minimal
         search.showsCancelButton = true
-        
-        search.searchTextField.backgroundColor = .clear
+        search.searchTextField.backgroundColor = UIColor(hex: "EEF0F8")
+        search.searchTextField.layer.cornerRadius = 10
         search.searchTextField.borderStyle = .none
         search.searchTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: placeholderAttributes)
-        
         search.searchTextField.textAlignment = .left
         return search
     }()
     
-    private let searchBarLine : UIView = {
-        let view = UIView()
-        view.layer.borderColor = UIColor.black.cgColor
-        view.layer.borderWidth = 1
-        return view
-    }()
-    
     private let tableView : UITableView = {
         let tableView = UITableView()
-        tableView.separatorStyle = .none
+//        tableView.separatorStyle = .none
         return tableView
     }()
     
     private lazy var nextButton : UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.backgroundColor = .black
+        button.backgroundColor = UIColor(hex: "BFC3D4")
         button.titleLabel?.textColor = .white
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        button.titleLabel?.textAlignment = .center
+        button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(nextButtonIsClicked), for: .touchUpInside)
+        button.isUserInteractionEnabled = false
         return button
     }()
     
@@ -94,39 +87,29 @@ class ChooseJobViewController: UIViewController {
     }
     
     private func configureLabel() {
-        self.view.addSubviews(mogakLabel, titleLabel, subLabel)
-        
-        mogakLabel.snp.makeConstraints({
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(48)
-            $0.leading.equalToSuperview().offset(20)
-        })
+        self.view.addSubviews(titleLabel, subLabel)
         
         titleLabel.snp.makeConstraints({
-            $0.top.equalTo(mogakLabel.snp.bottom).offset(16)
+            $0.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(24)
             $0.leading.equalToSuperview().offset(20)
         })
         
         subLabel.snp.makeConstraints({
-            $0.top.equalTo(titleLabel.snp.bottom).offset(8)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
             $0.leading.equalToSuperview().offset(20)
         })
     }
     
     private func configureSearchBar() {
         self.view.addSubview(searchBar)
-        self.view.addSubview(searchBarLine)
         
         searchBar.snp.makeConstraints({
             $0.top.equalTo(subLabel.snp.bottom).offset(48)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(33)
+//            $0.height.equalTo(33)
+            $0.height.equalToSuperview().multipliedBy(0.061)
         })
         
-        searchBarLine.snp.makeConstraints({
-            $0.top.equalTo(searchBar.snp.bottom)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(1)
-        })
     }
     
     
@@ -139,7 +122,7 @@ class ChooseJobViewController: UIViewController {
         self.view.addSubview(tableView)
         
         tableView.snp.makeConstraints({
-            $0.top.equalTo(searchBarLine.snp.bottom)
+            $0.top.equalTo(searchBar.snp.bottom)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.bottom.equalTo(nextButton.snp.top).offset(-12)
         })
@@ -154,9 +137,20 @@ class ChooseJobViewController: UIViewController {
         
         nextButton.snp.makeConstraints({
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(53)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-53)
+//            $0.height.equalTo(53)
+            $0.height.equalToSuperview().multipliedBy(0.061)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-23)
         })
+    }
+    
+    private func nextButtonIsOn() {
+        nextButton.isUserInteractionEnabled = true
+        nextButton.backgroundColor = UIColor(hex: "475FFD")
+    }
+    
+    private func nextButtonIsOff() {
+        nextButton.isUserInteractionEnabled = false
+        nextButton.backgroundColor = UIColor(hex: "BFC3D4")
     }
     
     @objc private func nextButtonIsClicked() {
@@ -209,7 +203,6 @@ extension ChooseJobViewController: UISearchBarDelegate {
 
 extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         let sectionTitles = getSectionTitles()
         return sectionTitles.count
@@ -229,11 +222,13 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
         
         let item = filteredItemsInSection[indexPath.row]
         cell.textLabel?.text = item
-        
+        cell.selectionStyle = .none
         if let selectedIndexPath = selectedIndexPath, selectedIndexPath == indexPath {
-            cell.checkButton.isHidden = false
+            cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
+            nextButtonIsOn()
         } else {
-            cell.checkButton.isHidden = true
+            cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+            nextButtonIsOff()
         }
         
         return cell
@@ -246,16 +241,19 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
         // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 같으면 체크 버튼을 숨깁니다.
         if previousIndexPath == indexPath {
             if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
-                cell.checkButton.isHidden = true
+                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+                nextButtonIsOff()
             }
             selectedIndexPath = nil  // 선택된 셀의 인덱스를 nil로 설정하여 선택 해제
         } else {
             // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 다르면 이전에 선택된 셀을 업데이트합니다.
             if let previousIndexPath = previousIndexPath, let cell = tableView.cellForRow(at: previousIndexPath) as? NameCell {
-                cell.checkButton.isHidden = true
+                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+                nextButtonIsOn()
             }
             if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
-                cell.checkButton.isHidden = false
+                cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
+                nextButtonIsOn()
             }
         }
     }

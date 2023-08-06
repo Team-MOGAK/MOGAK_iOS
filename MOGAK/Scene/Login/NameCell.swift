@@ -21,20 +21,19 @@ class NameCell: UITableViewCell {
     
     let checkButton : UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "checkmark"), for: .normal)
-        button.tintColor = .orange
+        button.setImage(UIImage(named: "checkOff"), for: .normal)
         return button
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.contentView.isUserInteractionEnabled = false
         configure()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         fatalError("init(coder:) has not been implemented")
-        
     }
     
     override func awakeFromNib() {
@@ -51,22 +50,22 @@ class NameCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         // 이전 셀의 상태를 초기화합니다.
-        checkButton.isHidden = true
     }
     
     private func configure() {
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(checkButton)
-        checkButton.isHidden = true
-        self.selectionStyle = .none
+        self.addSubview(nameLabel)
+        self.addSubview(checkButton)
+//        contentView.addSubview(nameLabel)
+//        contentView.addSubview(checkButton)
         
         nameLabel.snp.makeConstraints({
-            $0.leading.equalTo(contentView).offset(0)
+            $0.leading.equalToSuperview().offset(8)
         })
         
         checkButton.snp.makeConstraints({
-            $0.trailing.equalTo(contentView)
-            $0.centerY.equalTo(contentView)
+            $0.trailing.equalToSuperview().offset(-8)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(20)
         })
         
     }
