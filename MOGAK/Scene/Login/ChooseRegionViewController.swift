@@ -60,6 +60,10 @@ class ChooseRegionViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = .gray
@@ -116,7 +120,8 @@ class ChooseRegionViewController: UIViewController {
     }
     
     @objc private func nextButtonIsClicked() {
-        let mainVC = UINavigationController(rootViewController: TabBarViewController())
+//        let mainVC = UINavigationController(rootViewController: TabBarViewController())
+        let mainVC = TabBarViewController()
         mainVC.modalPresentationStyle = .fullScreen
         self.present(mainVC, animated: true)
         

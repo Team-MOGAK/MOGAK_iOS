@@ -54,9 +54,9 @@ class AppGuideViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        self.navigationController?.navigationBar.isHidden = false
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        self.navigationController?.navigationBar.isHidden = false
+//    }
     
     private func setupViews() {
         
@@ -165,7 +165,8 @@ class AppGuideViewController: UIViewController {
     }
     
     @objc private func skipButtonIsClicked() {
-        let loginVC = LoginViewController()
+//        let loginVC = LoginViewController()
+        let loginVC = UINavigationController(rootViewController: LoginViewController())
         self.navigationController?.pushViewController(loginVC, animated: true)
         
     }

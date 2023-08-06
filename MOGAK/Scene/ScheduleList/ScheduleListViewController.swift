@@ -66,7 +66,7 @@ class ScheduleListViewController: UIViewController {
         label.text = "MOGAKEE 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
-//        label.textColor = UIColor(hex: "000000")
+        //        label.textColor = UIColor(hex: "000000")
         return label
     }()
     
@@ -157,7 +157,6 @@ class ScheduleListViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(hex: "F1F3FA")
-        
         self.configureTop()
         self.configureSegment()
         self.configureTableView()
@@ -165,15 +164,18 @@ class ScheduleListViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         self.tabBarController?.tabBar.isHidden = false
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         self.tabBarController?.tabBar.isHidden = true
     }
     
@@ -203,7 +205,7 @@ class ScheduleListViewController: UIViewController {
     
     @objc private func floatingButtonTapped() {
         let mogakVC = MogakInitViewController()
-//        let testVC = TestViewController()
+        //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }
     
@@ -341,8 +343,28 @@ extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource
         default:
             break
         }
-
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ListTableViewCell else {
+            return
+        }
+        
+        let detailVC = JogakDetailViewController()
+        
+        if let status = cell.statusLabel.text,
+           let category = cell.categoryLabel.text,
+           let title = cell.titleLabel.text,
+           let color = cell.statusView.backgroundColor,
+           let textColor = cell.statusLabel.textColor
+        {
+            detailVC.configureData(color: color, status: status, category: category, title: title, textColor: textColor)
+        }
+        detailVC.modalPresentationStyle = .fullScreen
+        self.navigationController?.pushViewController(detailVC, animated: true)
+//        self.present(detailVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
