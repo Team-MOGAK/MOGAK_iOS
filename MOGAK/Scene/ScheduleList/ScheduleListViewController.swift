@@ -26,7 +26,7 @@ class ScheduleListViewController: UIViewController {
         return button
     }()
     
-    private let profileImage : UIImageView = {
+    private lazy var profileImage : UIImageView = {
         let view = UIImageView()
         view.layer.cornerRadius = view.frame.height/2
         view.layer.borderWidth = 1
@@ -34,6 +34,9 @@ class ScheduleListViewController: UIViewController {
         view.clipsToBounds = true
         view.contentMode = .scaleToFill
         view.image = UIImage(named: "setting")
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        view.addGestureRecognizer(gesture)
+        view.isUserInteractionEnabled = true
         return view
     }()
     
@@ -171,7 +174,7 @@ class ScheduleListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -179,35 +182,6 @@ class ScheduleListViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = true
     }
     
-    @objc private func changeSegmentedControlLinePosition() {
-        let segmentIndex = CGFloat(segmentControl.selectedSegmentIndex)
-        let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments)
-        let leadingDistance = segmentWidth * segmentIndex
-        UIView.animate(withDuration: 0.2, animations: { [weak self] in
-            self?.leadingDistance.constant = leadingDistance
-            self?.view.layoutIfNeeded()
-        })
-        self.listTableView.reloadData()
-    }
-    
-    @objc private func segmentSelected() {
-        switch(segmentControl.selectedSegmentIndex) {
-        case 0:
-            listTableView.reloadData()
-        case 1:
-            listTableView.reloadData()
-        case 2:
-            listTableView.reloadData()
-        default:
-            break
-        }
-    }
-    
-    @objc private func floatingButtonTapped() {
-        let mogakVC = MogakInitViewController()
-        //        let testVC = TestViewController()
-        self.navigationController?.pushViewController(mogakVC, animated: true)
-    }
     
     private func configureTop() {
         self.view.addSubview(topView)
@@ -312,6 +286,43 @@ class ScheduleListViewController: UIViewController {
         })
     }
     
+    @objc private func changeSegmentedControlLinePosition() {
+        let segmentIndex = CGFloat(segmentControl.selectedSegmentIndex)
+        let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments)
+        let leadingDistance = segmentWidth * segmentIndex
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            self?.leadingDistance.constant = leadingDistance
+            self?.view.layoutIfNeeded()
+        })
+        self.listTableView.reloadData()
+    }
+    
+    @objc private func segmentSelected() {
+        switch(segmentControl.selectedSegmentIndex) {
+        case 0:
+            listTableView.reloadData()
+        case 1:
+            listTableView.reloadData()
+        case 2:
+            listTableView.reloadData()
+        default:
+            break
+        }
+    }
+    
+    @objc private func floatingButtonTapped() {
+        let mogakVC = MogakInitViewController()
+        //        let testVC = TestViewController()
+        self.navigationController?.pushViewController(mogakVC, animated: true)
+    }
+    
+    
+    @objc private func profileImageTapped() {
+        print("클릭")
+        let settingVC = MyPageViewController()
+        self.navigationController?.pushViewController(settingVC, animated: true)
+    }
+    
 }
 
 extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource {
@@ -364,7 +375,7 @@ extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource
         }
         detailVC.modalPresentationStyle = .fullScreen
         self.navigationController?.pushViewController(detailVC, animated: true)
-//        self.present(detailVC, animated: true)
+        //        self.present(detailVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

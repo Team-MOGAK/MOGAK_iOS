@@ -26,8 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //        }
         
 //        firstVC = UINavigationController(rootViewController: LoginViewController())
-        firstVC = UINavigationController(rootViewController: AppGuideViewController())
-//        firstVC = AppGuideViewController()
+//        firstVC = UINavigationController(rootViewController: AppGuideViewController())
         
         window = UIWindow(windowScene: windowScene)
         

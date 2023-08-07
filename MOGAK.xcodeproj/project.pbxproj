@@ -30,6 +30,7 @@
 		9C2EF7FC2A7F296C00E8C8F4 /* RegionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7FB2A7F296C00E8C8F4 /* RegionCell.swift */; };
 		9C2EF7FE2A7FA55B00E8C8F4 /* JogakDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7FD2A7FA55B00E8C8F4 /* JogakDetailViewController.swift */; };
 		9C2EF8002A7FAC9B00E8C8F4 /* JogakDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */; };
+		9C2EF8022A812F2500E8C8F4 /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
 		9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB52A46E63D002AB791 /* AccountAPI.swift */; };
@@ -94,6 +95,7 @@
 		9C2EF7FB2A7F296C00E8C8F4 /* RegionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionCell.swift; sourceTree = "<group>"; };
 		9C2EF7FD2A7FA55B00E8C8F4 /* JogakDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakDetailViewController.swift; sourceTree = "<group>"; };
 		9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakDetailCell.swift; sourceTree = "<group>"; };
+		9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9C638AAF2A46DC75002AB791 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		9C638AB52A46E63D002AB791 /* AccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAPI.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				9C2EF7F72A76901B00E8C8F4 /* TestViewController.swift */,
 				9C2EF7FD2A7FA55B00E8C8F4 /* JogakDetailViewController.swift */,
 				9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */,
+				9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */,
 			);
 			path = ScheduleList;
 			sourceTree = "<group>";
@@ -550,6 +553,7 @@
 				9C2EF7F82A76901B00E8C8F4 /* TestViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */,
 				652C05DE2A740667004CE9C4 /* LocationFilterSheetView.swift in Sources */,
+				9C2EF8022A812F2500E8C8F4 /* MyPageViewController.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
 				9C2EF7FE2A7FA55B00E8C8F4 /* JogakDetailViewController.swift in Sources */,
 				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
