@@ -56,11 +56,14 @@ class ScheduleListViewController: UIViewController {
         return label
     }()
     
-    private let mogakerLabel : UILabel = {
+    private lazy var mogakerLabel : UILabel = {
         let label = UILabel()
         label.text = "MOGAKER 2"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(goToFriendPage))
+        label.addGestureRecognizer(gesture)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -321,6 +324,11 @@ class ScheduleListViewController: UIViewController {
         print("클릭")
         let settingVC = MyPageViewController()
         self.navigationController?.pushViewController(settingVC, animated: true)
+    }
+    
+    @objc private func goToFriendPage() {
+        let pageVC = FriendsListViewController()
+        self.navigationController?.pushViewController(pageVC, animated: true)
     }
     
 }
