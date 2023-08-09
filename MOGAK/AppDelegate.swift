@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 break
             }
         }
-        sleep(3)
+//        sleep(3)
         return true
     }
     

@@ -31,13 +31,14 @@ class MyPageViewController: UIViewController {
         $0.textColor = UIColor(hex: "000000")
     }
     
-    private let editButton = UIButton().then {
+    private lazy var editButton = UIButton().then {
         $0.setTitle("프로필 수정", for: .normal)
         $0.setTitleColor(UIColor(hex: "475FFD"), for: .normal)
         $0.backgroundColor = UIColor(hex: "E8EBFE")
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 16)
         $0.titleLabel?.textAlignment = .center
         $0.layer.cornerRadius = 10
+        $0.addTarget(self, action: #selector(goToEditPage), for: .touchUpInside)
     }
     
     private let shareButton = UIButton().then {
@@ -268,6 +269,12 @@ class MyPageViewController: UIViewController {
             $0.centerY.equalTo(self.versionLabel.snp.centerY)
             $0.trailing.equalToSuperview().offset(-30)
         })
+    }
+    
+    @objc private func goToEditPage() {
+        let mypageVC = MyPageEditViewController()
+        mypageVC.modalPresentationStyle = .fullScreen
+        self.navigationController?.pushViewController(mypageVC, animated: true)
     }
     
 }
