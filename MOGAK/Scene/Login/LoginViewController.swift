@@ -92,14 +92,14 @@ class LoginViewController: UIViewController {
     @objc private func appleLoginClicked() {
         let termVC = TermsAgreeViewController()
         self.navigationController?.pushViewController(termVC, animated: true)
-//        let appleIDProvider = ASAuthorizationAppleIDProvider()
-//        let request = appleIDProvider.createRequest()
-//        request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
-//
-//        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-//        authorizationController.delegate = self
-//        authorizationController.presentationContextProvider = self
-//        authorizationController.performRequests()
+        //        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        //        let request = appleIDProvider.createRequest()
+        //        request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
+        //
+        //        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        //        authorizationController.delegate = self
+        //        authorizationController.presentationContextProvider = self
+        //        authorizationController.performRequests()
     }
 }
 
@@ -129,8 +129,8 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             }
             
             print("useridentifier: \(userIdentifier)")
-//            print("fullName: \(fullName)")
-//            print("email: \(email)")
+            //            print("fullName: \(fullName)")
+            //            print("email: \(email)")
             
             //Move to NextPage
             let validVC = TermsAgreeViewController()

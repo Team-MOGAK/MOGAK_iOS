@@ -10,7 +10,7 @@ pod 'SnapKit', '~> 5.6.0'
 pod 'Then'
 pod 'Alamofire'
 pod 'ReusableKit'
-
+pod 'FSCalendar'
 
 
 post_install do |installer|

@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = scene as? UIWindowScene else { return }
         
-        var firstVC: UIViewController = TabBarViewController()
+        lazy var firstVC: UIViewController = TabBarViewController()
         //        let isFirst = UserDefaults.isFirstAppLauch()
         
         //        if isFirst {
@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //            firstVC = PermAgreeViewController()
         //        }
         
-//        firstVC = UINavigationController(rootViewController: AppGuideViewController())
+        firstVC = UINavigationController(rootViewController: AppGuideViewController())
         
         window = UIWindow(windowScene: windowScene)
         

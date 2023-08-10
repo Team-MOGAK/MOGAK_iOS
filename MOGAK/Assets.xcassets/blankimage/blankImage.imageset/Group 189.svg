@@ -1,0 +1,6 @@
+<svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="30" cy="44" r="2" fill="#BFC3D5"/>
+<circle cx="44" cy="44" r="2" fill="#BFC3D5"/>
+<circle cx="58" cy="44" r="2" fill="#BFC3D5"/>
+<circle cx="44" cy="44" r="43" stroke="#BFC3D5" stroke-width="2" stroke-dasharray="4 4"/>
+</svg>
