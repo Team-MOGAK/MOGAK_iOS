@@ -152,3 +152,4 @@ extension FriendsListViewController: UITableViewDelegate, UITableViewDataSource 
         return 64
     }
 }
+

@@ -10,6 +10,8 @@ import SnapKit
 
 class FollowingCell: UITableViewCell {
     
+//    var followButtonClick: (() -> Void)?
+    
     private let container = UIView().then {
         $0.backgroundColor = .white
     }
@@ -31,13 +33,14 @@ class FollowingCell: UITableViewCell {
         $0.font = UIFont.pretendard(.regular, size: 12)
     }
     
-    private let followButton = UIButton().then {
+    private lazy var followButton = UIButton().then {
         $0.setTitle("팔로잉", for: .normal)
         $0.setTitleColor(UIColor(hex: "6E707B"), for: .normal)
         $0.backgroundColor = UIColor(hex: "EEF0F8")
         $0.titleLabel?.textAlignment = .center
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 14)
         $0.layer.cornerRadius = 8
+        $0.addTarget(self, action: #selector(followButtonTapped), for: .touchUpInside)
     }
 
     override func awakeFromNib() {
@@ -54,6 +57,7 @@ class FollowingCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .white
+        self.contentView.isUserInteractionEnabled = false
         self.configure()
     }
     
@@ -97,4 +101,32 @@ class FollowingCell: UITableViewCell {
         })
     }
     
+    @objc private func followButtonTapped() {
+        print("팔로우 버튼 클릭")
+        if followButton.titleLabel?.text == "팔로잉" {
+            self.followButton.setTitle("팔로우", for: .normal)
+            self.followButton.backgroundColor = UIColor(hex: "E7F9F3")
+            self.followButton.setTitleColor(UIColor(hex: "009967"), for: .normal)
+            self.followButton.setImage(UIImage(systemName: "plus"), for: .normal)
+            self.followButton.semanticContentAttribute = .forceRightToLeft
+            self.followButton.tintColor = UIColor(hex: "009967")
+            
+            followButton.snp.updateConstraints({
+                $0.width.equalTo(71)
+            })
+            
+        } else if followButton.titleLabel?.text == "팔로우" {
+            self.followButton.setTitle("팔로잉", for: .normal)
+            self.followButton.backgroundColor = UIColor(hex: "EEF0F8")
+            self.followButton.setTitleColor(UIColor(hex: "6E707B"), for: .normal)
+            self.followButton.setImage(nil, for: .normal)
+            
+            followButton.snp.updateConstraints({
+                $0.width.equalTo(57)
+            })
+            
+        }
+    }
+    
 }
+
