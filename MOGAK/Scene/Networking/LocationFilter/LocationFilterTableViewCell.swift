@@ -51,31 +51,37 @@ class LocationFilterTableViewCell: UITableViewCell {
     }()
     
     // MARK: - BUTTON
-    private let selectButton: UIButton = {
+    let selectButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "MOGAK_button"), for: .normal)
+        button.setImage(UIImage(named: "MOGAK_button"), for: .disabled)
         //button.tintColor = UIColor(hex: "FF4D77")
         
         button.addTarget(self, action: #selector(selectButtonTapped), for: .touchUpInside)
-        
+        button.isEnabled = false
         return button
     }()
     
     @objc func selectButtonTapped() {
-            // 이미지 변경
-            if selectButton.image(for: .normal) == UIImage(named: "MOGAK_button") {
-                selectButton.setImage(UIImage(named: "MOGAK_button_filled"), for: .normal)
-            } else {
-                selectButton.setImage(UIImage(named: "MOGAK_button"), for: .normal)
-            }
-        }
+        // 이미지 변경
+//         if selectButton.image(for: .normal) == UIImage(named: "MOGAK_button") {
+//             selectButton.setImage(UIImage(named: "MOGAK_button_filled"), for: .normal)
+//         } else {
+//             selectButton.setImage(UIImage(named: "MOGAK_button"), for: .normal)
+//         }
+        
+        guard let tableView = self.superview as? UITableView,
+              let indexPath = tableView.indexPath(for: self) else { return }
+        
+        // Select the row
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        
+    }
     
     // MARK: - CONFIGURE
     private func configureCellContainer() {
         cellContainerView.addSubviews(locationLabel, selectButton)
         
         locationLabel.snp.makeConstraints({
-            //$0.leading.top.bottom.equalTo(cellContainerView)
             $0.leading.equalToSuperview()
             $0.top.equalToSuperview()
             $0.bottom.equalToSuperview()

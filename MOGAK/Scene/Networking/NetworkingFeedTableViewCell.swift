@@ -67,8 +67,8 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFit
         // 이미지뷰 크기 설정 (옵션)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        //imageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        //imageView.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
         imageView.tintColor = .systemBlue
         
@@ -76,6 +76,8 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         imageView.clipsToBounds = true
         return imageView
     }()
+    
+    var isFollowing: Bool = false
     
     private let followingButton: UIButton = {
         let button = UIButton()
@@ -85,8 +87,22 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         button.backgroundColor = UIColor(hex: "EEF0F8")
         button.layer.cornerRadius = 10
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        
+        button.addTarget(self, action: #selector(followingButtonTapped), for: .touchUpInside)
+        
         return button
     }()
+    
+    @objc private func followingButtonTapped() {
+        isFollowing.toggle()
+        print("Tapped") // 디버깅용
+        
+        if isFollowing {
+            followingButton.setTitle("팔로잉", for: .normal)
+        } else {
+            followingButton.setTitle("팔로우", for: .normal)
+        }
+    }
     
     private func configureProfile() {
         // Cell contentView에 top add
@@ -146,13 +162,15 @@ class NetworkingFeedTableViewCell: UITableViewCell {
     private let feedImage: UIImageView = {
         let imageView = UIImageView()
         // 이미지 설정
-        imageView.image = UIImage(systemName: "globe.asia.australia.fill") // 이미지 이름을 적절히 바꾸세요.
+        //imageView.image = UIImage(systemName: "globe.asia.australia.fill") // 이미지 이름을 적절히 바꾸세요.
+        imageView.image = UIImage(named: "cuteBokdol")
+        imageView.backgroundColor = .white
         // 이미지의 컨텐트 모드 설정 (옵션)
         imageView.contentMode = .scaleToFill
         // 이미지뷰 크기 설정 (옵션)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 390).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 390).isActive = true
+        //imageView.widthAnchor.constraint(equalToConstant: 390).isActive = true
+        //imageView.heightAnchor.constraint(equalToConstant: 390).isActive = true
         
         return imageView
     }()
@@ -186,12 +204,15 @@ class NetworkingFeedTableViewCell: UITableViewCell {
     
     @objc private func heartButtonTapped() {
         isHeartFilled.toggle()
+        // 디버깅용
+        print("Tapped: heart Filled: \(isHeartFilled)")
         
         if isHeartFilled {
             heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            
+            heartButton.tintColor = UIColor(hex: "FF4D77")
         } else {
             heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            heartButton.tintColor = UIColor(hex: "24252E")
         }
     }
     
@@ -226,45 +247,47 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         
         bodyView.snp.makeConstraints({
             $0.top.equalTo(topContainerView.snp.bottom)
-            $0.leading.trailing.equalTo(topContainerView).inset(0)
-            $0.width.equalTo(390)
-            $0.height.equalTo(435)
-            //$0.bottom.equalTo(contentView.snp.bottom).inset(10)
+            //$0.leading.trailing.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
+            //$0.width.equalTo(390)
+            //$0.height.equalTo(435)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(10)
         })
         
         bodyView.addSubviews(feedImage, feedText, heartButton, heartRate, messageButton, messageRate)
         
         feedImage.snp.makeConstraints({
             $0.top.equalTo(bodyView.snp.top)
-            $0.leading.trailing.equalTo(bodyView).inset(0)
-            $0.width.equalTo(390)
+            $0.horizontalEdges.equalToSuperview()
+            //$0.leading.trailing.equalTo(bodyView).inset(0)
+            $0.height.equalTo(390)
         })
         feedText.snp.makeConstraints({
             $0.top.equalTo(feedImage.snp.bottom).offset(16)
             $0.leading.trailing.equalTo(bodyView).inset(20)
-            $0.width.equalTo(350)
+            //$0.width.equalTo(350)
             //$0.height.equalTo(105)
         })
         heartButton.snp.makeConstraints({
             $0.leading.equalTo(bodyView.snp.leading).offset(20)
             $0.top.equalTo(feedText.snp.bottom).offset(20)
             $0.width.height.equalTo(24)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(16)
+            $0.bottom.equalTo(bodyView.snp.bottom).inset(16)
         })
         heartRate.snp.makeConstraints({
             $0.leading.equalTo(heartButton.snp.trailing).offset(4)
             $0.top.equalTo(feedText.snp.bottom).offset(21)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(16)
+            $0.bottom.equalTo(bodyView.snp.bottom).inset(16)
         })
         messageButton.snp.makeConstraints({
             $0.leading.equalTo(heartRate.snp.trailing).offset(12)
             $0.top.equalTo(feedText.snp.bottom).offset(20)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(16)
+            $0.bottom.equalTo(bodyView.snp.bottom).inset(16)
         })
         messageRate.snp.makeConstraints({
             $0.leading.equalTo(messageButton.snp.trailing).offset(4)
             $0.top.equalTo(feedText.snp.bottom).offset(21)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(16)
+            $0.bottom.equalTo(bodyView.snp.bottom).inset(16)
         })
     }
     
