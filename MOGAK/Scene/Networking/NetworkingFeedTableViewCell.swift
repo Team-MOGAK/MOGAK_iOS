@@ -133,8 +133,8 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         profileContainerView.addSubviews(nameLabel, categoryLabel, profileImageView)
         
         profileImageView.snp.makeConstraints({
-            $0.top.bottom.left.equalTo(profileContainerView).inset(0)
-            $0.width.height.equalTo(36)
+            $0.top.bottom.left.equalToSuperview()
+            $0.width.equalTo(profileContainerView.frame.height)
         })
         
         nameLabel.snp.makeConstraints({
@@ -230,8 +230,29 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         button.setImage(UIImage(systemName: "message"), for: .normal)
         button.tintColor = UIColor(hex: "24252E")
         
+        button.addTarget(self, action: #selector(toDetailFeedView), for: .touchUpInside)
+        
         return button
     }()
+    
+    @objc func toDetailFeedView() {
+        let viewController = FeedDetailViewController()
+        
+        if let navigationController = parentViewController?.navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        }
+    }
+    
+    var parentViewController: UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder?.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
     
     private let messageRate: UILabel = {
         let label = UILabel()
