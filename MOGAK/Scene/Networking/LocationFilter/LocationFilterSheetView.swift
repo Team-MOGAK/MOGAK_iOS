@@ -51,6 +51,9 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
             cell.selectionStyle = .none
         }
         
+        selectButton.isEnabled = true
+        selectButton.backgroundColor = UIColor(hex: "475FFD")
+        
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -78,10 +81,11 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
         button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         button.setTitle("선택 완료", for: .normal)
         button.setTitleColor(UIColor(hex: "FFFFFF"), for: .normal)
-        button.tintColor = UIColor(hex: "BFC3D4") // disabled color
+        //button.tintColor = UIColor(hex: "BFC3D4") // disabled color
         button.backgroundColor = UIColor(hex: "BFC3D4")
         button.layer.cornerRadius = 10
         button.contentEdgeInsets = UIEdgeInsets(top: 15, left: 141, bottom: 15, right: 142)
+        button.isEnabled = false
         return button
     }()
     
@@ -102,6 +106,8 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
         view.backgroundColor = .systemBackground
         
         //tableView.register(UINib(nibName: "LocationFilterTableViewCell", bundle: nil), forCellReuseIdentifier: "LocationFilterTableViewCell")
+        
+        selectButton.addTarget(self, action: #selector(selectLocationButtonTapped), for: .touchUpInside)
         
         setupSheet()
         
@@ -145,6 +151,11 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
         
         self.tableView.tableFooterView = footerView
         self.tableView.tableHeaderView = headerView
+    }
+    
+    @objc func selectLocationButtonTapped() {
+        // Dismiss the vc
+        self.dismiss(animated: true, completion: nil)
     }
     
     private func setupSheet() {
