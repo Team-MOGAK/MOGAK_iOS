@@ -76,13 +76,19 @@ class FriendsListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = false
+        
+        configureNavBar()
     }
     
     private func configureNavBar() {
+        let titleTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor(hex: "24252E"), .font: UIFont.pretendard(.semiBold, size: 18)
+            ]
         
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")
         self.title = "내 친구"
+        self.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
     }
     
     
@@ -145,11 +151,21 @@ extension FriendsListViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FollowingCell") as? FollowingCell else {return UITableViewCell()}
         cell.selectionStyle = .none
+        cell.followingDelegate = self
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 64
+    }
+}
+
+extension FriendsListViewController: FollowingDelegate {
+    func profileImageTapped() {
+        print("클릭")
+        let friendVC = FriendDetailPageViewController()
+        friendVC.modalPresentationStyle = .fullScreen
+        self.navigationController?.pushViewController(friendVC, animated: true)
     }
 }
 

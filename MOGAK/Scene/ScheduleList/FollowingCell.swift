@@ -8,17 +8,25 @@
 import UIKit
 import SnapKit
 
+protocol FollowingDelegate {
+    func profileImageTapped()
+}
+
 class FollowingCell: UITableViewCell {
     
 //    var followButtonClick: (() -> Void)?
+    var followingDelegate: FollowingDelegate?
     
     private let container = UIView().then {
         $0.backgroundColor = .white
     }
     
-    private let profileImage = UIImageView().then {
+    private lazy var profileImage = UIImageView().then {
         $0.image = UIImage(named: "default")
         $0.clipsToBounds = true
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        $0.addGestureRecognizer(gesture)
+        $0.isUserInteractionEnabled = true
     }
     
     private let userName = UILabel().then {
@@ -126,6 +134,10 @@ class FollowingCell: UITableViewCell {
             })
             
         }
+    }
+    
+    @objc private func profileImageTapped() {
+        self.followingDelegate?.profileImageTapped()
     }
     
 }

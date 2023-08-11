@@ -34,6 +34,7 @@
 		9C2EF8042A8285C100E8C8F4 /* FriendsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */; };
 		9C2EF8062A8289D100E8C8F4 /* FollowingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */; };
 		9C2EF8082A83D9E700E8C8F4 /* MyPageEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */; };
+		9C2EF80A2A86624400E8C8F4 /* FriendDetailPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */; };
 		9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAD2A46C6AA002AB791 /* NetworkService.swift */; };
 		9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AAF2A46DC75002AB791 /* KeyChainService.swift */; };
 		9C638AB62A46E63D002AB791 /* AccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C638AB52A46E63D002AB791 /* AccountAPI.swift */; };
@@ -102,6 +103,7 @@
 		9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListViewController.swift; sourceTree = "<group>"; };
 		9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingCell.swift; sourceTree = "<group>"; };
 		9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageEditViewController.swift; sourceTree = "<group>"; };
+		9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailPageViewController.swift; sourceTree = "<group>"; };
 		9C638AAD2A46C6AA002AB791 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9C638AAF2A46DC75002AB791 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
 		9C638AB52A46E63D002AB791 /* AccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAPI.swift; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */,
 				9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */,
 				9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */,
+				9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */,
 			);
 			path = ScheduleList;
 			sourceTree = "<group>";
@@ -565,6 +568,7 @@
 				652C05DE2A740667004CE9C4 /* LocationFilterSheetView.swift in Sources */,
 				9C2EF8022A812F2500E8C8F4 /* MyPageViewController.swift in Sources */,
 				9CFA7D1C2A458CCC003E80A7 /* UIColor+Ext.swift in Sources */,
+				9C2EF80A2A86624400E8C8F4 /* FriendDetailPageViewController.swift in Sources */,
 				9C2EF7FE2A7FA55B00E8C8F4 /* JogakDetailViewController.swift in Sources */,
 				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
 				652C05DC2A7404B4004CE9C4 /* Data.swift in Sources */,
