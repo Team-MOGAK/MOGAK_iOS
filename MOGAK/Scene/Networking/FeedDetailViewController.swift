@@ -35,17 +35,17 @@ class FeedDetailViewController: UIViewController {
     
     // 이름
     private let nameLabel : UILabel = {
-          let label = UILabel()
-          label.text = "이재혁"
-          label.font = UIFont.pretendard(.semiBold, size: 14)
-          label.textColor = UIColor(hex: "24252E")
-          return label
-      }()
-
-      // 카테고리
-      private let categoryLabel : UILabel = {
-          let label = UILabel()
-          label.text = "서비스기획자/PM"
+        let label = UILabel()
+        label.text = "이재혁"
+        label.font = UIFont.pretendard(.semiBold, size: 14)
+        label.textColor = UIColor(hex: "24252E")
+        return label
+    }()
+    
+    // 직무 라벨
+    private let categoryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "서비스기획자/PM"
         label.font = UIFont.pretendard(.regular, size: 12)
         label.textColor = UIColor(hex: "6E707B")
         return label
@@ -71,9 +71,8 @@ class FeedDetailViewController: UIViewController {
     // vertical ellipsis button
     private let editButton: UIButton = {
         let button = UIButton()
-        let ellipsis = UIImage(systemName: "ellipsis")
-        let verticalImage = ellipsis?.rotate(radians: .pi/2) // 90도 회전
-        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.setImage(UIImage(named: "ellipsis_vertical"), for: .normal)
+        button.tintColor = UIColor(hex: "6E707B")
         
         return button
     }()
@@ -128,7 +127,7 @@ class FeedDetailViewController: UIViewController {
         contentView.addSubview(topContainerView)
         topContainerView.snp.makeConstraints({
             $0.width.equalToSuperview()
-            $0.top.equalToSuperview().offset(40) // 나중에 offset 바꾸기
+            $0.top.equalToSuperview().offset(20) // 나중에 offset 바꾸기
             $0.height.equalTo(68)
         })
         
@@ -142,7 +141,7 @@ class FeedDetailViewController: UIViewController {
         })
         
         editButton.snp.makeConstraints({
-            $0.trailing.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview().offset(-20)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(24)
         })
@@ -158,8 +157,10 @@ class FeedDetailViewController: UIViewController {
         profileContainerView.addSubviews(nameLabel, profileImageView, categoryLabel)
         
         profileImageView.snp.makeConstraints({
-            $0.top.bottom.left.equalToSuperview()
-            $0.width.equalTo(profileContainerView.frame.height)
+            //            $0.top.bottom.left.equalToSuperview()
+            //            $0.width.equalTo(profileContainerView.frame.height)
+            $0.top.bottom.left.equalTo(profileContainerView).inset(0)
+            $0.width.height.equalTo(36)
         })
         
         nameLabel.snp.makeConstraints({
@@ -171,9 +172,229 @@ class FeedDetailViewController: UIViewController {
         categoryLabel.snp.makeConstraints({
             $0.leading.equalTo(profileImageView.snp.trailing).offset(8)
             $0.trailing.equalToSuperview()
-            $0.top.equalTo(profileContainerView.snp.centerY).offset(-2)
+            $0.top.equalTo(profileContainerView.snp.centerY).offset(4)
         })
     }
+    
+    // MARK: - BODY (FEED IMAGE)
+    let feedImage: UIImageView = {
+        let imageView = UIImageView()
+        
+        imageView.image = UIImage(named: "cuteBokdol")
+        //imageView.backgroundColor = .white
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return imageView
+    }()
+    
+    // MARK: - ADD FEED IMAGE
+    private func configureFeedImage() {
+        contentView.addSubview(feedImage)
+        
+        feedImage.snp.makeConstraints({
+            $0.width.equalToSuperview()
+            $0.top.equalTo(topContainerView.snp.bottom)
+            $0.height.equalTo(contentView.snp.width)
+        })
+    }
+    
+    // MARK: - BODY (루틴 정보)
+    private let routineInfoView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "F1F3FA")
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
+    // 루틴 카테고리
+    private let routineCategoryLabel : BasePaddingLabel = {
+        let label = BasePaddingLabel()
+        // label.clipToBounds = true -> 왜 안돼?
+        label.layer.masksToBounds = true // 위랑 같은 기능이라는데
+        label.alpha = 0.8
+        label.text = "대외활동"
+        label.textAlignment = .center
+        label.font = UIFont.pretendard(.semiBold, size: 14)
+        label.textColor = UIColor(hex: "475FFD")
+        label.layer.cornerRadius = 10
+        label.backgroundColor = UIColor(hex: "FFFFFF")
+        
+        return label
+    }()
+    
+    // 루틴 걸린시간
+    private let routineOverallTimeLabel: UILabel = UILabel().then {
+        $0.text = "1시간 20분"
+        $0.textColor = UIColor(hex: "475FFD")
+        $0.font = UIFont.pretendard(.regular, size: 14)
+    }
+    
+    // 루틴 이름
+    private let routineName: UILabel = UILabel().then {
+        $0.text = "기획 아티클 읽기"
+        $0.textColor = UIColor(hex: "24252E")
+        $0.font = UIFont.pretendard(.medium, size: 16)
+    }
+    
+    // 루틴 기간, 요일
+    private let routineTerm: UILabel = UILabel().then {
+        $0.text = "2024.6.2~ / 월 수"
+        $0.textColor = UIColor(hex: "6E707B")
+        $0.font = UIFont.pretendard(.regular, size: 14)
+    }
+        
+    
+    // MARK: - ADDSUBVIEW 루틴정보 캡슐
+    private func configureRoutineInfo() {
+        contentView.addSubview(routineInfoView)
+        routineInfoView.snp.makeConstraints({
+            $0.top.equalTo(feedImage.snp.bottom).offset(16)
+            $0.left.right.equalToSuperview().inset(20)
+            $0.height.equalTo(108)
+        })
+        
+        routineInfoView.addSubview(routineCategoryLabel)
+        routineCategoryLabel.snp.makeConstraints({
+            $0.top.left.equalToSuperview().offset(16)
+        })
+        
+        routineInfoView.addSubview(routineOverallTimeLabel)
+        routineOverallTimeLabel.snp.makeConstraints({
+            $0.top.equalToSuperview().offset(19)
+            $0.left.equalTo(routineCategoryLabel.snp.right).offset(8)
+        })
+        
+        routineInfoView.addSubview(routineName)
+        routineName.snp.makeConstraints({
+            $0.top.equalTo(routineCategoryLabel.snp.bottom).offset(8)
+            $0.left.right.equalToSuperview().offset(16)
+        })
+        
+        routineInfoView.addSubview(routineTerm)
+        routineTerm.snp.makeConstraints({
+            $0.top.equalTo(routineName.snp.bottom).offset(6)
+            $0.left.right.equalToSuperview().offset(16)
+        })
+    }
+    
+    // MARK: - BODY (피드 텍스트)
+    private let feedText: UILabel = UILabel().then {
+        $0.textColor = UIColor(hex: "200E04")
+        $0.font = UIFont.pretendard(.regular, size: 14)
+        $0.numberOfLines = 0
+        $0.alpha = 0.9
+        
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.26
+        paragraphStyle.lineBreakMode = .byCharWrapping
+        //paragraphStyle.lineBreakStrategy = .hangulWordPriority
+        $0.attributedText = NSMutableAttributedString(
+            string: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!",
+            attributes: [.paragraphStyle: paragraphStyle]
+        )
+    }
+    
+    // MARK: - ADDSUBVIEW 피드 텍스트
+    private func configureFeedText() {
+        contentView.addSubview(feedText)
+        feedText.snp.makeConstraints({
+            $0.left.right.equalToSuperview().inset(20)
+            $0.top.equalTo(routineInfoView.snp.bottom).offset(16)
+        })
+    }
+    
+    // MARK: - TAIL CONTAINER VIEW
+    private let tailContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        return view
+    }()
+    
+    var isHeartFilled: Bool = false
+    
+    private let heartButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        button.tintColor = UIColor(hex: "24252E")
+        button.isEnabled = true
+        
+        button.addTarget(self, action: #selector(heartButtonTapped), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    @objc private func heartButtonTapped() {
+        isHeartFilled.toggle()
+        // 디버깅용
+        print("Tapped: heart Filled: \(isHeartFilled)")
+        
+        if isHeartFilled {
+            heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            heartButton.tintColor = UIColor(hex: "FF4D77")
+        } else {
+            heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            heartButton.tintColor = UIColor(hex: "24252E")
+        }
+    }
+    
+    private let heartRate: UILabel = {
+        let label = UILabel()
+        label.text = "7"
+        label.font = UIFont.pretendard(.regular, size: 14)
+        label.textColor = UIColor(hex: "24252E")
+        
+        return label
+    }()
+    
+    private let messageButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "message"), for: .normal)
+        button.tintColor = UIColor(hex: "24252E")
+        
+        return button
+    }()
+    
+    private let messageRate: UILabel = {
+        let label = UILabel()
+        label.text = "2"
+        label.font = UIFont.pretendard(.regular, size: 14)
+        label.textColor = UIColor(hex: "24252E")
+        
+        return label
+    }()
+    
+    // MARK: - ADDSUBVIEW (하트 등등)
+    private func configureTailView() {
+        contentView.addSubview(tailContainerView)
+        tailContainerView.snp.makeConstraints({
+            $0.top.equalTo(feedText.snp.bottom).offset(16)
+            $0.left.right.equalToSuperview()
+            $0.height.equalTo(32)
+        })
+        
+        tailContainerView.addSubviews(heartButton, heartRate, messageButton, messageRate)
+        
+        heartButton.snp.makeConstraints({
+            $0.left.equalToSuperview().offset(20)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+        })
+        heartRate.snp.makeConstraints({
+            $0.left.equalTo(heartButton.snp.right).offset(4)
+            $0.centerY.equalToSuperview()
+        })
+        messageButton.snp.makeConstraints({
+            $0.left.equalTo(heartRate.snp.right).offset(12)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+        })
+        messageRate.snp.makeConstraints({
+            $0.left.equalTo(messageButton.snp.right).offset(4)
+            $0.centerY.equalToSuperview()
+        })
+    }
+    
     
     // MARK: - viewDidLoad()
     override func viewDidLoad() {
@@ -181,8 +402,74 @@ class FeedDetailViewController: UIViewController {
         view.backgroundColor = .white
         // Do any additional setup after loading the view.
         
+        self.navigationController?.navigationBar.isHidden = false
+        
+        configureNavBar()
         configureScrollView()
         configureTopContainer()
         configureProfileElements()
+        configureFeedImage()
+        configureRoutineInfo()
+        configureFeedText()
+        configureTailView()
+    }
+    
+    private func configureNavBar() {
+        self.navigationController?.navigationBar.topItem?.title = ""
+        self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")
     }
 }
+
+// MARK: - CUSTOM LABEL (for padding...)
+class BasePaddingLabel: UILabel {
+    private var padding = UIEdgeInsets(top: 4.0, left: 10.0, bottom: 4.0, right: 10.0)
+    
+    convenience init(padding: UIEdgeInsets) {
+        self.init()
+        self.padding = padding
+    }
+    
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: padding))
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        var contentSize = super.intrinsicContentSize
+        contentSize.height += padding.top + padding.bottom
+        contentSize.width += padding.left + padding.right
+        
+        return contentSize
+    }
+}
+
+
+// MARK: - PREVIEW
+// Preview code
+#if DEBUG
+import SwiftUI
+struct MainBoardViewControllerRepresentable: UIViewControllerRepresentable {
+
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        FeedDetailViewController() //<- 수정
+    }
+}
+@available(iOS 13.0, *)
+struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                MainBoardViewControllerRepresentable()
+                    //.ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone 11"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+
+    }
+} #endif

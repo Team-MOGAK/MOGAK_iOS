@@ -133,8 +133,10 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         profileContainerView.addSubviews(nameLabel, categoryLabel, profileImageView)
         
         profileImageView.snp.makeConstraints({
-            $0.top.bottom.left.equalToSuperview()
-            $0.width.equalTo(profileContainerView.frame.height)
+            //            $0.top.bottom.left.equalToSuperview()
+            //            $0.width.equalTo(profileContainerView.frame.height)
+            $0.top.bottom.left.equalTo(profileContainerView).inset(0)
+            $0.width.height.equalTo(36)
         })
         
         nameLabel.snp.makeConstraints({
