@@ -16,6 +16,7 @@ class TabBarViewController: UITabBarController{
         UITabBar.appearance().tintColor = UIColor.black
         UITabBar.appearance().unselectedItemTintColor = UIColor.gray
         UITabBar.appearance().backgroundColor = .white
+        
     }
     
     private func setupViews() {
@@ -31,10 +32,10 @@ class TabBarViewController: UITabBarController{
         let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
         
         self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
+        
         self.selectedIndex = 0
         
     }
-    
     fileprivate func generateNavController(vc: UIViewController, tabBarItem: UITabBarItem) -> UINavigationController {
         
         navigationItem.title = title
@@ -44,7 +45,15 @@ class TabBarViewController: UITabBarController{
         
         return navController
     }
-    
+}
+
+extension UITabBar{     //tabbarsize변경
+    override open func sizeThatFits(_ size: CGSize) -> CGSize {
+        super.sizeThatFits(size)
+        var sizeThatFits = super.sizeThatFits(size)
+        sizeThatFits.height = 100
+        return sizeThatFits
+    }
 }
 
 
