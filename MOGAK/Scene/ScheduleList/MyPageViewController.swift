@@ -148,6 +148,8 @@ class MyPageViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = false
+        
+        configureNavBar()
     }
     
     override func viewDidLayoutSubviews() {
@@ -157,6 +159,10 @@ class MyPageViewController: UIViewController {
     }
     
     private func configureNavBar() {
+        let titleTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor(hex: "000000"), .font: UIFont.pretendard(.semiBold, size: 18)
+            ]
+        self.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
         
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")

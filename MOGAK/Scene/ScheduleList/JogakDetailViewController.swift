@@ -64,6 +64,10 @@ class JogakDetailViewController: UIViewController {
     }
 
     private func configureNavBar() {
+        let titleTextAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor(hex: "24252E"), .font: UIFont.pretendard(.semiBold, size: 18)
+            ]
+        self.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
         
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")
