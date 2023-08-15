@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-class SettingViewController : UIViewController{
+class SettingViewController : UIViewController, UISheetPresentationControllerDelegate{  //지워주기
     
     private lazy var popButton : UIButton = {
         let popButton = UIButton()
@@ -51,8 +51,9 @@ class SettingViewController : UIViewController{
        }
        titleLabel.snp.makeConstraints{
            $0.centerX.equalToSuperview()
-           //$0.top.equalTo(view.safeAreaLayoutGuide).offset(6)
            $0.centerY.equalTo(popButton)
        }
     }
 }
+
+

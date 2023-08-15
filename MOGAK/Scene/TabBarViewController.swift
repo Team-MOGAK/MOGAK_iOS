@@ -25,6 +25,7 @@ class TabBarViewController: UITabBarController{
         let listTabBarItem = UITabBarItem(title: "조각관리", image: UIImage(named: "list"), selectedImage: UIImage(named: "selectedList"))
         let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(named: "networking"), selectedImage: UIImage(named: "selectedNetworking"))
         let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
+    
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let listVC = generateNavController(vc: ScheduleListViewController(), tabBarItem: listTabBarItem)
@@ -36,6 +37,7 @@ class TabBarViewController: UITabBarController{
         self.selectedIndex = 0
         
     }
+    
     fileprivate func generateNavController(vc: UIViewController, tabBarItem: UITabBarItem) -> UINavigationController {
         
         navigationItem.title = title
@@ -47,11 +49,10 @@ class TabBarViewController: UITabBarController{
     }
 }
 
-extension UITabBar{     //tabbarsize변경
+extension UITabBar {
     override open func sizeThatFits(_ size: CGSize) -> CGSize {
-        super.sizeThatFits(size)
         var sizeThatFits = super.sizeThatFits(size)
-        sizeThatFits.height = 100
+        sizeThatFits.height = 100 // 원하는 탭 바 높이 값으로 수정하세요
         return sizeThatFits
     }
 }

@@ -50,6 +50,7 @@ class ScheduleCancelModalVC : UIViewController{
     }()
     
      var circularProgressView = CircularProgressView()
+     var clicked : (()->())?
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -70,39 +71,31 @@ class ScheduleCancelModalVC : UIViewController{
             $0.centerX.equalToSuperview()
             $0.top.equalTo(canceltitleLabel.snp.bottom).offset(12)
         }
-        stopButton.snp.makeConstraints{
-            $0.width.equalTo(170)
+        stopButton.snp.makeConstraints{ 
+            $0.leading.equalToSuperview().inset(200)
             $0.height.equalTo(52)
-            $0.top.equalTo(cancelsubtitleLabel.snp.bottom).offset(32)
+            $0.bottom.equalToSuperview().inset(24)
             $0.trailing.equalToSuperview().inset(20)
         }
         keepGoButton.snp.makeConstraints{
-            $0.width.equalTo(170)
+            $0.trailing.equalToSuperview().inset(200)
             $0.height.equalTo(52)
-            $0.top.equalTo(cancelsubtitleLabel.snp.bottom).offset(32)
+            $0.bottom.equalToSuperview().inset(24)
             $0.leading.equalToSuperview().inset(20)
             
         }
     }
     //MARK: - @objc func
     @objc func ScheduleStop(){
-            // 모달 해제 -> pop
-            self.dismiss(animated: true) { [weak self] in
-                guard let self = self else { return }
-
-                if let scheduleStartVC = self.navigationController?.viewControllers.first(where: { $0 is ScheduleTimerVC }) {
-                    // ScheduleStartViewController가 이미 스택에 있으면 해당 뷰 컨트롤러로 이동
-                    self.navigationController?.popToViewController(scheduleStartVC, animated: true)
-                } else {
-                    // ScheduleStartViewController가 스택에 없으면 새로운 뷰 컨트롤러를 스택에 추가
-                    let scheduleStartVC = ScheduleTimerVC()
-                    self.navigationController?.pushViewController(scheduleStartVC, animated: true)
-                }
-            }
+        self.dismiss(animated: true, completion: {
+            self.clicked?()
+        })
     }
+    
     @objc func dismissModal(){
-        self.dismiss(animated: true)
-        circularProgressView.resumeTimer()
+        self.dismiss(animated: true){ [self] in
+            circularProgressView.resumeTimer()
+        }
     }
     
 }

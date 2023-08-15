@@ -9,9 +9,15 @@ import UIKit
 import SnapKit
 import Then
 
+protocol ScheduleTimerDelegate {
+    func certificateModal()
+}
+
 class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
     
 //MARK: - Properties
+    
+    var scheduleTimerDelegate: ScheduleTimerDelegate?
     
     private lazy var popButton : UIButton = {
         let popButton = UIButton()
@@ -58,7 +64,6 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
         //self.navigationController?.navigationBar.isHidden = true
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.011, green: 0.022, blue: 0.092, alpha: 1)
-        //self.navigationBar.barTintColor = UIColor(red: 0.011, green: 0.022, blue: 0.092, alpha: 1)
         
         setUI()
         changeTextFont()
@@ -67,11 +72,18 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
 //MARK: - @objc
     
     @objc func ScheduleCancel(){
+        print("클릭")
         circularProgressView.pauseTimer()
-        
+
         lazy var scheduleCancel = ScheduleCancelModalVC()
         scheduleCancel.modalPresentationStyle = .formSheet
         self.present(scheduleCancel,animated: true)
+        
+        scheduleCancel.clicked = {               //클로저
+            self.navigationController?.popViewController(animated: true)
+            print("클로저 실행")
+            
+        }
         
         if let sheet = scheduleCancel.sheetPresentationController{
             if #available(iOS 16.0, *) {
@@ -80,19 +92,27 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
                 }]
             } else {
                 sheet.detents = [.medium()]
-                
+
             }
             sheet.delegate = self
             sheet.prefersGrabberVisible = true
         }
         print("Cancel Schedule")
+//        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func SchedulePause(){
         circularProgressView.pauseTimer()
-        
-        lazy var schedulePause = PauseModalVC()
+
+        let schedulePause = PauseModalVC()
         schedulePause.modalPresentationStyle = .formSheet
+        
+        schedulePause.onClick = {               //클로저
+            self.navigationController?.popViewController(animated: true)
+            self.scheduleTimerDelegate?.certificateModal()
+            print("클로저 실행")
+        }
+
         self.present(schedulePause,animated: true)
         
         if let sheet = schedulePause.sheetPresentationController{
@@ -182,6 +202,7 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
 
 
 
+
 #if DEBUG
 import SwiftUI
 struct ScheduleTimerVCRepresentable: UIViewControllerRepresentable {
@@ -210,3 +231,4 @@ struct ScheduleTimerVCRepresentable_PreviewProvider: PreviewProvider {
         
     }
 } #endif
+

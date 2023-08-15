@@ -12,7 +12,7 @@ import Then
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
-//MARK: - Properties
+    //MARK: - Properties
     private lazy var profileImageView : UIButton = {
         let profileImageView = UIButton()
         profileImageView.setImage(UIImage(named: "default"), for: .normal)
@@ -172,24 +172,30 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.circularProgressView.isHidden = true
         self.startButton.isHidden = true
         self.motiveLabel.isHidden = true
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureUI()
         self.configureCalendar()
         self.tableSetting()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.ScheduleTableView.reloadData()
+        // print("배열 \(cellArray)")
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         self.motiveLabel.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = true
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         self.motiveLabel.isHidden = true
     }
     
@@ -225,7 +231,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     // 날짜 선택 해제 콜백 메소드
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-    
+        
     }
     
     
@@ -402,7 +408,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     @objc func goSchedule(_ sender : UIButton){
         tableViewUI()
-        
         print("go Schedule")
     }
     
@@ -415,6 +420,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     @objc func goStart(_ sender : UIButton){
         
         let startVC = ScheduleTimerVC()
+        startVC.scheduleTimerDelegate = self
         navigationController?.pushViewController(startVC, animated: true)
         startVC.circularProgressView.Timerstart()
         
@@ -454,7 +460,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.delegate = self
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
-        ScheduleTableView.isHidden = true
+        //        ScheduleTableView.isHidden = true
         
         underView.isHidden = true
         underView.addSubview(motiveLabel)
@@ -472,7 +478,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         blankLabel.isHidden = true
         
         ScheduleTableView.reloadData()
-
+        
         self.ScheduleTableView.rowHeight = 80 //셀 높이
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
@@ -540,3 +546,22 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     
 }
+
+extension ScheduleStartViewController: ScheduleTimerDelegate {
+    func certificateModal() {
+        print("프린트 서티피케이트")
+        let scheduleDone = CertificationModalVC()
+        scheduleDone.modalPresentationStyle = .formSheet
+        self.present(scheduleDone,animated: true)
+        
+        if let sheet = scheduleDone.sheetPresentationController{
+            sheet.detents = [.medium()]
+            sheet.delegate = self
+            sheet.prefersGrabberVisible = true
+            sheet.largestUndimmedDetentIdentifier = nil
+        }
+    }
+    
+    
+}
+
