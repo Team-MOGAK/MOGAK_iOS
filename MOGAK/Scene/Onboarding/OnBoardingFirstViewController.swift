@@ -14,6 +14,7 @@ class OnBoardingFirstViewController: UIViewController {
         $0.text = "가장 자극받을 수 있는\n게시물을\n매일 추천해드려요."
         $0.numberOfLines = 3
         $0.textColor = .black
+        $0.textAlignment = .center
         $0.font = UIFont.pretendard(.medium, size: 30)
         $0.asFont(targetString: "가장 자극받을 수 있는", font: UIFont.pretendard(.semiBold, size: 30))
     }

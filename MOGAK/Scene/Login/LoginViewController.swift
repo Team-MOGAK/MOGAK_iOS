@@ -41,9 +41,9 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.navigationController?.navigationBar.isHidden = true
+        //        self.navigationController?.navigationBar.isHidden = true
         view.backgroundColor = UIColor(hex: "FFFFFF")
-//        self.configureNavBar()
+        //        self.configureNavBar()
         self.configureLabel()
         self.configureButton()
         self.configureImage()
@@ -55,25 +55,25 @@ class LoginViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
     }
     
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        self.navigationController?.navigationBar.isHidden = false
-//    }
+    //    override func viewDidDisappear(_ animated: Bool) {
+    //        super.viewDidDisappear(animated)
+    //        self.navigationController?.navigationBar.isHidden = false
+    //    }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        self.navigationController?.navigationBar.isHidden = true
-//    }
-//
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        self.navigationController?.navigationBar.isHidden = false
-//    }
+    //    override func viewDidAppear(_ animated: Bool) {
+    //        super.viewDidAppear(animated)
+    //        self.navigationController?.navigationBar.isHidden = true
+    //    }
+    //
+    //    override func viewWillDisappear(_ animated: Bool) {
+    //        super.viewWillDisappear(animated)
+    //        self.navigationController?.navigationBar.isHidden = false
+    //    }
     
-//    private func configureNavBar() {
-//        self.navigationController?.navigationBar.topItem?.title = ""
-//        self.navigationController?.navigationBar.tintColor = .gray
-//    }
+    //    private func configureNavBar() {
+    //        self.navigationController?.navigationBar.topItem?.title = ""
+    //        self.navigationController?.navigationBar.tintColor = .gray
+    //    }
     
     private func configureLabel() {
         self.view.addSubview(mogakLabel)
@@ -91,7 +91,7 @@ class LoginViewController: UIViewController {
         loginImage.snp.makeConstraints({
             $0.top.equalTo(self.mogakLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(6)
-//            $0.bottom.equalTo(self.appleLoginButton.snp.top).offset(-129)
+            //            $0.bottom.equalTo(self.appleLoginButton.snp.top).offset(-129)
             $0.height.equalToSuperview().multipliedBy(0.53)
         })
     }
@@ -107,16 +107,16 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func appleLoginClicked() {
-        let termVC = TermsAgreeViewController()
-        self.navigationController?.pushViewController(termVC, animated: true)
-        //        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        //        let request = appleIDProvider.createRequest()
-        //        request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
-        //
-        //        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        //        authorizationController.delegate = self
-        //        authorizationController.presentationContextProvider = self
-        //        authorizationController.performRequests()
+//                let termVC = TermsAgreeViewController()
+//                self.navigationController?.pushViewController(termVC, animated: true)
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
+
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
     }
 }
 
@@ -133,7 +133,11 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             // You can create an account in your system.
             let userIdentifier = appleIDCredential.user
             let fullName = appleIDCredential.fullName
+            let realFullName = appleIDCredential.fullName?.formatted()
             let email = appleIDCredential.email
+            UserDefaults.standard.set(realFullName, forKey: "userName")
+            UserDefaults.standard.set(email, forKey: "userEmail")
+            
             
             if  let authorizationCode = appleIDCredential.authorizationCode,
                 let identityToken = appleIDCredential.identityToken,
@@ -145,14 +149,17 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
                 print("identifyTokenString: \(identifyTokenString)")
             }
             
-            print("useridentifier: \(userIdentifier)")
-            //            print("fullName: \(fullName)")
-            //            print("email: \(email)")
+            // 두번째부터는 여기서 이메일을 받아와야 함
+            if let tokenString = String(data: appleIDCredential.identityToken ?? Data(), encoding: .utf8) {
+                let email2 = Utils.decode(jwtToken: tokenString)["email"] as? String ?? ""
+                print("두번째 이메일 \(email2)")
+            }
             
             //Move to NextPage
             let validVC = TermsAgreeViewController()
             validVC.modalPresentationStyle = .fullScreen
-            present(validVC, animated: true, completion: nil)
+            self.navigationController?.pushViewController(validVC, animated: true)
+//                        present(validVC, animated: true, completion: nil)
             
         case let passwordCredential as ASPasswordCredential:
             // Sign in using an existing iCloud Keychain credential.

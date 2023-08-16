@@ -10,13 +10,15 @@ import SnapKit
 
 class ChooseJobViewController: UIViewController {
     
-//    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
+    //    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
     private var items = ["기획/전략", "법무,사무,총무", "인사/HR", "회계/세무", "마케팅/광고/MD", "개발/데이터", "디자인", "물류/무역", "운전/운송/배송", "영업", "고객상담/TM", "금융/보험", "식/음료", "고객서비스/리테일", "엔지니어링/설계", "제조/생산", "교육", "건축/시설", "의료/바이오", "미디어/문화", "스포츠", "공공복지", "자영업", "군인", "의료", "회계사", "법무사", "노무사", "세무사", "관세사", "교사", "디지털노마드", "영상제작자", "크리에이터"]
     // 검색 결과를 담는 배열
     private var filteredItems: [String] = []
     // checkButton 선택 셀 index
     private var previousIndexPath: IndexPath?
     private var selectedIndexPath: IndexPath?
+    
+    var selectedIndexPaths: Set<IndexPath> = []
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -51,7 +53,7 @@ class ChooseJobViewController: UIViewController {
     
     private let tableView : UITableView = {
         let tableView = UITableView()
-//        tableView.separatorStyle = .none
+        //        tableView.separatorStyle = .none
         return tableView
     }()
     
@@ -106,7 +108,7 @@ class ChooseJobViewController: UIViewController {
         searchBar.snp.makeConstraints({
             $0.top.equalTo(subLabel.snp.bottom).offset(48)
             $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.height.equalTo(33)
+            //            $0.height.equalTo(33)
             $0.height.equalToSuperview().multipliedBy(0.061)
         })
         
@@ -137,7 +139,7 @@ class ChooseJobViewController: UIViewController {
         
         nextButton.snp.makeConstraints({
             $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.height.equalTo(53)
+            //            $0.height.equalTo(53)
             $0.height.equalToSuperview().multipliedBy(0.061)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-23)
         })
@@ -200,6 +202,31 @@ extension ChooseJobViewController: UISearchBarDelegate {
     }
     
 }
+// 직무선택을 위한 코드
+extension ChooseJobViewController {
+    func updateCellSelectionState(_ cell: NameCell, at indexPath: IndexPath) {
+        if let selectedIndexPath = selectedIndexPath, selectedIndexPath == indexPath {
+            cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
+            nextButtonIsOn()
+        } else {
+            cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+            // 다른 선택된 셀이 있는지 확인하여 nextButton의 상태 업데이트
+            if selectedIndexPaths.isEmpty {
+                nextButtonIsOff()
+            }
+        }
+    }
+    
+    private func updateNextButtonState() {
+        if selectedIndexPaths.isEmpty {
+            nextButtonIsOff()
+        } else {
+            nextButtonIsOn()
+        }
+        
+        
+    }
+}
 
 extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -217,45 +244,33 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! NameCell
-        
-        let filteredItemsInSection = getFilteredItemsInSection(indexPath.section)
-        
-        let item = filteredItemsInSection[indexPath.row]
-        cell.textLabel?.text = item
-        cell.selectionStyle = .none
-        if let selectedIndexPath = selectedIndexPath, selectedIndexPath == indexPath {
-            cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
-            nextButtonIsOn()
-        } else {
-            cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
-            nextButtonIsOff()
-        }
-        
-        return cell
+            
+            let filteredItemsInSection = getFilteredItemsInSection(indexPath.section)
+            let item = filteredItemsInSection[indexPath.row]
+            cell.textLabel?.text = item
+            cell.selectionStyle = .none
+            
+            if selectedIndexPaths.contains(indexPath) {
+                cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
+            } else {
+                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+            }
+            
+            return cell
+
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let previousIndexPath = selectedIndexPath  // 이전에 선택된 셀의 인덱스 저장
-        selectedIndexPath = indexPath  // 선택된 셀의 인덱스 업데이트
-        
-        // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 같으면 체크 버튼을 숨깁니다.
-        if previousIndexPath == indexPath {
-            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
-                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
-                nextButtonIsOff()
+        if selectedIndexPaths.contains(indexPath) {
+                selectedIndexPaths.remove(indexPath)
+            } else {
+                // 하나의 셀만 선택될 수 있도록 이전에 선택된 셀을 모두 해제합니다.
+                selectedIndexPaths.removeAll()
+                selectedIndexPaths.insert(indexPath)
             }
-            selectedIndexPath = nil  // 선택된 셀의 인덱스를 nil로 설정하여 선택 해제
-        } else {
-            // 이전에 선택된 셀의 인덱스와 현재 선택한 셀의 인덱스가 다르면 이전에 선택된 셀을 업데이트합니다.
-            if let previousIndexPath = previousIndexPath, let cell = tableView.cellForRow(at: previousIndexPath) as? NameCell {
-                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
-                nextButtonIsOn()
-            }
-            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
-                cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
-                nextButtonIsOn()
-            }
-        }
+            
+            tableView.reloadData() // 선택 상태 업데이트
+            updateNextButtonState()
     }
     
     

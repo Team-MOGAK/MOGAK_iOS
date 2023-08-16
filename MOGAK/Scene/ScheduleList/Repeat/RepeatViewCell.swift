@@ -21,7 +21,8 @@ class RepeatCell: UICollectionViewCell {
         super.init(frame: frame)
         self.contentView.backgroundColor = UIColor(hex: "EEF0F8")
         self.contentView.layer.masksToBounds = true
-        self.contentView.layer.cornerRadius = contentView.frame.height/2
+//        self.contentView.layer.cornerRadius = contentView.frame.width / 2
+        self.contentView.layer.cornerRadius = 24
         self.configureUI()
     }
     

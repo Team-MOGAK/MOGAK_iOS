@@ -17,6 +17,8 @@ class AppGuideViewController: UIViewController {
         return scrollView
     }()
     
+    
+    
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.addTarget(self, action: #selector(pageControlValueChanged(_:)), for: .valueChanged)
@@ -54,10 +56,6 @@ class AppGuideViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        self.navigationController?.navigationBar.isHidden = false
-//    }
-    
     private func setupViews() {
         
         pageControl.translatesAutoresizingMaskIntoConstraints = false
@@ -74,13 +72,10 @@ class AppGuideViewController: UIViewController {
         pageControl.pageIndicatorTintColor = UIColor(hex: "eaeaea")
         pageControl.currentPageIndicatorTintColor = UIColor(hex: "90bdff")
         
-        scrollView.frame = UIScreen.main.bounds
-        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(pageCount), height: UIScreen.main.bounds.height)
-        
-        scrollView.alwaysBounceVertical = false
+        scrollView.alwaysBounceVertical = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.isScrollEnabled = true
+        scrollView.isScrollEnabled = false
         scrollView.isPagingEnabled = true
         scrollView.bounces = false
     }
@@ -89,19 +84,18 @@ class AppGuideViewController: UIViewController {
         NSLayoutConstraint.activate([
             
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            pageControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -128),
             
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            scrollView.topAnchor.constraint(equalTo: pageControl.bottomAnchor, constant: 20),
+            scrollView.widthAnchor.constraint(equalToConstant: self.view.frame.width * CGFloat(pageCount)),
             scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor),
+            scrollView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7),
             
             nextButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
             nextButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
-//            nextButton.heightAnchor.constraint(equalToConstant: 53),
             nextButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.061)
         ])
         
@@ -165,7 +159,6 @@ class AppGuideViewController: UIViewController {
     }
     
     @objc private func skipButtonIsClicked() {
-//        let loginVC = LoginViewController()
         let loginVC = UINavigationController(rootViewController: LoginViewController())
         self.navigationController?.pushViewController(loginVC, animated: true)
         
