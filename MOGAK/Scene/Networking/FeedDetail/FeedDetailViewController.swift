@@ -82,9 +82,10 @@ class FeedDetailViewController: UIViewController {
     
     private let followingButton: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = UIFont.pretendard(.semiBold, size: 14)
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 14)
         button.setTitle("팔로잉", for: .normal)
-        button.setTitleColor(UIColor(hex: "6E707B"), for: .normal)
+        //button.setTitleColor(UIColor(hex: "6E707B"), for: .normal)
+        button.setTitleColor(UIColor(red: 0.431, green: 0.441, blue: 0.483, alpha: 0.8), for: .normal)
         button.backgroundColor = UIColor(hex: "EEF0F8")
         button.layer.cornerRadius = 10
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
@@ -127,7 +128,7 @@ class FeedDetailViewController: UIViewController {
         contentView.addSubview(topContainerView)
         topContainerView.snp.makeConstraints({
             $0.width.equalToSuperview()
-            $0.top.equalToSuperview().offset(20) // 나중에 offset 바꾸기
+            $0.top.equalToSuperview() // 나중에 offset 바꾸기
             $0.height.equalTo(68)
         })
         
@@ -395,6 +396,71 @@ class FeedDetailViewController: UIViewController {
         })
     }
     
+    // MARK: - (게시글 - 댓글) divider
+    private let dividerLineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "EEF0F8")
+        return view
+    }()
+    
+    // MARK: - ADDSUBVIEW divider
+    private func configureDivider() {
+        contentView.addSubview(dividerLineView)
+        dividerLineView.snp.makeConstraints({
+            $0.top.equalTo(tailContainerView.snp.bottom).offset(16)
+            $0.left.right.equalToSuperview()
+            $0.height.equalTo(2)
+        })
+    }
+    
+    // MARK: - 댓글 tableview
+    lazy var commentTableView: UITableView = {
+        let tableView = UITableView()
+        //let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.register(FeedDetailCommentTableViewCell.self, forCellReuseIdentifier: "FeedDetailCommentTableViewCell")
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.isScrollEnabled = false
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
+        
+        return tableView
+    }()
+    
+    // MARK: - ADDSUBVIEW 댓글 tableview
+    private func configureCommentTable() {
+        contentView.addSubview(commentTableView)
+        var count = FeedComment.data.count
+        commentTableView.snp.makeConstraints({
+            $0.top.equalTo(dividerLineView.snp.bottom).offset(24)
+            $0.left.right.equalToSuperview().inset(20)
+            //$0.bottom.equalTo(contentView.snp.bottom).offset(90)
+            $0.height.equalTo(count * 140)
+            $0.bottom.equalToSuperview()
+        })
+    }
+    
+    // MARK: - (나중에지울거) dividerforScroll
+    private let dividerforScroll: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(hex: "EEF0F8")
+        return view
+    }()
+    
+    // MARK: - ADDSUBVIEW divider
+    private func configureDividerforScroll() {
+        contentView.addSubview(dividerforScroll)
+        dividerforScroll.snp.makeConstraints({
+            $0.left.right.equalToSuperview()
+            $0.height.equalTo(2)
+            $0.top.equalTo(commentTableView).offset(10)
+            $0.bottom.equalToSuperview()
+        })
+    }
     
     // MARK: - viewDidLoad()
     override func viewDidLoad() {
@@ -412,6 +478,9 @@ class FeedDetailViewController: UIViewController {
         configureRoutineInfo()
         configureFeedText()
         configureTailView()
+        configureDivider()
+        configureCommentTable()
+        //configureDividerforScroll()
     }
     
     private func configureNavBar() {
@@ -439,6 +508,44 @@ class BasePaddingLabel: UILabel {
         contentSize.width += padding.left + padding.right
         
         return contentSize
+    }
+}
+
+// MARK: TableViewDelegate, TableViewDataSource
+extension FeedDetailViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return FeedComment.data.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: "FeedDetailCommentTableViewCell") as? FeedDetailCommentTableViewCell
+        else { return UITableViewCell() }
+        
+        let dataObject = FeedComment.data[indexPath.row]
+        
+        cell.configureCell(profileImage: dataObject.profileImage, name: dataObject.name, comment: dataObject.comment)
+
+        return cell
+    }
+
+}
+
+// MARK: - CUSTOM TABLEVIEW
+class IntrinsicTableView: UITableView {
+    override var intrinsicContentSize: CGSize {
+        let number = numberOfRows(inSection: 0)
+        var height: CGFloat = 0
+
+        for i in 0..<number {
+            guard let cell = cellForRow(at: IndexPath(row: i, section: 0)) else {
+                continue
+            }
+            height += cell.bounds.height
+        }
+        return CGSize(width: contentSize.width, height: height)
     }
 }
 

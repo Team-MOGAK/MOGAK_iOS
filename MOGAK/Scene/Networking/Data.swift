@@ -15,6 +15,12 @@ struct Categories {
     var category: String
 }
 
+struct FeedComment {
+    var profileImage: String
+    var name: String
+    var comment: String
+}
+
 extension Locations {
     static var data = [
         Locations(location: "서울특별시"),
@@ -53,5 +59,18 @@ extension Categories {
         Categories(category: "프로젝트"),
         Categories(category: "스터디"),
         Categories(category: "기타"),
+    ]
+}
+
+extension FeedComment {
+    static var data = [
+        FeedComment(profileImage: "cuteBokdol", name: "엉엉이", comment: "우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!"),
+        FeedComment(profileImage: "cuteBokdol", name: "Nurin", comment: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!!")
     ]
 }
