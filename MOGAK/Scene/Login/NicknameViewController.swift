@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class NicknameViewController: UIViewController {
+    
+    let registerUserInfo = RegisterUserInfo.shared
     
     private let setNicknameLabel : UILabel = {
         let label = UILabel()
@@ -25,6 +28,11 @@ class NicknameViewController: UIViewController {
         label.textColor = UIColor(hex: "808497")
         return label
     }()
+    
+    private lazy var setProfile = UIButton().then {
+        $0.setImage(UIImage(named: "setProfile"), for: .normal)
+        $0.addTarget(self, action: #selector(settingProfileImage), for: .touchUpInside)
+    }
     
     private lazy var nicknameTextField : UITextField = {
         let textField = UITextField()
@@ -68,8 +76,13 @@ class NicknameViewController: UIViewController {
         view.backgroundColor = .white
         self.configureNavBar()
         self.configureLabel()
+        self.configureSetProfile()
         self.configureTextField()
         self.configureButton()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        setProfile.layer.cornerRadius = setProfile.frame.height / 2
     }
     
     private func configureNavBar() {
@@ -91,11 +104,21 @@ class NicknameViewController: UIViewController {
         })
     }
     
+    private func configureSetProfile() {
+        self.view.addSubview(setProfile)
+        
+        setProfile.snp.makeConstraints({
+            $0.width.height.equalTo(100)
+            $0.top.equalTo(self.subLabel.snp.bottom).offset(100)
+            $0.centerX.equalToSuperview()
+        })
+    }
+    
     private func configureTextField() {
         [nicknameTextField, tfSubLabel].forEach({view.addSubview($0)})
         
         nicknameTextField.snp.makeConstraints({
-            $0.center.equalToSuperview()
+            $0.top.equalTo(self.setProfile.snp.bottom).offset(52)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalToSuperview().multipliedBy(0.061)
         })
@@ -115,6 +138,15 @@ class NicknameViewController: UIViewController {
             $0.height.equalToSuperview().multipliedBy(0.06)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
         })
+    }
+    // MARK: - objc
+    
+    @objc private func settingProfileImage() {
+        // 이미지 선택 컨트롤러를 생성합니다.
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        present(imagePickerController, animated: true, completion: nil)
     }
     
     @objc private func nextButtonIsClicked() {
@@ -198,3 +230,39 @@ extension NicknameViewController: UITextFieldDelegate {
     }
     
 }
+
+extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    // 이미지 선택이 완료되었을 때 호출되는 메서드입니다.
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // 선택된 이미지를 가져옵니다.
+        if let image = info[.originalImage] as? UIImage {
+            // 가져온 이미지를 버튼 이미지로 설정합니다.
+            setProfile.setImage(image, for: .normal)
+            
+            // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
+            let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
+            if let imageURL = info[.imageURL] as? URL {
+                registerUserInfo.profileImage = imageURL.absoluteString
+                print("저장된 이미지 주소 \(registerUserInfo.profileImage)")
+                
+                // Kingfisher를 사용하여 버튼 이미지를 설정합니다.
+                setProfile.kf.setImage(with: imageURL, for: .normal, placeholder: image, options: options, completionHandler: { result in
+                    switch result {
+                    case .success(_):
+                        // 버튼 모양을 원 모양으로 변경합니다.
+                        self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
+                        self.setProfile.clipsToBounds = true
+                        break
+                    case .failure(let error):
+                        // 이미지 표시 중에 에러가 발생한 경우 실행되는 코드
+                        print("Error setting button image: \(error)")
+                    }
+                })
+            }
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    
+}
+
