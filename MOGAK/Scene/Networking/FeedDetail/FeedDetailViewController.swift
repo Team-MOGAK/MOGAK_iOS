@@ -427,7 +427,7 @@ class FeedDetailViewController: UIViewController {
 
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
-        
+        //tableView.tableFooterView = writingCommentFooterView
         return tableView
     }()
     
@@ -441,6 +441,63 @@ class FeedDetailViewController: UIViewController {
             //$0.bottom.equalTo(contentView.snp.bottom).offset(90)
             $0.height.equalTo(count * 140)
             $0.bottom.equalToSuperview()
+        })
+    }
+    
+    // MARK: - 댓글쓰기 footer
+    private let writingCommentFooterView: UIView = UIView().then {
+        $0.backgroundColor = .white
+        $0.frame.size.height = 50
+    }
+    
+    private let commentTextField: UITextField = UITextField().then {
+        $0.placeholder = "모각러에게 응원의 한마디를 남겨주세요!"
+        $0.font = UIFont.pretendard(.regular, size: 14)
+        $0.borderStyle = UITextField.BorderStyle.roundedRect
+        $0.autocorrectionType = UITextAutocorrectionType.no
+        $0.keyboardType = UIKeyboardType.default
+        $0.returnKeyType = UIReturnKeyType.done
+        $0.clearButtonMode = UITextField.ViewMode.whileEditing
+        $0.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+    }
+    
+    private let registerCommentButton: UIButton = UIButton().then {
+        $0.setTitle("작성", for: .normal)
+        $0.titleLabel?.font = UIFont.pretendard(.semiBold, size: 14)
+        $0.setTitleColor(UIColor(hex: "FFFFFF"), for: .normal)
+        $0.backgroundColor = UIColor(hex: "475FFD")
+        $0.layer.cornerRadius = 10
+        $0.contentEdgeInsets = UIEdgeInsets(top: 2, left: 10, bottom: 2, right: 10)
+    }
+    
+    lazy var commentTextView: UITextView = UITextView().then {
+        $0.layer.masksToBounds = true
+        $0.layer.cornerRadius = 10
+        $0.backgroundColor = UIColor(hex: "EEF0F8")
+//        $0.autocorrectionType = UITextAutocorrectionType.no
+//        $0.keyboardType = UIKeyboardType.default
+//        $0.returnKeyType = UIReturnKeyType.done
+        $0.font = UIFont.pretendard(.regular, size: 14)
+        $0.text = "모각러에게 응원의 한마디를 남겨주세요!"
+        $0.textColor = UIColor(hex: "808497")
+        $0.textContainerInset.top = 10
+        $0.delegate = self
+        $0.isEditable = true
+    }
+    
+    private func configureFooterView() {
+        writingCommentFooterView.addSubviews(commentTextView, registerCommentButton)
+        commentTextView.snp.makeConstraints({
+            $0.centerY.equalToSuperview()
+            $0.left.equalToSuperview().inset(5)
+            $0.right.equalToSuperview().inset(50)
+            $0.height.equalTo(40)
+        })
+        registerCommentButton.snp.makeConstraints({
+            //$0.bottom.equalTo(commentTextField.snp.bottom)
+            $0.centerY.equalToSuperview()
+            //$0.right.equalToSuperview().inset(5)
+            $0.left.equalTo(commentTextView.snp.right).offset(5)
         })
     }
     
@@ -481,11 +538,44 @@ class FeedDetailViewController: UIViewController {
         configureDivider()
         configureCommentTable()
         //configureDividerforScroll()
+
+        configureFooterView()
+        commentTableView.tableFooterView = writingCommentFooterView
     }
     
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        // 키보드 업&다운 옵저버
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardUp), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDown), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    // 키보드 팝업하면 뷰를 올리는
+    @objc func keyboardUp(notification:NSNotification) {
+        if let keyboardFrame:NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            
+            UIView.animate(
+                withDuration: 0.3
+                , animations: {
+                    self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardRectangle.height)
+                }
+            )
+        }
+    }
+    
+    // 키보드 내려가면 원래대로
+    @objc func keyboardDown() {
+        self.view.transform = .identity
     }
 }
 
@@ -528,9 +618,19 @@ extension FeedDetailViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.configureCell(profileImage: dataObject.profileImage, name: dataObject.name, comment: dataObject.comment)
 
+        cell.selectionStyle = .none
         return cell
     }
 
+}
+
+// MARK: - UITEXTVIEW extension
+extension FeedDetailViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        guard textView.textColor == UIColor(hex: "808497") else { return }
+        textView.text = nil
+        textView.textColor = .label
+    }
 }
 
 // MARK: - CUSTOM TABLEVIEW
