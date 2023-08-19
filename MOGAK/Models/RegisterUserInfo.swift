@@ -11,5 +11,9 @@ class RegisterUserInfo {
     static let shared = RegisterUserInfo()
     
     var profileImage : String?
+    var nickName : String?
+    var userName : String?
+    var userEmail : String?
+    var userJob : String?
     private init() {}
 }

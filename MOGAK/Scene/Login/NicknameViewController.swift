@@ -12,6 +12,7 @@ import Kingfisher
 class NicknameViewController: UIViewController {
     
     let registerUserInfo = RegisterUserInfo.shared
+    let apiManger = ApiManager.shared
     
     private let setNicknameLabel : UILabel = {
         let label = UILabel()
@@ -139,6 +140,8 @@ class NicknameViewController: UIViewController {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
         })
     }
+    
+    
     // MARK: - objc
     
     @objc private func settingProfileImage() {
@@ -151,21 +154,16 @@ class NicknameViewController: UIViewController {
     
     @objc private func nextButtonIsClicked() {
         // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
+        
+        
         if let text = nicknameTextField.text {
-            if text == "" {
-                let alert = UIAlertController(title: "경고", message: "nickname 입력 바람.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "다시 돌아가기", style: .cancel))
-                present(alert, animated: true)
-            }
-            print("text: \(text)")
-            let chooseJobVC = ChooseJobViewController()
-            self.navigationController?.pushViewController(chooseJobVC, animated: true)
-        } else {
-            let alert = UIAlertController(title: "경고", message: "nickname 입력 바람.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "다시 돌아가기", style: .cancel))
-            present(alert, animated: true)
+            registerUserInfo.nickName = text
+            print("저장된 닉네임 - \(registerUserInfo.nickName)")
+            validateNickname(nickName: text)
         }
         
+        
+//
     }
 }
 
@@ -180,13 +178,23 @@ extension NicknameViewController: UITextFieldDelegate {
         return true
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        tfSubLabel.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField.text != "" {
+        guard let text = textField.text else { return }
+        
+        if text.validateNickname() {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor(hex: "475FFD")
+        } else {
+            nextButton.isUserInteractionEnabled = false
+            nextButton.backgroundColor = UIColor(hex: "BFC3D4")
         }
+        
     }
-    // 글자수 제한 디폴트 10 + 지우기(백스페이스) 가능 + 문자,숫자,특수문자 조합
+    // 글자수 제한 디폴트 10 + 지우기(백스페이스) 가능
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         // 백스페이스 처리
         if let char = string.cString(using: String.Encoding.utf8) {
@@ -195,39 +203,13 @@ extension NicknameViewController: UITextFieldDelegate {
                 return true
             }
         }
+        
         guard textField.text!.count < 10 else { return false } // 10 글자로 제한
+        
         return true
-        //        if let char = string.cString(using: String.Encoding.utf8) {
-        //            let isBackSpace = strcmp(char, "\\b")
-        //            if isBackSpace == -92 {
-        //                return true
-        //            }
-        //        }
-        //
-        //        var allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+")
-        //
-        //        // 추가: 한글 유니코드 범위를 포함하여 허용 문자 집합에 추가합니다.
-        //        let koreanRange = "\u{AC00}"..."\u{D7AF}"
-        //        let containsKoreanCharacters = string.unicodeScalars.contains { scalar in
-        //            koreanRange.contains(scalar)
-        //        }
-        //        if containsKoreanCharacters {
-        //            let koreanCharacters = string.filter { character in
-        //                let scalar = String(character).unicodeScalars
-        //                return koreanRange.contains(scalar[scalar.startIndex])
-        //            }
-        //            allowedCharacters.formUnion(CharacterSet(charactersIn: koreanCharacters))
-        //        }
-        //
-        //
-        //        let allowedCharacterSet = CharacterSet(charactersIn: string)
-        //        let isValid = allowedCharacterSet.isSubset(of: allowedCharacters)
-        //
-        //        guard let text = textField.text else { return true }
-        //        let newLength = text.count + string.count - range.length
-        //
-        //        return isValid && newLength <= 10
+        
     }
+    
     
 }
 
@@ -264,5 +246,32 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
     }
     
     
+}
+// 네트워크 코드
+extension NicknameViewController {
+    func validateNickname(nickName: String) {
+        
+        let url = ApiConstants.baseURL + "/api/users/\(nickName)/verify"
+        ApiManager.shared.getData(url: url) { (result: ApiManager.APIResult<ApiManager.EmptyResponse>) in
+            switch result {
+            case .success:
+                print("success")
+            case .failure(.statusCode(let statusCode)):
+                if statusCode == 409 {
+                    print("Duplicate User Error: User already exists.")
+                    self.tfSubLabel.text = "중복된 닉네임입니다."
+                } else if statusCode == 200 {
+                    // 페이지 이동
+                    let chooseJobVC = ChooseJobViewController()
+                    chooseJobVC.modalPresentationStyle = .fullScreen
+                    self.navigationController?.pushViewController(chooseJobVC, animated: true)
+                }
+            case .failure(.requestFailed):
+                print("요청 실패")
+            case .failure(.invalidResponse):
+                print("이상한 응답")
+            }
+        }
+    }
 }
 

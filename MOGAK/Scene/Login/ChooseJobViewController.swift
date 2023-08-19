@@ -156,14 +156,8 @@ class ChooseJobViewController: UIViewController {
     }
     
     @objc private func nextButtonIsClicked() {
-        if let _ = selectedIndexPath {
-            let regionVC = ChooseRegionViewController()
-            self.navigationController?.pushViewController(regionVC, animated: true)
-        } else {
-            let alert = UIAlertController(title: "경고", message: "직군을 선택하셔야 합니다.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "다시 돌아가기", style: .cancel))
-            present(alert, animated: true)
-        }
+        let regionVC = ChooseRegionViewController()
+        self.navigationController?.pushViewController(regionVC, animated: true)
     }
 }
 
@@ -215,6 +209,7 @@ extension ChooseJobViewController {
                 nextButtonIsOff()
             }
         }
+        print("selectedIndexPath \(selectedIndexPath)")
     }
     
     private func updateNextButtonState() {
@@ -268,9 +263,17 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
                 selectedIndexPaths.removeAll()
                 selectedIndexPaths.insert(indexPath)
             }
-            
+        
             tableView.reloadData() // 선택 상태 업데이트
             updateNextButtonState()
+        
+        // 선택된 셀의 정보 가져오기
+           if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
+               if let nameLabel = cell.textLabel?.text {
+                   print("Selected cell's nameLabel: \(nameLabel)")
+                   RegisterUserInfo.shared.userJob = nameLabel
+               }
+           }
     }
     
     

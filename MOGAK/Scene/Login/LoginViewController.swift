@@ -11,6 +11,8 @@ import AuthenticationServices
 
 class LoginViewController: UIViewController {
     
+    let registerUserInfo = RegisterUserInfo.shared
+    
     private let mogakLabel : UILabel = {
         let label = UILabel()
         label.text = "모두가 각자의 성장을\n응원하기 위한\n여정을 시작해볼까요?"
@@ -137,7 +139,9 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             let email = appleIDCredential.email
             UserDefaults.standard.set(realFullName, forKey: "userName")
             UserDefaults.standard.set(email, forKey: "userEmail")
-            
+            registerUserInfo.userEmail = email
+            registerUserInfo.userName = realFullName
+            print("싱글톤 유저 이메일 \(registerUserInfo.userEmail), 싱글톤 유저 이름 \(registerUserInfo.userName)")
             
             if  let authorizationCode = appleIDCredential.authorizationCode,
                 let identityToken = appleIDCredential.identityToken,
