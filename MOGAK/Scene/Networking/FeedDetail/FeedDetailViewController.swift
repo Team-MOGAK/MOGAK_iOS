@@ -73,9 +73,81 @@ class FeedDetailViewController: UIViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "ellipsis_vertical"), for: .normal)
         button.tintColor = UIColor(hex: "6E707B")
+        button.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         
         return button
     }()
+    
+    // MARK: - 수정 버튼 탭
+    @objc private func editButtonTapped() {
+        let alertController: UIAlertController
+        if 1 + 1 == 2 { // 나중에 추가
+            // 내 게시물인 경우
+            alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let editAction = UIAlertAction(title: "수정하기", style: .default) { _ in
+                // Edit action
+                let navigationController = UINavigationController(rootViewController: ConfirmEdittingSheetViewController())
+                
+                navigationController.isNavigationBarHidden = true
+                
+                self.present(navigationController, animated: true, completion: nil)
+            }
+            let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) { _ in
+                // Delete action
+                let navigationController = UINavigationController(rootViewController: ConfirmDeletingFeedSheetViewController())
+                
+                navigationController.isNavigationBarHidden = true
+                
+                self.present(navigationController, animated: true, completion: nil)
+            }
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+            alertController.addAction(editAction)
+            alertController.addAction(deleteAction)
+            alertController.addAction(cancelAction)
+        } else {
+            // 다른 계정의 게시물인 경우
+            alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let reportAction = UIAlertAction(title: "신고하기", style: .destructive) { _ in
+                // Report action
+            }
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+            alertController.addAction(reportAction)
+            alertController.addAction(cancelAction)
+        }
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    /**
+     GPT를 통해 물어본 내 게시글, 타인 게시글에 따라 다른 ACTION SHEET 예시 코드
+     @IBAction func buttonTapped(_ sender: UIButton) {
+         let alertController: UIAlertController
+         if post.authorID == currentUserID {
+             // 내 게시물인 경우
+             alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+             let editAction = UIAlertAction(title: "Edit", style: .default) { _ in
+                 // Edit action
+             }
+             let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
+                 // Delete action
+             }
+             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+             alertController.addAction(editAction)
+             alertController.addAction(deleteAction)
+             alertController.addAction(cancelAction)
+         } else {
+             // 다른 계정의 게시물인 경우
+             alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+             let reportAction = UIAlertAction(title: "Report", style: .destructive) { _ in
+                 // Report action
+             }
+             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+             alertController.addAction(reportAction)
+             alertController.addAction(cancelAction)
+         }
+         present(alertController, animated: true, completion: nil)
+     }
+
+     */
     
     // 팔로우팔로잉 버튼
     var isFollowing: Bool = false
@@ -474,9 +546,9 @@ class FeedDetailViewController: UIViewController {
         $0.layer.masksToBounds = true
         $0.layer.cornerRadius = 10
         $0.backgroundColor = UIColor(hex: "EEF0F8")
-//        $0.autocorrectionType = UITextAutocorrectionType.no
-//        $0.keyboardType = UIKeyboardType.default
-//        $0.returnKeyType = UIReturnKeyType.done
+        $0.autocorrectionType = UITextAutocorrectionType.no
+        $0.keyboardType = UIKeyboardType.default
+        $0.returnKeyType = UIReturnKeyType.done
         $0.font = UIFont.pretendard(.regular, size: 14)
         $0.text = "모각러에게 응원의 한마디를 남겨주세요!"
         $0.textColor = UIColor(hex: "808497")
@@ -508,7 +580,7 @@ class FeedDetailViewController: UIViewController {
         return view
     }()
     
-    // MARK: - ADDSUBVIEW divider
+    // MARK: - ADDSUBVIEW divider (나중에 지울거)
     private func configureDividerforScroll() {
         contentView.addSubview(dividerforScroll)
         dividerforScroll.snp.makeConstraints({
@@ -537,7 +609,6 @@ class FeedDetailViewController: UIViewController {
         configureTailView()
         configureDivider()
         configureCommentTable()
-        //configureDividerforScroll()
 
         configureFooterView()
         commentTableView.tableFooterView = writingCommentFooterView
@@ -630,22 +701,6 @@ extension FeedDetailViewController: UITextViewDelegate {
         guard textView.textColor == UIColor(hex: "808497") else { return }
         textView.text = nil
         textView.textColor = .label
-    }
-}
-
-// MARK: - CUSTOM TABLEVIEW
-class IntrinsicTableView: UITableView {
-    override var intrinsicContentSize: CGSize {
-        let number = numberOfRows(inSection: 0)
-        var height: CGFloat = 0
-
-        for i in 0..<number {
-            guard let cell = cellForRow(at: IndexPath(row: i, section: 0)) else {
-                continue
-            }
-            height += cell.bounds.height
-        }
-        return CGSize(width: contentSize.width, height: height)
     }
 }
 
