@@ -122,7 +122,7 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         return button
     }()
     
-    private let categoryFilterButton: UIButton = {
+    private lazy var categoryFilterButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = UIFont.pretendard(.regular, size: 14)
         button.setTitle("프로젝트", for: .normal)

@@ -10,9 +10,9 @@ import SnapKit
 import FSCalendar
 import Then
 
-class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance{
+class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
-    
+    //MARK: - Properties
     private lazy var profileImageView : UIButton = {
         let profileImageView = UIButton()
         profileImageView.setImage(UIImage(named: "default"), for: .normal)
@@ -58,7 +58,6 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         $0.timeZone = TimeZone(identifier : "KST")
     }
     
-    
     private lazy var toggleButton : UIButton = { //기본값
         let toggleButton = UIButton()
         toggleButton.setImage(UIImage(named: "week"), for: .normal)
@@ -103,7 +102,7 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         let motiveLabel = UILabel()
         motiveLabel.text = "오늘도 조금씩 더 나은 내일을 위해, 조각을 시작해 볼까요?"
         motiveLabel.textColor = UIColor(hex: "#6E707B")
-        motiveLabel.font = UIFont(name: "Pretendard", size: 14)
+        motiveLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
         return motiveLabel
     }()
     
@@ -157,6 +156,8 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         return startbutton
     }()
     
+    var circularProgressView = CircularProgressView()
+    
     //MARK: - CellAarray
     
     //var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
@@ -168,26 +169,33 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
+        self.circularProgressView.isHidden = true
         self.startButton.isHidden = true
         self.motiveLabel.isHidden = true
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureUI()
         self.configureCalendar()
         self.tableSetting()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.ScheduleTableView.reloadData()
+        // print("배열 \(cellArray)")
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         self.motiveLabel.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = true
-        self.ScheduleTableView.isHidden = true
+        //        self.ScheduleTableView.isHidden = true
         self.motiveLabel.isHidden = true
     }
     
@@ -223,7 +231,7 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
     
     // 날짜 선택 해제 콜백 메소드
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-    
+        
     }
     
     
@@ -257,7 +265,7 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         }
         
         
-        [upperView,alarmButton,calendarView,motiveLabel,toggleButton,profileStackView,headerStackView,underView,blankimage,blankLabel,blankButton,startButton].forEach{view.addSubview($0)}
+        [upperView,alarmButton,calendarView,motiveLabel,toggleButton,profileStackView,headerStackView,underView,blankimage,blankLabel,blankButton,startButton,circularProgressView].forEach{view.addSubview($0)}
         
         
         profileStackView.snp.makeConstraints{
@@ -304,7 +312,7 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         
         motiveLabel.snp.makeConstraints{
             $0.top.equalTo(calendarView.snp.bottom).offset(16)
-            $0.centerX.equalToSuperview()
+            $0.leading.equalTo(calendarView.collectionView)
         }
         
         blankimage.snp.makeConstraints{
@@ -392,27 +400,29 @@ class ScheduleStartViewController: UIViewController ,FSCalendarDelegate,FSCalend
         }
     }
     
-    @objc func goSetting(_ sender : Any){
+    @objc func goSetting(_ sender : UIButton){
         let settingVC = SettingViewController()
-        
         navigationController?.pushViewController(settingVC, animated: true)
         print("go setting")
     }
     
     @objc func goSchedule(_ sender : UIButton){
         tableViewUI()
-        
         print("go Schedule")
     }
     
     @objc func goAlarm(_ sender : UIButton){
+        let alarmVC = AlarmViewController()
+        navigationController?.pushViewController(alarmVC, animated: true)
         print("go alarm")
     }
     
     @objc func goStart(_ sender : UIButton){
-        let startVC = ScheduleModalVC()
-        startVC.modalPresentationStyle = .automatic
-        self.present(startVC,animated: true)
+        
+        let startVC = ScheduleTimerVC()
+        startVC.scheduleTimerDelegate = self
+        navigationController?.pushViewController(startVC, animated: true)
+        startVC.circularProgressView.Timerstart()
         
         print("timer Start")
     }
@@ -450,7 +460,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.delegate = self
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
-        ScheduleTableView.isHidden = true
+        //        ScheduleTableView.isHidden = true
         
         underView.isHidden = true
         underView.addSubview(motiveLabel)
@@ -468,7 +478,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         blankLabel.isHidden = true
         
         ScheduleTableView.reloadData()
-
+        
         self.ScheduleTableView.rowHeight = 80 //셀 높이
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
@@ -536,3 +546,22 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     
 }
+
+extension ScheduleStartViewController: ScheduleTimerDelegate {
+    func certificateModal() {
+        print("프린트 서티피케이트")
+        let scheduleDone = CertificationModalVC()
+        scheduleDone.modalPresentationStyle = .formSheet
+        self.present(scheduleDone,animated: true)
+        
+        if let sheet = scheduleDone.sheetPresentationController{
+            sheet.detents = [.medium()]
+            sheet.delegate = self
+            sheet.prefersGrabberVisible = true
+            sheet.largestUndimmedDetentIdentifier = nil
+        }
+    }
+    
+    
+}
+

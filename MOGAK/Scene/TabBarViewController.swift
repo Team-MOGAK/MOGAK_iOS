@@ -16,6 +16,7 @@ class TabBarViewController: UITabBarController{
         UITabBar.appearance().tintColor = UIColor.black
         UITabBar.appearance().unselectedItemTintColor = UIColor.gray
         UITabBar.appearance().backgroundColor = .white
+        
     }
     
     private func setupViews() {
@@ -24,6 +25,7 @@ class TabBarViewController: UITabBarController{
         let listTabBarItem = UITabBarItem(title: "조각관리", image: UIImage(named: "list"), selectedImage: UIImage(named: "selectedList"))
         let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(named: "networking"), selectedImage: UIImage(named: "selectedNetworking"))
         let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
+    
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let listVC = generateNavController(vc: ScheduleListViewController(), tabBarItem: listTabBarItem)
@@ -31,6 +33,7 @@ class TabBarViewController: UITabBarController{
         let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
         
         self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
+        
         self.selectedIndex = 0
         
     }
@@ -44,7 +47,14 @@ class TabBarViewController: UITabBarController{
         
         return navController
     }
-    
+}
+
+extension UITabBar {
+    override open func sizeThatFits(_ size: CGSize) -> CGSize {
+        var sizeThatFits = super.sizeThatFits(size)
+        sizeThatFits.height = 100 // 원하는 탭 바 높이 값으로 수정하세요
+        return sizeThatFits
+    }
 }
 
 
