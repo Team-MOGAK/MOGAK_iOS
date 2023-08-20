@@ -14,12 +14,12 @@ class OnBoardingSecondViewController: UIViewController {
         $0.text = "간단하게 루틴을\n생성할 수 있어요."
         $0.numberOfLines = 2
         $0.textColor = .black
-        $0.font = UIFont.pretendard(.medium, size: 30)
+        $0.font = UIFont.pretendard(.regular, size: 30)
         $0.asFont(targetString: "간단하게 루틴을", font: UIFont.pretendard(.semiBold, size: 30))
     }
     
     private let image = UIImageView().then {
-        $0.image = UIImage(named: "onboarding1")
+        $0.image = UIImage(named: "onboarding2")
     }
     
     override func viewDidLoad() {

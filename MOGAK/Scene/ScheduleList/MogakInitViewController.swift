@@ -300,6 +300,14 @@ class MogakInitViewController: UIViewController {
         self.configureCompleteButton()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     private func configureView() {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -851,25 +859,25 @@ extension MogakInitViewController: UICollectionViewDelegate {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
             
 //            // 선택된 셀의 배경색 변경
-//            selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
-//            selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
+            selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
+            selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
 //
 //            // 이전에 선택된 셀이 있다면 배경색 변경
-//            if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
-//                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
-//                    prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
-//                    prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
-//                }
-//            }
+            if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
+                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
+                    prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
+                    prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
+                }
+            }
 //
 //            // 선택된 셀의 인덱스를 저장
-//            selectedCategoryIndexPath = nil
-//            selectedRepeatIndexPath = indexPath
-//
-//            if let cellText = selectedCell.textLabel.text {
-//                repeatSelectedList = [cellText]
-//            }
-//            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+            selectedCategoryIndexPath = nil
+            selectedRepeatIndexPath = indexPath
+
+            if let cellText = selectedCell.textLabel.text {
+                repeatSelectedList = [cellText]
+            }
+            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
         }
     }
 }

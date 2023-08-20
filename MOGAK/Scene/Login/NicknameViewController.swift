@@ -180,6 +180,7 @@ extension NicknameViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         tfSubLabel.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+        tfSubLabel.textColor = UIColor(hex: "808497")
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -260,6 +261,7 @@ extension NicknameViewController {
                 if statusCode == 409 {
                     print("Duplicate User Error: User already exists.")
                     self.tfSubLabel.text = "중복된 닉네임입니다."
+                    self.tfSubLabel.textColor = UIColor(hex: "FF2323")
                 } else if statusCode == 200 {
                     // 페이지 이동
                     let chooseJobVC = ChooseJobViewController()

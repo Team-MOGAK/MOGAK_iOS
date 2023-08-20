@@ -7,10 +7,11 @@
 
 import UIKit
 import SnapKit
+import Alamofire
 
 class ChooseRegionViewController: UIViewController {
     
-    private let region = ["서울특별시","세종특별자치시","대전광역시","광주광역시","대구광역시","부산광역시","울산광역시","경상남도", "경상북도","전라남도","전라북도","충청남도","충청북도","강원도", "제주도", "독도/울릉도"]
+    private let region = ["서울특별시", "경기도", "세종특별자치시","대전광역시","광주광역시","대구광역시","부산광역시","울산광역시","경상남도", "경상북도","전라남도","전라북도","충청남도","충청북도","강원도", "제주도", "독도/울릉도"]
     // checkButton 선택 셀 index
     private var previousIndexPath: IndexPath?
     private var selectedIndexPath: IndexPath?
@@ -58,10 +59,6 @@ class ChooseRegionViewController: UIViewController {
         self.configureButton()
         self.configureTableView()
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.navigationBar.isHidden = true
     }
     
     private func configureNavBar() {
@@ -120,11 +117,13 @@ class ChooseRegionViewController: UIViewController {
     }
     
     @objc private func nextButtonIsClicked() {
-//        let mainVC = UINavigationController(rootViewController: TabBarViewController())
-        let mainVC = TabBarViewController()
-        mainVC.modalPresentationStyle = .fullScreen
-        self.present(mainVC, animated: true)
-        
+        print("profileImage \(RegisterUserInfo.shared.profileImage)")
+        print("userEmail \(UserDefaults.standard.string(forKey: "userEmail"))")
+        print("userJob \(RegisterUserInfo.shared.userJob)")
+        print("userName \(RegisterUserInfo.shared.nickName)")
+        print("userRegion \(RegisterUserInfo.shared.userRegion)")
+        registerUser()
+        //        let mainVC = UINavigationController(rootViewController: TabBarViewController())
     }
     
 }
@@ -171,11 +170,65 @@ extension ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource
         } else {
             nextButtonIsOff()
         }
+        
+        // 선택된 셀의 정보 가져오기
+        if let cell = tableView.cellForRow(at: indexPath) as? RegionCell {
+            if let region = cell.name.text {
+                print("Selected cell's region: \(region)")
+                RegisterUserInfo.shared.userRegion = region
+            }
+        }
     }
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.view.bounds.height / 20
+    }
+    
+    
+}
+
+//네트워크 코드
+extension ChooseRegionViewController {
+    func registerUser() {
+        
+        let userEmail = UserDefaults.standard.string(forKey: "userEmail")
+        
+        let url = ApiConstants.join
+        
+        let parameters: Parameters = [
+            "nickname": "\(RegisterUserInfo.shared.nickName!)",
+            "job": "\(RegisterUserInfo.shared.userJob!)",
+            "address": "\(RegisterUserInfo.shared.userRegion!)",
+            "email": "\(userEmail!)"
+        ]
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseJSON { response in
+                switch response.result {
+                case .success(let data):
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
+                        do {
+                            let decoder = JSONDecoder()
+                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
+                            print("Decoded data: \(decodedData)")
+                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
+                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
+
+                            let mainVC = TabBarViewController()
+                            mainVC.modalPresentationStyle = .fullScreen
+                            self.present(mainVC, animated: true)
+                        } catch {
+                            print("Decoding error: \(error)")
+                        }
+                    } else {
+                        print("Invalid response data format")
+                    }
+                case .failure(let error):
+                    print("Error: \(error)")
+                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
+                }
+            }
     }
     
     

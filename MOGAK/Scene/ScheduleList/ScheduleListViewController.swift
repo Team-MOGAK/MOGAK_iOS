@@ -33,7 +33,7 @@ class ScheduleListViewController: UIViewController {
         view.layer.borderColor = UIColor.clear.cgColor
         view.clipsToBounds = true
         view.contentMode = .scaleToFill
-        view.image = UIImage(named: "setting")
+        view.image = UIImage(named: "default")
         let gesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
         view.addGestureRecognizer(gesture)
         view.isUserInteractionEnabled = true
@@ -58,7 +58,7 @@ class ScheduleListViewController: UIViewController {
     
     private lazy var mogakerLabel : UILabel = {
         let label = UILabel()
-        label.text = "MOGAKER 2"
+        label.text = "MENTOR 2"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
         let gesture = UITapGestureRecognizer(target: self, action: #selector(goToFriendPage))
@@ -69,10 +69,9 @@ class ScheduleListViewController: UIViewController {
     
     private let mogakeeLabel : UILabel = {
         let label = UILabel()
-        label.text = "MOGAKEE 5"
+        label.text = "MOTO 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
-        //        label.textColor = UIColor(hex: "000000")
         return label
     }()
     
@@ -86,7 +85,7 @@ class ScheduleListViewController: UIViewController {
     // MARK: - segment
     private lazy var containerView : UIView = {
         let container = UIView()
-        container.backgroundColor = .clear
+        container.backgroundColor = .white
         container.translatesAutoresizingMaskIntoConstraints = false
         return container
     }()
@@ -168,10 +167,6 @@ class ScheduleListViewController: UIViewController {
         self.configureTableView()
         self.configureButton()
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.navigationBar.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {

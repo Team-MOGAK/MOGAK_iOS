@@ -17,8 +17,9 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.text = "모두가 각자의 성장을\n응원하기 위한\n여정을 시작해볼까요?"
         label.numberOfLines = 3
-        label.font = UIFont.pretendard(.medium, size: 32)
-        label.asFont(targetString: "모두가 각자의 성장을", font: UIFont.pretendard(.bold, size: 32))
+        label.textAlignment = .center
+        label.font = UIFont.pretendard(.regular, size: 30)
+        label.asFont(targetString: "모두가 각자의 성장을", font: UIFont.pretendard(.bold, size: 30))
         return label
     }()
     
@@ -157,6 +158,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             if let tokenString = String(data: appleIDCredential.identityToken ?? Data(), encoding: .utf8) {
                 let email2 = Utils.decode(jwtToken: tokenString)["email"] as? String ?? ""
                 print("두번째 이메일 \(email2)")
+                UserDefaults.standard.set(email2, forKey: "userEmail")
             }
             
             //Move to NextPage

@@ -15,7 +15,7 @@ class OnBoardingFirstViewController: UIViewController {
         $0.numberOfLines = 3
         $0.textColor = .black
         $0.textAlignment = .center
-        $0.font = UIFont.pretendard(.medium, size: 30)
+        $0.font = UIFont.pretendard(.regular, size: 30)
         $0.asFont(targetString: "가장 자극받을 수 있는", font: UIFont.pretendard(.semiBold, size: 30))
     }
     

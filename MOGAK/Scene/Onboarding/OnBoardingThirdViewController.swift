@@ -12,15 +12,16 @@ import SnapKit
 class OnBoardingThirdViewController: UIViewController {
     
     private let titleLabel = UILabel().then {
-        $0.text = "나와 같은 직무를\n준비하는 모각이들은\n어떻게 성장하는지 알수있어요!"
+        $0.text = "나와 같은 직무를 준비하는\n모각이들은 어떻게\n성장하는지 알수있어요!"
         $0.numberOfLines = 3
         $0.textColor = .black
-        $0.font = UIFont.pretendard(.medium, size: 30)
-        $0.asFont(targetString: "어떻게 성장하는지", font: UIFont.pretendard(.semiBold, size: 30))
+        $0.textAlignment = .center
+        $0.font = UIFont.pretendard(.regular, size: 30)
+        $0.asFont(targetString: "나와 같은 직무를 준비하는\n모각이", font: UIFont.pretendard(.semiBold, size: 30))
     }
     
     private let image = UIImageView().then {
-        $0.image = UIImage(named: "onboarding1")
+        $0.image = UIImage(named: "onboarding3")
     }
     
     override func viewDidLoad() {

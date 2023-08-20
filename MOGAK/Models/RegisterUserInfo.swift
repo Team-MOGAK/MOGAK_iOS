@@ -15,5 +15,6 @@ class RegisterUserInfo {
     var userName : String?
     var userEmail : String?
     var userJob : String?
+    var userRegion : String?
     private init() {}
 }

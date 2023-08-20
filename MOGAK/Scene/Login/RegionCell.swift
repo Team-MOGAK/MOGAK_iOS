@@ -10,7 +10,7 @@ import SnapKit
 
 class RegionCell: UITableViewCell {
     
-    private let name = UILabel().then {
+    let name = UILabel().then {
         $0.text = ""
         $0.textColor = .black
         $0.font = UIFont.pretendard(.medium, size: 16)
@@ -19,15 +19,15 @@ class RegionCell: UITableViewCell {
     private let checkButton = UIButton().then {
         $0.setImage(UIImage(named: "checkOff"), for: .normal)
     }
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
@@ -67,5 +67,5 @@ class RegionCell: UITableViewCell {
             $0.width.height.equalTo(20)
         })
     }
-
+    
 }

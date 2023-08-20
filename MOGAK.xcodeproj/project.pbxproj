@@ -44,6 +44,7 @@
 		9CCB39D72A91186200968CDB /* ApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D62A91186200968CDB /* ApiManager.swift */; };
 		9CCB39D92A9118CC00968CDB /* ApiConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D82A9118CC00968CDB /* ApiConstants.swift */; };
 		9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */; };
+		9CCB39DD2A92677100968CDB /* JoinModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39DC2A92677100968CDB /* JoinModel.swift */; };
 		9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426A92A594049001629DC /* Pretendard-Bold.otf */; };
 		9CE426B02A59404A001629DC /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */; };
 		9CE426B12A59404A001629DC /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AB2A59404A001629DC /* Pretendard-Light.otf */; };
@@ -115,6 +116,7 @@
 		9CCB39D62A91186200968CDB /* ApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiManager.swift; sourceTree = "<group>"; };
 		9CCB39D82A9118CC00968CDB /* ApiConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiConstants.swift; sourceTree = "<group>"; };
 		9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateNicknameModel.swift; sourceTree = "<group>"; };
+		9CCB39DC2A92677100968CDB /* JoinModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinModel.swift; sourceTree = "<group>"; };
 		9CE426A92A594049001629DC /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
 		9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		9CE426AB2A59404A001629DC /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 			children = (
 				9CCB39D22A8FDA3C00968CDB /* RegisterUserInfo.swift */,
 				9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */,
+				9CCB39DC2A92677100968CDB /* JoinModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -605,6 +608,7 @@
 				65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */,
 				9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* OnBoardingThirdViewController.swift in Sources */,
+				9CCB39DD2A92677100968CDB /* JoinModel.swift in Sources */,
 				9C2EF8002A7FAC9B00E8C8F4 /* JogakDetailCell.swift in Sources */,
 				9C638AAE2A46C6AA002AB791 /* NetworkService.swift in Sources */,
 				9C638ABC2A46E6CD002AB791 /* WebLink.swift in Sources */,
@@ -758,9 +762,11 @@
 				DEVELOPMENT_TEAM = YL7ZX6U88Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "모각";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -768,7 +774,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kanghyun.MOGAK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -788,16 +794,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YL7ZX6U88Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "모각";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -805,11 +814,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kanghyun.MOGAK;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = mogak_develop;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = mogak;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
