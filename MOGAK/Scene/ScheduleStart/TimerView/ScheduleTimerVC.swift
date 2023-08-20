@@ -98,7 +98,7 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
             sheet.prefersGrabberVisible = true
         }
         print("Cancel Schedule")
-//        self.navigationController?.popViewController(animated: true)
+
     }
     
     @objc func SchedulePause(){

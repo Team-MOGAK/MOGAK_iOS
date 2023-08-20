@@ -9,7 +9,12 @@ import UIKit
 import SnapKit
 import Then
 
+<<<<<<< HEAD
+
+class CertificationModalVC : UIViewController{
+=======
 class CertificationModalVC : UIViewController {
+>>>>>>> ScheduleStart
     
     private lazy var titleLabel : UILabel = {
         let titleLabel = UILabel()
@@ -52,7 +57,11 @@ class CertificationModalVC : UIViewController {
         stopButton.setTitleColor(.white, for : .normal) //글자 색
         stopButton.backgroundColor = UIColor(hex: "475FFD") //백그라운드색
         stopButton.layer.cornerRadius = 10 //둥글기
+<<<<<<< HEAD
+        stopButton.addTarget(self, action: #selector(scheduleRecord), for: .touchUpInside)
+=======
         stopButton.addTarget(self, action: #selector(scheduleStop), for: .touchUpInside)
+>>>>>>> ScheduleStart
         return stopButton
     }()
     
@@ -67,7 +76,11 @@ class CertificationModalVC : UIViewController {
     }()
     
     var circularProgressView = CircularProgressView()
+<<<<<<< HEAD
+    var scheduleEnd : (() -> ())?
+=======
     var scheduleend : (() -> ())?
+>>>>>>> ScheduleStart
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -123,10 +136,22 @@ class CertificationModalVC : UIViewController {
     }
     
     //홈으로가기
+<<<<<<< HEAD
+    @objc func scheduleRecord(){
+        self.dismiss(animated: true) {
+            let newVC = RecordingViewController()
+            newVC.modalPresentationStyle = .fullScreen
+            
+            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
+                RecordingVC.present(newVC, animated: true, completion: nil)
+            }
+        }
+=======
     @objc func scheduleStop(){
         self.dismiss(animated: true,completion: {
             
         })
+>>>>>>> ScheduleStart
     }
     
     @objc func dismissModal(){
