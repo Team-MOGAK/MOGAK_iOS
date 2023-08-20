@@ -562,13 +562,3 @@ extension ScheduleStartViewController: ScheduleTimerDelegate {
         }
     }
 }
-
-//extension ScheduleStartViewController : RecordingVCdelegate {
-//    func moveRecordingVC() {
-//        print("레코딩 뷰컨으로 이동")
-//
-//        let goRecordingVC = RecordingViewController()
-//        goRecordingVC.navigationController?.pushViewController(goRecordingVC, animated: true)
-//        print("이동완료")
-//    }
-//}
