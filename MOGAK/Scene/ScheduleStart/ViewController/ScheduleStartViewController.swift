@@ -139,10 +139,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return underView
     }()
     
-    private lazy var ScheduleTableView : UITableView = {
-        let ScheduleTableView = UITableView()
-        ScheduleTableView.layer.cornerRadius = 10
-        return ScheduleTableView
+    private lazy var scheduleTableView : UITableView = {
+        let scheduleTableView = UITableView()
+        scheduleTableView.layer.cornerRadius = 10
+        return scheduleTableView
     }()
     
     private lazy var startButton : UIButton = {
@@ -181,8 +181,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.ScheduleTableView.reloadData()
-        // print("배열 \(cellArray)")
+        self.scheduleTableView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -216,14 +215,14 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
-        ScheduleTableView.reloadData()
+        scheduleTableView.reloadData()
         
         blankimage.isHidden = false
         blankLabel.isHidden = false
         blankButton.isHidden = false
         startButton.isHidden = true
         
-        ScheduleTableView.isHidden = true
+        scheduleTableView.isHidden = true
         motiveLabel.isHidden = true
         
         
@@ -305,8 +304,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         underView.snp.makeConstraints{
-            $0.top.equalTo(calendarView.snp.bottom)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
+            $0.top.equalTo(motiveLabel.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
         
@@ -457,17 +456,17 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
 extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSource{
     
     func tableSetting(){
-        ScheduleTableView.delegate = self
-        ScheduleTableView.dataSource = self
-        ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
+        scheduleTableView.delegate = self
+        scheduleTableView.dataSource = self
+        scheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
         //        ScheduleTableView.isHidden = true
         
         underView.isHidden = true
         underView.addSubview(motiveLabel)
-        underView.addSubview(ScheduleTableView)
-        ScheduleTableView.snp.makeConstraints{
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
+        underView.addSubview(scheduleTableView)
+        scheduleTableView.snp.makeConstraints{
+            $0.top.equalTo(underView)
+            $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().inset(150)
         }
     }
@@ -477,12 +476,12 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         blankButton.isHidden = true
         blankLabel.isHidden = true
         
-        ScheduleTableView.reloadData()
+        scheduleTableView.reloadData()
         
-        self.ScheduleTableView.rowHeight = 80 //셀 높이
-        self.ScheduleTableView.backgroundColor = .clear
-        ScheduleTableView.separatorStyle = .none
-        ScheduleTableView.isHidden = false
+        self.scheduleTableView.rowHeight = 80 //셀 높이
+        self.scheduleTableView.backgroundColor = .clear
+        scheduleTableView.separatorStyle = .none
+        scheduleTableView.isHidden = false
         motiveLabel.isHidden = false
         underView.isHidden = false
     }
@@ -490,7 +489,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     //MARK: -  Cell설정
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { //셀 클릭시 이벤트
-        guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
+        guard let cell = scheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
         if cell.contentView.backgroundColor == UIColor.white &&
@@ -506,14 +505,14 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         }
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { //셀을 땟을때 이벤트
-        guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
+        guard let cell = scheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
         
         cell.contentView.backgroundColor = .white
         cell.cellImage.image = UIImage(named: "ScheduleDefault")
         
-        ScheduleTableView.deselectRow(at: indexPath, animated: true)
+        scheduleTableView.deselectRow(at: indexPath, animated: true)
     }
     
     //MARK: - Cell Selction
@@ -530,7 +529,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     //MARK: - cellUI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { //cell 재활용
         
-        guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
+        guard let cell = scheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
         cell.cellLabel.text = cellArray[indexPath.row]
         cell.cellImage.image = UIImage(named: "ScheduleDefault")
@@ -561,6 +560,7 @@ extension ScheduleStartViewController: ScheduleTimerDelegate {
             sheet.largestUndimmedDetentIdentifier = nil
         }
     }
+    
     
     
 }

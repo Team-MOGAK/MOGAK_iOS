@@ -9,7 +9,7 @@ import Foundation
 
 enum MOGAKAPI {
     
-    static let baseURL: String = "http://54.180.2.148:8000"
+    static let baseURL: String = "http://43.200.36.231:8080/ "
     
     enum Header: APIHeader {
         

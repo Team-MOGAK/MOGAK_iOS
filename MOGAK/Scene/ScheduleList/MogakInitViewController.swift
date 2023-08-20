@@ -877,3 +877,35 @@ extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
     }
 }
 
+
+
+
+//Preview code
+#if DEBUG
+import SwiftUI
+struct MogakInitViewControllerRepresentable: UIViewControllerRepresentable {
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        MogakInitViewController()
+    }
+}
+@available(iOS 13.0, *)
+struct MogakInitViewControllerRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                MogakInitViewControllerRepresentable()
+                    .ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+        
+    }
+} #endif

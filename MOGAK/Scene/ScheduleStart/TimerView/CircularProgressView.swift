@@ -11,7 +11,7 @@ import Then
 
 class CircularProgressView : UIView, UISheetPresentationControllerDelegate{
     
-//MARK: - Properties
+    //MARK: - Properties
     private lazy var backgroundLayer : CAShapeLayer = {
         let backgroundLayer = CAShapeLayer()
         return backgroundLayer
@@ -36,7 +36,7 @@ class CircularProgressView : UIView, UISheetPresentationControllerDelegate{
     }
     //초기시간
     var secondsLeft : Int
-    var Time : Int = 123
+    var Time : Int = 5
     
     private var timer : Timer?
     

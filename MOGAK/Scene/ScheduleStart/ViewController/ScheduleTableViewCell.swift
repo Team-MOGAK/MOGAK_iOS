@@ -33,7 +33,8 @@ class ScheduleTableViewCell : UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0))
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 13, bottom: 4, right: 13))
+
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -47,7 +48,7 @@ class ScheduleTableViewCell : UITableViewCell {
         
         cellImage.snp.makeConstraints{
             $0.width.height.equalTo(20)
-           $0.leading.equalTo(contentView).offset(10)
+            $0.leading.equalTo(contentView).offset(10)
             $0.centerY.equalTo(contentView)
         }
         cellLabel.snp.makeConstraints{
@@ -55,13 +56,12 @@ class ScheduleTableViewCell : UITableViewCell {
             $0.leading.equalTo(cellImage.snp.trailing).offset(10)
         }
         
-
         
-        layer.shadowColor = UIColor.darkGray.cgColor         //그림자 효과 추후 적용 예정
-        layer.shadowOffset = CGSize(width: 10, height: 10)
-        layer.shadowOpacity = 0.06
-        contentView.layer.shadowRadius = 10
-        
+        layer.cornerRadius = 10
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.shadowColor = UIColor(red: 0.749, green: 0.765, blue: 0.831, alpha: 0.5).cgColor
+        layer.shadowOpacity = 1
+        layer.shadowRadius = 10
     }
     
  
