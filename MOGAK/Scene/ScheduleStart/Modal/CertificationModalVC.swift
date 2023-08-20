@@ -10,7 +10,11 @@ import SnapKit
 import Then
 
 class CertificationModalVC : UIViewController{
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> parent of 5ca10b4... 조각 내용 기록 수정중
     private lazy var titleLabel : UILabel = {
         let titleLabel = UILabel()
         titleLabel.text = "조각을 시작하기 전에\n 내 실천 인증 사진을 남겨주세요."
@@ -44,7 +48,7 @@ class CertificationModalVC : UIViewController{
         cameraButton.addTarget(self, action: #selector(cameraclicked), for: .touchUpInside)
         return cameraButton
     }()
-    
+
     
     private lazy var stopButton : UIButton = {
         let stopButton = UIButton()
@@ -52,7 +56,11 @@ class CertificationModalVC : UIViewController{
         stopButton.setTitleColor(.white, for : .normal) //글자 색
         stopButton.backgroundColor = UIColor(hex: "475FFD") //백그라운드색
         stopButton.layer.cornerRadius = 10 //둥글기
+<<<<<<< HEAD
         stopButton.addTarget(self, action: #selector(scheduleRecord), for: .touchUpInside)
+=======
+        stopButton.addTarget(self, action: #selector(ScheduleStop), for: .touchUpInside)
+>>>>>>> parent of 5ca10b4... 조각 내용 기록 수정중
         return stopButton
     }()
     
@@ -67,7 +75,10 @@ class CertificationModalVC : UIViewController{
     }()
     
     var circularProgressView = CircularProgressView()
+<<<<<<< HEAD
     var scheduleEnd : (() -> ())?
+=======
+>>>>>>> parent of 5ca10b4... 조각 내용 기록 수정중
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -114,14 +125,12 @@ class CertificationModalVC : UIViewController{
         }
     }
     //MARK: - @objc func
-    
+
     @objc func cameraclicked(){
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .camera
-        self.present(imagePickerController, animated: true)
+        
     }
     
+<<<<<<< HEAD
     //홈으로가기
     @objc func scheduleRecord(){
         self.dismiss(animated: true) {
@@ -132,18 +141,26 @@ class CertificationModalVC : UIViewController{
                 RecordingVC.present(newVC, animated: true, completion: nil)
             }
         }
+=======
+    @objc func ScheduleStop(){
+            // 모달 해제 -> pop
+            self.dismiss(animated: true) { [weak self] in
+                guard let self = self else { return }
+
+                if let scheduleStartVC = self.navigationController?.viewControllers.first(where: { $0 is ScheduleStartViewController }) {
+                    // ScheduleStartViewController가 이미 스택에 있으면 해당 뷰 컨트롤러로 이동
+                    self.navigationController?.popToViewController(scheduleStartVC, animated: true)
+                } else {
+                    // ScheduleStartViewController가 스택에 없으면 새로운 뷰 컨트롤러를 스택에 추가
+                    let scheduleStartVC = ScheduleStartViewController()
+                    self.navigationController?.pushViewController(scheduleStartVC, animated: true)
+                }
+            }
+>>>>>>> parent of 5ca10b4... 조각 내용 기록 수정중
     }
-    
     @objc func dismissModal(){
-        self.dismiss(animated: true) { [self] in
+        self.dismiss(animated: true){ [self] in
             circularProgressView.resumeTimer()
         }
     }
 }
-
-extension CertificationModalVC : UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-    //    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-    //        <#code#>
-}
-//
-//}
