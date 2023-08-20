@@ -91,7 +91,7 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         
         listTableView.snp.makeConstraints({
             $0.top.equalTo(self.filtersContainerView.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         })
         
@@ -155,7 +155,8 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         
         let popular = UIAction(title: "인기순", handler: { _ in print("인기순")})
         
-        button.menu = UIMenu(identifier: nil, options: .singleSelection, children: [newest, popular])
+        button.menu = UIMenu(identifier: nil, options: .displayInline, children: [newest, popular])
+        
         button.showsMenuAsPrimaryAction = true
         button.changesSelectionAsPrimaryAction = true
         
@@ -179,17 +180,22 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         self.tabBarController?.tabBar.isHidden = false
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         self.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     @objc private func changeSegmentedControlLinePosition() {
@@ -337,34 +343,34 @@ extension LocationFilterSheetView: UISheetPresentationControllerDelegate {
 
 // MARK: - PREVIEW
 //Preview code
-#if DEBUG
-import SwiftUI
-struct MainBoardViewControllerRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        NetworkingViewController() //<- 수정
-    }
-}
-@available(iOS 13.0, *)
-struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                MainBoardViewControllerRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 11"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-} #endif
+//#if DEBUG
+//import SwiftUI
+//struct MainBoardViewControllerRepresentable: UIViewControllerRepresentable {
+//    
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//    @available(iOS 13.0.0, *)
+//    func makeUIViewController(context: Context) -> UIViewController{
+//        NetworkingViewController() //<- 수정
+//    }
+//}
+//@available(iOS 13.0, *)
+//struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if #available(iOS 14.0, *) {
+//                MainBoardViewControllerRepresentable()
+//                    .ignoresSafeArea()
+//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+//                    .previewDevice(PreviewDevice(rawValue: "iPhone 11"))
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//        }
+//        
+//    }
+//} #endif
 
 
 /*

@@ -50,6 +50,7 @@ class ScheduleCancelModalVC : UIViewController{
     }()
     
      var circularProgressView = CircularProgressView()
+    
      var clicked : (()->())?
     
     //MARK: - viewDidLoad

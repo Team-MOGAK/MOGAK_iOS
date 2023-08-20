@@ -304,7 +304,7 @@ class MogakInitViewController: UIViewController {
         self.view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-        scrollView.backgroundColor = .white
+        scrollView.backgroundColor = .systemRed
         contentView.backgroundColor = .white
         
         scrollView.snp.makeConstraints({
