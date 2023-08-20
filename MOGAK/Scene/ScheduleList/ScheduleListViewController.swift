@@ -26,14 +26,17 @@ class ScheduleListViewController: UIViewController {
         return button
     }()
     
-    private let profileImage : UIImageView = {
+    private lazy var profileImage : UIImageView = {
         let view = UIImageView()
         view.layer.cornerRadius = view.frame.height/2
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.clear.cgColor
         view.clipsToBounds = true
         view.contentMode = .scaleToFill
-        view.image = UIImage(named: "setting")
+        view.image = UIImage(named: "default")
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        view.addGestureRecognizer(gesture)
+        view.isUserInteractionEnabled = true
         return view
     }()
     
@@ -53,20 +56,22 @@ class ScheduleListViewController: UIViewController {
         return label
     }()
     
-    private let mogakerLabel : UILabel = {
+    private lazy var mogakerLabel : UILabel = {
         let label = UILabel()
-        label.text = "MOGAKER 2"
+        label.text = "MENTOR 2"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(goToFriendPage))
+        label.addGestureRecognizer(gesture)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
     private let mogakeeLabel : UILabel = {
         let label = UILabel()
-        label.text = "MOGAKEE 5"
+        label.text = "MOTO 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
-//        label.textColor = UIColor(hex: "000000")
         return label
     }()
     
@@ -80,7 +85,7 @@ class ScheduleListViewController: UIViewController {
     // MARK: - segment
     private lazy var containerView : UIView = {
         let container = UIView()
-        container.backgroundColor = .clear
+        container.backgroundColor = .white
         container.translatesAutoresizingMaskIntoConstraints = false
         return container
     }()
@@ -157,7 +162,6 @@ class ScheduleListViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(hex: "F1F3FA")
-        
         self.configureTop()
         self.configureSegment()
         self.configureTableView()
@@ -167,45 +171,15 @@ class ScheduleListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         self.tabBarController?.tabBar.isHidden = false
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         self.tabBarController?.tabBar.isHidden = true
     }
     
-    @objc private func changeSegmentedControlLinePosition() {
-        let segmentIndex = CGFloat(segmentControl.selectedSegmentIndex)
-        let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments)
-        let leadingDistance = segmentWidth * segmentIndex
-        UIView.animate(withDuration: 0.2, animations: { [weak self] in
-            self?.leadingDistance.constant = leadingDistance
-            self?.view.layoutIfNeeded()
-        })
-        self.listTableView.reloadData()
-    }
-    
-    @objc private func segmentSelected() {
-        switch(segmentControl.selectedSegmentIndex) {
-        case 0:
-            listTableView.reloadData()
-        case 1:
-            listTableView.reloadData()
-        case 2:
-            listTableView.reloadData()
-        default:
-            break
-        }
-    }
-    
-    @objc private func floatingButtonTapped() {
-        let mogakVC = MogakInitViewController()
-//        let testVC = TestViewController()
-        self.navigationController?.pushViewController(mogakVC, animated: true)
-    }
     
     private func configureTop() {
         self.view.addSubview(topView)
@@ -310,6 +284,48 @@ class ScheduleListViewController: UIViewController {
         })
     }
     
+    @objc private func changeSegmentedControlLinePosition() {
+        let segmentIndex = CGFloat(segmentControl.selectedSegmentIndex)
+        let segmentWidth = segmentControl.frame.width / CGFloat(segmentControl.numberOfSegments)
+        let leadingDistance = segmentWidth * segmentIndex
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            self?.leadingDistance.constant = leadingDistance
+            self?.view.layoutIfNeeded()
+        })
+        self.listTableView.reloadData()
+    }
+    
+    @objc private func segmentSelected() {
+        switch(segmentControl.selectedSegmentIndex) {
+        case 0:
+            listTableView.reloadData()
+        case 1:
+            listTableView.reloadData()
+        case 2:
+            listTableView.reloadData()
+        default:
+            break
+        }
+    }
+    
+    @objc private func floatingButtonTapped() {
+        let mogakVC = MogakInitViewController()
+        //        let testVC = TestViewController()
+        self.navigationController?.pushViewController(mogakVC, animated: true)
+    }
+    
+    
+    @objc private func profileImageTapped() {
+        print("클릭")
+        let settingVC = MyPageViewController()
+        self.navigationController?.pushViewController(settingVC, animated: true)
+    }
+    
+    @objc private func goToFriendPage() {
+        let pageVC = FriendsListViewController()
+        self.navigationController?.pushViewController(pageVC, animated: true)
+    }
+    
 }
 
 extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource {
@@ -341,8 +357,28 @@ extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource
         default:
             break
         }
-
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ListTableViewCell else {
+            return
+        }
+        
+        let detailVC = JogakDetailViewController()
+        
+        if let status = cell.statusLabel.text,
+           let category = cell.categoryLabel.text,
+           let title = cell.titleLabel.text,
+           let color = cell.statusView.backgroundColor,
+           let textColor = cell.statusLabel.textColor
+        {
+            detailVC.configureData(color: color, status: status, category: category, title: title, textColor: textColor)
+        }
+        detailVC.modalPresentationStyle = .fullScreen
+        self.navigationController?.pushViewController(detailVC, animated: true)
+        //        self.present(detailVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

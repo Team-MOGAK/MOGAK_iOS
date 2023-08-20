@@ -21,14 +21,14 @@ class ListTableViewCell: UITableViewCell {
         return view
     }()
     
-    private let statusView : UIView = {
+    let statusView : UIView = {
         let view = UIView()
         view.layer.cornerRadius = 10
         view.backgroundColor = UIColor(hex: "E8EBFE")
         return view
     }()
     
-    private let statusLabel : UILabel = {
+    let statusLabel : UILabel = {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.pretendard(.semiBold, size: 14)
@@ -42,7 +42,7 @@ class ListTableViewCell: UITableViewCell {
         return view
     }()
     
-    private let categoryLabel : UILabel = {
+    let categoryLabel : UILabel = {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.pretendard(.semiBold, size: 14)
@@ -50,7 +50,7 @@ class ListTableViewCell: UITableViewCell {
     }()
     
     
-    private let titleLabel : UILabel = {
+    let titleLabel : UILabel = {
         let label = UILabel()
         label.text = ""
         label.textColor = UIColor(hex: "24252E")
@@ -67,6 +67,7 @@ class ListTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.backgroundColor = UIColor(hex: "F1F3FA")
         configureContainerView()
         configureButton()
         configureLabel()

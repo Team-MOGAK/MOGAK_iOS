@@ -22,7 +22,7 @@ class CategoryCell: UICollectionViewCell {
         super.init(frame: frame)
         self.contentView.backgroundColor = UIColor(hex: "F1F3FA")
         self.contentView.layer.masksToBounds = true
-        self.contentView.layer.cornerRadius = 20
+        self.contentView.layer.cornerRadius = 16
         
         
         self.configureUI()

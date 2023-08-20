@@ -25,7 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //            firstVC = PermAgreeViewController()
         //        }
         
-//        firstVC = UINavigationController(rootViewController: AppGuideViewController())
+//        firstVC = UINavigationController(rootViewController: LoginViewController())
+        firstVC = UINavigationController(rootViewController: AppGuideViewController())
         
         window = UIWindow(windowScene: windowScene)
         
