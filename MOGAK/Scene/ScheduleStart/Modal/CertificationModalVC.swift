@@ -9,8 +9,6 @@ import UIKit
 import SnapKit
 import Then
 
-
-
 class CertificationModalVC : UIViewController{
     
     private lazy var titleLabel : UILabel = {
