@@ -41,14 +41,16 @@ class RecordingViewController : UIViewController{
     //MARK: - ScrollView
     private lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .gray
+        scrollView.backgroundColor = .white
         scrollView.isScrollEnabled = true
+        scrollView.contentSize = CGSize(width: contentView.frame.width, height: 915)
+        scrollView.isUserInteractionEnabled = true
         return scrollView
     }()
     
     private lazy var contentView : UIView = {
         let contentView = UIView()
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .red
         return contentView
     }()
     
@@ -170,8 +172,6 @@ class RecordingViewController : UIViewController{
     private lazy var galleryScrollView : UIScrollView = {
         let scrollview = UIScrollView()
         scrollview.backgroundColor = .red
-        scrollview.isScrollEnabled = true
-        
         return scrollview
     }()
     
@@ -198,20 +198,25 @@ class RecordingViewController : UIViewController{
             $0.centerX.equalToSuperview()
             $0.centerY.equalTo(popButton)
         }
+        
         scrollView.snp.makeConstraints{
-            
-            $0.top.equalTo(titleLabel.snp.bottom)
-            $0.leading.trailing.bottom.equalToSuperview()
+            //            $0.top.equalTo(titleLabel.snp.bottom)
+            //            $0.leading.trailing.bottom.equalToSuperview()
+            $0.top.equalTo(self.titleLabel.snp.bottom)
+            $0.leading.equalTo(self.view.safeAreaLayoutGuide.snp.leading)
+            $0.trailing.equalTo(self.view.safeAreaLayoutGuide.snp.trailing)
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
             
         }
         
         contentView.snp.makeConstraints{
-            //$0.height.equalTo(1000)
-            $0.edges.equalTo(scrollView)
-        }
-        
-        label.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(12)
+            //                        $0.edges.equalTo(scrollView)
+            //                        $0.width.equalTo(view)
+            $0.top.equalTo(self.scrollView.contentLayoutGuide.snp.top)
+            $0.leading.equalTo(self.scrollView.contentLayoutGuide.snp.leading)
+            $0.trailing.equalTo(self.scrollView.contentLayoutGuide.snp.trailing)
+            $0.width.equalToSuperview().multipliedBy(1.0)
+            $0.bottom.equalTo(self.scrollView.contentLayoutGuide.snp.bottom)
         }
         
         startView.snp.makeConstraints{
@@ -304,8 +309,6 @@ class RecordingViewController : UIViewController{
     //MARK: - @objc func
     
     @objc func backhome(){
-//        lazy var homeVC = ScheduleStartViewController()
-//        navigationController?.popViewController(animated: true)
         self.dismiss(animated: true)
         print("back home")
     }

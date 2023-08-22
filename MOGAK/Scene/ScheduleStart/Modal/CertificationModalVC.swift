@@ -122,25 +122,13 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
     }
     
     //홈으로가기
-//    @objc func scheduleRecord(){
-//        self.dismiss(animated: true) {
-//            let newVC = RecordingViewController()
-//            newVC.modalPresentationStyle = .fullScreen
-//
-//            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
-//                RecordingVC.present(newVC, animated: true, completion: nil)
-//            }
-//        }
-//    }
-    
-    @objc func scheduleRecord() {
-        dismiss(animated: true) {
+    @objc func scheduleRecord(){
+        self.dismiss(animated: true) {
             let newVC = RecordingViewController()
             newVC.modalPresentationStyle = .fullScreen
-            
-            if let keyWindow = UIApplication.shared.keyWindow,
-               let rootViewController = keyWindow.rootViewController {
-                rootViewController.present(newVC, animated: true, completion: nil)
+
+            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
+                RecordingVC.present(newVC, animated: true, completion: nil)
             }
         }
     }

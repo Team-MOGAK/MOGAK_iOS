@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import FSCalendar
 import Then
+import Alamofire
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
@@ -170,7 +171,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
     
-    var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀","12","123","53445","435345234","57493"]
+    var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다."]
     
     //MARK: - viewDidLoad
     
@@ -572,4 +573,9 @@ extension ScheduleStartViewController: ScheduleTimerDelegate {
     }
 }
 
+//extension ScheduleStartViewController {
+//    func Userdefualt(){
+//        let request = AF.request(<#URLConvertible#>)
+//    }
+//}
 
