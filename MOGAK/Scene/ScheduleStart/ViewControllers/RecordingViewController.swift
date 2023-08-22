@@ -167,6 +167,14 @@ class RecordingViewController : UIViewController{
         return textView
     }()
     
+    private lazy var galleryScrollView : UIScrollView = {
+        let scrollview = UIScrollView()
+        scrollview.backgroundColor = .red
+        scrollview.isScrollEnabled = true
+        
+        return scrollview
+    }()
+    
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -179,7 +187,7 @@ class RecordingViewController : UIViewController{
     }
     
     func setUI(){
-        [popButton,titleLabel,label,contentView,startView,endView,startLabel,startTimeLabel,endLabel,endTimeLabel,cellView,cellViewImage,textViewLabel,textbackgroundView,cellLabel,celltimeLabel,textView].forEach{view.addSubview($0)}
+        [popButton,titleLabel,label,contentView,startView,endView,startLabel,startTimeLabel,endLabel,endTimeLabel,cellView,cellViewImage,textViewLabel,textbackgroundView,cellLabel,celltimeLabel,textView,galleryScrollView].forEach{view.addSubview($0)}
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
