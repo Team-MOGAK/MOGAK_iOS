@@ -22,13 +22,14 @@ class ScheduleListViewController: UIViewController {
     
     private let settingButton : UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "setting"), for: .normal)
+        button.setImage(UIImage(named: "person"), for: .normal)
+        button.tintColor = UIColor(hex: "ffffff")
         return button
     }()
     
     private lazy var profileImage : UIImageView = {
         let view = UIImageView()
-        view.layer.cornerRadius = view.frame.height/2
+        view.layer.cornerRadius = view.frame.height / 2
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.clear.cgColor
         view.clipsToBounds = true
@@ -64,6 +65,7 @@ class ScheduleListViewController: UIViewController {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(goToFriendPage))
         label.addGestureRecognizer(gesture)
         label.isUserInteractionEnabled = true
+        label.asFontColor(targetString: "MENTOR", font: UIFont.pretendard(.medium, size: 16), color: UIColor(hex: "ffffff").withAlphaComponent(0.9))
         return label
     }()
     
@@ -72,6 +74,7 @@ class ScheduleListViewController: UIViewController {
         label.text = "MOTO 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
+        label.asFontColor(targetString: "MOTO", font: UIFont.pretendard(.medium, size: 16), color: UIColor(hex: "ffffff").withAlphaComponent(0.9))
         return label
     }()
     
@@ -169,10 +172,26 @@ class ScheduleListViewController: UIViewController {
         
     }
     
+    override func viewWillLayoutSubviews() {
+        self.profileImage.layer.cornerRadius = self.profileImage.frame.height / 2
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        floatingButton.frame = CGRect(x: view.frame.size.width - 70, y: view.frame.size.height - 150, width: 48, height: 48)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
+        print("viewWillAppear")
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
+        print("viewDidAppear")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -187,18 +206,14 @@ class ScheduleListViewController: UIViewController {
         
         topView.backgroundColor = UIColor(hex: "475FFD")
         
+        profileImage.layer.cornerRadius = 22
+        
         topView.snp.makeConstraints({
             $0.top.equalToSuperview()
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(156)
         })
         
-        settingButton.snp.makeConstraints({
-            $0.top.equalTo(topView.snp.top).offset(63)
-            $0.trailing.equalTo(topView.snp.trailing).offset(-22.35)
-            $0.width.equalTo(19.65)
-            $0.height.equalTo(20)
-        })
         
         profileImage.snp.makeConstraints({
             $0.top.equalTo(topView.snp.top).offset(61)
@@ -215,6 +230,14 @@ class ScheduleListViewController: UIViewController {
             $0.top.equalTo(profileName.snp.bottom).offset(8)
             $0.leading.equalTo(profileImage.snp.trailing).offset(11)
         })
+        
+        settingButton.snp.makeConstraints({
+            //            $0.top.equalTo(topView.snp.top).offset(63)
+            $0.centerY.equalTo(self.profileName.snp.centerY)
+            $0.trailing.equalTo(topView.snp.trailing).offset(-22.35)
+            $0.width.height.equalTo(24)
+        })
+        
         
         mogakerLabel.snp.makeConstraints({
             $0.top.equalTo(profileJob.snp.bottom).offset(12)
@@ -278,10 +301,6 @@ class ScheduleListViewController: UIViewController {
     private func configureButton() {
         self.view.addSubview(floatingButton)
         
-        floatingButton.snp.makeConstraints({
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-75)
-            $0.trailing.equalTo(listTableView.snp.trailing).offset(-20)
-        })
     }
     
     @objc private func changeSegmentedControlLinePosition() {

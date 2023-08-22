@@ -25,7 +25,18 @@ class TabBarViewController: UITabBarController{
         let listTabBarItem = UITabBarItem(title: "조각관리", image: UIImage(named: "list"), selectedImage: UIImage(named: "selectedList"))
         let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(named: "networking"), selectedImage: UIImage(named: "selectedNetworking"))
         let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
-    
+        
+        let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+        homeTabBarItem.imageInsets = insets
+        listTabBarItem.imageInsets = insets
+        networkingTabBarItem.imageInsets = insets
+        reportTabBarItem.imageInsets = insets
+        
+        let titleOffset = UIOffset(horizontal: 0, vertical: 10)
+        homeTabBarItem.titlePositionAdjustment = titleOffset
+        listTabBarItem.titlePositionAdjustment = titleOffset
+        networkingTabBarItem.titlePositionAdjustment = titleOffset
+        reportTabBarItem.titlePositionAdjustment = titleOffset
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let listVC = generateNavController(vc: ScheduleListViewController(), tabBarItem: listTabBarItem)
@@ -93,31 +104,31 @@ extension UITabBar {
 
 
 //Preview code
-#if DEBUG
-import SwiftUI
-struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        TabBarViewController()
-    }
-}
-@available(iOS 13.0, *)
-struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                TabBarViewControllerRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-} #endif
+//#if DEBUG
+//import SwiftUI
+//struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
+//
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//    @available(iOS 13.0.0, *)
+//    func makeUIViewController(context: Context) -> UIViewController{
+//        TabBarViewController()
+//    }
+//}
+//@available(iOS 13.0, *)
+//struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if #available(iOS 14.0, *) {
+//                TabBarViewControllerRepresentable()
+//                    .ignoresSafeArea()
+//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+//                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//        }
+//
+//    }
+//} #endif

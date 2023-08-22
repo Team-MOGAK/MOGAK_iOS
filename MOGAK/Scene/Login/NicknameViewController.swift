@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import Alamofire
 
 class NicknameViewController: UIViewController {
     
@@ -163,7 +164,7 @@ class NicknameViewController: UIViewController {
         }
         
         
-//
+        //
     }
 }
 
@@ -253,27 +254,43 @@ extension NicknameViewController {
     func validateNickname(nickName: String) {
         
         let url = ApiConstants.baseURL + "/api/users/\(nickName)/verify"
-        ApiManager.shared.getData(url: url) { (result: ApiManager.APIResult<ApiManager.EmptyResponse>) in
-            switch result {
-            case .success:
-                print("success")
-            case .failure(.statusCode(let statusCode)):
-                if statusCode == 409 {
-                    print("Duplicate User Error: User already exists.")
-                    self.tfSubLabel.text = "중복된 닉네임입니다."
-                    self.tfSubLabel.textColor = UIColor(hex: "FF2323")
-                } else if statusCode == 200 {
-                    // 페이지 이동
-                    let chooseJobVC = ChooseJobViewController()
-                    chooseJobVC.modalPresentationStyle = .fullScreen
-                    self.navigationController?.pushViewController(chooseJobVC, animated: true)
+        
+        AF.request(url, method: .post)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: ValidateNicknameModel.self) { response in
+                switch response.result {
+                case .success(let response):
+                    if response.status == "OK" {
+                        print("성공")
+                        let chooseJobVC = ChooseJobViewController()
+                        chooseJobVC.modalPresentationStyle = .fullScreen
+                        self.navigationController?.pushViewController(chooseJobVC, animated: true)
+                    }
+                case .failure(let error):
+                    print("error \(error)")
                 }
-            case .failure(.requestFailed):
-                print("요청 실패")
-            case .failure(.invalidResponse):
-                print("이상한 응답")
             }
-        }
+        //        ApiManager.shared.getData(url: url) { (result: <ValidateNickNameModel>) in
+        //            switch result {
+        //            case .success:
+        //                print("success")
+        //            case .failure(.statusCode(let statusCode)):
+        //                if statusCode == 409 {
+        //                    print("Duplicate User Error: User already exists.")
+        //                    self.tfSubLabel.text = "중복된 닉네임입니다."
+        //                    self.tfSubLabel.textColor = UIColor(hex: "FF2323")
+        //                } else if statusCode == 200 {
+        //                    // 페이지 이동
+        //                    let chooseJobVC = ChooseJobViewController()
+        //                    chooseJobVC.modalPresentationStyle = .fullScreen
+        //                    self.navigationController?.pushViewController(chooseJobVC, animated: true)
+        //                }
+        //            case .failure(.requestFailed):
+        //                print("요청 실패")
+        //            case .failure(.invalidResponse):
+        //                print("이상한 응답")
+        //            }
+        //        }
     }
 }
 
