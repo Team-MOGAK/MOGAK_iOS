@@ -32,10 +32,18 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     private lazy var challengeLabel : UILabel = {
         let challengeLabel = UILabel()
-        challengeLabel.text = "우리가 도전한지 벌써 127일째!"
+        challengeLabel.text = "우리가 도전한지 벌써" + challengeLabelcount.text! + "일째!"
         challengeLabel.font = UIFont(name: "Pretendard", size: 12)
         challengeLabel.textColor = UIColor(hex: "#6E707B")
         return challengeLabel
+    }()
+    
+    var challengeLabelcount : UILabel = {
+        var label = UILabel()
+        label.text = "124"
+        label.font = UIFont(name: "Pretendard", size: 12)
+        label.textColor = UIColor(hex: "#6E707B")
+        return label
     }()
     
     private lazy var alarmButton : UIButton = {
@@ -548,6 +556,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
 }
 
 extension ScheduleStartViewController: ScheduleTimerDelegate {
+    
     func certificateModal() {
         print("프린트 서티피케이트")
         let scheduleDone = CertificationModalVC()
@@ -561,7 +570,6 @@ extension ScheduleStartViewController: ScheduleTimerDelegate {
             sheet.largestUndimmedDetentIdentifier = nil
         }
     }
-    
-    
 }
+
 

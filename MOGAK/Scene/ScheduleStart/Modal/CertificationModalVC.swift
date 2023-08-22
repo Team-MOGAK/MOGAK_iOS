@@ -9,8 +9,8 @@ import UIKit
 import SnapKit
 import Then
 
-class CertificationModalVC : UIViewController{
-
+class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate{
+    
     private lazy var titleLabel : UILabel = {
         let titleLabel = UILabel()
         titleLabel.text = "조각을 시작하기 전에\n 내 실천 인증 사진을 남겨주세요."
@@ -44,7 +44,7 @@ class CertificationModalVC : UIViewController{
         cameraButton.addTarget(self, action: #selector(cameraclicked), for: .touchUpInside)
         return cameraButton
     }()
-
+    
     
     private lazy var stopButton : UIButton = {
         let stopButton = UIButton()
@@ -113,22 +113,38 @@ class CertificationModalVC : UIViewController{
         }
     }
     //MARK: - @objc func
-
+    
     @objc func cameraclicked(){
-        
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .camera
+        self.present(imagePickerController, animated: true)
     }
     
     //홈으로가기
-    @objc func scheduleRecord(){
-        self.dismiss(animated: true) {
+//    @objc func scheduleRecord(){
+//        self.dismiss(animated: true) {
+//            let newVC = RecordingViewController()
+//            newVC.modalPresentationStyle = .fullScreen
+//
+//            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
+//                RecordingVC.present(newVC, animated: true, completion: nil)
+//            }
+//        }
+//    }
+    
+    @objc func scheduleRecord() {
+        dismiss(animated: true) {
             let newVC = RecordingViewController()
             newVC.modalPresentationStyle = .fullScreen
             
-            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
-                RecordingVC.present(newVC, animated: true, completion: nil)
+            if let keyWindow = UIApplication.shared.keyWindow,
+               let rootViewController = keyWindow.rootViewController {
+                rootViewController.present(newVC, animated: true, completion: nil)
             }
         }
     }
+    
     @objc func dismissModal(){
         self.dismiss(animated: true){ [self] in
             circularProgressView.resumeTimer()
