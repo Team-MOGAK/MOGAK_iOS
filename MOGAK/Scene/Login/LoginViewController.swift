@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import AuthenticationServices
+import Alamofire
 
 class LoginViewController: UIViewController {
     
@@ -110,12 +111,12 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func appleLoginClicked() {
-//                let termVC = TermsAgreeViewController()
-//                self.navigationController?.pushViewController(termVC, animated: true)
+        //                let termVC = TermsAgreeViewController()
+        //                self.navigationController?.pushViewController(termVC, animated: true)
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
-
+        
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
@@ -158,14 +159,17 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             if let tokenString = String(data: appleIDCredential.identityToken ?? Data(), encoding: .utf8) {
                 let email2 = Utils.decode(jwtToken: tokenString)["email"] as? String ?? ""
                 print("두번째 이메일 \(email2)")
+                
                 UserDefaults.standard.set(email2, forKey: "userEmail")
             }
             
+            if let email = UserDefaults.standard.string(forKey: "userEmail") {
+                login(email: email)
+            }
             //Move to NextPage
-            let validVC = TermsAgreeViewController()
-            validVC.modalPresentationStyle = .fullScreen
-            self.navigationController?.pushViewController(validVC, animated: true)
-//                        present(validVC, animated: true, completion: nil)
+            
+            //
+            //                        present(validVC, animated: true, completion: nil)
             
         case let passwordCredential as ASPasswordCredential:
             // Sign in using an existing iCloud Keychain credential.
@@ -192,5 +196,40 @@ extension UIView {
         for view in views {
             addSubview(view)
         }
+    }
+}
+
+extension LoginViewController {
+    func login(email: String) {
+        let url = ApiConstants.baseURL + "/api/users/login/\(email)"
+        
+        let headers: HTTPHeaders = [
+            "accept": "application/json"
+        ]
+        
+        AF.request(url, method: .post, headers: headers)
+            .response { response in
+                if let headerFields = response.response?.allHeaderFields as? [String: String] {
+                    if let authorization = headerFields["Authorization"] {
+                        print("Authorization Header: \(authorization)")
+                        UserDefaults.standard.set(authorization, forKey: "accessToken")
+                        let mainVC = TabBarViewController()
+                        mainVC.modalPresentationStyle = .fullScreen
+                        self.present(mainVC, animated: true)
+                    } else {
+                        let validVC = TermsAgreeViewController()
+                        validVC.modalPresentationStyle = .fullScreen
+                        self.navigationController?.pushViewController(validVC, animated: true)
+                    }
+                    
+                    // Print all header fields
+                    print("All Headers: \(headerFields)")
+                }
+                
+                if let data = response.data {
+                    // Process the data here
+                }
+            }
+        
     }
 }
