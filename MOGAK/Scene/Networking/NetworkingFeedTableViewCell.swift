@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class NetworkingFeedTableViewCell: UITableViewCell {
     
@@ -314,12 +315,18 @@ class NetworkingFeedTableViewCell: UITableViewCell {
         })
     }
     
-    func configure(nameText: String, categoryText: String, profileImageName: UIImage, feedImageName: UIImage, feedText: String) {
+//    func configure(nameText: String, categoryText: String, profileImageName: UIImage, feedImageName: UIImage, feedText: String) {
+    func configure(nameText: String, categoryText: String, feedText: String, likeCnt: Int, messageCnt: Int, feedImageURL: String) {
         self.nameLabel.text = nameText
         self.categoryLabel.text = categoryText
-        self.profileImageView.image = profileImageName
-        self.feedImage.image = feedImageName
+//        self.profileImageView.image = profileImageName
+//        self.feedImage.image = feedImageName
         self.feedText.text = feedText
+        self.heartRate.text = "\(likeCnt)"
+        self.messageRate.text = "\(messageCnt)"
+        
+        let url = URL(string: feedImageURL)
+        self.feedImage.kf.setImage(with: url)
     }
     
     /*

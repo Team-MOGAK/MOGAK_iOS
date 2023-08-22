@@ -8,6 +8,8 @@
 import UIKit
 import SnapKit
 import SwiftUI
+import Alamofire
+import Kingfisher
 
 class NetworkingViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - PROPERTIES
@@ -177,7 +179,7 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         //self.view.sendSubviewToBack(self.navigationController?.navigationBar ?? UIView())
         self.configureFilter()
         self.configureTableView()
-        
+        self.setUpFeed()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -305,6 +307,75 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         }
         present(navigationController, animated: true, completion: nil)
     }
+    
+    // MARK: - 페이스메이커 게시글 불러오기 API
+    var PacemakerFeedData = [FeedModel]()
+    
+    func PacemakerFeedsGET(completion: @escaping([PacemakerFeedsResponse.Result]?) -> Void) {
+//        guard let jwt_token = "Bearer " + UserDefaults.standard.value(forKey: "accessToken") else {
+//            completion(nil)
+//            return
+//        }
+        
+//        let token = UserDefaults.standard.value(forKey: "accessToken") as! String
+        
+//        guard let token = UserDefaults.standard.value(forKey: "accessToken") as? String else {
+//            print("ERROR TOKEN")
+//            completion(nil)
+//            return
+//        }
+        
+//        let jwt_token: String = "Bearer " + token
+        let jwt_token: String = "Bearer " + "eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
+        print("jwt token : \(jwt_token)")
+        let headers: HTTPHeaders = [
+            "Authorization": jwt_token
+        ]
+        
+        let params = [
+            "cursor": 0,
+            "size": 5
+        ]
+        
+        AF.request("http://43.200.36.231:8080/api/posts/pacemakers",
+                   method: .get,
+                   parameters: params,
+                   //encoding: JSONEncoding.default,
+                   encoding: URLEncoding.default,
+                   headers: headers)
+        .responseDecodable(of: PacemakerFeedsResponse.self) { response in
+            switch response.result {
+            case .success(let serverResponse):
+                print(serverResponse)
+                completion(serverResponse.result)
+            case .failure(let error):
+                print("ERROR: \(error)")
+                completion(nil)
+            }
+        }
+    } //: PacemakerFeedsGET()
+    
+    func setUpFeed() {
+        PacemakerFeedsGET() { result in
+            guard let result = result else {
+                print("Failed to get feed data.")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                for post in result {
+                    print("\(post.user.nickname), \(post.user.job), \(post.user.address), \(post.imgUrls[0]),\n 피드글: \(post.contents)\n")
+                    self.PacemakerFeedData.append(FeedModel(
+                        userName: post.user.nickname,
+                        category: post.user.job,
+                        feedImageURL: post.imgUrls[0],
+                        feedContent: post.contents,
+                        likeCnt: post.likeCnt,
+                        messageCnt: post.comments.count))
+                }
+            }
+        }
+    } //: setUpFeed()
 }
 
 
@@ -314,7 +385,7 @@ extension NetworkingViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             return 2
         case 1:
-            return 3
+            return PacemakerFeedData.count
         default:
             break
         }
@@ -323,8 +394,24 @@ extension NetworkingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? NetworkingFeedTableViewCell else {return UITableViewCell()}
+        
+        switch (segmentControl.selectedSegmentIndex) {
+        case 0:
+            cell.selectionStyle = .none
+            return cell
+        case 1:
+            cell.selectionStyle = .none
+            let target = PacemakerFeedData[indexPath.row]
+            
+            cell.configure(nameText: target.userName, categoryText: target.category, feedText: target.feedContent, likeCnt: target.likeCnt, messageCnt: target.messageCnt, feedImageURL: target.feedImageURL)
+            
+            return cell
+        default:
+            break
+        }
         //cell.delegate = self
         cell.selectionStyle = .none
+        
         return cell
     }
     
