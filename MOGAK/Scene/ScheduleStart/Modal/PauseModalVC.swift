@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import Then
 
-
 class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
     
     private lazy var canceltitleLabel : UILabel = {
