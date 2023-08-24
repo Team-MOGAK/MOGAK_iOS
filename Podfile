@@ -9,7 +9,9 @@ target 'MOGAK' do
 pod 'SnapKit', '~> 5.6.0'
 pod 'Then'
 pod 'Alamofire'
-
+pod 'ReusableKit'
+pod 'FSCalendar'
+pod 'Kingfisher', '~> 7.0'
 
 
 post_install do |installer|
