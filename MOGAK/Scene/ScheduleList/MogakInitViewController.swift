@@ -24,6 +24,9 @@ class MogakInitViewController: UIViewController {
     var selectedCategoryIndexPath: IndexPath?
     var selectedRepeatIndexPath: IndexPath?
     
+    // 선택된 셀의 인덱스를 저장하는 Set
+    var selectedRepeatIndexPaths = Set<IndexPath>()
+    
     private var contentHeightConstraint: Constraint?
     
     
@@ -194,6 +197,15 @@ class MogakInitViewController: UIViewController {
         return button
     }()
     
+    private let testLabel = UILabel().then{
+        $0.font = DesignSystemFont.bold22L100.value
+        $0.textColor = DesignSystemColor.signature.value
+    }
+    
+    private let testView = UIImageView().then {
+        $0.image = UIImage(named: DesignSystemIcon.circleCheckmark.imageName)
+    }
+    
     private lazy var startNextButton : UIButton = {
         let button = UIButton()
         button.tintColor = UIColor(hex: "24252E")
@@ -299,6 +311,11 @@ class MogakInitViewController: UIViewController {
         self.configureRepeat()
         self.configureDate()
         self.configureEndDate()
+        
+        let today = startCalendar.today!
+        self.headerTitle.text = setYearAndMonth(of: today)
+        self.endHeaderTitle.text = setYearAndMonth(of: today)
+        
         self.configureCompleteButton()
     }
     
@@ -726,8 +743,8 @@ extension MogakInitViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    // 키보드 안 올라오게
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         if textField == startTextField {
             [startNextButton, headerTitle, startPreviousButton, startCalendar].forEach({$0.isHidden = false})
             
@@ -870,8 +887,12 @@ extension MogakInitViewController: UITextFieldDelegate {
                 $0.width.equalToSuperview().multipliedBy(1.0)
             })
         }
+        return false
     }
+    
 }
+
+
 
 extension MogakInitViewController: UICollectionViewDataSource {
     // cell갯수
@@ -934,27 +955,49 @@ extension MogakInitViewController: UICollectionViewDelegate {
             print("클릭 시 categorySelectedList === \(categorySelectedList)")
         } else if collectionView.tag == 2 {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
-            
-            //            // 선택된 셀의 배경색 변경
-            selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
-            selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
-            //
-            //            // 이전에 선택된 셀이 있다면 배경색 변경
-            if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
-                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
-                    prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
-                    prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
+                
+                // 이미 선택된 셀인지 확인
+                if selectedRepeatIndexPaths.contains(indexPath) {
+                    // 이미 선택된 셀의 경우 선택 해제 처리
+                    selectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
+                    selectedCell.textLabel.textColor = UIColor(hex: "24252E")
+                    selectedRepeatIndexPaths.remove(indexPath)
+                    if let index = repeatSelectedList.firstIndex(of: selectedCell.textLabel.text ?? "") {
+                        repeatSelectedList.remove(at: index)
+                    }
+                } else {
+                    // 선택되지 않은 셀의 경우 선택 처리
+                    selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
+                    selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
+                    selectedRepeatIndexPaths.insert(indexPath)
+                    if let cellText = selectedCell.textLabel.text {
+                        repeatSelectedList.append(cellText)
+                    }
                 }
-            }
-            //
-            //            // 선택된 셀의 인덱스를 저장
-            selectedCategoryIndexPath = nil
-            selectedRepeatIndexPath = indexPath
-            
-            if let cellText = selectedCell.textLabel.text {
-                repeatSelectedList = [cellText]
-            }
-            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+                print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+
+//            let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
+//
+//            //            // 선택된 셀의 배경색 변경
+//            selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
+//            selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
+//            //
+//            //            // 이전에 선택된 셀이 있다면 배경색 변경
+//            if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
+//                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
+//                    prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
+//                    prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
+//                }
+//            }
+//            //
+//            //            // 선택된 셀의 인덱스를 저장
+//            selectedCategoryIndexPath = nil
+//            selectedRepeatIndexPath = indexPath
+//
+//            if let cellText = selectedCell.textLabel.text {
+//                repeatSelectedList = [cellText]
+//            }
+//            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
         }
     }
 }
@@ -986,6 +1029,16 @@ extension MogakInitViewController: UICollectionViewDelegateFlowLayout {
         return CGSize()
     }
 }
+// MARK: - 캘린더 관련
+
+extension MogakInitViewController {
+    private func setYearAndMonth(of date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy년 M월"
+        let dateString = formatter.string(from: date)
+        return dateString
+    }
+}
 
 extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
@@ -1002,6 +1055,20 @@ extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             print("종료 Selected Date: \(selectedDateStr)")
             endTextField.text = selectedDateStr
             
+        }
+    }
+    
+    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+        let date = calendar.currentPage
+        let formatter = DateFormatter()
+        // 년과 월을 출력하기 위한 포맷 설정
+        formatter.dateFormat = "yyyy년 M월"
+        let dateString = formatter.string(from: date)
+        
+        if calendar == startCalendar {
+            self.headerTitle.text = dateString
+        } else if calendar == endCalendar {
+            self.endHeaderTitle.text = dateString
         }
     }
 }
@@ -1043,15 +1110,6 @@ extension MogakInitViewController {
                 }
             }
         
-        //        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-        //            .responseDecodable(of: MogakInitModel.self) { response in
-        //                switch response.result {
-        //                case .success(let data):
-        //                    print("모각 생성 완료 \(data)")
-        //                case .failure(let error):
-        //                    print("실패 \(error)")
-        //                }
-        //            }
     }
 }
 

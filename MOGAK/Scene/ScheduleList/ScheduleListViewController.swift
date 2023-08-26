@@ -164,10 +164,9 @@ class ScheduleListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let nickName = UserDefaults.standard.string(forKey: "nickname") else {return}
-        
-        self.profileName.text = nickName
+//        guard let nickName = UserDefaults.standard.string(forKey: "nickname") else {return}
+//
+//        self.profileName.text = nickName
         
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureTop()
