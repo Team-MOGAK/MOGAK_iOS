@@ -37,14 +37,14 @@ extension DesignSystemColor {
 }
 // MARK: - 폰트
 enum DesignSystemFont {
-    case bold22L100(lineHeightMultiple: CGFloat = 0.84)
-    case semibold20L140(lineHeightMultiple: CGFloat = 1.17)
-    case semibold18L100(lineHeightMultiple: CGFloat = 0.84)
-    case medium16L100(lineHeightMultiple: CGFloat = 0.84)
-    case medium16L150(lineHeightMultiple: CGFloat = 1.26)
-    case semibold14L150(lineHeightMultiple: CGFloat = 1.26)
-    case regular14L150(lineHeightMultiple: CGFloat = 1.26)
-    case medium12L150(lineHeightMultiple: CGFloat = 0.84)
+    case bold22L100
+    case semibold20L140
+    case semibold18L100
+    case medium16L100
+    case medium16L150
+    case semibold14L150
+    case regular14L150
+    case medium12L150
     
 }
 
@@ -72,22 +72,22 @@ extension DesignSystemFont {
     
     var lineHeightMultiple: CGFloat {
         switch self {
-        case .bold22L100(let multiple):
-            return multiple
-        case .semibold20L140(let multiple):
-            return multiple
-        case .semibold18L100(let multiple):
-            return multiple
-        case .medium16L100(let multiple):
-            return multiple
-        case .medium16L150(let multiple):
-            return multiple
-        case .semibold14L150(let multiple):
-            return multiple
-        case .regular14L150(let multiple):
-            return multiple
-        case .medium12L150(let multiple):
-            return multiple
+        case .bold22L100:
+            return 0.84
+        case .semibold20L140:
+            return 1.17
+        case .semibold18L100:
+            return 0.84
+        case .medium16L100:
+            return 0.84
+        case .medium16L150:
+            return 1.26
+        case .semibold14L150:
+            return 1.26
+        case .regular14L150:
+            return 1.26
+        case .medium12L150:
+            return 1.26
         }
     }
     
