@@ -96,11 +96,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-<<<<<<< Updated upstream
+
 		16E674CBAEA7449DA55FE573 /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-=======
-		54DF658BCA89C3E8B9E5E08F /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
->>>>>>> Stashed changes
+
 		652C05D92A73AB34004CE9C4 /* LocationFilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTableViewCell.swift; sourceTree = "<group>"; };
 		652C05DB2A7404B4004CE9C4 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterSheetView.swift; sourceTree = "<group>"; };
@@ -198,11 +196,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A165D545DF550574C320791C /* Pods_MOGAK.framework in Frameworks */,
-<<<<<<< Updated upstream
+
 				B2CECC3F3478546F35837000 /* Pods_MOGAK.framework in Frameworks */,
-=======
-				1AE0A8D2970008DFFBD4EB84 /* Pods_MOGAK.framework in Frameworks */,
->>>>>>> Stashed changes
+
+
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,11 +462,9 @@
 				9CFA7D032A458109003E80A7 /* MOGAK */,
 				9CFA7D022A458109003E80A7 /* Products */,
 				6A1C03A268A96BF0F17C707F /* Pods */,
-<<<<<<< Updated upstream
+
 				EAE8A43E2C06B7EA732F4A70 /* Frameworks */,
-=======
-				93D0E5217314BC0F81379724 /* Frameworks */,
->>>>>>> Stashed changes
+
 			);
 			sourceTree = "<group>";
 		};
