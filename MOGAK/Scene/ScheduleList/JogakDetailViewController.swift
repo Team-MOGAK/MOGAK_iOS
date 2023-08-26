@@ -71,7 +71,7 @@ class JogakDetailViewController: UIViewController {
         
         self.navigationController?.navigationBar.topItem?.title = ""
         self.navigationController?.navigationBar.tintColor = UIColor(hex: "24252E")
-        self.title = "성공 조각"
+        self.title = "\(statusButton.titleLabel?.text ?? "성공") 조각"
     }
     
     private func configureTop() {

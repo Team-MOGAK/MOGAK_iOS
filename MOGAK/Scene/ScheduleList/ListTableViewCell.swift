@@ -127,7 +127,7 @@ class ListTableViewCell: UITableViewCell {
             $0.top.equalTo(containerView.snp.top).offset(24)
             $0.trailing.equalTo(containerView.snp.trailing).offset(-16)
             $0.width.equalTo(15)
-            $0.height.equalTo(3)
+            $0.height.equalTo(4)
         })
     }
     

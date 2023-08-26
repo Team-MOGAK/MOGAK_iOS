@@ -164,7 +164,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             }
             
             if let email = UserDefaults.standard.string(forKey: "userEmail") {
-                login(email: "jdkfj@naver.com")
+                login(email: "hyun123@naver.com")
             }
             //Move to NextPage
             

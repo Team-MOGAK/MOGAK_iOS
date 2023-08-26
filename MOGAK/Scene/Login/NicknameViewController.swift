@@ -156,7 +156,6 @@ class NicknameViewController: UIViewController {
     @objc private func nextButtonIsClicked() {
         // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
         
-        
         if let text = nicknameTextField.text {
             registerUserInfo.nickName = text
             print("저장된 닉네임 - \(registerUserInfo.nickName)")

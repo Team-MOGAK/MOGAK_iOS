@@ -10,10 +10,11 @@ import SnapKit
 import Then
 import ReusableKit
 import FSCalendar
+import Alamofire
 
 class MogakInitViewController: UIViewController {
     
-    private var categorySelectedList : [String] = []
+    private var categorySelectedList = ""
     private var repeatSelectedList : [String] = []
     private var collectionViewHeightConstraint: NSLayoutConstraint!
     // 달력 현재 페이지
@@ -178,7 +179,7 @@ class MogakInitViewController: UIViewController {
     }()
     
     private let headerTitle = UILabel().then {
-        $0.text = "2023년 7월"
+        $0.text = "2023년 8월"
         $0.textColor = UIColor(hex: "24252E")
         $0.font = UIFont.pretendard(.semiBold, size: 18)
         $0.isHidden = true
@@ -252,7 +253,7 @@ class MogakInitViewController: UIViewController {
     }()
     
     private let endHeaderTitle = UILabel().then {
-        $0.text = "2023년 7월"
+        $0.text = "2023년 8월"
         $0.textColor = UIColor(hex: "24252E")
         $0.font = UIFont.pretendard(.semiBold, size: 18)
         $0.isHidden = true
@@ -277,11 +278,12 @@ class MogakInitViewController: UIViewController {
     }()
     
     private lazy var completeButton = UIButton().then {
-        $0.backgroundColor = UIColor(hex: "BFC3D4")
+        $0.backgroundColor = UIColor(hex: "#475FFD")
         $0.setTitle("완료", for: .normal)
         $0.titleLabel?.textAlignment = .center
         $0.titleLabel?.textColor = .white
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        $0.layer.cornerRadius = 10
     }
     
     
@@ -407,7 +409,7 @@ class MogakInitViewController: UIViewController {
             $0.top.equalTo(self.repeatLabel.snp.bottom).offset(12)
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-80)
-            $0.height.equalTo(110)
+            $0.height.equalTo(116)
         })
     }
     
@@ -510,8 +512,7 @@ class MogakInitViewController: UIViewController {
     
     private func configureCompleteButton() {
         self.contentView.addSubview(completeButton)
-        
-        
+        completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         completeButton.snp.makeConstraints({
             //            $0.bottom.equalTo(self.scrollView.frameLayoutGuide.snp.bottom).offset(-24)
             $0.bottom.equalToSuperview().offset(-24)
@@ -639,6 +640,82 @@ class MogakInitViewController: UIViewController {
         }
     }
     
+    @objc private func completeButtonTapped() {
+        if let title = mogakTextField.text,
+           let start = startTextField.text,
+           let end = endTextField.text {
+            var shortStart = String(start.dropLast(5))
+            var shortEnd = String(end.dropLast(5))
+            let startComponents = shortStart.components(separatedBy: "/")
+            let endComponents = shortEnd.components(separatedBy: "/")
+            
+            if startComponents.count >= 2, let year = Int(startComponents[0]), let month = Int(startComponents[1]) {
+                var modifiedMonth: String = ""
+                
+                // 조건에 따라 월을 변환
+                //                if 1...9 ~= month {
+                //                    modifiedMonth = "0\(month)"
+                //                }
+                if 1...9 ~= month {
+                    modifiedMonth = "0\(month)"
+                }
+                
+                // 변환된 월을 2자리 숫자로 포맷
+                //                let formattedMonth = String(format: "%02d", modifiedMonth)
+                
+                // 최종 결과 생성
+                shortStart = "\(year)-\(modifiedMonth)-\(startComponents[2])"
+                print("\(shortStart)") // 출력 결과: "2023/08/14"
+            } else {
+                print("Invalid date format")
+            }
+            
+            if endComponents.count >= 2, let year = Int(endComponents[0]), let month = Int(endComponents[1]) {
+                var modifiedMonth: String = "\(month)"
+                
+                // 조건에 따라 월을 변환
+                if 1...9 ~= month {
+                    modifiedMonth = "0\(month)"
+                }
+                
+                // 변환된 월을 2자리 숫자로 포맷
+                //                let formattedMonth = String(format: "%02d", modifiedMonth)
+                
+                // 최종 결과 생성
+                shortEnd = "\(year)-\(modifiedMonth)-\(endComponents[2])"
+                print("\(shortEnd)") // 출력 결과: "2023/08/14"
+            } else {
+                print("Invalid date format")
+            }
+            
+            var days: [String] = []
+            
+            switch self.repeatSelectedList[0] {
+            case "월":
+                days.append("MONDAY")
+            case "화":
+                days.append("TUESDAY")
+            case "수":
+                days.append("WEDNESDAY")
+            case "목":
+                days.append("THURSDAY")
+            case "금":
+                days.append("FRIDAY")
+            case "토":
+                days.append("SATURDAY")
+            case "일":
+                days.append("SUNDAY")
+            default:
+                days.append("MONDAY")
+            }
+            
+            initMogak(title: title, category: categorySelectedList, days: days, start: shortStart, end: shortEnd)
+            print("title \(title) start \(shortStart) end \(shortEnd) days \(days) category \(categorySelectedList)")
+        } else {
+            print("버튼 옵셔널 해제 실패")
+        }
+    }
+    
 }
 
 // MARK: - 익스텐션
@@ -662,15 +739,15 @@ extension MogakInitViewController: UITextFieldDelegate {
             
             headerTitle.snp.remakeConstraints({
                 $0.centerX.equalToSuperview()
-//                $0.centerY.equalTo(self.startPreviousButton.snp.centerY)
+                //                $0.centerY.equalTo(self.startPreviousButton.snp.centerY)
                 $0.top.equalTo(self.startLabel.snp.bottom).offset(43)
                 $0.leading.equalTo(self.startPreviousButton.snp.trailing).offset(4)
             })
             
             startPreviousButton.snp.remakeConstraints({
-//                $0.top.equalTo(self.startLabel.snp.bottom).offset(43)
+                //                $0.top.equalTo(self.startLabel.snp.bottom).offset(43)
                 $0.centerY.equalTo(self.headerTitle.snp.centerY)
-//                $0.leading.equalToSuperview().offset(20)
+                //                $0.leading.equalToSuperview().offset(20)
                 $0.trailing.equalTo(self.headerTitle.snp.leading).offset(-4)
                 $0.width.height.equalTo(16)
             })
@@ -707,7 +784,7 @@ extension MogakInitViewController: UITextFieldDelegate {
                     $0.trailing.equalToSuperview().offset(-20)
                     $0.height.equalTo(52)
                 })
-
+                
             }
             
             contentView.snp.makeConstraints({
@@ -728,9 +805,9 @@ extension MogakInitViewController: UITextFieldDelegate {
             
             let startText = startLabel.text ?? ""
             let startTextSize = (text as NSString).boundingRect(with: CGSize(width: .greatestFiniteMagnitude, height: startLabel.bounds.height),
-                                                           options: .usesLineFragmentOrigin,
-                                                           attributes: [NSAttributedString.Key.font: startLabel.font!],
-                                                           context: nil).size
+                                                                options: .usesLineFragmentOrigin,
+                                                                attributes: [NSAttributedString.Key.font: startLabel.font!],
+                                                                context: nil).size
             
             startLabel.snp.remakeConstraints({
                 $0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(55)
@@ -763,7 +840,7 @@ extension MogakInitViewController: UITextFieldDelegate {
                 $0.centerX.equalToSuperview()
                 $0.leading.equalTo(self.startPreviousButton.snp.trailing).offset(4)
             })
-
+            
             endPreviousButton.snp.remakeConstraints({
                 $0.centerY.equalTo(self.endHeaderTitle.snp.centerY)
                 $0.trailing.equalTo(self.endHeaderTitle.snp.leading).offset(-4)
@@ -781,7 +858,7 @@ extension MogakInitViewController: UITextFieldDelegate {
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(212)
             })
-
+            
             completeButton.snp.remakeConstraints({
                 $0.top.equalTo(self.endCalendar.snp.bottom).offset(16)
                 $0.leading.trailing.equalToSuperview().inset(20)
@@ -852,28 +929,28 @@ extension MogakInitViewController: UICollectionViewDelegate {
             selectedRepeatIndexPath = nil
             
             if let cellText = selectedCell.textLabel.text {
-                categorySelectedList = [cellText]
+                categorySelectedList = cellText
             }
             print("클릭 시 categorySelectedList === \(categorySelectedList)")
         } else if collectionView.tag == 2 {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
             
-//            // 선택된 셀의 배경색 변경
+            //            // 선택된 셀의 배경색 변경
             selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
             selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
-//
-//            // 이전에 선택된 셀이 있다면 배경색 변경
+            //
+            //            // 이전에 선택된 셀이 있다면 배경색 변경
             if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
                 if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
                     prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
                     prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
                 }
             }
-//
-//            // 선택된 셀의 인덱스를 저장
+            //
+            //            // 선택된 셀의 인덱스를 저장
             selectedCategoryIndexPath = nil
             selectedRepeatIndexPath = indexPath
-
+            
             if let cellText = selectedCell.textLabel.text {
                 repeatSelectedList = [cellText]
             }
@@ -926,6 +1003,55 @@ extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             endTextField.text = selectedDateStr
             
         }
+    }
+}
+
+extension MogakInitViewController {
+    func initMogak(title: String, category: String, days: [String], start: String, end: String) {
+        let url = ApiConstants.baseURL + "/api/mogaks"
+        
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {return}
+        
+        let headers : HTTPHeaders = [
+            "Authorization": "Bearer \(accessToken)",
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        ]
+        
+        let parameters : Parameters = [
+            "title": title,
+            "category": category,
+            "days": days,
+            "startAt": start,
+            "endAt": end
+        ]
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+            .validate(statusCode: 200..<300)
+            .responseJSON { response in
+                switch response.result {
+                case .success(let value):
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: value),
+                       let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
+                        print("모각 생성 완료 \(responseModel)")
+                        self.navigationController?.popViewController(animated: true)
+                    } else {
+                        print("디코딩 실패")
+                    }
+                case .failure(let error):
+                    print("실패 \(error)")
+                }
+            }
+        
+        //        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+        //            .responseDecodable(of: MogakInitModel.self) { response in
+        //                switch response.result {
+        //                case .success(let data):
+        //                    print("모각 생성 완료 \(data)")
+        //                case .failure(let error):
+        //                    print("실패 \(error)")
+        //                }
+        //            }
     }
 }
 

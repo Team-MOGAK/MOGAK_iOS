@@ -20,14 +20,15 @@ class ScheduleListViewController: UIViewController {
         return view
     }()
     
-    private let settingButton : UIButton = {
+    private lazy var settingButton : UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "person"), for: .normal)
         button.tintColor = UIColor(hex: "ffffff")
+        button.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var profileImage : UIImageView = {
+    private let profileImage : UIImageView = {
         let view = UIImageView()
         view.layer.cornerRadius = view.frame.height / 2
         view.layer.borderWidth = 1
@@ -35,9 +36,6 @@ class ScheduleListViewController: UIViewController {
         view.clipsToBounds = true
         view.contentMode = .scaleToFill
         view.image = UIImage(named: "default")
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
-        view.addGestureRecognizer(gesture)
-        view.isUserInteractionEnabled = true
         return view
     }()
     
@@ -69,12 +67,15 @@ class ScheduleListViewController: UIViewController {
         return label
     }()
     
-    private let mogakeeLabel : UILabel = {
+    private lazy var mogakeeLabel : UILabel = {
         let label = UILabel()
         label.text = "MOTO 5"
         label.font = UIFont.pretendard(.medium, size: 16)
         label.textColor = UIColor(hex: "FFFFFF")
         label.asFontColor(targetString: "MOTO", font: UIFont.pretendard(.medium, size: 16), color: UIColor(hex: "ffffff").withAlphaComponent(0.9))
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(goToFriendPage))
+        label.addGestureRecognizer(gesture)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -163,6 +164,10 @@ class ScheduleListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        guard let nickName = UserDefaults.standard.string(forKey: "nickname") else {return}
+        
+        self.profileName.text = nickName
         
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureTop()
