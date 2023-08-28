@@ -398,6 +398,7 @@
 				9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */,
 				9CCB39DC2A92677100968CDB /* JoinModel.swift */,
 				9C82D4492A95159800CBC1C3 /* MogakModels.swift */,
+				9CE426EA2A5AA98E001629DC /* API */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -475,7 +476,6 @@
 			children = (
 				9C5236A22A99CDC5005A76FD /* DesignSystem */,
 				9CCB39D12A8FDA2000968CDB /* Models */,
-				9CE426EA2A5AA98E001629DC /* API */,
 				9CC1AE812A4718B000B484DD /* MOGAK.entitlements */,
 				9CFA7D042A458109003E80A7 /* AppDelegate.swift */,
 				9CFA7D062A458109003E80A7 /* SceneDelegate.swift */,
@@ -890,7 +890,8 @@
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -931,7 +932,8 @@
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

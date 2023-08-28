@@ -32,25 +32,20 @@ class RecordingViewController : UIViewController{
         return titleLabel
     }()
     
-    private let label : UILabel = {
-        let label = UILabel()
-        label.text = "5678678467846787846"
-        return label
-    }()
-    
     //MARK: - ScrollView
     private lazy var scrollView : UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .white
         scrollView.isScrollEnabled = true
-        scrollView.contentSize = CGSize(width: contentView.frame.width, height: 915)
         scrollView.isUserInteractionEnabled = true
         return scrollView
     }()
     
+    //MARK: - contentView
+    
     private lazy var contentView : UIView = {
         let contentView = UIView()
-        contentView.backgroundColor = .red
+        contentView.backgroundColor = .clear
         return contentView
     }()
     
@@ -169,25 +164,23 @@ class RecordingViewController : UIViewController{
         return textView
     }()
     
-    private lazy var galleryScrollView : UIScrollView = {
-        let scrollview = UIScrollView()
-        scrollview.backgroundColor = .red
-        return scrollview
-    }()
     
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        self.view.addSubview(scrollView)
+        view.addSubview(scrollView)
         scrollView.addSubview(contentView)
+        self.scrollView.delegate = self
+        textView.delegate = self
         setUI()
-        setViewStyle()
     }
     
     func setUI(){
-        [popButton,titleLabel,label,contentView,startView,endView,startLabel,startTimeLabel,endLabel,endTimeLabel,cellView,cellViewImage,textViewLabel,textbackgroundView,cellLabel,celltimeLabel,textView,galleryScrollView].forEach{view.addSubview($0)}
+        [popButton,titleLabel].forEach{view.addSubview($0)}
+        
+        contentView.addSubviews(startView,startLabel,startTimeLabel,endView,endTimeLabel,endLabel,textView,textbackgroundView,cellView,cellLabel,cellViewImage,cellLabel,textViewLabel,celltimeLabel)
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -200,30 +193,27 @@ class RecordingViewController : UIViewController{
         }
         
         scrollView.snp.makeConstraints{
-            //            $0.top.equalTo(titleLabel.snp.bottom)
-            //            $0.leading.trailing.bottom.equalToSuperview()
             $0.top.equalTo(self.titleLabel.snp.bottom)
             $0.leading.equalTo(self.view.safeAreaLayoutGuide.snp.leading)
             $0.trailing.equalTo(self.view.safeAreaLayoutGuide.snp.trailing)
-            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide)
             
         }
         
         contentView.snp.makeConstraints{
-            //                        $0.edges.equalTo(scrollView)
-            //                        $0.width.equalTo(view)
-            $0.top.equalTo(self.scrollView.contentLayoutGuide.snp.top)
-            $0.leading.equalTo(self.scrollView.contentLayoutGuide.snp.leading)
-            $0.trailing.equalTo(self.scrollView.contentLayoutGuide.snp.trailing)
-            $0.width.equalToSuperview().multipliedBy(1.0)
-            $0.bottom.equalTo(self.scrollView.contentLayoutGuide.snp.bottom)
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.height.greaterThanOrEqualTo(scrollView.snp.height).priority(.low)
+            $0.width.equalTo(scrollView.snp.width)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(915)
+
         }
         
         startView.snp.makeConstraints{
             $0.top.equalTo(contentView.snp.top).offset(40)
             $0.height.equalTo(56)
-            $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().inset(200)
+            $0.leading.equalTo(contentView).inset(20)
+            $0.trailing.equalTo(contentView).inset(200)
         }
         
         startLabel.snp.makeConstraints{
@@ -239,8 +229,8 @@ class RecordingViewController : UIViewController{
         endView.snp.makeConstraints{
             $0.top.equalTo(contentView.snp.top).offset(40)
             $0.height.equalTo(56)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.leading.equalToSuperview().inset(200)
+            $0.trailing.equalTo(contentView).inset(20)
+            $0.leading.equalTo(contentView).inset(200)
         }
         
         endLabel.snp.makeConstraints{
@@ -254,7 +244,7 @@ class RecordingViewController : UIViewController{
         }
         
         cellView.snp.makeConstraints{
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalTo(contentView).inset(20)
             $0.top.equalTo(startView.snp.bottom).offset(12)
             $0.height.equalTo(70)
         }
@@ -266,12 +256,13 @@ class RecordingViewController : UIViewController{
         
         textViewLabel.snp.makeConstraints{
             $0.top.equalTo(cellView.snp.bottom).offset(32)
-            $0.leading.equalToSuperview().inset(25)
+            $0.leading.equalTo(contentView).inset(25)
         }
         
         textbackgroundView.snp.makeConstraints{
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalTo(contentView).inset(20)
             $0.top.equalTo(textViewLabel.snp.bottom).offset(12)
+            $0.bottom.equalTo(textView.snp.bottom).offset(16)
             $0.height.equalTo(411)
             
         }
@@ -289,31 +280,16 @@ class RecordingViewController : UIViewController{
         textView.snp.makeConstraints{
             $0.top.equalTo(textbackgroundView.snp.top).offset(16)
             $0.leading.trailing.equalTo(textbackgroundView).inset(16)
-            $0.bottom.equalTo(textbackgroundView)
         }
         
-    }
-    //MARK: - textView
-    
-    func setViewStyle(){
-        self.textView.delegate = self
-        self.textView.autocapitalizationType = .none
-        self.textView.backgroundColor = .clear
-        self.textView.font = UIFont(name: "Pretendard-Regular", size: 16)
         
-        self.textView.text = "오늘 당신의 조각은 어떠셨나요?\n느낀 점이나 기억에 남는 것을 공유해보세요"
-        
-        self.textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
     }
     
-    //MARK: - @objc func
-    
+//MARK: - @objc func
     @objc func backhome(){
         self.dismiss(animated: true)
         print("back home")
     }
-    
-    
 }
 
 
@@ -341,19 +317,6 @@ extension RecordingViewController : UITextViewDelegate{
     // 리턴 키 입력 시 키보드 내림
     func textViewShouldReturn(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
-        return true
-    }
-    
-    // 글자수 제한 디폴트 20 + 지우기(백스페이스) 가능
-    func textField(_ textView: UITextView, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print(string)
-        if let char = string.cString(using: String.Encoding.utf8) {
-            let isBackSpace = strcmp(char, "\\b")
-            if isBackSpace == -92 {
-                return true
-            }
-        }
-        guard textView.text!.count < 20 else { return false }   //text길이
         return true
     }
 }

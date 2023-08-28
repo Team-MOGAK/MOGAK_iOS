@@ -1,5 +1,5 @@
 //
-//  ScheduleStart_ServerRespone.swift
+//  ScheduleStartStruct.swift
 //  MOGAK
 //
 //  Created by 안세훈 on 2023/08/22.
@@ -10,36 +10,18 @@ import Foundation
 
 struct APIconstants{
     static let BaseURL = "http://43.200.36.231:8080/"
-    static let GenerateJogakURL = "/api/mogaks/jogaks/{mogakId}"
-    static let DeleteJogakURL = "/api/mogaks/jogaks/{jogakId}"
-    static let JogakStartURL = BaseURL + "/api/mogaks/jogaks/{jogakId}/start"
-    static let JohakEndURL = BaseURL + "/api/mogaks/jogaks/{jogakId}/end"
+    static let GenerateJogakURL = "/api/mogaks/jogaks/{mogakId}"    //생성
+    static let DeleteJogakURL = "/api/mogaks/jogaks/{jogakId}"      //삭제
+    static let JogakStartURL = BaseURL + "/api/mogaks/jogaks/{jogakId}/start" //시작
+    static let JohakEndURL = BaseURL + "/api/mogaks/jogaks/{jogakId}/end" //종료
 }
-
-//MARK: - Reuslt
-enum NetworkReult<T>{
-    case success(T) //서버 통신 성공했을 때
-    case requestErr(T) // 요청 에러 발생했을 때
-    case pathErr(T) // 경로 에러 발생했을 때
-    case serverErr // 서버의 내부 에러가 발생했을 때
-    case networkFail // 네트워크 연결 실패했을 때
-}
-
-//MARK: - (임시)조각 생성
-struct GenerateJogak: Codable {
-    let time, status, code, message: String
-    let result: GenerateJogakResult
-}
-
-struct GenerateJogakResult: Codable {
-    let startTime: String
-}
-
-//MARK: - 진행중인 모각만 조각을 생성, 존재하지 않는 모각
-struct GenerateJogakerror: Codable {
-    let time: String
-    let status: Int
-    let code, message: String
+//MARK: - 결과
+enum CheckJogakResponse <T>{
+  case success(T) //서버 통신 성공했을 때
+  case requestErr(T) // 요청 에러 발생했을 때
+  case pathErr(T) // 경로 에러 발생했을 때
+  case serverErr // 서버의 내부 에러가 발생했을 때
+  case networkFail // 네트워크 연결 실패했을 때
 }
 
 //MARK: - (임시)조각 삭제
@@ -88,4 +70,26 @@ struct JogkaEnderror: Codable {
     let status: Int
     let code, message: String
 }
+
+//MARK: - 당일 조각 조회
+struct CheckJogak: Codable {
+    let time, status, code, message: String
+    let result: Result
+}
+
+struct Result: Codable {
+    let jogaks: [Jogak]
+    let size: Int
+}
+
+struct Jogak: Codable {
+    let mogakTitle, startTime, endTime: String
+}
+
+struct noUser: Codable {
+    let time: String
+    let status: Int
+    let code, message: String
+}
+
 

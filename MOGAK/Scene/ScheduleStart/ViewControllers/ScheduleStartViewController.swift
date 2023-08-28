@@ -460,6 +460,23 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeMonth")
         }
     }
+//MARK: - 조각 조회 API
+//    var ScheduleStartData = [CheckJogak]()
+//
+//    func checkJogak() {
+//        let checkJogakURL = APIconstants.BaseURL + "/api/mogaks/jogaks"
+//        AF.request(checkJogakURL).responseDecodable(of: CheckJogakResponse.self) { response in
+//            switch response.result {
+//            case .success(let checkJogakResponse):
+//                // API 응답을 성공적으로 받았을 때 처리
+//                self.ScheduleStartData = checkJogakResponse.result.jogaks
+//                self.ScheduleTableView.reloadData()
+//            case .failure(let error):
+//                // API 호출 실패 또는 데이터 매핑 실패 시 처리
+//                print("API 호출 실패: \(error)")
+//            }
+//        }
+//    }
 }
 //MARK: - tableview
 
@@ -553,7 +570,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    
 }
 
 extension ScheduleStartViewController: ScheduleTimerDelegate {
@@ -572,10 +588,4 @@ extension ScheduleStartViewController: ScheduleTimerDelegate {
         }
     }
 }
-
-//extension ScheduleStartViewController {
-//    func Userdefualt(){
-//        let request = AF.request(<#URLConvertible#>)
-//    }
-//}
 
