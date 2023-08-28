@@ -164,10 +164,7 @@ class ScheduleListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        guard let nickName = UserDefaults.standard.string(forKey: "nickname") else {return}
-//
-//        self.profileName.text = nickName
-        
+        self.login()
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureTop()
         self.configureSegment()
@@ -409,4 +406,25 @@ extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
 }
+// MARK: - 통신 코드
 
+extension ScheduleListViewController {
+    func login() {
+        NetworkManager.shared.post(path: "/api/users/login/hyun123@naver.com") { response in
+            switch response.result {
+            case .success(let data):
+                // 결과 처리... 이 때, `data`는 `Data?` 타입이므로 필요하다면 언래핑해야 합니다.
+                
+                if let httpResponse = response.response, let authValue = httpResponse.allHeaderFields["Authorization"] as? String {
+                    print("Authorization header value: \(authValue)")
+                    UserDefaults.standard.set(authValue, forKey: "accessToken")
+                } else {
+                    print("No Authorization header found")
+                }
+                
+            case .failure(let error):
+                print("Error during POST request: \(error.localizedDescription)")
+            }
+        }
+    }
+}

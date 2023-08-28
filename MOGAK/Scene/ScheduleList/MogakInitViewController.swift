@@ -886,6 +886,8 @@ extension MogakInitViewController: UITextFieldDelegate {
                 $0.bottom.equalTo(completeButton.snp.bottom).offset(30)
                 $0.width.equalToSuperview().multipliedBy(1.0)
             })
+        } else if textField == mogakTextField {
+            return true
         }
         return false
     }
@@ -955,49 +957,27 @@ extension MogakInitViewController: UICollectionViewDelegate {
             print("클릭 시 categorySelectedList === \(categorySelectedList)")
         } else if collectionView.tag == 2 {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
-                
-                // 이미 선택된 셀인지 확인
-                if selectedRepeatIndexPaths.contains(indexPath) {
-                    // 이미 선택된 셀의 경우 선택 해제 처리
-                    selectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
-                    selectedCell.textLabel.textColor = UIColor(hex: "24252E")
-                    selectedRepeatIndexPaths.remove(indexPath)
-                    if let index = repeatSelectedList.firstIndex(of: selectedCell.textLabel.text ?? "") {
-                        repeatSelectedList.remove(at: index)
-                    }
-                } else {
-                    // 선택되지 않은 셀의 경우 선택 처리
-                    selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
-                    selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
-                    selectedRepeatIndexPaths.insert(indexPath)
-                    if let cellText = selectedCell.textLabel.text {
-                        repeatSelectedList.append(cellText)
-                    }
+            
+            // 이미 선택된 셀인지 확인
+            if selectedRepeatIndexPaths.contains(indexPath) {
+                // 이미 선택된 셀의 경우 선택 해제 처리
+                selectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
+                selectedCell.textLabel.textColor = UIColor(hex: "24252E")
+                selectedRepeatIndexPaths.remove(indexPath)
+                if let index = repeatSelectedList.firstIndex(of: selectedCell.textLabel.text ?? "") {
+                    repeatSelectedList.remove(at: index)
                 }
-                print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
-
-//            let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
-//
-//            //            // 선택된 셀의 배경색 변경
-//            selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
-//            selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
-//            //
-//            //            // 이전에 선택된 셀이 있다면 배경색 변경
-//            if let prevSelectedIndexPath = selectedRepeatIndexPath, prevSelectedIndexPath != indexPath {
-//                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? RepeatCell {
-//                    prevSelectedCell.contentView.backgroundColor = UIColor(hex: "EEF0F8")
-//                    prevSelectedCell.textLabel.textColor = UIColor(hex: "24252E")
-//                }
-//            }
-//            //
-//            //            // 선택된 셀의 인덱스를 저장
-//            selectedCategoryIndexPath = nil
-//            selectedRepeatIndexPath = indexPath
-//
-//            if let cellText = selectedCell.textLabel.text {
-//                repeatSelectedList = [cellText]
-//            }
-//            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+            } else {
+                // 선택되지 않은 셀의 경우 선택 처리
+                selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
+                selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
+                selectedRepeatIndexPaths.insert(indexPath)
+                if let cellText = selectedCell.textLabel.text {
+                    repeatSelectedList.append(cellText)
+                }
+            }
+            print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+            
         }
     }
 }
@@ -1072,20 +1052,22 @@ extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
         }
     }
 }
+// MARK: - 통신 코드
 
 extension MogakInitViewController {
+    // 모각 생성
     func initMogak(title: String, category: String, days: [String], start: String, end: String) {
-        let url = ApiConstants.baseURL + "/api/mogaks"
+        let path = "/api/mogaks"
         
-        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {return}
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
         
-        let headers : HTTPHeaders = [
+        let headers: HTTPHeaders = [
             "Authorization": "Bearer \(accessToken)",
             "accept": "application/json",
             "Content-Type": "application/json"
         ]
         
-        let parameters : Parameters = [
+        let parameters: [String: Any] = [
             "title": title,
             "category": category,
             "days": days,
@@ -1093,23 +1075,26 @@ extension MogakInitViewController {
             "endAt": end
         ]
         
-        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .validate(statusCode: 200..<300)
-            .responseJSON { response in
-                switch response.result {
-                case .success(let value):
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: value),
-                       let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
-                        print("모각 생성 완료 \(responseModel)")
-                        self.navigationController?.popViewController(animated: true)
-                    } else {
-                        print("디코딩 실패")
-                    }
-                case .failure(let error):
-                    print("실패 \(error)")
+        NetworkManager.shared.post(path: path, parameters: parameters, headers: headers) { response in
+            switch response.result {
+            case .success(let data):
+                guard let jsonData = data else {
+                    print("No data received")
+                    return
                 }
+                if let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
+                    print("모각 생성 완료 \(responseModel)")
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    print("디코딩 실패")
+                }
+            case .failure(let error):
+                print("실패 \(error)")
+                print("token \(accessToken)")
+                debugPrint(response)
             }
-        
+        }
     }
+    
 }
 
