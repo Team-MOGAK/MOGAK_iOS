@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 
 class ScheduleListViewController: UIViewController {
-    
     private var progressCount = 3
     private var failCount = 3
     private var successCount = 5

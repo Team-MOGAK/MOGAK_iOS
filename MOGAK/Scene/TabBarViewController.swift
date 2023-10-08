@@ -22,29 +22,24 @@ class TabBarViewController: UITabBarController{
     private func setupViews() {
         
         let homeTabBarItem = UITabBarItem(title: "조각시작", image: UIImage(named: "start"), selectedImage: UIImage(named: "selectedStart"))
-        let listTabBarItem = UITabBarItem(title: "조각관리", image: UIImage(named: "list"), selectedImage: UIImage(named: "selectedList"))
-        let networkingTabBarItem = UITabBarItem(title: "네트워킹", image: UIImage(named: "networking"), selectedImage: UIImage(named: "selectedNetworking"))
+        let modalArtBarItem = UITabBarItem(title: "모다라트", image: UIImage(named: "modalArt"), selectedImage: UIImage(named: ""))
         let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
         
         let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
         homeTabBarItem.imageInsets = insets
-        listTabBarItem.imageInsets = insets
-        networkingTabBarItem.imageInsets = insets
+        modalArtBarItem.imageInsets = insets
         reportTabBarItem.imageInsets = insets
         
         let titleOffset = UIOffset(horizontal: 0, vertical: 10)
         homeTabBarItem.titlePositionAdjustment = titleOffset
-        listTabBarItem.titlePositionAdjustment = titleOffset
-        networkingTabBarItem.titlePositionAdjustment = titleOffset
+        modalArtBarItem.titlePositionAdjustment = titleOffset
         reportTabBarItem.titlePositionAdjustment = titleOffset
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
-        let listVC = generateNavController(vc: ScheduleListViewController(), tabBarItem: listTabBarItem)
-        let networkingVC = generateNavController(vc: NetworkingViewController(), tabBarItem: networkingTabBarItem)
+        let modalArtVC = generateNavController(vc: ModalartMainViewController(), tabBarItem: modalArtBarItem)
         let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
         
-        self.viewControllers = [homeVC, listVC, networkingVC, reportVC]
-        
+        self.viewControllers = [homeVC,modalArtVC, reportVC]
         self.selectedIndex = 0
         
     }
