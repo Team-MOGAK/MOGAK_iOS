@@ -191,14 +191,6 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
     }
 }
 
-extension UIView {
-    func addSubviews(_ views: UIView...) {
-        for view in views {
-            addSubview(view)
-        }
-    }
-}
-
 extension LoginViewController {
     func login(email: String) {
         let url = ApiConstants.baseURL + "/api/users/login/\(email)"

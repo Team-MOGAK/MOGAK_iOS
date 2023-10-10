@@ -30,18 +30,19 @@ class TermsAgreeViewController: UIViewController {
     
     private let permAllLabel = UILabel().then {
         $0.text = "약관 전체 동의"
-        $0.textColor = UIColor(hex: "000000")
+        $0.textColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.semiBold, size: 18)
     }
     
     private let permAllSubLabel = UILabel().then {
         $0.text = "서비스 이용을 위해 약관에 모두 동의합니다."
-        $0.textColor = UIColor(hex: "BFC3D4")
+        $0.textColor = DesignSystemColor.gray3.value
         $0.font = UIFont.pretendard(.medium, size: 14)
     }
     
     private let permUnderline = UIView().then {
-        $0.layer.borderColor = UIColor(hex: "EEF0F8").cgColor
+//        $0.layer.borderColor = UIColor(hex: "EEF0F8").cgColor
+        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
         $0.layer.borderWidth = 1
     }
     
@@ -53,7 +54,8 @@ class TermsAgreeViewController: UIViewController {
     
     private let ageLabel = UILabel().then {
         $0.text = "(필수) 만 14세입니다."
-        $0.textColor = UIColor(hex: "000000")
+//        $0.textColor = UIColor(hex: "000000")
+        $0.textColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.regular, size: 16)
     }
     
@@ -65,13 +67,14 @@ class TermsAgreeViewController: UIViewController {
     
     private let serviceLabel = UILabel().then {
         $0.text = "(필수) 서비스 이용악관"
-        $0.textColor = UIColor(hex: "000000")
+        $0.textColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.regular, size: 16)
     }
     
     private let serviceNext = UIButton().then {
         $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        $0.tintColor = UIColor(hex: "808497")
+//        $0.tintColor = UIColor(hex: "808497")
+        $0.tintColor = DesignSystemColor.gray4.value
     }
     
     // 개인정보 처리방침
@@ -82,13 +85,14 @@ class TermsAgreeViewController: UIViewController {
     
     private let privacyLabel = UILabel().then {
         $0.text = "(필수) 개인정보 처리방침"
-        $0.textColor = UIColor(hex: "000000")
+        $0.textColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.regular, size: 16)
     }
     
     private let privacyNext = UIButton().then {
         $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        $0.tintColor = UIColor(hex: "808497")
+//        $0.tintColor = UIColor(hex: "808497")
+        $0.tintColor = DesignSystemColor.gray4.value
     }
     
     // 마케팅 정보 수신동의
@@ -99,22 +103,26 @@ class TermsAgreeViewController: UIViewController {
     
     private let marketingLabel = UILabel().then {
         $0.text = "(선택) 마케팅 정보 수신동의"
-        $0.textColor = UIColor(hex: "000000")
+//        $0.textColor = UIColor(hex: "000000")
+        $0.tintColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.regular, size: 16)
     }
     
     private let marketingNext = UIButton().then {
         $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        $0.tintColor = UIColor(hex: "808497")
+//        $0.tintColor = UIColor(hex: "808497")
+        $0.tintColor = DesignSystemColor.gray4.value
     }
     
+    //다음 화면으로 넘어가는 버튼 초기세팅(필수 항목이 선택되어 있지 않으므로 다음화면으로 넘어가지 않도록 막아놓음
     private lazy var nextButton : UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.setTitleColor(UIColor(hex: "ffffff"), for: .normal)
+//        button.setTitleColor(UIColor(hex: "ffffff"), for: .normal)
+        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
         button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         button.titleLabel?.textAlignment = .center
-        button.backgroundColor = UIColor(hex: "BFC3D4")
+        button.backgroundColor = DesignSystemColor.gray3.value
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(nextButtonIsClicked), for: .touchUpInside)
         button.isUserInteractionEnabled = false
@@ -257,15 +265,16 @@ class TermsAgreeViewController: UIViewController {
         })
     }
     
+    //다음 버튼
     private func nextIsConfirm() {
         let isOn = ageIsOn && serviceIsOn && privacyIsOn
-        if isOn {
+        if isOn { //필수 항목들이 선택됨 -> 다음으로 넘어갈 수 있음
             nextButton.isUserInteractionEnabled = true
-            nextButton.backgroundColor = UIColor(hex: "475FFD")
+            nextButton.backgroundColor = DesignSystemColor.signature.value
 //            permAllAgreeButton.setImage(UIImage(named: "checkOn"), for: .normal)
         } else {
             nextButton.isUserInteractionEnabled = false
-            nextButton.backgroundColor = UIColor(hex: "BFC3D4")
+            nextButton.backgroundColor = DesignSystemColor.gray3.value
 //            permAllAgreeButton.setImage(UIImage(named: "checkOff"), for: .normal)
         }
     }
