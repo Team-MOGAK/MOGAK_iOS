@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Then
 import BSImagePicker
+import Photos
 
 protocol RecordingVCdelegate {
     func moveRecordingVC()
@@ -172,32 +173,25 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
     
     //MARK: - galleryCollectioview
     private lazy var galleryCollectionView : UICollectionView = {
-        let flowLayout = UICollectionViewFlowLayout()
-        let view = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flowLayout)
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal // 가로 스크롤 활성화
+        
+        let view = UICollectionView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 200), collectionViewLayout: layout)
         view.isScrollEnabled = true
         view.delegate = self
         view.dataSource = self
-        view.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: "GalleryTableViewCell")
-        view.backgroundColor = .red
         return view
     }()
     
-//    let layout = UICollectionViewFlowLayout()
-//    let sectionSpacing : CGFloat = 20
-//    let itemSpacing : CGFloat = 8
-//    let width: CGFloat = UIScreen.main.bounds.width - (itemSpacing * (rowCount-1)) - (sectionSpacing * 2)
-//    let itemWidth: CGFloat = width / rowCount
-//    layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
-//
-//    // 스크롤 방향 설정
-//    layout.scrollDirection = .vertical
-//
-//    // Section간 간격 설정
-//    layout.sectionInset = UIEdgeInsets(top: sectionSpacing, left: sectionSpacing, bottom: sectionSpacing, right: sectionSpacing)
-//
-//    // item간 간격 설정
-//    layout.minimumLineSpacing = itemSpacing        // 최소 줄간 간격 (수직 간격)
-//    layout.minimumInteritemSpacing = itemSpacing   // 최소 행간 간격 (수평 간격)
+    private lazy var finishButton : UIButton = {
+        let button = UIButton()
+        button.setTitle("완료", for: .normal)
+        button.backgroundColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -206,15 +200,15 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         self.scrollView.delegate = self
-        self.galleryCollectionView.delegate = self
-        //textView.delegate = self
+        
+        setCollectionView()
         setUI()
     }
     
     func setUI(){
         [popButton,titleLabel].forEach{view.addSubview($0)}
         
-        contentView.addSubviews(startView,startLabel,startTimeLabel,endView,endTimeLabel,endLabel,textView,textbackgroundView,cellView,cellLabel,cellViewImage,cellLabel,textViewLabel,celltimeLabel,galleryCollectionView)
+        contentView.addSubviews(startView,startLabel,startTimeLabel,endView,endTimeLabel,endLabel,textView,textbackgroundView,cellView,cellLabel,cellViewImage,cellLabel,textViewLabel,celltimeLabel,galleryCollectionView,finishButton)
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -239,7 +233,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
             $0.height.greaterThanOrEqualTo(scrollView.snp.height).priority(.low)
             $0.width.equalTo(scrollView.snp.width)
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(915)
+            $0.bottom.equalTo(finishButton.snp.bottom).offset(20)
             
         }
         
@@ -317,12 +311,23 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         }
         
         galleryCollectionView.snp.makeConstraints{
-            $0.top.equalTo(textbackgroundView.snp.bottom).offset(20)
+            $0.top.equalTo(textbackgroundView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(20)
-
-            $0.width.equalToSuperview()
+            //$0.width.equalTo(textbackgroundView)
+            $0.height.equalTo(72)
+        }
+        finishButton.snp.makeConstraints{
+            $0.top.equalTo(galleryCollectionView.snp.bottom).offset(20)
+            $0.leading.trailing.equalTo(galleryCollectionView)
+            $0.height.equalTo(52)
         }
         
+    }
+    
+    func setCollectionView(){
+        galleryCollectionView.dataSource = self
+        galleryCollectionView.delegate = self
+        galleryCollectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: "GalleryCollectionViewCell")
     }
     
     //MARK: - @objc func
@@ -331,30 +336,71 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         print("back home")
     }
 }
-    //MARK: - exteinson CollectioView
+
+//MARK: - exteinson CollectioView
 extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
     
-        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return 4
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
-                return UICollectionViewCell()
-            }
-            return cell
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            // 셀의 크기를 여기에서 설정하세요.
-            return CGSize(width: 50, height: collectionView.frame.height)
-        }
-        
+    //cell 개수
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
+    }
     
-        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            print("\(indexPath.section), \(indexPath.row)")
+    //cell 재사용
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
+            return UICollectionViewCell()
         }
+        return cell
+    }
     
+    //Cell의 크기
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: collectionView.frame.height , height: collectionView.frame.height)
+    }
+    
+    //cell의 간격
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 12
+    }
+    
+    //MARK: - 클릭시 갤러리 열림
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(indexPath.section), \(indexPath.row)")
+        
+        cellClicked()
+    }
+    
+    @objc func cellClicked(){
+        
+        let imagePicker = ImagePickerController()
+           imagePicker.settings.selection.max = 4
+           imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+           imagePicker.settings.theme.selectionStyle = .numbered
+
+           // ImagePicker에서 이미지를 선택한 후의 처리
+//           imagePicker.onFinish = { (assets) in
+//               // 선택한 이미지들을 처리
+//               for asset in assets {
+//                   if let phAsset = asset as? PHAsset {
+//                       // phAsset을 이용하여 이미지를 가져올 수 있음
+//                       // 여기서 선택한 이미지를 처리하면 됨
+//                   }
+//               }
+//           }
+
+           // BSImagePicker를 표시
+           self.presentImagePicker(imagePicker, animated: true, select: { (asset) in
+               // 선택한 이미지에 대한 처리를 할 수도 있음
+           }, deselect: { (asset) in
+               // 이미지 선택 해제 시 처리할 내용을 추가할 수도 있음
+           }, cancel: { (assets) in
+               // 이미지 선택을 취소한 경우 처리할 내용을 추가할 수도 있음
+           }, finish: { (assets) in
+               // 이미지 선택이 완료된 경우 처리할 내용을 추가할 수도 있음
+           })
+    }
 }
 
 //extension RecordingViewController : UITextViewDelegate{
@@ -414,7 +460,7 @@ struct RecordingViewControllerRepresentable_PreviewProvider: PreviewProvider {
                 RecordingViewControllerRepresentable()
                     .ignoresSafeArea()
                     .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+                    .previewDevice(PreviewDevice(rawValue: "iPhone se"))
             } else {
                 // Fallback on earlier versions
             }
