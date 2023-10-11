@@ -37,7 +37,7 @@ class TabBarViewController: UITabBarController{
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let modalArtVC = generateNavController(vc: ModalartMainViewController(), tabBarItem: modalArtBarItem)
-        let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
+        let reportVC = generateNavController(vc: MyHistoryViewController(), tabBarItem: reportTabBarItem)
         
         self.viewControllers = [homeVC,modalArtVC, reportVC]
         self.selectedIndex = 0
