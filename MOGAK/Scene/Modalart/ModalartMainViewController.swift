@@ -121,9 +121,14 @@ extension ModalartMainViewController {
     }
 }
 
-//extension ModalartMainViewController: UICollectionViewDelegate {
-//    func collecscroll
-//}
+extension ModalartMainViewController: UICollectionViewDelegate {
+    //이걸 통해서 어떤 모각이 선택되었는지를 알 수 있음
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.cellForItem(at: indexPath)
+        print(#fileID, #function, #line, "- 선택된 cell의 타입:\(collectionView.cellForItem(at: indexPath)?.reuseIdentifier)")
+        print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
+    }
+}
 
 extension ModalartMainViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -136,9 +141,6 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print(#fileID, #function, #line, "- 셀만들기⭐️")
-        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기")]
-        
         guard let emptyMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell else { return UICollectionViewCell() }
         
         guard let mainMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
@@ -155,13 +157,11 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         } else {
             return checkEmptyCell(row, mogakCell, emptyMogakCell)
         }
-        
-//        return emptyMogakCell
     }
     
     func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-//        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
-        let mogakCategory: [(String, String)] = []
+        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
+//        let mogakCategory: [(String, String)] = []
         if (mogakCategory.count > row && row < 4) {
             mogakCell.goalCategoryLabelText = mogakCategory[row].0
             mogakCell.goalContentLabelText = mogakCategory[row].1

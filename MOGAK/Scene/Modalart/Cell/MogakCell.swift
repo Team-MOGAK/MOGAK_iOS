@@ -41,6 +41,13 @@ class MogakCell: UICollectionViewCell {
         return label
     }()
     
+    private lazy var settingIcon: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "settingIcon"), for: .normal)
+        button.addTarget(self, action: #selector(settingIconTapped), for: .touchUpInside)
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: .zero)
         print(#fileID, #function, #line, "- FullMogakCell")
@@ -60,12 +67,16 @@ class MogakCell: UICollectionViewCell {
         self.goalCategoryLabel.textColor = UIColor(hex: goalCategoryLabelTextColor)
         self.goalContentLabel.text = goalContentLabelText
     }
+    
+    @objc func settingIconTapped() {
+        print(#fileID, #function, #line, "- settingIconTapped⭐️")
+    }
 }
 
 //MARK: - 오토레이아웃 잡기
 extension MogakCell {
     private func configureLayout() {
-        self.addSubviews(goalCategoryLabel, goalContentLabel)
+        self.addSubviews(goalCategoryLabel, goalContentLabel, settingIcon)
         
         goalCategoryLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(40)
@@ -76,6 +87,12 @@ extension MogakCell {
             $0.top.equalTo(goalCategoryLabel.snp.bottom).offset(22)
             $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
+        }
+        
+        settingIcon.snp.makeConstraints {
+            $0.size.equalTo(20)
+            $0.top.equalToSuperview().offset(8)
+            $0.trailing.equalToSuperview().offset(-8)
         }
         
     }
