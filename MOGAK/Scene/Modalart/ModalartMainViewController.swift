@@ -37,16 +37,8 @@ class ModalartMainViewController: UIViewController {
     
     private lazy var modalArtCollectionView: UICollectionView = {
         print(#fileID, #function, #line, "- collectionview 생성⭐️")
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .vertical
-//
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createFlowlayout())
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout.init())
         collectionView.backgroundColor = DesignSystemColor.signatureBag.value
-        collectionView.isScrollEnabled = true
-        collectionView.showsVerticalScrollIndicator = true
-        collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
     
@@ -79,22 +71,11 @@ class ModalartMainViewController: UIViewController {
         print(#fileID, #function, #line, "- 모다라트 추가 삭제버튼(타코버튼) 탭 ⭐️")
     }
     
-    func createFlowlayout() -> UICollectionViewFlowLayout {
-        let flowlayout = UICollectionViewFlowLayout()
-        flowlayout.scrollDirection = .vertical
-        flowlayout.minimumLineSpacing = 10
-        flowlayout.minimumInteritemSpacing = 10
-        let cellWidth: CGFloat = self.view.frame.width / 3.0 - 30 //하나의 셀이 가지는 넓이의최소 크기
-        let cellHeight: CGFloat = 520 / 3.0 - 10 //하나의 셀이 가지는 높이의 최소 크기
-        flowlayout.itemSize = CGSize(width: cellWidth, height: cellHeight)
-        
-        return flowlayout
-    }
-    
     func collectionViewSetting() {
         //cell등록
         modalArtCollectionView.register(EmptyMogakCell.self, forCellWithReuseIdentifier: EmptyMogakCell.identifier)
         modalArtCollectionView.register(MogakCell.self, forCellWithReuseIdentifier: MogakCell.identifier)
+        modalArtCollectionView.register(ModalartMainCell.self, forCellWithReuseIdentifier: ModalartMainCell.identifier)
         
         //delegate, datasource를 사용할 viewcontroller설정
         modalArtCollectionView.delegate = self
@@ -131,7 +112,8 @@ extension ModalartMainViewController {
         
         modalArtCollectionView.snp.makeConstraints{
             print(#fileID, #function, #line, "- ???⭐️")
-            $0.leading.equalTo(modalArtNameLabel.snp.leading)
+//            $0.leading.equalTo(modalArtNameLabel.snp.leading)
+            $0.width.equalTo(350)
             $0.height.equalTo(520)
             $0.centerX.equalToSuperview()
             $0.top.equalTo(modalArtNameLabel.snp.top).offset(39)
@@ -145,44 +127,78 @@ extension ModalartMainViewController {
 
 extension ModalartMainViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        print(#fileID, #function, #line, "- ???/")
         return 1
     }
     
     //한 섹션에 몇개의 아이템이 들어갈지
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(#fileID, #function, #line, "- ???⭐️")
         return 9
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         print(#fileID, #function, #line, "- 셀만들기⭐️")
-        if let emptyMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell {
-            print(#fileID, #function, #line, "- emptyMOgakCell 등록 됨")
-            return emptyMogakCell
+        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기")]
+        
+        guard let emptyMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell else { return UICollectionViewCell() }
+        
+        guard let mainMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
+        
+        guard let mogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: MogakCell.identifier, for: indexPath) as? MogakCell else { return UICollectionViewCell() }
+        
+        let row = indexPath.row
+        
+        if(row == 4) {
+            mainMogakCell.mainBackgroundColor = "475FFD"
+            mainMogakCell.mainLabelText = "운동하기"
+            mainMogakCell.cellDataSetting()
+            return mainMogakCell
         } else {
-            print(#fileID, #function, #line, "- 엠티 모각 못가져옴")
-            return UICollectionViewCell()
+            return checkEmptyCell(row, mogakCell, emptyMogakCell)
         }
+        
+//        return emptyMogakCell
     }
     
+    func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
+//        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
+        let mogakCategory: [(String, String)] = []
+        if (mogakCategory.count > row && row < 4) {
+            mogakCell.goalCategoryLabelText = mogakCategory[row].0
+            mogakCell.goalContentLabelText = mogakCategory[row].1
+            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
+            mogakCell.goalCategoryLabelTextColor = "475FFD"
+            mogakCell.cellDataSetting()
+            return mogakCell
+        } else if (mogakCategory.count > row - 1 && row > 4) {
+            mogakCell.goalCategoryLabelText = mogakCategory[row - 1].0
+            mogakCell.goalContentLabelText = mogakCategory[row - 1].1
+            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
+            mogakCell.goalCategoryLabelTextColor = "475FFD"
+            mogakCell.cellDataSetting()
+            return mogakCell
+        } else {
+            return emptyMogakCell
+        }
+    }
     
 }
 
 extension ModalartMainViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        print(#fileID, #function, #line, "- ⭐️")
         return 10
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+        return 0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        print(#fileID, #function, #line, "- cell flow 만들기?⭐️")
         let cellWidth: CGFloat = self.modalArtCollectionView.frame.width / 3.0 - 10 //하나의 셀이 가지는 넓이의최소 크기
-        let cellHeight: CGFloat = self.modalArtCollectionView.frame.height / 3.0 - 10 //하나의 셀이 가지는 높이의 최소 크기
+        let cellHeight: CGFloat = self.modalArtCollectionView.frame.height / 3.0 - 10//하나의 셀이 가지는 높이의 최소 크기
         return CGSizeMake(cellWidth, cellHeight)
     }
 }

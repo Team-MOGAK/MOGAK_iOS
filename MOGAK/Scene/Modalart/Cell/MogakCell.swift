@@ -46,10 +46,19 @@ class MogakCell: UICollectionViewCell {
         print(#fileID, #function, #line, "- FullMogakCell")
         self.backgroundColor = DesignSystemColor.white.value
         self.layer.cornerRadius = 15
+        configureLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func cellDataSetting() {
+        print(#fileID, #function, #line, "- mogakCell⭐️ : \(goalContentLabelText)")
+        self.goalCategoryLabel.text = goalCategoryLabelText
+        self.goalCategoryLabel.backgroundColor = UIColor(hex: goalCategoryLabelBackgoundColor)
+        self.goalCategoryLabel.textColor = UIColor(hex: goalCategoryLabelTextColor)
+        self.goalContentLabel.text = goalContentLabelText
     }
 }
 
@@ -64,7 +73,8 @@ extension MogakCell {
         }
         
         goalContentLabel.snp.makeConstraints {
-            $0.top.equalTo(goalContentLabel.snp.bottom).offset(22)
+            $0.top.equalTo(goalCategoryLabel.snp.bottom).offset(22)
+            $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
         }
         
