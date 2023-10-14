@@ -203,32 +203,32 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
 
 
 
-#if DEBUG
-import SwiftUI
-struct ScheduleTimerVCRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        ScheduleTimerVC()
-    }
-}
-@available(iOS 13.0, *)
-struct ScheduleTimerVCRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                ScheduleTimerVCRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-} #endif
-
+//#if DEBUG
+//import SwiftUI
+//struct ScheduleTimerVCRepresentable: UIViewControllerRepresentable {
+//    
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//    @available(iOS 13.0.0, *)
+//    func makeUIViewController(context: Context) -> UIViewController{
+//        ScheduleTimerVC()
+//    }
+//}
+//@available(iOS 13.0, *)
+//struct ScheduleTimerVCRepresentable_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if #available(iOS 14.0, *) {
+//                ScheduleTimerVCRepresentable()
+//                    .ignoresSafeArea()
+//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+//                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//        }
+//        
+//    }
+//} #endif
+//
