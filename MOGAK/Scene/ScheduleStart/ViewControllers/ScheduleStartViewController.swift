@@ -171,7 +171,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
     
-    var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다."]
+    var cellArray = ["0번째 셀입니다.","1번째 셀입니다.","2번째 셀입니다."," 3번째 셀입니다.3번째 셀입니다.","4번째 셀입니다.4번째 셀입니다.","5번째 셀입니다.5번째 셀입니다.","6번째 셀입니다.6번째 셀입니다.","7번째 셀입니다.7번째 셀입니다."]
     
     //MARK: - viewDidLoad
     

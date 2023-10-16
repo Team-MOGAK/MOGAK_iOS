@@ -184,6 +184,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         return view
     }()
     
+    var selectedImages: [PHAsset] = []
+    
     private lazy var finishButton : UIButton = {
         let button = UIButton()
         button.setTitle("완료", for: .normal)
@@ -342,13 +344,18 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
     
     //cell 개수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return 4
     }
     
     //cell 재사용
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
             return UICollectionViewCell()
+        }
+        if indexPath.row < selectedImages.count {
+            let imageAsset = selectedImages[indexPath.row]
+            // cell에 이미지를 설정하는 코드
+            // cell.image = UIImage(data: data) 또는 다른 방식으로 이미지를 설정하세요
         }
         return cell
     }
@@ -365,43 +372,83 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
     }
     
     //MARK: - 클릭시 갤러리 열림
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(indexPath.section), \(indexPath.row)")
         
         cellClicked()
     }
     
-    @objc func cellClicked(){
+    
+    public func cellClicked(){
         
         let imagePicker = ImagePickerController()
-           imagePicker.settings.selection.max = 4
-           imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-           imagePicker.settings.theme.selectionStyle = .numbered
-
-           // ImagePicker에서 이미지를 선택한 후의 처리
-//           imagePicker.onFinish = { (assets) in
-//               // 선택한 이미지들을 처리
-//               for asset in assets {
-//                   if let phAsset = asset as? PHAsset {
-//                       // phAsset을 이용하여 이미지를 가져올 수 있음
-//                       // 여기서 선택한 이미지를 처리하면 됨
-//                   }
-//               }
-//           }
-
-           // BSImagePicker를 표시
-           self.presentImagePicker(imagePicker, animated: true, select: { (asset) in
-               // 선택한 이미지에 대한 처리를 할 수도 있음
-           }, deselect: { (asset) in
-               // 이미지 선택 해제 시 처리할 내용을 추가할 수도 있음
-           }, cancel: { (assets) in
-               // 이미지 선택을 취소한 경우 처리할 내용을 추가할 수도 있음
-           }, finish: { (assets) in
-               // 이미지 선택이 완료된 경우 처리할 내용을 추가할 수도 있음
-           })
+        imagePicker.settings.selection.max = 4
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+        imagePicker.modalPresentationStyle = .fullScreen
+        imagePicker.settings.theme.selectionStyle = .numbered
+        imagePicker.doneButtonTitle = "완료"
+        imagePicker.doneButton.tintColor = .black
+        imagePicker.cancelButton.tintColor = .black
+        
+        // ImagePicker에서 이미지를 선택한 후의 처리
+        //        imagePicker.onFin ish = { [weak self] assets in
+        //            guard let self = self else { return }
+        //
+        //
+        //
+        //            // 이미지 선택이 완료된 경우 처리할 내용을 추가할 수도 있음
+        //        }
+        
+        
+        // BSImagePicker를 표시
+        self.presentImagePicker(imagePicker, animated: true, select: { (asset) in
+            // 선택한 이미지에 대한 처리를 할 수도 있음
+        }, deselect: { (asset) in
+            print("이미지 선택 해제")
+            // 이미지 선택 해제 시 처리할 내용을 추가할 수도 있음
+        }, cancel: { (assets) in
+            // 이미지 선택을 취소한 경우 처리할 내용을 추가할 수도 있음
+            print("이미지 선택 취소")
+        }, finish: { (assets) in
+            // 이미지 선택을 끝낼 경우 처리할 내용을 추가할 수동 있음
+            
+            print("이미지 선택 끝")
+            for i in 0..<assets.count {
+                        self.selectedImages.append(assets[i])
+                     }
+                     self.convertAssetToImage()
+                     //self.delegate?.didPickImagesToUpload(images: self.userSelectedImages)
+        })
     }
+    
+    func convertAssetToImage() {
+        if selectedImages.count != 0 {
+                for i in 0 ..< selectedImages.count {
+                    let imageManager = PHImageManager.default()
+                        let option = PHImageRequestOptions()
+                        option.isSynchronous = true
+                        var thumbnail = UIImage()
+                        imageManager.requestImage(for: selectedImages[i], targetSize: CGSize(width: selectedImages[i].pixelWidth, height: selectedImages[i].pixelHeight), contentMode: .aspectFill, options: option) {
+                                (result, info) in
+                                thumbnail = result!
+                    }
+                
+                        let data = thumbnail.jpegData(compressionQuality: 0.7)
+                        let newImage = UIImage(data: data!)
+                        //self.convertAssetToImages()
+//                        self.selectedImages.append(newImage! as UIImage)
+                    }
+            }
+    }
+    
+    //사진을 고르고 난 뒤에 사진의 데이터 타입은 PHAsset 이라는 점이다. 즉, UIImage 타입이 아니기 때문에 바로 UIImageView 에 띄운다거나 그러지는 못한다. 그러기 위해서 convertAssetToImages( ) 함수를 하나 더 정의해야한다.
+//    func convertAssetToImages() {
+//        
+//    }
 }
+
+
 
 //extension RecordingViewController : UITextViewDelegate{
 //
