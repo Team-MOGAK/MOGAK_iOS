@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 ///아래에 위치하는 모달창
-class BottomModalSheet: UIViewController {
+class CustomBottomModalSheet: UIViewController {
     //MARK: - properties
     //modal높이
     var bottomHeight: CGFloat = 300.0
@@ -111,7 +111,7 @@ class BottomModalSheet: UIViewController {
 
 }
 
-extension BottomModalSheet {
+extension CustomBottomModalSheet {
     private func configureLayout() {
         self.view.addSubviews(dimmedBackgroundView, bottomModalSheetView, indicatorView)
         
@@ -134,8 +134,8 @@ extension BottomModalSheet {
         indicatorView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(bottomModalSheetView.snp.top).offset(12)
-            make.width.equalTo(102)
-            make.height.equalTo(7)
+            make.width.equalTo(100)
+            make.height.equalTo(5)
         }
     }
 }

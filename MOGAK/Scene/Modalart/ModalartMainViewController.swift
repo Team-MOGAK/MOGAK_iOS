@@ -125,8 +125,23 @@ extension ModalartMainViewController: UICollectionViewDelegate {
     //이걸 통해서 어떤 모각이 선택되었는지를 알 수 있음
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.cellForItem(at: indexPath)
-        print(#fileID, #function, #line, "- 선택된 cell의 타입:\(collectionView.cellForItem(at: indexPath)?.reuseIdentifier)")
         print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
+        
+        guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
+        if cellType == "ModalartMainCell" {
+            print(#fileID, #function, #line, "- modalArtMainCell만음")
+            let bottomSheetVC = CustomBottomModalSheet()
+            bottomSheetVC.bottomHeight = 200
+            var bottomSheetView = MakeTitleAlertBottomSheetView()
+            bottomSheetView.noBtn.addTarget(bottomSheetVC, action: #selector(bottomSheetView.noBtnTapped), for: .touchUpInside)
+            bottomSheetView.okayBtn.addTarget(bottomSheetVC, action: #selector(bottomSheetView.okayBtnTapped), for: .touchUpInside)
+            bottomSheetVC.bottomModalSheetView = bottomSheetView
+            
+            bottomSheetVC.modalPresentationStyle = .overFullScreen
+            bottomSheetVC.modalTransitionStyle = .crossDissolve
+            
+            self.present(bottomSheetVC, animated: true)
+        }
     }
 }
 
