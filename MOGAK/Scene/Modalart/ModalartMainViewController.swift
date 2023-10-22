@@ -128,13 +128,27 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
         
         guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
-        if cellType == "ModalartMainCell" {
-            print(#fileID, #function, #line, "- modalArtMainCell만음")
+        if cellType == EmptyMogakCell.identifier {
+            print(#fileID, #function, #line, "- 아무것도 없는 모각 셀")
+
             let bottomSheetVC = CustomBottomModalSheet()
             bottomSheetVC.bottomHeight = 200
-            var bottomSheetView = MakeTitleAlertBottomSheetView()
-            bottomSheetView.noBtn.addTarget(bottomSheetVC, action: #selector(bottomSheetView.noBtnTapped), for: .touchUpInside)
-            bottomSheetView.okayBtn.addTarget(bottomSheetVC, action: #selector(bottomSheetView.okayBtnTapped), for: .touchUpInside)
+            let bottomSheetView = NeedModalArtMainTitleModal()
+            bottomSheetView.vc = bottomSheetVC
+            bottomSheetVC.bottomModalSheetView = bottomSheetView
+            
+            bottomSheetVC.modalPresentationStyle = .overFullScreen
+            bottomSheetVC.modalTransitionStyle = .crossDissolve
+            
+            self.present(bottomSheetVC, animated: true)
+        } else if cellType == ModalartMainCell.identifier {
+            print(#fileID, #function, #line, "- 아무것도 없는 모각 셀")
+
+            let bottomSheetVC = CustomBottomModalSheet()
+            bottomSheetVC.bottomHeight = 252
+            let bottomSheetView = SetModalArtTitleModal()
+            bottomSheetView.vc = bottomSheetVC
+            bottomSheetView.vc.indicatorView.isHidden = true
             bottomSheetVC.bottomModalSheetView = bottomSheetView
             
             bottomSheetVC.modalPresentationStyle = .overFullScreen

@@ -20,4 +20,16 @@ extension UITextField {
         self.rightView = rightimage
         self.rightViewMode = .always
     }
+    
+    //MARK: - placeHolderColor설정하기
+    //반드시 string넣고 -> color지정
+    func setPlaceholderColor(_ placeHolderColor: UIColor) {
+        attributedPlaceholder = NSAttributedString(
+            string: placeholder ?? "",
+            attributes: [
+                .foregroundColor: placeHolderColor,
+                .font: font
+            ].compactMapValues{ $0 }
+        )
+    }
 }

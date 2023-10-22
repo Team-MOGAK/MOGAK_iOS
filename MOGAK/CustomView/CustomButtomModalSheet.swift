@@ -16,7 +16,7 @@ class CustomBottomModalSheet: UIViewController {
     var bottomHeight: CGFloat = 300.0
     
     //bottomModalSheet가 view의 상단에서 떨어진 거리
-    private var bottomSheetViewTopConstraint: Constraint!
+    var bottomSheetViewTopConstraint: Constraint!
     
     //기존의 화면을 흐려지게 함(즉, 모달의 배경이 되는 화면이 보이도록 함)
     private let dimmedBackgroundView: UIView = {
@@ -29,7 +29,7 @@ class CustomBottomModalSheet: UIViewController {
     // vc를 메모리에 올릴때 UIView생성후 주입시켜주세요!!
     var bottomModalSheetView: UIView!
     
-    private let indicatorView: UIView = {
+    var indicatorView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray3
         view.layer.cornerRadius = 3
