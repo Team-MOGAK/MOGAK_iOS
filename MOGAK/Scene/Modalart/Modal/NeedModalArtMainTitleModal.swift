@@ -60,10 +60,12 @@ class NeedModalArtMainTitleModal: UIView {
 
     @objc func noBtnTapped() {
         print(#fileID, #function, #line, "- 아니오 button clicked")
+        vc.dismiss(animated: true)
     }
 
     @objc func okayBtnTapped() {
         print(#fileID, #function, #line, "- yes button tapped")
+        vc.dismiss(animated: true)
     }
 
     override init(frame: CGRect) {

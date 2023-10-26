@@ -21,6 +21,7 @@ class ModalartMainCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.textColor = DesignSystemColor.white.value
         label.font = UIFont.pretendard(.semiBold, size: 18)
+        label.textAlignment = .center
         return label
     }()
     

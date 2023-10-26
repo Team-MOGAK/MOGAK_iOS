@@ -11,11 +11,16 @@ import SnapKit
 
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
-    var modalArtName: String = "내 모다라트"
+    //MARK: - 임시 데이터들
+//    var modalArtName: String = "내 모다라트"
+    var modalArtNameArr: [String] = ["운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
+    var nowShowModalArtNum: Int = 0 //현재 보여지는 모다라트의 번호
+    var mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
+//    var mogakCategory: [(String, String)] = []
     
     private lazy var modalArtNameLabel: UILabel = {
         let label = UILabel()
-        label.text = modalArtName //데이터 받아오면 그 모다라트 이름으로 변경 필요
+        label.text = modalArtNameArr[nowShowModalArtNum] //데이터 받아오면 그 모다라트 이름으로 변경 필요
         label.font = DesignSystemFont.semibold20L140.value
         label.textColor = DesignSystemColor.black.value
         return label
@@ -24,7 +29,6 @@ class ModalartMainViewController: UIViewController {
     private lazy var showModalArtListBtn: UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(named: "downArrow"), for: .normal)
-        btn.addTarget(self, action: #selector(showModalArtListBtnTapped), for: .touchUpInside)
         return btn
     }()
     
@@ -47,6 +51,7 @@ class ModalartMainViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = DesignSystemColor.signatureBag.value
         
+        showModalArtListBtnTapped()
         collectionViewSetting()
         configureLayout()
     }
@@ -62,13 +67,49 @@ class ModalartMainViewController: UIViewController {
     }
     
     //MARK: - 모다라트 리스트 보기(custom sheet)
-    @objc private func showModalArtListBtnTapped() {
-        print(#fileID, #function, #line, "- 모다라트 리스트 보기 버튼 탭⭐️")
+    func showModalArtListBtnTapped(){ //개인적으로 View를 새롭게 만드는 것보다 UIMenu를 생성하는게 맞다고 생각함
+        let actionArr: [UIAction] = modalArtNameArr
+            .enumerated()
+            .map { index, name in
+                let uiAction = UIAction(title: name) { _ in
+                    //선택한 모다라트에 맞도록 데이터를 변경해줘야 함
+                    self.nowShowModalArtNum = index
+                    self.mogakCategory = [("딴스", "bbbb"), ("aaaa", "aaaaa"),("bb", "cccc")]
+                }
+               return uiAction
+        }
+        print(#fileID, #function, #line, "- 모다라트 리스트 보기 버튼 탭⭐️: \(actionArr)")
+        showModalArtListBtn.showsMenuAsPrimaryAction = true
+        showModalArtListBtn.menu = UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: actionArr)
     }
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
     @objc private func tacoBtnTapped() {
         print(#fileID, #function, #line, "- 모다라트 추가 삭제버튼(타코버튼) 탭 ⭐️")
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let addModalArtAction = UIAlertAction(title: "모다라트 추가", style: .default) { _ in
+            print(#fileID, #function, #line, "- 모다라트 추가하기 sheet")
+            // 모다라트를 계속적으로 추가할 수 있게 할 것인지
+            let nextModalArtName: String = "내 모다라트" + String(self.modalArtNameArr.count + 1)
+            self.modalArtNameArr.append(nextModalArtName)
+            self.mogakCategory = []
+            self.modalArtCollectionView.reloadData()
+        }
+        
+        let deleteModalArtAction = UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in
+            print(#fileID, #function, #line, "- 모다라트 삭제하기")
+            //삭제시 바로 이전 모다라트를 보여줄것인지?
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            print(#fileID, #function, #line, "- <#comment#>")
+        }
+        
+        actionSheet.addAction(addModalArtAction)
+        actionSheet.addAction(deleteModalArtAction)
+        actionSheet.addAction(cancelAction)
+        self.present(actionSheet, animated: true)
     }
     
     func collectionViewSetting() {
@@ -100,7 +141,7 @@ extension ModalartMainViewController {
         showModalArtListBtn.snp.makeConstraints {
             $0.size.equalTo(16)
             $0.leading.equalTo(modalArtNameLabel.snp.trailing).offset(12)
-            $0.top.equalTo(modalArtNameLabel.snp.top)
+            $0.centerY.equalTo(modalArtNameLabel.snp.centerY)
         }
         
         //MARK: - 타코버튼(모다라트 추가, 삭제하기 actionSheet)
@@ -111,8 +152,6 @@ extension ModalartMainViewController {
         }
         
         modalArtCollectionView.snp.makeConstraints{
-            print(#fileID, #function, #line, "- ???⭐️")
-//            $0.leading.equalTo(modalArtNameLabel.snp.leading)
             $0.width.equalTo(350)
             $0.height.equalTo(520)
             $0.centerX.equalToSuperview()
@@ -124,26 +163,25 @@ extension ModalartMainViewController {
 extension ModalartMainViewController: UICollectionViewDelegate {
     //이걸 통해서 어떤 모각이 선택되었는지를 알 수 있음
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.cellForItem(at: indexPath)
         print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
         
         guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
-        if cellType == EmptyMogakCell.identifier {
+        if cellType == EmptyMogakCell.identifier && modalArtNameArr[nowShowModalArtNum] == "내 모다라트" {
             print(#fileID, #function, #line, "- 아무것도 없는 모각 셀")
-
-            let bottomSheetVC = CustomBottomModalSheet()
-            bottomSheetVC.bottomHeight = 200
-            let bottomSheetView = NeedModalArtMainTitleModal()
-            bottomSheetView.vc = bottomSheetVC
-            bottomSheetVC.bottomModalSheetView = bottomSheetView
-            
-            bottomSheetVC.modalPresentationStyle = .overFullScreen
-            bottomSheetVC.modalTransitionStyle = .crossDissolve
-            
-            self.present(bottomSheetVC, animated: true)
+            if modalArtNameArr[nowShowModalArtNum] == "내 모다라트" {
+                let bottomSheetVC = CustomBottomModalSheet()
+                bottomSheetVC.bottomHeight = 200
+                let bottomSheetView = NeedModalArtMainTitleModal()
+                bottomSheetView.vc = bottomSheetVC
+                bottomSheetVC.bottomModalSheetView = bottomSheetView
+                
+                bottomSheetVC.modalPresentationStyle = .overFullScreen
+                bottomSheetVC.modalTransitionStyle = .crossDissolve
+                self.present(bottomSheetVC, animated: true)
+            } else {
+                print(#fileID, #function, #line, "- 작은 모다라트 설정으로 이동")
+            }
         } else if cellType == ModalartMainCell.identifier {
-            print(#fileID, #function, #line, "- 아무것도 없는 모각 셀")
-
             let bottomSheetVC = CustomBottomModalSheet()
             bottomSheetVC.bottomHeight = 252
             let bottomSheetView = SetModalArtTitleModal()
@@ -179,8 +217,10 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         let row = indexPath.row
         
         if(row == 4) {
-            mainMogakCell.mainBackgroundColor = "475FFD"
-            mainMogakCell.mainLabelText = "운동하기"
+            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) == "내 모다라트"
+            mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? "BFC3D4" : "475FFD"
+            print(#fileID, #function, #line, "- 내 모다라트 이름 확인:\(hasModalArtNameChecking)")
+            mainMogakCell.mainLabelText = hasModalArtNameChecking ? "큰 목표 \n추가" : modalArtNameArr[nowShowModalArtNum] //
             mainMogakCell.cellDataSetting()
             return mainMogakCell
         } else {
@@ -189,8 +229,6 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     }
     
     func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
-//        let mogakCategory: [(String, String)] = []
         if (mogakCategory.count > row && row < 4) {
             mogakCell.goalCategoryLabelText = mogakCategory[row].0
             mogakCell.goalContentLabelText = mogakCategory[row].1

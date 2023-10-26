@@ -29,7 +29,7 @@ class EmptyMogakCell: UICollectionViewCell {
         let btn = UIButton()
         btn.setImage(UIImage(named: "mogakPlusBtn"), for: .normal)
         btn.contentMode = .scaleToFill
-        btn.addTarget(self, action: #selector(addBtnTapped), for: .touchUpInside)
+//        btn.addTarget(self, action: #selector(addBtnTapped), for: .touchUpInside)
         return btn
     }()
     
