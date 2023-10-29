@@ -110,10 +110,7 @@ class SetModalArtNameModalVC: UIViewController{
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        if modalArtTitle != "" {
-            titleSetTextField.text = modalArtTitle
-        }
-        
+        viewSetting()
         setupGestureRecognizer()
         configureLayout()
         collectionViewSetUp()
@@ -130,6 +127,16 @@ class SetModalArtNameModalVC: UIViewController{
         super.viewDidAppear(animated)
         showBottomModalSheet()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    //MARK: - 뷰컨 셋팅(textField에 텍스트 넣어주기, addTarget달아주기)
+    func viewSetting() {
+        if modalArtTitle != "" {
+            titleSetTextField.text = modalArtTitle
+        }
+        
+        self.cancelBtn.addTarget(self, action: #selector(cancelBtnTapped(_:)), for: .touchUpInside)
+        self.completeBtn.addTarget(self, action: #selector(completeBtnTapped(_:)), for: .touchUpInside)
     }
     
     //MARK: - GestureRecognizer 세팅 작업
