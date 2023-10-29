@@ -12,11 +12,13 @@ import SnapKit
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - 임시 데이터들
-//    var modalArtName: String = "내 모다라트"
-    var modalArtNameArr: [String] = ["운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기", "운동하기"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
+//    var modalArtNameArr: [String] = ["내 모다라트"]
+    var modalArtNameArr: [String] = ["2023 김라영의 모다라트 호로로", "운동하기", "내 모다라트3"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
     var nowShowModalArtNum: Int = 0 //현재 보여지는 모다라트의 번호
     var mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
 //    var mogakCategory: [(String, String)] = []
+//    var modalArtMainCellBgColor: String = "475FFD" //나중에 받아와서 변경할 에정
+    var modalArtMainCellBgColor: String = "11D796" //나중에 받아와서 변경할 에정
     
     private lazy var modalArtNameLabel: UILabel = {
         let label = UILabel()
@@ -26,8 +28,8 @@ class ModalartMainViewController: UIViewController {
         return label
     }()
     
-    private lazy var showModalArtListBtn: UIButton = {
-        let btn = UIButton()
+    private lazy var showModalArtListBtn: ButtonWithMenu = {
+        let btn = ButtonWithMenu()
         btn.setImage(UIImage(named: "downArrow"), for: .normal)
         return btn
     }()
@@ -50,7 +52,6 @@ class ModalartMainViewController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         self.view.backgroundColor = DesignSystemColor.signatureBag.value
-        
         showModalArtListBtnTapped()
         collectionViewSetting()
         configureLayout()
@@ -68,19 +69,35 @@ class ModalartMainViewController: UIViewController {
     
     //MARK: - 모다라트 리스트 보기(custom sheet)
     func showModalArtListBtnTapped(){ //개인적으로 View를 새롭게 만드는 것보다 UIMenu를 생성하는게 맞다고 생각함
-        let actionArr: [UIAction] = modalArtNameArr
+        var actionArr: [UIAction] = modalArtNameArr
             .enumerated()
             .map { index, name in
-                let uiAction = UIAction(title: name) { _ in
+                let uiAction = UIAction(title: name) { action in
                     //선택한 모다라트에 맞도록 데이터를 변경해줘야 함
+                    let hasModalArtNameChecking: Bool = String(name.prefix(6)) == "내 모다라트"
+                    if hasModalArtNameChecking {
+                        print(#fileID, #function, #line, "- 내 모다라트로 아직 타이틀 설정안됨")
+    
+                    }
                     self.nowShowModalArtNum = index
                     self.mogakCategory = [("딴스", "bbbb"), ("aaaa", "aaaaa"),("bb", "cccc")]
                 }
                return uiAction
         }
+        
+        let addModalArtAction: UIAction = UIAction(title: "모다라트 추가") { _ in
+            print(#fileID, #function, #line, "- 모다라트 추가 클릭")
+        }
+        
+        actionArr.append(addModalArtAction)
+        
+        let menu = UIMenu(title: "", image: nil, identifier: nil,options: .displayInline, children: actionArr)
+        
+        showModalArtListBtn.offset = CGPoint(x: -180, y: 0)
         print(#fileID, #function, #line, "- 모다라트 리스트 보기 버튼 탭⭐️: \(actionArr)")
         showModalArtListBtn.showsMenuAsPrimaryAction = true
-        showModalArtListBtn.menu = UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: actionArr)
+        showModalArtListBtn.menu = menu
+    
     }
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
@@ -121,7 +138,6 @@ class ModalartMainViewController: UIViewController {
         //delegate, datasource를 사용할 viewcontroller설정
         modalArtCollectionView.delegate = self
         modalArtCollectionView.dataSource = self
-//        modalArtCollectionView.reloadData()
     }
 
 }
@@ -130,6 +146,10 @@ class ModalartMainViewController: UIViewController {
 extension ModalartMainViewController {
     func configureLayout() {
         self.view.addSubviews(modalArtNameLabel, showModalArtListBtn, tacoBtn, modalArtCollectionView)
+        //모다라트 사이즈 설정
+        guard let window = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+        let screenWidthSize = window.screen.bounds.width
+        let modalArtWidthSize = screenWidthSize - 70 //모각 사이간격이 10, padding이 20
         
         //MARK: - 모다라트 이름 라벨 레이아웃
         modalArtNameLabel.snp.makeConstraints {
@@ -152,7 +172,7 @@ extension ModalartMainViewController {
         }
         
         modalArtCollectionView.snp.makeConstraints{
-            $0.width.equalTo(350)
+            $0.width.equalTo(modalArtWidthSize)
             $0.height.equalTo(520)
             $0.centerX.equalToSuperview()
             $0.top.equalTo(modalArtNameLabel.snp.top).offset(39)
@@ -174,7 +194,6 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 let bottomSheetView = NeedModalArtMainTitleModal()
                 bottomSheetView.vc = bottomSheetVC
                 bottomSheetVC.bottomModalSheetView = bottomSheetView
-                
                 bottomSheetVC.modalPresentationStyle = .overFullScreen
                 bottomSheetVC.modalTransitionStyle = .crossDissolve
                 self.present(bottomSheetVC, animated: true)
@@ -182,12 +201,15 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 print(#fileID, #function, #line, "- 작은 모다라트 설정으로 이동")
             }
         } else if cellType == ModalartMainCell.identifier {
-            let bottomSheetVC = CustomBottomModalSheet()
-            bottomSheetVC.bottomHeight = 252
-            let bottomSheetView = SetModalArtTitleModal()
-            bottomSheetView.vc = bottomSheetVC
-            bottomSheetView.vc.indicatorView.isHidden = true
-            bottomSheetVC.bottomModalSheetView = bottomSheetView
+            print(#fileID, #function, #line, "- 모다라트 중앙 셀 설정")
+            //ModalArtMainCell의 goalLableTitle을 여기서 가지고 올 수가 없기 때문에 모다라트 타이틀로 결정을 해야 한다 -> 즉, 모다라트 타이틀의 앞 여섯글자가 내 모다라트와 동일한 경우 아직 목표 설정이 안된것!
+            //그러므로 모다라트의 이름이 절대 내 모다라트이면 안된다! -> 내 모다라트라는 이름으로 할 경우 alert을 띄워야 한다고 생각함
+            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) == "내 모다라트"
+            let bottomSheetVC = SetModalArtNameModalVC()
+
+            bottomSheetVC.titleSetTextField.text = hasModalArtNameChecking ? nil : modalArtNameArr[nowShowModalArtNum]
+            bottomSheetVC.titleBgColor = modalArtMainCellBgColor
+            print(#fileID, #function, #line, "- modalArtTitle⭐️: \(modalArtNameArr[nowShowModalArtNum])")
             
             bottomSheetVC.modalPresentationStyle = .overFullScreen
             bottomSheetVC.modalTransitionStyle = .crossDissolve

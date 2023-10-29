@@ -42,11 +42,19 @@ class CustomBottomModalSheet: UIViewController {
         
         setupGestureRecognizer()
         configureLayout()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         showBottomModalSheet()
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
     
     //MARK: - GestureRecognizer 세팅 작업
@@ -107,6 +115,22 @@ class CustomBottomModalSheet: UIViewController {
                 break
             }
         }
+    }
+    
+    @objc func keyboardWillShow(_ sender: Notification) {
+        guard let keyboardSize = (sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        
+        guard let screenSize = self.view.window?.windowScene?.screen.bounds else { return }
+        let bottomPadding: CGFloat = self.view.safeAreaInsets.bottom
+        self.bottomModalSheetView.frame.origin.y = screenSize.height - (keyboardSize.height + self.bottomHeight + bottomPadding)
+//        self.frame.origin.y = 500
+    }
+    
+    @objc func keyboardWillHide(_ sender: Notification) {
+        guard let screenSize = self.view.window?.windowScene?.screen.bounds else { return }
+        let bottomPadding: CGFloat = self.view.safeAreaInsets.bottom
+        self.bottomModalSheetView.frame.origin.y = screenSize.height - (self.bottomHeight + bottomPadding + 10)
+        
     }
 
 }

@@ -50,6 +50,7 @@ extension ModalartMainCell {
         goalLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().offset(20)
         }
     }
 }

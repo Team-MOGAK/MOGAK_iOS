@@ -9,8 +9,10 @@ import Foundation
 import UIKit
 import SnapKit
 
+///큰 목표 타이틀 생성하는 모달
 class SetModalArtTitleModal: UIView {
     var vc: CustomBottomModalSheet!
+    var modalArtTitle: String = ""
     
     let titleColorPalette: [UIColor] = [DesignSystemColor.gray.value, DesignSystemColor.red.value, DesignSystemColor.black.value, DesignSystemColor.green.value, DesignSystemColor.lightGreen.value, DesignSystemColor.orange.value, DesignSystemColor.pink.value, DesignSystemColor.purple.value, DesignSystemColor.signature.value]
     
@@ -92,9 +94,13 @@ class SetModalArtTitleModal: UIView {
         self.configureLayout()
         self.mainModalArtTitleColors()
         
+        print(#fileID, #function, #line, "- modalArtTitle: \(modalArtTitle)")
+        if modalArtTitle != "" {
+            titleSetTextField.text = modalArtTitle
+        }
+        
         self.cancelBtn.addTarget(vc, action: #selector(cancelBtnTapped(_:)), for: .touchUpInside)
         self.completeBtn.addTarget(vc, action: #selector(completeBtnTapped(_:)), for: .touchUpInside)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -103,10 +109,10 @@ class SetModalArtTitleModal: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.endEditing(true)
-    }
-    
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        self.endEditing(true)
+//    }
+
     //MARK: - color palette만들기
     private func mainModalArtTitleColors() {
         titleColorPalette.map { color in
@@ -141,6 +147,7 @@ class SetModalArtTitleModal: UIView {
         guard let screenSize = vc.view.window?.windowScene?.screen.bounds else { return }
         let bottomPadding: CGFloat = vc.view.safeAreaInsets.bottom
         self.frame.origin.y = screenSize.height - (keyboardSize.height + vc.bottomHeight + bottomPadding)
+//        self.frame.origin.y = 500
     }
     
     @objc func keyboardWillHide(_ sender: Notification) {
@@ -148,6 +155,11 @@ class SetModalArtTitleModal: UIView {
         let bottomPadding: CGFloat = vc.view.safeAreaInsets.bottom
         self.frame.origin.y = screenSize.height - (vc.bottomHeight + bottomPadding + 10)
         
+    }
+    
+    //MARK: - 만약에 모다라트 이름이 겹칠 경우 혹은 모다라트 이름이 '내 모다라트N'일 경우 alert을 띄워줘야 한다
+    func makeSetModalArtTitleErroAlert() {
+        print(#fileID, #function, #line, "- 모다라트 이름이 있는 이름일 경우에 띄울 알림")
     }
 }
 
@@ -207,7 +219,8 @@ extension SetModalArtTitleModal: UITextFieldDelegate {
         
         guard let stringLength = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringLength, with: string)
-        
         return updatedText.count <= 8
     }
+    
+    
 }
