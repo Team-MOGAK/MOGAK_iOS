@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
-///아래에 위치하는 모달창
+///모다라트 이름을 설정하는 바텀시트
 class SetModalArtNameModalVC: UIViewController{
     //MARK: - properties
     //modal높이
@@ -18,10 +18,13 @@ class SetModalArtNameModalVC: UIViewController{
     //bottomModalSheet가 view의 상단에서 떨어진 거리
     var bottomSheetViewTopConstraint: Constraint!
     
+    //모다라트 타이틀
     var modalArtTitle: String = ""
     
+    //모다라트 배경색
     var titleBgColor: String!
 
+    //모다라트 배경색으로 선택 가능한 컬러차트
     let titleColorPalette: [String] = ["475FFD", "11D796", "009967", "FF2323", "D9D9D9", "F98A08", "FF6827", "9C31FF"]
     
     //기존의 화면을 흐려지게 함(즉, 모달의 배경이 되는 화면이 보이도록 함)
@@ -32,7 +35,6 @@ class SetModalArtNameModalVC: UIViewController{
     }()
     
     //MARK: - 실제 바텀 모달시트뷰
-    // vc를 메모리에 올릴때 UIView생성후 주입시켜주세요!!
     var bottomModalSheetView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -64,22 +66,6 @@ class SetModalArtNameModalVC: UIViewController{
         return textField
     }()
     
-    var colorStackView: UIStackView = {
-        let stk = UIStackView()
-        stk.axis = .horizontal
-        stk.alignment = .fill
-        stk.spacing = 16
-        stk.distribution = .fillEqually
-        return stk
-    }()
-    
-    var colorScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.backgroundColor = .clear
-        scrollView.showsHorizontalScrollIndicator = false
-        return scrollView
-    }()
-    
     var cancelBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("취소", for: .normal)
@@ -109,6 +95,7 @@ class SetModalArtNameModalVC: UIViewController{
         return stk
     }()
     
+    //MARK: - 컬러 차트
     var colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 40, height: 40)
@@ -120,6 +107,7 @@ class SetModalArtNameModalVC: UIViewController{
         return collectionView
     }()
     
+    //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         if modalArtTitle != "" {
@@ -128,15 +116,16 @@ class SetModalArtNameModalVC: UIViewController{
         
         setupGestureRecognizer()
         configureLayout()
-        mainModalArtTitleColors()
         collectionViewSetUp()
     }
     
+    //MARK: - viewDidDisappear
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    //MARK: - viewDidAppear
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         showBottomModalSheet()
@@ -221,67 +210,32 @@ class SetModalArtNameModalVC: UIViewController{
         self.bottomModalSheetView.frame.origin.y = screenSize.height - (self.bottomHeight + bottomPadding + 10)
     }
         
-        //MARK: - color palette만들기
-    private func mainModalArtTitleColors() {
-        titleColorPalette.map { color in
-            let view: UIView = {
-                let view = UIView()
-                view.backgroundColor = UIColor(hex: color)
-                
-                view.layer.cornerRadius = 20 //width가 40이니까 그거의 절반인 20으로만들기
-                view.clipsToBounds = true
-                view.snp.makeConstraints { make in
-                    make.size.equalTo(40)
-                }
-                return view
-            }()
-            return view
-        }
-        .forEach(colorStackView.addArrangedSubview)
-    }
-        
+    //MARK: - 취소버튼 눌렀을 때
     @objc func cancelBtnTapped(_ sender: UIButton) {
         print(#fileID, #function, #line, "- 취소버튼 클릭")
         self.dismiss(animated: true)
     }
     
+    //MARK: - 완료버튼 눌렀을 때
     @objc func completeBtnTapped(_ sender: UIButton) {
         print(#fileID, #function, #line, "- 완료버튼 클릭")
         self.dismiss(animated: true)
     }
     
-    //MARK: - 컬러 팔레트의 컬러를 선택했을때 해당 컬러 안에 넣어야 함
-    @objc func colorTapGesture(_ sender: UITapGestureRecognizer) -> UIView{
-        let view: UIView = {
-            let view = UIView()
-            view.backgroundColor = DesignSystemColor.white.value
-            
-            view.layer.cornerRadius = 15 //width가 40이니까 그거의 절반인 20으로만들기
-            view.clipsToBounds = true
-            view.snp.makeConstraints { make in
-                make.size.equalTo(30)
-            }
-            return view
-        }()
-        return view
-    }
-    
+    //MARK: - 컬러 차트 collectionView 셋팅
     func collectionViewSetUp() {
         colorCollectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
         colorCollectionView.dataSource = self
-//        colorCollectionView.delegate = self
     }
 
 }
 
 extension SetModalArtNameModalVC {
+    //MARK: - 뷰들 레이아웃 잡기
     private func configureLayout() {
         self.view.addSubviews(dimmedBackgroundView, bottomModalSheetView)
         
-//        self.bottomModalSheetView.addSubviews(indicatorView, titleLabel, titleSetTextField, colorScrollView, btnStackView)
         self.bottomModalSheetView.addSubviews(indicatorView, titleLabel, titleSetTextField, colorCollectionView, btnStackView)
-        
-//        self.colorScrollView.addSubview(colorStackView)
         self.btnStackView.addArrangedSubview(cancelBtn)
         self.btnStackView.addArrangedSubview(completeBtn)
         
@@ -316,20 +270,6 @@ extension SetModalArtNameModalVC {
             make.height.equalTo(40)
         }
         
-//        colorScrollView.snp.makeConstraints { make in
-//            make.top.equalTo(titleSetTextField.snp.bottom).offset(26)
-//            make.leading.equalToSuperview().offset(20)
-//            make.trailing.equalToSuperview()
-//            make.height.equalTo(40)
-//        }
-        
-//        colorStackView.snp.makeConstraints { make in
-//            make.top.equalTo(colorScrollView.snp.top)
-//            make.leading.equalTo(colorScrollView.snp.leading)
-//            make.bottom.equalTo(colorScrollView.snp.bottom)
-//            make.trailing.equalTo(colorScrollView.snp.trailing)
-//        }
-        
         btnStackView.snp.makeConstraints { make in
             make.height.equalTo(52)
             make.centerX.equalToSuperview()
@@ -347,31 +287,30 @@ extension SetModalArtNameModalVC {
 }
 
 extension SetModalArtNameModalVC: UITextFieldDelegate {
+    //MARK: - 텍스트필드 글자수 제한
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         print(#fileID, #function, #line, "- 변경된거 탄🐿️")
         let currentText = textField.text ?? ""
         
         guard let stringLength = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringLength, with: string)
-        return updatedText.count <= 8
+        return updatedText.count <= 20
     }
-    
-    
 }
 
 
 extension SetModalArtNameModalVC: UICollectionViewDataSource {
+    //MARK: - 한 섹션안에 컬러 차트의 개수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         titleColorPalette.count
     }
 
-    
+    //MARK: - cell 셋팅
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = colorCollectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
         
         cell.color = UIColor(hex: titleColorPalette[indexPath.row])
-        if titleColorPalette[indexPath.row] == titleBgColor {
-//            cell.isSelected = true
+        if titleColorPalette[indexPath.row] == titleBgColor { //만약에 지금 보여줘야 하는 셀이 타이틀 백그라운드 색이랑 같다면 해당 컬러차트 표시
             cell.innerView.backgroundColor = .white
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
         }
@@ -382,11 +321,4 @@ extension SetModalArtNameModalVC: UICollectionViewDataSource {
         return cell
     }
 }
-
-//extension SetModalArtNameModalVC: UICollectionViewDelegate {
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        print(#fileID, #function, #line, "- <#comment#>")
-//        
-//    }
-//}
 
