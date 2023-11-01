@@ -14,47 +14,6 @@ import Alamofire
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
     //MARK: - Properties
-    private lazy var profileImageView : UIButton = {
-        let profileImageView = UIButton()
-        profileImageView.setImage(UIImage(named: "default"), for: .normal)
-        profileImageView.layer.cornerRadius = 18
-        profileImageView.clipsToBounds = true
-        profileImageView.addTarget(self, action: #selector(goSetting), for: .touchUpInside)
-        return profileImageView
-    }()
-    
-    private lazy var nameLabel : UILabel = {
-        let nameLabel = UILabel()
-        nameLabel.text = "이름"
-        nameLabel.font = UIFont(name: "Pretendard", size: 14)
-        nameLabel.textColor = UIColor(hex: "#200E04")
-        return nameLabel
-    }()
-    
-    private lazy var challengeLabel : UILabel = {
-        let challengeLabel = UILabel()
-        challengeLabel.text = "우리가 도전한지 벌써" + challengeLabelcount.text! + "일째!"
-        challengeLabel.font = UIFont(name: "Pretendard", size: 12)
-        challengeLabel.textColor = UIColor(hex: "#6E707B")
-        return challengeLabel
-    }()
-    
-    var challengeLabelcount : UILabel = {
-        var label = UILabel()
-        label.text = "124"
-        label.font = UIFont(name: "Pretendard", size: 12)
-        label.textColor = UIColor(hex: "#6E707B")
-        return label
-    }()
-    
-    private lazy var alarmButton : UIButton = {
-        let alarmButton = UIButton()
-        alarmButton.backgroundColor = .clear
-        alarmButton.setImage(UIImage(named: "noalarm"), for: .normal)
-        alarmButton.layer.cornerRadius = 12
-        alarmButton.addTarget(self, action: #selector(goAlarm), for: .touchUpInside)
-        return alarmButton
-    }()
     
     private lazy var calendarView : FSCalendar = {
         let calendarView = FSCalendar(frame: .zero)
@@ -79,7 +38,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     private lazy var leftButton : UIButton = {
         let leftButton = UIButton()
         leftButton.backgroundColor = .clear
-        leftButton.setImage(UIImage(named: "<"), for: .normal)
+        leftButton.setImage(UIImage(named: "<"), for: .normal) //이미지 수정
         leftButton.addTarget(self, action: #selector(tapBeforeWeek), for: .touchUpInside)
         return leftButton
     }()
@@ -87,7 +46,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     private lazy var rightButton : UIButton = {
         let rightButton = UIButton()
         rightButton.backgroundColor = .clear
-        rightButton.setImage(UIImage(named: ">"), for: .normal)
+        rightButton.setImage(UIImage(named: ">"), for: .normal) //이미지수정
         rightButton.addTarget(self, action: #selector(tapNextWeek), for: .touchUpInside)
         return rightButton
     }()
@@ -124,7 +83,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     private lazy var blankLabel : UILabel = {
         let blankLabel = UILabel()
-        blankLabel.text = "내 조각이 없어요...\n더 나은 내일을 위해 조각을 시작해볼까요?"
+        blankLabel.text = "내 조각이 없어요...\n모다라트를 먼저 생성해 볼까요?"
         blankLabel.font = UIFont(name: "Pretendard", size: 16)
         blankLabel.textColor = UIColor(hex: "#808497")
         blankLabel.numberOfLines = 2
@@ -133,13 +92,15 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }()
     
     
-    private lazy var blankButton : UIButton = {
-        let blankbutton = UIButton()
-        blankbutton.backgroundColor = .clear
-        blankbutton.setImage(UIImage(named: "blankButton"), for: .normal)
-        blankbutton.layer.cornerRadius = 15 //둥글기
-        blankbutton.addTarget(self, action: #selector(goSchedule), for: .touchUpInside)
-        return blankbutton
+    private lazy var makeModalArt : UIButton = {
+        let makeModalArt = UIButton()
+        makeModalArt.backgroundColor = UIColor(red: 0.883, green: 0.899, blue: 1, alpha: 1)
+        makeModalArt.layer.cornerRadius = 15 //둥글기
+        makeModalArt.setTitle("모다라트 만들러가기", for: .normal)
+        makeModalArt.setTitleColor(DesignSystemColor.signature.value, for: .normal)
+        makeModalArt.titleLabel?.font =  DesignSystemFont.medium12L150.value
+        makeModalArt.addTarget(self, action: #selector(goSchedule), for: .touchUpInside)
+        return makeModalArt
     }()
     
     private lazy var underView : UIView = {
@@ -156,10 +117,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     private lazy var startButton : UIButton = {
         let startbutton = UIButton()
-        startbutton.setTitle("시작하기",for : .normal) //타이틀
+        startbutton.setTitle("오늘 할 조각 추가하기",for : .normal) //타이틀
         startbutton.setTitleColor(.white, for : .normal) //글자 색
-        startbutton.backgroundColor = UIColor(hex: "475FFD")//백그라운드색
-        startbutton.titleLabel?.font = UIFont(name: "Pretendard", size: 18)
+        startbutton.backgroundColor = DesignSystemColor.signature.value//백그라운드색
+        startbutton.titleLabel?.font = DesignSystemFont.semibold18L100.value
         startbutton.layer.cornerRadius = 10 //둥글기
         startbutton.addTarget(self, action: #selector(goStart), for: .touchUpInside)
         return startbutton
@@ -171,7 +132,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //var cellArray = ["두줄까지 쓸 수 있어요.\n두줄까지 쓸 수 있어요.","물론 한줄도 가능합니다.","근데 세줄은 할수 없습니다.","4번째 셀","5번째 셀"]
     
-    var cellArray = ["0번째 셀입니다.","1번째 셀입니다.","2번째 셀입니다."," 3번째 셀입니다.3번째 셀입니다.","4번째 셀입니다.4번째 셀입니다.","5번째 셀입니다.5번째 셀입니다.","6번째 셀입니다.6번째 셀입니다.","7번째 셀입니다.7번째 셀입니다."]
+    var cellArray = ["0번째 셀입니다.","1번째 셀입니다.","2번째 셀입니다."]
     
     //MARK: - viewDidLoad
     
@@ -179,9 +140,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         self.circularProgressView.isHidden = true
-        self.startButton.isHidden = true
+        //        self.startButton.isHidden = true
         self.motiveLabel.isHidden = true
-        //        self.ScheduleTableView.isHidden = true
         view.backgroundColor = UIColor(hex: "F1F3FA")
         self.configureUI()
         self.configureCalendar()
@@ -229,9 +189,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         blankimage.isHidden = false
         blankLabel.isHidden = false
-        blankButton.isHidden = false
-        startButton.isHidden = true
-        
+        makeModalArt.isHidden = false
+        //        startButton.isHidden = true
         ScheduleTableView.isHidden = true
         motiveLabel.isHidden = true
         
@@ -247,21 +206,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     //MARK: - configureUI
     private func configureUI(){
         
-        let LabelStackView = UIStackView(arrangedSubviews:[nameLabel,challengeLabel]).then{
-            $0.axis = .vertical
-            $0.distribution = .fill
-            $0.spacing = 0
-        }
-        
-        let profileStackView = UIStackView(arrangedSubviews: [profileImageView,LabelStackView]).then{
-            $0.axis = .horizontal
-            $0.distribution = .equalSpacing
-            $0.spacing = 8
-            profileImageView.snp.makeConstraints{
-                $0.height.width.equalTo(36.0)
-            }
-        }
-        
         let headerStackView = UIStackView(arrangedSubviews: [leftButton,headerLabel,rightButton]).then{
             $0.axis = .horizontal
             $0.distribution = .equalSpacing
@@ -274,31 +218,19 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         
-        [upperView,alarmButton,calendarView,motiveLabel,toggleButton,profileStackView,headerStackView,underView,blankimage,blankLabel,blankButton,startButton,circularProgressView].forEach{view.addSubview($0)}
+        [upperView,calendarView,motiveLabel,toggleButton,headerStackView,underView,blankimage,blankLabel,makeModalArt,startButton,circularProgressView].forEach{view.addSubview($0)}
         
-        
-        profileStackView.snp.makeConstraints{
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(6)
-            $0.leading.equalTo(calendarView.collectionView)
-            
-        }
-        
-        alarmButton.snp.makeConstraints{
-            $0.top.equalTo(view.safeAreaLayoutGuide ).offset(6)
-            $0.trailing.equalTo(calendarView.collectionView)
-            $0.width.height.equalTo(24)
-        }
         
         
         headerStackView.snp.makeConstraints{
-            $0.top.equalTo(profileStackView.snp.bottom).offset(24)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(26)
             $0.leading.equalTo(calendarView.collectionView)
         }
         
         calendarView.snp.makeConstraints{
             $0.top.equalTo(headerStackView.snp.bottom).offset(5) //달력 대가리
             $0.trailing.leading.equalToSuperview().inset(12)
-            $0.height.equalTo(300)
+            $0.height.equalTo(200) // 캘린더뷰의(월)일때의 총 높이
         }
         
         toggleButton.snp.makeConstraints{
@@ -331,20 +263,22 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         blankLabel.snp.makeConstraints{
-            $0.top.equalTo(blankimage.snp.bottom).offset(10)
+            $0.top.equalTo(blankimage.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
         }
         
-        blankButton.snp.makeConstraints{
-            $0.top.equalTo(blankLabel.snp.bottom).offset(10)
-            $0.width.equalTo(129)
+        makeModalArt.snp.makeConstraints{
+            $0.top.equalTo(blankLabel.snp.bottom).offset(22)
+            $0.width.equalTo(153)
             $0.height.equalTo(30)
             $0.centerX.equalToSuperview()
         }
+        
         startButton.snp.makeConstraints{
             $0.leading.trailing.equalTo(calendarView.collectionView)
             $0.bottom.equalToSuperview().inset(100)
             $0.centerX.equalToSuperview()
+            $0.height.equalTo(48)
         }
     }
     
@@ -477,13 +411,13 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.snp.makeConstraints{
             $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalToSuperview().inset(150)
+            $0.bottom.equalTo(startButton.snp.top).offset(-24)
         }
     }
     
     func tableViewUI(){
         blankimage.isHidden = true
-        blankButton.isHidden = true
+        makeModalArt.isHidden = true
         blankLabel.isHidden = true
         
         ScheduleTableView.reloadData()
@@ -497,30 +431,42 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     }
     
     //MARK: -  Cell설정
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { //셀 클릭시 이벤트
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
-        if cell.contentView.backgroundColor == UIColor.white &&
-            cell.cellImage.image == UIImage(named: "ScheduleDefault"){
-            cell.contentView.backgroundColor = UIColor(hex: "E7F9F3")
-            cell.cellImage.image = UIImage(named: "ScheduleVariant")
-            startButton.isHidden = false
-        } else{
-            cell.contentView.backgroundColor = UIColor.white
-            cell.cellImage.image = UIImage(named: "ScheduleDefault")
-            startButton.isHidden = true
+        cell.contentView.backgroundColor = UIColor.white
+        
+        if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
+            cell.cellImage.image = UIImage(named: "squareCheckmark")
             
+            print("cell의 if문")
+            
+            let selectJogak = SelectJogakModal()
+            selectJogak.modalPresentationStyle = .formSheet
+            self.present(selectJogak,animated: true)
+            
+            if let sheet = selectJogak.sheetPresentationController{     //셀임의로 스크롤뷰. 우선적으로 라영님께 여쭤 보기 전임
+                sheet.detents = [.medium()]
+                sheet.delegate = self
+                sheet.prefersGrabberVisible = true
+                sheet.largestUndimmedDetentIdentifier = nil
+            }
+            
+            
+        } else{
+            cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
+            print("cell의 else문")
         }
     }
+    
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { //셀을 땟을때 이벤트
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else { //ScheduleTableViewCell을 사용
             return
         }
-        
+        //셀의 기본설정
         cell.contentView.backgroundColor = .white
-        cell.cellImage.image = UIImage(named: "ScheduleDefault")
+        cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
         
         ScheduleTableView.deselectRow(at: indexPath, animated: true)
     }
@@ -542,7 +488,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
         cell.cellLabel.text = cellArray[indexPath.row]
-        cell.cellImage.image = UIImage(named: "ScheduleDefault")
+        cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
         
         
         cell.contentView.backgroundColor = .white

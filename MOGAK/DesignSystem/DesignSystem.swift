@@ -11,10 +11,18 @@ import UIKit
 enum DesignSystemColor {
     case lightGreen
     case green
+    case mint
+    case brightmint
     case signature
     case red
+    case ruby
     case gray
+    case icongray
     case white
+    case yellow
+    case orange
+    case pink
+    case lavender
 }
 
 extension DesignSystemColor {
@@ -24,14 +32,30 @@ extension DesignSystemColor {
             return UIColor(hex: "11D796")
         case .green:
             return UIColor(hex: "009967")
+        case .brightmint:
+            return UIColor(hex: "E7F9F3")
+        case .mint:
+            return UIColor(hex: "02BE81")
         case .signature:
             return UIColor(hex: "475FFD")
         case .red:
             return UIColor(hex: "FF2323")
+        case .ruby:
+            return UIColor(hex: "FF2F2F")
         case .gray:
             return UIColor(hex: "D9D9D9")
+        case .icongray:
+            return UIColor(hex: "6E707B")
         case .white:
             return UIColor(hex: "FFFFFF")
+        case .yellow:
+            return UIColor(hex: "FFF5D3")
+        case.orange:
+            return UIColor(hex: "#F98A08")
+        case .pink:
+            return UIColor(hex: "FFE8E8")
+        case .lavender:
+            return UIColor(hex: "E8EBFE")
         }
     }
 }

@@ -165,11 +165,6 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         return textView
     }()
     
-    //MARK: - scrollview
-    private var scrollview : UIScrollView = {
-        let scrollview = UIScrollView()
-        return scrollview
-    }()
     
     //MARK: - galleryCollectioview
     private lazy var galleryCollectionView : UICollectionView = {
