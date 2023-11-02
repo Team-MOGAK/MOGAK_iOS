@@ -9,12 +9,13 @@ import Foundation
 import Alamofire
 
 class ApiManager {
-    
+    let BASE_URL = ""
     static let shared = ApiManager()
     
     private init() {}
     
     enum APIError: Error {
+        case invalidURL
         case requestFailed
         case invalidResponse
         case statusCode(Int)

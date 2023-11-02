@@ -12,13 +12,13 @@ import SnapKit
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - 임시 데이터들
-//    var modalArtNameArr: [String] = ["내 모다라트"]
-    var modalArtNameArr: [String] = ["2023 김라영의 모다라트 호로로", "운동하기", "내 모다라트3"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
+    var modalArtNameArr: [String] = ["인턴 합격하기","내 모다라트"]
+//    var modalArtNameArr: [String] = ["2023 김라영의 모다라트 호로로", "운동하기", "내 모다라트3"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
     var nowShowModalArtNum: Int = 0 //현재 보여지는 모다라트의 번호
-    var mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
-//    var mogakCategory: [(String, String)] = []
+//    var mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
+    var mogakCategory: [(String, String)] = []
 //    var modalArtMainCellBgColor: String = "475FFD" //나중에 받아와서 변경할 에정
-    var modalArtMainCellBgColor: String = "11D796" //나중에 받아와서 변경할 에정
+    var modalArtMainCellBgColor: String = "" //나중에 받아와서 변경할 에정
     
     private lazy var modalArtNameLabel: UILabel = {
         let label = UILabel()
@@ -28,9 +28,16 @@ class ModalartMainViewController: UIViewController {
         return label
     }()
     
-    private lazy var showModalArtListBtn: ButtonWithMenu = {
-        let btn = ButtonWithMenu()
+//    private lazy var showModalArtListBtn: ButtonWithMenu = {
+//        let btn = ButtonWithMenu()
+//        btn.setImage(UIImage(named: "downArrow"), for: .normal)
+//        return btn
+//    }()
+    
+    private lazy var showModalArtListBtn: UIButton = {
+        let btn = UIButton()
         btn.setImage(UIImage(named: "downArrow"), for: .normal)
+        btn.addTarget(self, action: #selector(showModalartListTapped), for: .touchUpInside)
         return btn
     }()
     
@@ -69,35 +76,45 @@ class ModalartMainViewController: UIViewController {
     
     //MARK: - 모다라트 리스트 보기(custom sheet)
     func showModalArtListBtnTapped(){ //개인적으로 View를 새롭게 만드는 것보다 UIMenu를 생성하는게 맞다고 생각함
-        var actionArr: [UIAction] = modalArtNameArr
-            .enumerated()
-            .map { index, name in
-                let uiAction = UIAction(title: name) { action in
-                    //선택한 모다라트에 맞도록 데이터를 변경해줘야 함
-                    let hasModalArtNameChecking: Bool = String(name.prefix(6)) == "내 모다라트"
-                    if hasModalArtNameChecking {
-                        print(#fileID, #function, #line, "- 내 모다라트로 아직 타이틀 설정안됨")
+//        var actionArr: [UIAction] = modalArtNameArr
+//            .enumerated()
+//            .map { index, name in
+//                let uiAction = UIAction(title: name) { action in
+//                    //선택한 모다라트에 맞도록 데이터를 변경해줘야 함
+//                    let hasModalArtNameChecking: Bool = String(name.prefix(6)) == "내 모다라트"
+//                    if hasModalArtNameChecking {
+//                        print(#fileID, #function, #line, "- 내 모다라트로 아직 타이틀 설정안됨")
+//
+//                    }
+//                    self.nowShowModalArtNum = index
+//                    self.mogakCategory = [("딴스", "bbbb"), ("aaaa", "aaaaa"),("bb", "cccc")]
+//                }
+//               return uiAction
+//        }
+//
+//        let addModalArtAction: UIAction = UIAction(title: "모다라트 추가") { _ in
+//            print(#fileID, #function, #line, "- 모다라트 추가 클릭")
+//        }
+//
+//        actionArr.append(addModalArtAction)
+//
+//        let menu = UIMenu(title: "", image: nil, identifier: nil,options: .displayInline, children: actionArr)
+//
+//        showModalArtListBtn.offset = CGPoint(x: -180, y: 0)
+//        print(#fileID, #function, #line, "- 모다라트 리스트 보기 버튼 탭⭐️: \(actionArr)")
+//        showModalArtListBtn.showsMenuAsPrimaryAction = true
+//        showModalArtListBtn.menu = menu
+        
+    }
     
-                    }
-                    self.nowShowModalArtNum = index
-                    self.mogakCategory = [("딴스", "bbbb"), ("aaaa", "aaaaa"),("bb", "cccc")]
-                }
-               return uiAction
-        }
-        
-        let addModalArtAction: UIAction = UIAction(title: "모다라트 추가") { _ in
-            print(#fileID, #function, #line, "- 모다라트 추가 클릭")
-        }
-        
-        actionArr.append(addModalArtAction)
-        
-        let menu = UIMenu(title: "", image: nil, identifier: nil,options: .displayInline, children: actionArr)
-        
-        showModalArtListBtn.offset = CGPoint(x: -180, y: 0)
-        print(#fileID, #function, #line, "- 모다라트 리스트 보기 버튼 탭⭐️: \(actionArr)")
-        showModalArtListBtn.showsMenuAsPrimaryAction = true
-        showModalArtListBtn.menu = menu
-    
+    @objc private func showModalartListTapped() {
+        print(#fileID, #function, #line, "- 모다라트 추가 버튼 탭")
+        let showModalartListModalVC = ShowModalArtListModal()
+        modalArtNameArr.append("모다라트 추가")
+        showModalartListModalVC.modalArtNameList = modalArtNameArr
+        showModalartListModalVC.modalPresentationStyle = .overFullScreen
+        showModalartListModalVC.modalTransitionStyle = .crossDissolve
+        self.present(showModalartListModalVC, animated: false)
     }
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)

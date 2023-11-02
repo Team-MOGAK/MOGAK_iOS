@@ -34,7 +34,6 @@ class SetModalArtNameModalVC: UIViewController{
         return view
     }()
     
-    //MARK: - 실제 바텀 모달시트뷰
     var bottomModalSheetView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -59,10 +58,12 @@ class SetModalArtNameModalVC: UIViewController{
     
     var titleSetTextField: UITextField = {
         let textField = UITextField()
+        
         textField.placeholder = "이루고픈 목표를 입력해 주세요."
         textField.setPlaceholderColor(DesignSystemColor.gray3.value)
         textField.textColor = .black
         textField.autocorrectionType = .no
+//        textField.backgroundColor = .black
         return textField
     }()
     
@@ -129,8 +130,25 @@ class SetModalArtNameModalVC: UIViewController{
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
     
+    override func viewDidLayoutSubviews() {
+        let bottomLine = CALayer()
+        bottomLine.frame = CGRect(x: 0.0, y: titleSetTextField.frame.height - 1, width: titleSetTextField.frame.width, height: 1.0)
+        bottomLine.backgroundColor = DesignSystemColor.gray3.value.cgColor
+        titleSetTextField.layer.addSublayer(bottomLine)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let safeAreaHeight: CGFloat = view.safeAreaLayoutGuide.layoutFrame.height
+        let bottomPadding: CGFloat = view.safeAreaInsets.bottom
+
+        let changeConstant = (safeAreaHeight + bottomPadding) - bottomHeight
+        self.bottomSheetViewTopConstraint.update(offset: changeConstant)
+        self.view.endEditing(true)
+    }
+    
     //MARK: - 뷰컨 셋팅(textField에 텍스트 넣어주기, addTarget달아주기)
     func viewSetting() {
+        titleSetTextField.delegate = self
         if modalArtTitle != "" {
             titleSetTextField.text = modalArtTitle
         }
@@ -225,7 +243,9 @@ class SetModalArtNameModalVC: UIViewController{
     
     //MARK: - 완료버튼 눌렀을 때
     @objc func completeBtnTapped(_ sender: UIButton) {
-        print(#fileID, #function, #line, "- 완료버튼 클릭")
+        print(#fileID, #function, #line, "- 완료버튼 클릭🔥")
+        print(#fileID, #function, #line, "- indexpath selected item check: \(colorCollectionView.indexPathsForSelectedItems?[0][1])")
+        
         self.dismiss(animated: true)
     }
     
@@ -265,6 +285,7 @@ extension SetModalArtNameModalVC {
         }
         
         titleSetTextField.snp.makeConstraints { make in
+            make.height.equalTo(30)
             make.leading.equalToSuperview().offset(20)
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
@@ -302,6 +323,16 @@ extension SetModalArtNameModalVC: UITextFieldDelegate {
         guard let stringLength = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringLength, with: string)
         return updatedText.count <= 20
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        let safeAreaHeight: CGFloat = view.safeAreaLayoutGuide.layoutFrame.height
+        let bottomPadding: CGFloat = view.safeAreaInsets.bottom
+
+        let changeConstant = (safeAreaHeight + bottomPadding) - bottomHeight
+        self.bottomSheetViewTopConstraint.update(offset: changeConstant)
+        textField.resignFirstResponder()
+        return true
     }
 }
 

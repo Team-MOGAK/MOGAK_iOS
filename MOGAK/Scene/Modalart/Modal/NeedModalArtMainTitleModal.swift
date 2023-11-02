@@ -30,39 +30,15 @@ class NeedModalArtMainTitleModal: UIView {
         return label
     }()
 
-    var noBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle("아니요", for: .normal)
-        btn.backgroundColor = DesignSystemColor.signatureBag.value
-        btn.layer.cornerRadius = 10
-        btn.setTitleColor(DesignSystemColor.signature.value, for: .normal)
-        btn.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        return btn
-    }()
-
     var okayBtn: UIButton = {
         let btn = UIButton()
-        btn.setTitle("네", for: .normal)
+        btn.setTitle("확인", for: .normal)
         btn.backgroundColor = DesignSystemColor.signature.value
         btn.layer.cornerRadius = 10
         btn.setTitleColor(DesignSystemColor.white.value, for: .normal)
         btn.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         return btn
     }()
-
-    var stk: UIStackView = {
-        let stk = UIStackView()
-        stk.axis = .horizontal
-        stk.alignment = .fill
-        stk.spacing = 10
-        stk.distribution = .fillEqually
-        return stk
-    }()
-
-    @objc func noBtnTapped() {
-        print(#fileID, #function, #line, "- 아니오 button clicked")
-        vc.dismiss(animated: true)
-    }
 
     @objc func okayBtnTapped() {
         print(#fileID, #function, #line, "- yes button tapped")
@@ -74,7 +50,6 @@ class NeedModalArtMainTitleModal: UIView {
         viewUISetting()
         configureLayout()
         
-        self.noBtn.addTarget(vc, action: #selector(noBtnTapped), for: .touchUpInside)
         self.okayBtn.addTarget(vc, action: #selector(okayBtnTapped), for: .touchUpInside)
     }
 
@@ -87,16 +62,13 @@ class NeedModalArtMainTitleModal: UIView {
         self.layer.cornerRadius = 10
         self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         self.clipsToBounds = true
-
-        stk.addArrangedSubview(noBtn)
-        stk.addArrangedSubview(okayBtn)
     }
 }
 
 //MARK: - 오토레이아웃 설정
 extension NeedModalArtMainTitleModal {
     private func configureLayout() {
-        self.addSubviews(titleLabel, subTitleLabel, stk)
+        self.addSubviews(titleLabel, subTitleLabel, okayBtn)
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(49)
@@ -108,11 +80,11 @@ extension NeedModalArtMainTitleModal {
             make.centerX.equalToSuperview()
         }
 
-        stk.snp.makeConstraints { make in
+        okayBtn.snp.makeConstraints { make in
             make.height.equalTo(52)
             make.centerX.equalToSuperview()
-            make.left.equalToSuperview().offset(20)
-            make.top.equalTo(subTitleLabel.snp.top).offset(25)
+            make.left.equalToSuperview().offset(30)
+            make.top.equalTo(subTitleLabel.snp.bottom).offset(25)
         }
     }
 }

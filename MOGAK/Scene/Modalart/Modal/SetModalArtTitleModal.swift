@@ -34,10 +34,16 @@ class SetModalArtTitleModal: UIView {
     
     var titleSetTextField: UITextField = {
         let textField = UITextField()
+        let bottomLine = CALayer()
+        bottomLine.frame = CGRect(x: 0.0, y: textField.frame.height - 1, width: textField.frame.width, height: 1.0)
+        bottomLine.backgroundColor = DesignSystemColor.gray2.value.cgColor
+        textField.layer.addSublayer(bottomLine)
         textField.placeholder = "이루고픈 목표를 입력해 주세요."
         textField.setPlaceholderColor(DesignSystemColor.gray3.value)
         textField.textColor = .black
-        textField.autocorrectionType = .no
+//        textField.autocorrectionType = .no
+        
+        textField.backgroundColor = .red
         return textField
     }()
     

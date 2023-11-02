@@ -327,6 +327,7 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
         
 //        let jwt_token: String = "Bearer " + token
         let jwt_token: String = "Bearer " + "eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
+        
         print("jwt token : \(jwt_token)")
         let headers: HTTPHeaders = [
             "Authorization": jwt_token
