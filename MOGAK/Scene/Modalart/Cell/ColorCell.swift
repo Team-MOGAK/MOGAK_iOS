@@ -66,6 +66,7 @@ class ColorCell: UICollectionViewCell {
         didSet {
             if isSelected {
                 innerView.backgroundColor = DesignSystemColor.white.value
+//                NotificationCenter.default.post(name: Notification.Name.colorSetting, object: nil, userInfo: [SetModalartState.modalartColor : true])
             } else {
                 innerView.backgroundColor = .clear
             }

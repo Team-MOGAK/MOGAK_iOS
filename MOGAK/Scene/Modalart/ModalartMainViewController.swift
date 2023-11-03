@@ -12,13 +12,13 @@ import SnapKit
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - 임시 데이터들
-    var modalArtNameArr: [String] = ["인턴 합격하기","내 모다라트"]
+    var modalArtNameArr: [String] = ["내 모다라트"]
 //    var modalArtNameArr: [String] = ["2023 김라영의 모다라트 호로로", "운동하기", "내 모다라트3"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
     var nowShowModalArtNum: Int = 0 //현재 보여지는 모다라트의 번호
 //    var mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
     var mogakCategory: [(String, String)] = []
 //    var modalArtMainCellBgColor: String = "475FFD" //나중에 받아와서 변경할 에정
-    var modalArtMainCellBgColor: String = "" //나중에 받아와서 변경할 에정
+    var modalArtMainCellBgColor: String = "BFC3D4" //나중에 받아와서 변경할 에정
     
     private lazy var modalArtNameLabel: UILabel = {
         let label = UILabel()
@@ -227,7 +227,15 @@ extension ModalartMainViewController: UICollectionViewDelegate {
             bottomSheetVC.titleSetTextField.text = hasModalArtNameChecking ? nil : modalArtNameArr[nowShowModalArtNum]
             bottomSheetVC.titleBgColor = modalArtMainCellBgColor
             print(#fileID, #function, #line, "- modalArtTitle⭐️: \(modalArtNameArr[nowShowModalArtNum])")
-            
+            bottomSheetVC.changeMainMogak = { bgColor, modalartTitle in
+                print(#fileID, #function, #line, "- 모다라트 중앙 모각 세팅🔥: \(bgColor)")
+                print(#fileID, #function, #line, "- 모다라트 중앙 모각 세팅🔥: \(modalartTitle)")
+                
+                self.modalArtNameLabel.text = modalartTitle
+                self.modalArtMainCellBgColor = bgColor
+                self.modalArtNameArr[self.nowShowModalArtNum] = modalartTitle
+                self.modalArtCollectionView.reloadItems(at: [indexPath])
+            }
             bottomSheetVC.modalPresentationStyle = .overFullScreen
             bottomSheetVC.modalTransitionStyle = .crossDissolve
             
@@ -256,10 +264,10 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         let row = indexPath.row
         
         if(row == 4) {
-            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) == "내 모다라트"
-            mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? "BFC3D4" : "475FFD"
+            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) != "내 모다라트"
+            mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? modalArtMainCellBgColor : "BFC3D4"
             print(#fileID, #function, #line, "- 내 모다라트 이름 확인:\(hasModalArtNameChecking)")
-            mainMogakCell.mainLabelText = hasModalArtNameChecking ? "큰 목표 \n추가" : modalArtNameArr[nowShowModalArtNum] //
+            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalArtNameArr[nowShowModalArtNum] : "큰 목표 \n추가"//
             mainMogakCell.cellDataSetting()
             return mainMogakCell
         } else {
