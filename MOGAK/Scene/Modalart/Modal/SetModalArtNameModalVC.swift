@@ -27,8 +27,14 @@ class SetModalArtNameModalVC: UIViewController{
     //모다라트 배경색으로 선택 가능한 컬러차트
     let titleColorPalette: [String] = ["475FFD", "11D796", "009967", "FF2323", "D9D9D9", "F98A08", "FF6827", "9C31FF"]
     
+    //완료를 눌렀을때 모다라트 타이틀이랑 중앙 모각 설정
     var changeMainMogak: ((_ mogakBGColor: String, _ mogakTitle: String) -> ())? = nil
 
+    //모각 색 설정되었는지
+    var isColorSelected: Bool = false
+    
+    //모각 타이틀이 설정 되었는지
+    var isTitleSetUp: Bool = false
     
     //기존의 화면을 흐려지게 함(즉, 모달의 배경이 되는 화면이 보이도록 함)
     private let dimmedBackgroundView: UIView = {
@@ -66,7 +72,6 @@ class SetModalArtNameModalVC: UIViewController{
         textField.setPlaceholderColor(DesignSystemColor.gray3.value)
         textField.textColor = .black
         textField.autocorrectionType = .no
-//        textField.backgroundColor = .black
         return textField
     }()
     
@@ -87,7 +92,6 @@ class SetModalArtNameModalVC: UIViewController{
         btn.layer.cornerRadius = 10
         btn.setTitleColor(DesignSystemColor.white.value, for: .normal)
         btn.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-//        btn.isEnabled = false
         return btn
     }()
     
@@ -119,7 +123,6 @@ class SetModalArtNameModalVC: UIViewController{
         setupGestureRecognizer()
         configureLayout()
         collectionViewSetUp()
-//        settingObserver()
     }
     
     //MARK: - viewDidDisappear
@@ -132,9 +135,11 @@ class SetModalArtNameModalVC: UIViewController{
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         showBottomModalSheet()
+        changeCompleteBtn()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
     
+    //MARK: - ViewDidLayoutSubview
     override func viewDidLayoutSubviews() {
         let bottomLine = CALayer()
         bottomLine.frame = CGRect(x: 0.0, y: titleSetTextField.frame.height - 1, width: titleSetTextField.frame.width, height: 1.0)
@@ -142,6 +147,7 @@ class SetModalArtNameModalVC: UIViewController{
         titleSetTextField.layer.addSublayer(bottomLine)
     }
     
+    //MARK: - 터치됐을 때 설정
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let safeAreaHeight: CGFloat = view.safeAreaLayoutGuide.layoutFrame.height
         let bottomPadding: CGFloat = view.safeAreaInsets.bottom
@@ -154,9 +160,7 @@ class SetModalArtNameModalVC: UIViewController{
     //MARK: - 뷰컨 셋팅(textField에 텍스트 넣어주기, addTarget달아주기)
     func viewSetting() {
         titleSetTextField.delegate = self
-        if modalArtTitle != "" {
-            titleSetTextField.text = modalArtTitle
-        }
+        titleSetTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         
         self.cancelBtn.addTarget(self, action: #selector(cancelBtnTapped(_:)), for: .touchUpInside)
         self.completeBtn.addTarget(self, action: #selector(completeBtnTapped(_:)), for: .touchUpInside)
@@ -260,31 +264,35 @@ class SetModalArtNameModalVC: UIViewController{
         self.dismiss(animated: true)
     }
     
+    //MARK: - textField가 변경되고 난 후
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        guard let modalartTitle = textField.text else { return }
+        print(#fileID, #function, #line, "- 변경? : \(modalartTitle)")
+        if modalartTitle == "" {
+            isTitleSetUp = false
+        } else {
+            isTitleSetUp = true
+        }
+        changeCompleteBtn()
+    }
+    
     //MARK: - 컬러 차트 collectionView 셋팅
     func collectionViewSetUp() {
         colorCollectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
         colorCollectionView.dataSource = self
         colorCollectionView.delegate = self
     }
-
-//    func settingObserver() {
-//        NotificationCenter.default.addObserver(completeBtn, selector: #selector(changeEnableCompleteBtn(notification:)), name: Notification.Name.textFieldSetting, object: nil)
-//        NotificationCenter.default.addObserver(completeBtn, selector: #selector(changeEnableCompleteBtn(notification:)), name: Notification.Name.colorSetting, object: nil)
-//
-//    }
-//
-//    @objc func changeEnableCompleteBtn(notification: Notification) {
-//        print(#fileID, #function, #line, "- <#comment#>")
-//        guard let isTitleSetUp = notification.userInfo?[SetModalartState.modalartTitle] as? Bool,
-//              let isColorSetUp = notification.userInfo?[SetModalartState.modalartColor] as? Bool else {
-//            return
-//        }
-//
-//        if isTitleSetUp && isColorSetUp {
-//            completeBtn.backgroundColor = DesignSystemColor.signature.value
-//        }
-//
-//    }
+    
+    //MARK: - 완료 버튼 backgroundColor & isEnabled변경
+    func changeCompleteBtn() {
+        if isColorSelected && isTitleSetUp {
+            completeBtn.isEnabled = true
+            completeBtn.backgroundColor = DesignSystemColor.signature.value
+        } else {
+            completeBtn.isEnabled = false
+            completeBtn.backgroundColor = DesignSystemColor.gray3.value
+        }
+    }
 }
 
 extension SetModalArtNameModalVC {
@@ -347,23 +355,15 @@ extension SetModalArtNameModalVC {
 extension SetModalArtNameModalVC: UITextFieldDelegate {
     //MARK: - 텍스트필드 글자수 제한
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print(#fileID, #function, #line, "- 변경된거 탄🐿️")
-        let currentText = textField.text ?? ""
-        
+        guard let currentText = textField.text else { return false }
+        print(#fileID, #function, #line, "- currentText🥺: \(currentText)")
+
         guard let stringLength = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringLength, with: string)
         return updatedText.count <= 20
     }
     
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        guard let modalartTitle = textField.text else { return }
-//        if !modalartTitle.isEmpty {
-//            NotificationCenter.default.post(name: Notification.Name.textFieldSetting, object: nil, userInfo: [SetModalartState.modalartTitle : true])
-//        } else {
-//            NotificationCenter.default.post(name: Notification.Name.textFieldSetting, object: nil, userInfo: [SetModalartState.modalartTitle : false])
-//        }
-//    }
-    
+    //MARK: - 텍스트필드가 선택되었을 때 키보드 올라오면서 모다라트 위치 조절
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         let safeAreaHeight: CGFloat = view.safeAreaLayoutGuide.layoutFrame.height
         let bottomPadding: CGFloat = view.safeAreaInsets.bottom
@@ -388,28 +388,25 @@ extension SetModalArtNameModalVC: UICollectionViewDataSource {
         
         cell.color = UIColor(hex: titleColorPalette[indexPath.row])
         if titleColorPalette[indexPath.row] == titleBgColor { //만약에 지금 보여줘야 하는 셀이 타이틀 백그라운드 색이랑 같다면 해당 컬러차트 표시
+            isColorSelected = true
             cell.innerView.backgroundColor = .white
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+            changeCompleteBtn()
         }
+        
         cell.setUpColorView()
         cell.setUpInnerView()
-        
-        print(#fileID, #function, #line, "- cell.colr: \(titleColorPalette[indexPath.row]), cell.isSelected:\(cell.isSelected)" )
         
         return cell
     }
 }
 
 extension SetModalArtNameModalVC: UICollectionViewDelegate {
-    
-}
-
-extension Notification.Name {
-    static let textFieldSetting = Notification.Name("textFieldSetting") //텍스트 필드가 입력이 됬는지
-    static let colorSetting = Notification.Name("colorSetting") //컬러 차트가 생성이 되었는지
-}
-
-enum SetModalartState {
-    case modalartTitle
-    case modalartColor
+    //MARK: - 컬러가 선택되었을 때
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if !isColorSelected {
+            isColorSelected = true
+            changeCompleteBtn()
+        }
+    }
 }
