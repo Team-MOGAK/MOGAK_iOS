@@ -20,6 +20,7 @@
 		4D7861BE2AD40938006B8E88 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */; };
 		4D7861C12AD427EB006B8E88 /* CustomPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */; };
 		4D7D3E652AE52DCF00335073 /* SetModalArtTitleModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D3E642AE52DCF00335073 /* SetModalArtTitleModal.swift */; };
+		4D7E49752AFBCBFB00DEB70C /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E49742AFBCBFB00DEB70C /* APICall.swift */; };
 		4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */; };
 		4D9439302ACD54E000864336 /* EmptyMogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */; };
 		4DD74EE92AD58FC000147E9C /* MogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74EE82AD58FC000147E9C /* MogakCell.swift */; };
@@ -126,6 +127,7 @@
 		4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaddingLabel.swift; sourceTree = "<group>"; };
 		4D7D3E642AE52DCF00335073 /* SetModalArtTitleModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetModalArtTitleModal.swift; sourceTree = "<group>"; };
+		4D7E49742AFBCBFB00DEB70C /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
 		4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainViewController.swift; sourceTree = "<group>"; };
 		4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyMogakCell.swift; sourceTree = "<group>"; };
 		4DD74EE82AD58FC000147E9C /* MogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCell.swift; sourceTree = "<group>"; };
@@ -540,6 +542,7 @@
 			children = (
 				9CCB39D62A91186200968CDB /* ApiManager.swift */,
 				9CCB39D82A9118CC00968CDB /* ApiConstants.swift */,
+				4D7E49742AFBCBFB00DEB70C /* APICall.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -839,6 +842,7 @@
 				9C2EF7F42A74899600E8C8F4 /* DismissKeyboardView.swift in Sources */,
 				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
 				9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */,
+				4D7E49752AFBCBFB00DEB70C /* APICall.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* OnBoardingSecondViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
