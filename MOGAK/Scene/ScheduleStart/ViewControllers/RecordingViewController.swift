@@ -18,6 +18,7 @@ protocol RecordingVCdelegate {
 class RecordingViewController : UIViewController, UIScrollViewDelegate{
     
     //MARK: - Properties
+    
     private lazy var popButton : UIButton = {
         let popButton = UIButton()
         popButton.backgroundColor = .clear //백그라운드색
@@ -50,68 +51,27 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         return contentView
     }()
     
-    //MARK: - start
-    
-    private lazy var startView : UIView = {
-        let startView = UIView()
-        startView.layer.cornerRadius = 10
-        startView.layer.shadowColor = UIColor(red: 0.749, green: 0.765, blue: 0.831, alpha: 0.5).cgColor
-        startView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        startView.layer.shadowOpacity = 1
-        startView.layer.shadowRadius = 10
-        startView.backgroundColor = .white
-        return startView
-    }()
-    
-    private lazy var startLabel : UILabel = {
-        let startLabel = UILabel()
-        startLabel.text = "시작"
-        startLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-        startLabel.textColor = UIColor(red: 0.431, green: 0.441, blue: 0.483, alpha: 1)
-        return startLabel
-    }()
-    
-    private lazy var startTimeLabel : UILabel = {
-        let startTimeLabel = UILabel()
-        startTimeLabel.text = "12:02"
-        startTimeLabel.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        startTimeLabel.textColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 1)
-        return startTimeLabel
-    }()
-    
-    //MARK: - end
-    
-    private lazy var endView : UIView = {
-        let endView = UIView()
-        endView.layer.cornerRadius = 10
-        endView.layer.shadowColor = UIColor(red: 0.749, green: 0.765, blue: 0.831, alpha: 0.5).cgColor
-        endView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        endView.layer.shadowOpacity = 1
-        endView.layer.shadowRadius = 10
-        endView.backgroundColor = .white
-        return endView
-    }()
-    
-    private lazy var endLabel : UILabel = {
-        let endLabel = UILabel()
-        endLabel.text = "종료"
-        endLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-        endLabel.textColor = UIColor(red: 0.431, green: 0.441, blue: 0.483, alpha: 1)
-        return endLabel
-    }()
-    
-    private lazy var endTimeLabel : UILabel = {
-        let endTimeLabel = UILabel()
-        endTimeLabel.text = "12:02"
-        endTimeLabel.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        endTimeLabel.textColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 1)
-        return endTimeLabel
+    private lazy var categoryLabel : UILabel = {
+        let label = UILabel()
+        label.text = "직무"
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.backgroundColor = UIColor(red: 0.867, green: 0.968, blue: 1, alpha: 1)
+        label.textColor = UIColor(red: 0, green: 0.671, blue: 0.883, alpha: 1)
+        label.layer.cornerRadius = 8
+        label.clipsToBounds = true
+        label.textAlignment = .center
+        return label
     }()
     
     
+    private lazy var mogakLabel : UILabel = {
+        let label = UILabel()
+        label.text = "자격증 4개 따기"
+        label.font = UIFont(name: "PretendardVariable-SemiBold", size: 16)
+        return label
+    }()
     
-    //MARK: - cellView
-    private lazy var cellView : UIView = {
+    private lazy var jogakView : UIView = {
         let cellView = UIView()
         cellView.layer.cornerRadius = 10
         cellView.layer.shadowColor = UIColor(red: 0.749, green: 0.765, blue: 0.831, alpha: 0.5).cgColor
@@ -122,28 +82,21 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         return cellView
     }()
     
-    let cellViewImage : UIImageView = {
+    let jogakViewImage : UIImageView = {
         let cellViewImage = UIImageView()
         cellViewImage.backgroundColor = .clear
-        cellViewImage.image = UIImage(named: "ScheduleVariant")
+        cellViewImage.image = UIImage(named: "squareCheckmark")
         return cellViewImage
     }()
     
-    var cellLabel : UILabel = {
+    var jogakLabel : UILabel = {
         let cellLabel = UILabel()
         cellLabel.text = "기획 아티클 읽기"
         cellLabel.textColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 1)
         cellLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
         return cellLabel
     }()
-    
-    var celltimeLabel : UILabel = {
-        let celltimeLabel = UILabel()
-        celltimeLabel.text = "1시간 20분"
-        celltimeLabel.textColor = UIColor(red: 0.278, green: 0.373, blue: 0.992, alpha: 1)
-        celltimeLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-        return celltimeLabel
-    }()
+    //MARK: - TextView
     
     private let textViewLabel : UILabel = {
         let textViewLabel = UILabel()
@@ -162,6 +115,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
     
     private lazy var textView : UITextView = {
         let textView = UITextView()
+        textView.delegate = self
+        textView.backgroundColor = .clear
         return textView
     }()
     
@@ -197,7 +152,6 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         self.scrollView.delegate = self
-        
         setCollectionView()
         setUI()
     }
@@ -205,7 +159,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
     func setUI(){
         [popButton,titleLabel].forEach{view.addSubview($0)}
         
-        contentView.addSubviews(startView,startLabel,startTimeLabel,endView,endTimeLabel,endLabel,textView,textbackgroundView,cellView,cellLabel,cellViewImage,cellLabel,textViewLabel,celltimeLabel,galleryCollectionView,finishButton)
+        contentView.addSubviews(categoryLabel,mogakLabel,textbackgroundView,textView,jogakView,jogakViewImage,jogakLabel,textViewLabel,galleryCollectionView,finishButton)
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -233,54 +187,33 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
             $0.bottom.equalTo(finishButton.snp.bottom).offset(20)
             
         }
-        
-        startView.snp.makeConstraints{
-            $0.top.equalTo(contentView.snp.top).offset(40)
-            $0.height.equalTo(56)
+        categoryLabel.snp.makeConstraints{
+            $0.width.equalTo(49)
+            $0.height.equalTo(26)
+            $0.top.equalToSuperview().inset(30)
             $0.leading.equalTo(contentView).inset(20)
-            $0.trailing.equalTo(contentView).inset(200)
+            
+        }
+        mogakLabel.snp.makeConstraints{
+            $0.top.equalTo(categoryLabel.snp.bottom).offset(10)
+            $0.leading.equalTo(jogakView)
+            
         }
         
-        startLabel.snp.makeConstraints{
-            $0.centerX.centerY.equalTo(startView)
-            $0.leading.equalTo(startView.snp.leading).offset(16)
-        }
         
-        startTimeLabel.snp.makeConstraints{
-            $0.centerY.equalTo(startView)
-            $0.trailing.equalTo(startView.snp.trailing).offset(-16)
-        }
-        
-        endView.snp.makeConstraints{
-            $0.top.equalTo(contentView.snp.top).offset(40)
-            $0.height.equalTo(56)
-            $0.trailing.equalTo(contentView).inset(20)
-            $0.leading.equalTo(contentView).inset(200)
-        }
-        
-        endLabel.snp.makeConstraints{
-            $0.centerX.centerY.equalTo(endView)
-            $0.leading.equalTo(endView.snp.leading).offset(16)
-        }
-        
-        endTimeLabel.snp.makeConstraints{
-            $0.centerY.equalTo(endLabel)
-            $0.trailing.equalTo(endView.snp.trailing).offset(-16)
-        }
-        
-        cellView.snp.makeConstraints{
+        jogakView.snp.makeConstraints{
             $0.leading.trailing.equalTo(contentView).inset(20)
-            $0.top.equalTo(startView.snp.bottom).offset(12)
+            $0.top.equalTo(mogakLabel.snp.bottom).offset(10)
             $0.height.equalTo(70)
         }
         
-        cellViewImage.snp.makeConstraints{
-            $0.centerY.equalTo(cellView)
-            $0.leading.equalTo(cellView.snp.leading).offset(16)
+        jogakViewImage.snp.makeConstraints{
+            $0.centerY.equalTo(jogakView)
+            $0.leading.equalTo(jogakView.snp.leading).offset(16)
         }
         
         textViewLabel.snp.makeConstraints{
-            $0.top.equalTo(cellView.snp.bottom).offset(32)
+            $0.top.equalTo(jogakView.snp.bottom).offset(32)
             $0.leading.equalTo(contentView).inset(25)
         }
         
@@ -292,25 +225,20 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
             
         }
         
-        cellLabel.snp.makeConstraints{
-            $0.top.equalTo(cellView.snp.top).offset(13)
-            $0.leading.equalTo(cellViewImage.snp.trailing).offset(12)
+        jogakLabel.snp.makeConstraints{
+            $0.centerY.equalTo(jogakViewImage)
+            $0.leading.equalTo(jogakViewImage.snp.trailing).offset(12)
         }
         
-        celltimeLabel.snp.makeConstraints{
-            $0.leading.equalTo(cellLabel)
-            $0.bottom.equalTo(cellView.snp.bottom).offset(-13)
-        }
         
-        textView.snp.makeConstraints{
+        textView.snp.makeConstraints{ //수정요망
             $0.top.equalTo(textbackgroundView.snp.top).offset(16)
-            $0.leading.trailing.equalTo(textbackgroundView).inset(16)
+            $0.leading.trailing.bottom.equalTo(textbackgroundView).inset(16)
         }
         
         galleryCollectionView.snp.makeConstraints{
             $0.top.equalTo(textbackgroundView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(20)
-            //$0.width.equalTo(textbackgroundView)
             $0.height.equalTo(72)
         }
         finishButton.snp.makeConstraints{
@@ -332,6 +260,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         self.dismiss(animated: true)
         print("back home")
     }
+    
+    let textViewPlaceHolder = "asd"
 }
 
 //MARK: - exteinson CollectioView
@@ -344,6 +274,7 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
     
     //cell 재사용
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
             return UICollectionViewCell()
         }
@@ -410,68 +341,86 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
             
             print("이미지 선택 끝")
             for i in 0..<assets.count {
-                        self.selectedImages.append(assets[i])
-                     }
-                     self.convertAssetToImage()
-                     //self.delegate?.didPickImagesToUpload(images: self.userSelectedImages)
+                self.selectedImages.append(assets[i])
+            }
+            self.convertAssetToImage()
+            //self.delegate?.didPickImagesToUpload(images: self.userSelectedImages)
         })
     }
     
     func convertAssetToImage() {
         if selectedImages.count != 0 {
-                for i in 0 ..< selectedImages.count {
-                    let imageManager = PHImageManager.default()
-                        let option = PHImageRequestOptions()
-                        option.isSynchronous = true
-                        var thumbnail = UIImage()
-                        imageManager.requestImage(for: selectedImages[i], targetSize: CGSize(width: selectedImages[i].pixelWidth, height: selectedImages[i].pixelHeight), contentMode: .aspectFill, options: option) {
-                                (result, info) in
-                                thumbnail = result!
-                    }
+            for i in 0 ..< selectedImages.count {
+                let imageManager = PHImageManager.default()
+                let option = PHImageRequestOptions()
+                option.isSynchronous = true
+                var thumbnail = UIImage()
+                imageManager.requestImage(for: selectedImages[i], targetSize: CGSize(width: selectedImages[i].pixelWidth, height: selectedImages[i].pixelHeight), contentMode: .aspectFill, options: option) {
+                    (result, info) in
+                    thumbnail = result!
+                }
                 
-                        let data = thumbnail.jpegData(compressionQuality: 0.7)
-                        let newImage = UIImage(data: data!)
-                        //self.convertAssetToImages()
-//                        self.selectedImages.append(newImage! as UIImage)
-                    }
+                let data = thumbnail.jpegData(compressionQuality: 0.7)
+                let newImage = UIImage(data: data!)
+                //self.convertAssetToImages()
+                //                        self.selectedImages.append(newImage! as UIImage)
             }
+        }
     }
     
     //사진을 고르고 난 뒤에 사진의 데이터 타입은 PHAsset 이라는 점이다. 즉, UIImage 타입이 아니기 때문에 바로 UIImageView 에 띄운다거나 그러지는 못한다. 그러기 위해서 convertAssetToImages( ) 함수를 하나 더 정의해야한다.
-//    func convertAssetToImages() {
-//        
-//    }
+    //    func convertAssetToImages() {
+    //
+    //    }
+    
+    
 }
 
 
 
-//extension RecordingViewController : UITextViewDelegate{
-//
-//    func textViewDidBeginEditing(_ textView: UITextView) {
-//        guard textView.textColor == UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1) else {return}
-//        textView.text = nil
-//        textView.textColor = .label
-//    }
-//
-//    func textViewDidEndEditing(_ textView: UITextView) {
-//        if textView.text.isEmpty {
-//            textView.text = "오늘 당신의 조각은 어떠셨나요?\n느낀 점이나 기억에 남는 것을 공유해보세요"
-//            textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
-//        }
-//    }
-//
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if textView.isFirstResponder && !textView.text.isEmpty {
-//            textView.resignFirstResponder()
-//        }
-//    }
-//
-//    // 리턴 키 입력 시 키보드 내림
-//    func textViewShouldReturn(_ textView: UITextView) -> Bool {
-//        textView.resignFirstResponder()
-//        return true
-//    }
-//}
+extension RecordingViewController : UITextViewDelegate{
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        guard textView.textColor == UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1) else {return}
+        textView.text = nil
+        textView.textColor = .label
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "오늘 당신의 조각은 어떠셨나요?\n느낀 점이나 기억에 남는 것을 공유해보세요"
+            textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
+        }
+    }
+    
+    //        func textViewDidBeginEditing(_ textView: UITextView) {
+    //            if textView.text == textViewPlaceHolder {
+    //                print(#fileID, #function, #line, "- ?")
+    //                textView.text = "asd"
+    //                textView.textColor = .black
+    //            }
+    //        }
+    //
+    //        //MARK: - 리뷰 textView에 입력이 끝났을 경우
+    //        func textViewDidEndEditing(_ textView: UITextView) {
+    //            if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    //                textView.text = textViewPlaceHolder
+    //                //textView.textColor = textBorderColor
+    //            }
+    //        }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if textView.isFirstResponder && !textView.text.isEmpty {
+            textView.resignFirstResponder()
+        }
+    }
+    
+    // 리턴 키 입력 시 키보드 내림
+    func textViewShouldReturn(_ textView: UITextView) -> Bool {
+        textView.resignFirstResponder()
+        return true
+    }
+}
 
 
 

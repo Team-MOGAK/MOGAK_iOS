@@ -104,7 +104,7 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
     @objc func SchedulePause(){
         circularProgressView.pauseTimer()
 
-        let schedulePause = PauseModalVC()
+        let schedulePause = SetRoutineModal()
         schedulePause.modalPresentationStyle = .formSheet
         
         schedulePause.onClick = {               //클로저
@@ -116,13 +116,13 @@ class ScheduleTimerVC : UIViewController, UISheetPresentationControllerDelegate{
         self.present(schedulePause,animated: true)
         
         if let sheet = schedulePause.sheetPresentationController{
-            if #available(iOS 16.0, *) {
-                sheet.detents = [.custom(){context in
-                    return 239
-                }]
-            } else {
-                sheet.detents = [.medium()]
-            }
+//            if #available(iOS 16.0, *) {
+//                sheet.detents = [.custom(){context in
+//                    return 239
+//                }]
+//            } else {
+                sheet.detents = [.medium()] 
+//            }
             sheet.delegate = self
             sheet.prefersGrabberVisible = true
         }

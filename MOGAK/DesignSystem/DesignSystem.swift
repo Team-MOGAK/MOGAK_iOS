@@ -51,7 +51,7 @@ extension DesignSystemColor {
         case .yellow:
             return UIColor(hex: "FFF5D3")
         case.orange:
-            return UIColor(hex: "#F98A08")
+            return UIColor(hex: "F98A08")
         case .pink:
             return UIColor(hex: "FFE8E8")
         case .lavender:

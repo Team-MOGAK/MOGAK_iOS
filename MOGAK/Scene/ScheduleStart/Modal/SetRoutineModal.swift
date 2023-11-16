@@ -9,24 +9,24 @@ import UIKit
 import SnapKit
 import Then
 
-class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
+class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
-    private lazy var canceltitleLabel : UILabel = {
-        let canceltitleLabel = UILabel()
-        canceltitleLabel.text = "조각을 완성하시겠습니까?"
-        canceltitleLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        canceltitleLabel.textColor = UIColor(hex: "24252E")
-        return canceltitleLabel
+    private lazy var jogaktitleLabel : UILabel = {
+        let label = UILabel()
+        label.text = "조각 이름이 들어갈 부분"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textColor = UIColor(hex: "24252E")
+        return label
     }()
     
-    private lazy var cancelsubtitleLabel : UILabel = {
-        let cancelsubtitleLabel = UILabel()
-        cancelsubtitleLabel.text = "오늘도 수고하셨어요!\n 나와의 약속을 지킨 당신을 응원해요"
-        cancelsubtitleLabel.numberOfLines = 2
-        cancelsubtitleLabel.textAlignment = .center
-        cancelsubtitleLabel.font = UIFont(name: "Pretendard", size: 14)
-        cancelsubtitleLabel.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.6)
-        return cancelsubtitleLabel
+    private lazy var subtitleLabel : UILabel = {
+        let label = UILabel()
+        label.text = "오늘도 수고하셨어요!\n 나와의 약속을 지킨 당신을 응원해요"
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.font = UIFont(name: "Pretendard", size: 14)
+        label.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.6)
+        return label
     }()
     
     private lazy var stopButton : UIButton = {
@@ -41,13 +41,14 @@ class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
     
     private lazy var keepGoButton : UIButton = {
         let keepGoButton = UIButton()
-        keepGoButton.setTitle("아니요",for : .normal) //타이틀
+        keepGoButton.setTitle("삭제하기",for : .normal) //타이틀
         keepGoButton.setTitleColor(UIColor(hex: "475FFD"), for: .normal) //글자 색
         keepGoButton.backgroundColor = UIColor(hex: "#E8EBFE") //백그라운드색
         keepGoButton.layer.cornerRadius = 10 //둥글기
         keepGoButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
         return keepGoButton
     }()
+    
     
     var circularProgressView = CircularProgressView()
     var onClick : (() -> ())?
@@ -58,20 +59,19 @@ class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
         view.backgroundColor = .white
         setUI()
         circularProgressView.isHidden = true
-        
     }
     
     //MARK: - setUI
     func setUI(){
-        [canceltitleLabel,cancelsubtitleLabel,stopButton,keepGoButton,circularProgressView].forEach{view.addSubview($0)}
-        canceltitleLabel.snp.makeConstraints{
+        [jogaktitleLabel,subtitleLabel,stopButton,keepGoButton,circularProgressView].forEach{view.addSubview($0)}
+        jogaktitleLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().inset(49)
         }
         
-        cancelsubtitleLabel.snp.makeConstraints{
+        subtitleLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(canceltitleLabel.snp.bottom).offset(12)
+            $0.top.equalTo(jogaktitleLabel.snp.bottom).offset(12)
         }
         
         stopButton.snp.makeConstraints{
@@ -80,7 +80,7 @@ class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
             $0.bottom.equalToSuperview().inset(24)
             $0.trailing.equalToSuperview().inset(20)
         }
-        keepGoButton.snp.makeConstraints{ 
+        keepGoButton.snp.makeConstraints{
             $0.trailing.equalToSuperview().inset(200)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
@@ -101,5 +101,50 @@ class PauseModalVC : UIViewController,UISheetPresentationControllerDelegate{
             circularProgressView.resumeTimer()
         }
     }
+    //MARK: - titlelabel
+    func configure(with mogak: SelectJogakModal.Mogak) {
+        jogaktitleLabel.text = mogak.jogak
+    }
+    
+    
 }
 
+
+
+
+
+
+
+
+
+
+
+//Preview code
+#if DEBUG
+import SwiftUI
+struct SetRoutineModalVCRepresentable: UIViewControllerRepresentable {
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        SetRoutineModal()
+    }
+}
+@available(iOS 13.0, *)
+struct SelectJogakModalRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                SetRoutineModalVCRepresentable()
+                    .ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone 15pro"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+        
+    }
+} #endif

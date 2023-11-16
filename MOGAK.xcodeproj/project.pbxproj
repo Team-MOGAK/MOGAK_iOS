@@ -26,8 +26,7 @@
 		6C3502362A6EC24E00080017 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */; };
 		6C4EE4E62A7AA15100DE0D5C /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */; };
 		6C51FDA02A7CC249005B1738 /* AlarmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */; };
-		6C7F95D72A928B6B00255ED1 /* PauseModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F95D62A928B6B00255ED1 /* PauseModalVC.swift */; };
-		6CB3DEA92A7B7F850056C596 /* CancelModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */; };
+		6C7F95D72A928B6B00255ED1 /* SetRoutineModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */; };
 		6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC638BA2A922B21009BC333 /* RecordingViewController.swift */; };
 		6CD4A8842A93BF2900E7DEFD /* ScheduleTimerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F95D82A928B9100255ED1 /* ScheduleTimerVC.swift */; };
 		6CD4A8852A93BF3C00E7DEFD /* CertificationModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */; };
@@ -95,7 +94,9 @@
 		9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */; };
 		9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */; };
 		D1826F822AEFF4B300A755D4 /* SelectJogakModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */; };
+		D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */; };
 		D1A8EC152AD56F0F00FE1648 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */; };
+		D1D10D7C2AF9173A0039A00C /* MogakTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -120,7 +121,7 @@
 		6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
 		6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmViewController.swift; sourceTree = "<group>"; };
-		6C7F95D62A928B6B00255ED1 /* PauseModalVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseModalVC.swift; sourceTree = "<group>"; };
+		6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetRoutineModal.swift; sourceTree = "<group>"; };
 		6C7F95D82A928B9100255ED1 /* ScheduleTimerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleTimerVC.swift; sourceTree = "<group>"; };
 		6C89F6BD2A82A61300E5B1FE /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 		6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelModalVC.swift; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 		9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleReportViewController.swift; sourceTree = "<group>"; };
 		D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectJogakModal.swift; sourceTree = "<group>"; };
 		D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
+		D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,6 +290,7 @@
 				6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */,
 				D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */,
 				6CC638BA2A922B21009BC333 /* RecordingViewController.swift */,
+				D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -304,7 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */,
-				6C7F95D62A928B6B00255ED1 /* PauseModalVC.swift */,
+				6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */,
 				6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */,
 				D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */,
 			);
@@ -690,7 +693,6 @@
 				9C2EF8082A83D9E700E8C8F4 /* MyPageEditViewController.swift in Sources */,
 				9CE426E52A5A3976001629DC /* OnBoardingFirstViewController.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
-				6CB3DEA92A7B7F850056C596 /* CancelModalVC.swift in Sources */,
 				6C51FDA02A7CC249005B1738 /* AlarmViewController.swift in Sources */,
 				9CE426F42A5D38E4001629DC /* ChooseJobViewController.swift in Sources */,
 				9CFA7D222A4590F9003E80A7 /* ScheduleListViewController.swift in Sources */,
@@ -698,7 +700,7 @@
 				9CE426FA2A5FE50F001629DC /* UITextField+Ext.swift in Sources */,
 				9C5236A42A99CDD8005A76FD /* DesignSystem.swift in Sources */,
 				6CD4A8882A94F8EF00E7DEFD /* ScheduleStartStruct.swift in Sources */,
-				6C7F95D72A928B6B00255ED1 /* PauseModalVC.swift in Sources */,
+				6C7F95D72A928B6B00255ED1 /* SetRoutineModal.swift in Sources */,
 				9C2EF7F82A76901B00E8C8F4 /* TestViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */,
 				65F880E82A86B0C7005543C9 /* UIImage+Ext.swift in Sources */,
@@ -724,6 +726,7 @@
 				6544766E2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift in Sources */,
 				9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
+				D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */,
 				9C2EF7F62A76351D00E8C8F4 /* ScorllView+Ext.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
 				6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */,
@@ -732,6 +735,7 @@
 				4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */,
 				9CCB39D02A8B39BE00968CDB /* Utils.swift in Sources */,
 				9CCB39D52A9062E600968CDB /* String+Ext.swift in Sources */,
+				D1D10D7C2AF9173A0039A00C /* MogakTableViewCell.swift in Sources */,
 				9C2EF8062A8289D100E8C8F4 /* FollowingCell.swift in Sources */,
 				65B139332A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift in Sources */,
 				9CE426F62A5EA04F001629DC /* NameCell.swift in Sources */,

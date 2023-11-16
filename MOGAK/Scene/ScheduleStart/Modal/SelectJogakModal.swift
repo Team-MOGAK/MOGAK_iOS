@@ -10,19 +10,15 @@ import UIKit
 import SnapKit
 import Then
 
-class SelectJogakModal : UIViewController, UIScrollViewDelegate{
-//MARK: - Properties
+class SelectJogakModal : UIViewController{
     
-    private lazy var modalScrollView : UIScrollView = {
-        let scrollview = UIScrollView()
-        scrollview.backgroundColor = .white
-        scrollview.isScrollEnabled = true
-        return scrollview
-    }()
+    let currentDate = Date()
+    
+    //MARK: - Basic Properties
     
     private lazy var contentView : UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = .white
         return view
     }()
     
@@ -33,205 +29,198 @@ class SelectJogakModal : UIViewController, UIScrollViewDelegate{
         label.font = DesignSystemFont.semibold18L100.value
         return label
     }()
-//MARK: - 모각 1
     
-    private lazy var mogakView1 : UIView = {
-        let view1 = UIView()
-        view1.layer.cornerRadius = 8
-        view1.backgroundColor = DesignSystemColor.brightmint.value
-        return view1
+    var configureClosure: ((String) -> Void)? //클로저는 보내는 VC에서 설정 : String에서 보내고 받는쪽은 Void
+    
+    //MARK: - Mogak 구조체
+    struct Mogak {
+        var mogaktitle: String
+        var mogaktitleColor : UIColor
+        var jogak: String
+        var ViewColor: UIColor
+        var jogakimage : UIImage
+        var jogakDate: Date
+    }
+    //MARK: - 정보를 받는 곳
+    
+    var mogakList: [Mogak] = [
+        Mogak(mogaktitle: "10키로 감량!", mogaktitleColor: DesignSystemColor.mint.value, jogak: "공복 유산소", ViewColor: DesignSystemColor.brightmint.value, jogakimage:UIImage(named: "emptySquareCheckmark")!, jogakDate: Date()),
+        
+        Mogak(mogaktitle: "자격증 4개따기", mogaktitleColor: DesignSystemColor.orange.value, jogak: "ㅁㅇㄴ", ViewColor: DesignSystemColor.yellow.value, jogakimage: UIImage(named: "emptySquareCheckmark")!, jogakDate: Date()),
+        
+        Mogak(mogaktitle: "시험 합격", mogaktitleColor: DesignSystemColor.ruby.value, jogak: "이건 세번쩨 조각", ViewColor: DesignSystemColor.pink.value, jogakimage: UIImage(named: "emptySquareCheckmark")!, jogakDate: Date()),
+        
+        Mogak(mogaktitle: "공모전에서 수상하기", mogaktitleColor: DesignSystemColor.signature.value, jogak: "ㅁㄴ", ViewColor: DesignSystemColor.lavender.value, jogakimage: UIImage(named: "emptySquareCheckmark")!, jogakDate: Date())
+    ]
+    
+    lazy var MogakTableView: UITableView = {
+        let table = UITableView()
+        table.backgroundColor = .white
+        table.dataSource = self
+        table.delegate = self
+        return table
     }()
     
-    private lazy var mogakLabel1 : UILabel = {
-        let label = UILabel()
-        label.text = "10키로 감량!"
-        label.textColor = DesignSystemColor.mint.value
-        label.font = UIFont(name: "Pretendard-Medium", size: 18)
-        return label
-    }()
+    let mogaktableviewcell = MogakTableViewCell()
     
-    private lazy var mogakButton1 : UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "chevron.up"), for: .normal)
-        button.tintColor = DesignSystemColor.icongray.value
-        button.addTarget(self, action: #selector(mogakbtn1cliecked), for: .touchUpInside)
-        return button
-    }()
-
-    
-//MARK: - 모각2
-    
-    private lazy var mogakView2 : UIView = {
-        let view2 = UIView()
-        view2.layer.cornerRadius = 8
-        view2.backgroundColor = DesignSystemColor.yellow.value
-        return view2
-    }()
-    
-    private lazy var mogakLabel2 : UILabel = {
-        let label = UILabel()
-        label.text = "자격증 4개따기"
-        label.textColor = DesignSystemColor.orange.value
-        label.font = UIFont(name: "Pretendard-Medium", size: 18)
-        return label
-    }()
-    
-//MARK: - 모각3
-    
-    private lazy var mogakView3 : UIView = {
-        let view3 = UIView()
-        view3.layer.cornerRadius = 8
-        view3.backgroundColor = DesignSystemColor.pink.value
-        return view3
-    }()
-    
-    private lazy var mogakLabel3 : UILabel = {
-        let label = UILabel()
-        label.text = "시험 합격"
-        label.textColor = DesignSystemColor.ruby.value
-        label.font = UIFont(name: "Pretendard-Medium", size: 18)
-        return label
-    }()
-    
-//MARK: - 모각4
-    
-    private lazy var mogakView4 : UIView = {
-        let view4 = UIView()
-        view4.layer.cornerRadius = 8
-        view4.backgroundColor = DesignSystemColor.lavender.value
-        return view4
-    }()
-    
-    private lazy var mogakLabel4 : UILabel = {
-        let label = UILabel()
-        label.text = "공모전에서 수상하기"
-        label.textColor = DesignSystemColor.signature.value
-        label.font = UIFont(name: "Pretendard-Medium", size: 18)
-        return label
-    }()
-    
-//MARK: - viewDidLoad
+    //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .clear
-        self.modalScrollView.delegate = self
+        view.backgroundColor = .white
         setUI()
+        tableSetUI()
     }
     
-//MARK: - button method
-    @objc func mogakbtn1cliecked(){
-
-        if let currentImage = mogakButton1.currentImage, currentImage == UIImage(systemName: "chevron.up") {
-                mogakButton1.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-                print("if")
-            } else {
-                mogakButton1.setImage(UIImage(systemName: "chevron.up"), for: .normal)
-                print("else")
-            }
-            
-        print("mogakbtn1clicked")
-    }
-
     //MARK: - UIsetting
-
+    
     func setUI(){
-        view.addSubview(modalScrollView)
-        modalScrollView.addSubview(contentView)
-        contentView.addSubviews(mainLabel,mogakView1,mogakLabel1,mogakButton1,mogakView2,mogakLabel2,mogakView3,mogakLabel3,mogakView4,mogakLabel4)
-        
-        modalScrollView.snp.makeConstraints{
-            $0.edges.equalToSuperview()
-        }
+        view.addSubviews(mainLabel,contentView)
+        contentView.addSubviews(MogakTableView)
         
         contentView.snp.makeConstraints{
-            $0.edges.width.equalTo(modalScrollView)
-            $0.height.equalTo(1200)
+            $0.top.equalTo(mainLabel.snp.bottom).offset(24)
+            $0.leading.trailing.bottom.equalToSuperview()
+            //$0.height.equalTo(1200)
             
         }
-        
         mainLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().offset(36)
         }
         
-        mogakLabel1.snp.makeConstraints{
-            $0.leading.equalToSuperview().inset(40)
-            $0.top.equalTo(mainLabel.snp.bottom).offset(36)
-        }
-        mogakView1.snp.makeConstraints{
-            $0.leading.equalTo(mogakLabel1).offset(-20)
-            $0.trailing.equalTo(mogakLabel1).offset(20)
-            $0.top.equalTo(mogakLabel1).offset(-12)
-            $0.bottom.equalTo(mogakLabel1).offset(12)
-        }
-        mogakButton1.snp.makeConstraints{
-            $0.centerY.equalTo(mogakLabel1)
-            $0.trailing.equalToSuperview().offset(-20)
+        MogakTableView.snp.makeConstraints{
+            $0.edges.equalTo(contentView)
         }
         
-        mogakLabel2.snp.makeConstraints{
-            $0.leading.equalToSuperview().inset(40)
-            $0.top.equalTo(mogakView1.snp.bottom).offset(36)
-        }
-        mogakView2.snp.makeConstraints{
-            $0.leading.equalTo(mogakLabel2).offset(-20)
-            $0.trailing.equalTo(mogakLabel2).offset(20)
-            $0.top.equalTo(mogakLabel2).offset(-12)
-            $0.bottom.equalTo(mogakLabel2).offset(12)
+        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakCell")
+        
+    }
+    
+    func tableSetUI(){
+        MogakTableView.snp.makeConstraints{
+            $0.edges.equalTo(contentView)
         }
         
-        mogakLabel3.snp.makeConstraints{
-            $0.leading.equalToSuperview().inset(40)
-            $0.top.equalTo(mogakView2.snp.bottom).offset(36)
-        }
-        mogakView3.snp.makeConstraints{
-            $0.leading.equalTo(mogakLabel3).offset(-20)
-            $0.trailing.equalTo(mogakLabel3).offset(20)
-            $0.top.equalTo(mogakLabel3).offset(-12)
-            $0.bottom.equalTo(mogakLabel3).offset(12)
-        }
+        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakCell")
         
-        mogakLabel4.snp.makeConstraints{
-            $0.leading.equalToSuperview().inset(40)
-            $0.top.equalTo(mogakView3.snp.bottom).offset(36)
-        }
-        mogakView4.snp.makeConstraints{
-            $0.leading.equalTo(mogakLabel4).offset(-20)
-            $0.trailing.equalTo(mogakLabel4).offset(20)
-            $0.top.equalTo(mogakLabel4).offset(-12)
-            $0.bottom.equalTo(mogakLabel4).offset(12)
-        }
+        MogakTableView.reloadData()
+        MogakTableView.separatorStyle = .none
+        MogakTableView.rowHeight = UITableView.automaticDimension
         
     }
 }
+
+extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     
-    //Preview code
-#if DEBUG
-    import SwiftUI
-    struct SelectJogakModalRepresentable: UIViewControllerRepresentable {
-        
-        func updateUIViewController(_ uiView: UIViewController,context: Context) {
-            // leave this empty
-        }
-        @available(iOS 13.0.0, *)
-        func makeUIViewController(context: Context) -> UIViewController{
-            SelectJogakModal()
-        }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return mogakList.count
     }
-    @available(iOS 13.0, *)
-    struct SelectJogakModalRepresentable_PreviewProvider: PreviewProvider {
-        static var previews: some View {
-            Group {
-                if #available(iOS 14.0, *) {
-                    SelectJogakModalRepresentable()
-                        .ignoresSafeArea()
-                        .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                        .previewDevice(PreviewDevice(rawValue: "iPhone 15pro"))
-                } else {
-                    // Fallback on earlier versions
-                }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MogakCell", for: indexPath)
+        
+        if let mogakCell = cell as? MogakTableViewCell {
+            let mogak = mogakList[indexPath.row]
+            mogakCell.configure(with: mogak)
+        }
+        
+        return cell
+        
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        return UITableView.automaticDimension
+    }
+    
+    
+    
+    //MARK: - 셀 클릭시 반응
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? MogakTableViewCell {
+            cell.JogakLabel.isHidden = !cell.JogakLabel.isHidden
+            cell.jogakImageView.isHidden = !cell.jogakImageView.isHidden
+            
+            if cell.JogakLabel.isHidden {
+                cell.MogakButtonView.image = UIImage(systemName: "chevron.up")
+            } else {
+                cell.MogakButtonView.image = UIImage(systemName: "chevron.down")
             }
             
+            print("상태 \(cell.JogakLabel.isHidden)")
+            
         }
-    } #endif
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    //    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    //        tableView.beginUpdates()
+    //        tableView.endUpdates()
+    //    }
+    
+    
+}
+
+extension Date {
+    func isSameDay(as date: Date) -> Bool {
+        return Calendar.current.isDate(self, inSameDayAs: date)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////Preview code
+//#if DEBUG
+//import SwiftUI
+//struct SelectJogakModalRepresentable: UIViewControllerRepresentable {
+//
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//    @available(iOS 13.0.0, *)
+//    func makeUIViewController(context: Context) -> UIViewController{
+//        SelectJogakModal()
+//    }
+//}
+//@available(iOS 13.0, *)
+//struct SelectJogakModalRepresentable_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if #available(iOS 14.0, *) {
+//                SelectJogakModalRepresentable()
+//                    .ignoresSafeArea()
+//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+//                    .previewDevice(PreviewDevice(rawValue: "iPhone 15pro"))
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//        }
+//
+//    }
+//} #endif
 

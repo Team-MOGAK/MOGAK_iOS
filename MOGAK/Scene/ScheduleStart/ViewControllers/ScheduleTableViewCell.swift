@@ -8,11 +8,11 @@
 import UIKit
 import SnapKit
 
-class ScheduleTableViewCell : UITableViewCell {
-
+class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
+    
     //MARK: - properties
-
-     lazy var cellImage : UIImageView = {
+    
+    lazy var cellImage : UIImageView = {
         let cellImage = UIImageView()
         //cellImage.clipsToBounds = true
         cellImage.backgroundColor = .clear //백그라운드색
@@ -20,14 +20,14 @@ class ScheduleTableViewCell : UITableViewCell {
         return cellImage
     }()
     
-     lazy var cellLabel : UILabel = {
+    lazy var cellLabel : UILabel = {
         let cellLabel = UILabel()
         cellLabel.numberOfLines = 2
         cellLabel.textAlignment = .left
         return cellLabel
     }()
     
-     lazy var cellButton : UIButton = {
+    lazy var cellButton : UIButton = {
         let cellButton = UIButton()
         cellButton.setImage(UIImage(systemName : "ellipsis"), for: .normal)
         cellButton.tintColor = UIColor(hex: "#6E707B")
@@ -36,14 +36,32 @@ class ScheduleTableViewCell : UITableViewCell {
         return cellButton
     }()
     
+    let selectJogakModal = SelectJogakModal()
+    
     //MARK: - @objc
     @objc func ButtonClicked(){
+        guard let parentViewController = self.parentVC else {
+            print("Error: Parent view controller not found.")
+            return
+        }
+        
+        let setroutine = SetRoutineModal()
+        setroutine.modalPresentationStyle = .formSheet
+        
+        parentViewController.present(setroutine,animated: true)
+        
+        if let sheet = setroutine.sheetPresentationController{
+            sheet.detents = [.medium()]
+            sheet.delegate = self
+            sheet.prefersGrabberVisible = true
+        }
+        
         
         print("cell button clicked")
     }
     
     //MARK: - init
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         CellUI()
@@ -60,7 +78,7 @@ class ScheduleTableViewCell : UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     //MARK: - UI
-
+    
     private func CellUI(){
         contentView.addSubview(cellImage)
         contentView.addSubview(cellLabel)
@@ -87,6 +105,22 @@ class ScheduleTableViewCell : UITableViewCell {
         contentView.layer.shadowRadius = 10
         
     }
+    func cellconfigure(with mogak: SelectJogakModal.Mogak, indexPath : IndexPath){
+        let mogak = selectJogakModal.mogakList[indexPath.row]
+        cellLabel.text = mogak.jogak //cell
+    }
     
- 
+}
+
+extension UITableViewCell { //VC에 접근
+    var parentVC: UIViewController? {
+        var responder: UIResponder? = self
+        while let nextResponder = responder?.next {
+            if let viewController = nextResponder as? UIViewController {
+                return viewController
+            }
+            responder = nextResponder
+        }
+        return nil
+    }
 }
