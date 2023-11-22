@@ -422,11 +422,11 @@ extension FriendDetailPageViewController: UITableViewDelegate, UITableViewDataSo
         
         let detailVC = JogakDetailViewController()
         
-        if let status = cell.statusLabel.text,
-           let category = cell.categoryLabel.text,
+        if let status = cell.smallGoalLabel.text,
+           let category = cell.episodeLabel.text,
            let title = cell.titleLabel.text,
-           let color = cell.statusView.backgroundColor,
-           let textColor = cell.statusLabel.textColor
+           let color = cell.smallGoalView.backgroundColor,
+           let textColor = cell.smallGoalLabel.textColor
         {
             detailVC.configureData(color: color, status: status, category: category, title: title, textColor: textColor)
         }
