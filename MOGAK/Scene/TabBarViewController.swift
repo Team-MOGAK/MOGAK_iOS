@@ -23,7 +23,7 @@ class TabBarViewController: UITabBarController{
         
         let homeTabBarItem = UITabBarItem(title: "조각시작", image: UIImage(named: "start"), selectedImage: UIImage(named: "selectedStart"))
         let modalArtBarItem = UITabBarItem(title: "모다라트", image: UIImage(named: "modalArt"), selectedImage: UIImage(named: ""))
-        let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
+        let reportTabBarItem = UITabBarItem(title: "마이 히스토리", image: UIImage(named: "History"), selectedImage: UIImage(named: "selectedHistory"))
         
         let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
         homeTabBarItem.imageInsets = insets
@@ -37,7 +37,7 @@ class TabBarViewController: UITabBarController{
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let modalArtVC = generateNavController(vc: ModalartMainViewController(), tabBarItem: modalArtBarItem)
-        let reportVC = generateNavController(vc: ScheduleReportViewController(), tabBarItem: reportTabBarItem)
+        let reportVC = generateNavController(vc: MyHistoryViewController(), tabBarItem: reportTabBarItem)
         
         self.viewControllers = [homeVC,modalArtVC, reportVC]
         self.selectedIndex = 0
