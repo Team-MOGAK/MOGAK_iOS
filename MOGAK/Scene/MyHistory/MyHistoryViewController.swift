@@ -248,13 +248,15 @@ class MyHistoryViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(hex: "F1F3FA")
-        self.configureTop()
+        //self.configureTop()
         self.configureSelectModalart()
         //self.configureSegment()
         self.configureSegmentCollectionView()
         self.configureTableView()
-        //self.configureButton()
+        self.configureButton()
         
+        let defaultSelectedIndexPath = IndexPath(item: 0, section: 0)
+        segmentCollectionView.selectItem(at: defaultSelectedIndexPath, animated: false, scrollPosition: .top)
     }
     
     override func viewWillLayoutSubviews() {
@@ -349,7 +351,8 @@ class MyHistoryViewController: UIViewController {
         
         selectModalart.snp.makeConstraints({
             $0.leading.equalToSuperview().inset(20)
-            $0.top.equalTo(topView.snp.bottom).offset(24)
+            //$0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            $0.top.equalTo(view.snp.top).offset(80)
         })
     }
     
@@ -469,6 +472,10 @@ class MyHistoryViewController: UIViewController {
     private func configureButton() {
         self.view.addSubview(floatingButton)
         
+        floatingButton.snp.makeConstraints({
+            $0.top.equalTo(view.snp.top).offset(60)
+            $0.leading.equalTo(selectModalart.snp.trailing).offset(16)
+        })
     }
     
     @objc private func changeSegmentedControlLinePosition() {

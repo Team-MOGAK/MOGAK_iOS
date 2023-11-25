@@ -217,7 +217,8 @@ class MemoirDetailViewController: UIViewController {
             $0.height.equalTo(68)
         })
         
-        topContainerView.addSubviews(profileContainerView, editButton)
+        //topContainerView.addSubviews(profileContainerView, editButton)
+        topContainerView.addSubview(profileContainerView)
         
         profileContainerView.snp.makeConstraints({
             $0.centerY.equalToSuperview()
@@ -226,11 +227,11 @@ class MemoirDetailViewController: UIViewController {
             $0.height.equalTo(36)
         })
         
-        editButton.snp.makeConstraints({
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
-        })
+//        editButton.snp.makeConstraints({
+//            $0.trailing.equalToSuperview().offset(-20)
+//            $0.centerY.equalToSuperview()
+//            $0.width.height.equalTo(24)
+//        })
     }
     
     // MARK: - 프로필 컨테이너 <- addsubviews
@@ -621,6 +622,10 @@ class MemoirDetailViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         self.navigationController?.navigationBar.isHidden = false
+        
+        let rightButtonImage = UIImage(systemName: "ellipsis")
+        let rightButtonItem = UIBarButtonItem(image: rightButtonImage, style: .plain, target: self, action: #selector(ellipsisButtonTapped))
+        navigationItem.rightBarButtonItem = rightButtonItem
         
         configureNavBar()
         configureScrollView()

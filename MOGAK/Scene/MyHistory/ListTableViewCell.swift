@@ -72,6 +72,9 @@ class ListTableViewCell: UITableViewCell {
         return label
     }()
     
+    // MemoirDetailVC 네비게이션 바 아이템에 ellipsisButton 추가
+    
+    
     private let ellipsisButton : UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
@@ -115,9 +118,21 @@ class ListTableViewCell: UITableViewCell {
         self.parentViewController?.present(alertController, animated: true, completion: nil)
     }
     
+    private let thumbNailView: UIImageView = {
+        let imageView = UIImageView()
+        //imageView.image = UIImage(named: "cuteBokdol")
+        //imageView.backgroundColor = .white
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 10
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = UIColor(hex: "F1F3FA")
+        configureThumbnailImageView()
         configureContainerView()
         configureButton()
         configureLabel()
@@ -141,10 +156,32 @@ class ListTableViewCell: UITableViewCell {
         containerView.addSubviews(smallGoalLabel, episodeLabel)
         containerView.addSubview(dateLabel)
         
-        titleLabel.snp.makeConstraints({
-            $0.top.equalTo(containerView.snp.top).offset(16) //원래 46
-            $0.leading.equalTo(containerView.snp.leading).offset(16)
-        })
+        if thumbNailView.image != nil {
+            titleLabel.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(16) //원래 46
+                $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+            })
+            
+            dateLabel.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(80)
+                $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+            })
+        } else {
+            titleLabel.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(16) //원래 46
+                $0.leading.equalTo(containerView.snp.leading).offset(16)
+            })
+            
+            dateLabel.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(80)
+                $0.leading.equalTo(containerView.snp.leading).offset(16)
+            })
+        }
+        
+//        titleLabel.snp.makeConstraints({
+//            $0.top.equalTo(containerView.snp.top).offset(16) //원래 46
+//            $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+//        })
         
         smallGoalLabel.snp.makeConstraints({
             $0.centerX.equalTo(smallGoalView)
@@ -156,21 +193,37 @@ class ListTableViewCell: UITableViewCell {
             $0.centerY.equalTo(episodeView)
         })
         
-        dateLabel.snp.makeConstraints({
-            $0.top.equalTo(containerView.snp.top).offset(80)
-            $0.leading.equalTo(containerView.snp.leading).offset(16)
-        })
+//        dateLabel.snp.makeConstraints({
+//            $0.top.equalTo(containerView.snp.top).offset(80)
+//            $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+//        })
     }
     
     private func configureButton() {
         containerView.addSubviews(smallGoalView, episodeView, ellipsisButton)
         
-        smallGoalView.snp.makeConstraints({
-            $0.top.equalTo(containerView.snp.top).offset(44)
-            $0.leading.equalTo(containerView.snp.leading).offset(16)
-            $0.width.equalTo(57)
-            $0.height.equalTo(26)
-        })
+        if thumbNailView.image != nil {
+            smallGoalView.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(44)
+                $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+                $0.width.equalTo(57)
+                $0.height.equalTo(26)
+            })
+        } else {
+            smallGoalView.snp.makeConstraints({
+                $0.top.equalTo(containerView.snp.top).offset(44)
+                $0.leading.equalTo(containerView.snp.leading).offset(16)
+                $0.width.equalTo(57)
+                $0.height.equalTo(26)
+            })
+        }
+        
+//        smallGoalView.snp.makeConstraints({
+//            $0.top.equalTo(containerView.snp.top).offset(44)
+//            $0.leading.equalTo(thumbNailView.snp.trailing).offset(16)
+//            $0.width.equalTo(57)
+//            $0.height.equalTo(26)
+//        })
         
         episodeView.snp.makeConstraints({
             $0.top.equalTo(containerView.snp.top).offset(44)
@@ -195,6 +248,28 @@ class ListTableViewCell: UITableViewCell {
             $0.leading.trailing.equalTo(contentView).inset(20)
             $0.height.equalTo(108)
         })
+    }
+    
+    private func configureThumbnailImageView() {
+        if thumbNailView.image != nil {
+            containerView.addSubview(thumbNailView)
+            
+            thumbNailView.snp.makeConstraints({
+                $0.centerY.equalToSuperview()
+                $0.leading.equalTo(containerView).inset(20)
+                $0.height.width.equalTo(80)
+            })
+        } else {
+            return
+        }
+        
+//        containerView.addSubview(thumbNailView)
+//        
+//        thumbNailView.snp.makeConstraints({
+//            $0.centerY.equalToSuperview()
+//            $0.leading.equalTo(containerView).inset(20)
+//            $0.height.width.equalTo(80)
+//        })
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
