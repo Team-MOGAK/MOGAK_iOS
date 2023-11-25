@@ -13,6 +13,9 @@ import FSCalendar
 import Alamofire
 
 class MogakInitViewController: UIViewController {
+    private let titleColorPalette: [String] = ["475FFD", "11D796", "009967", "FF2323", "D9D9D9", "F98A08", "FF6827", "9C31FF"]
+    
+    private var isColorSelected: Bool = false
     
     private var categorySelectedList = ""
     private var repeatSelectedList : [String] = []
@@ -314,6 +317,17 @@ class MogakInitViewController: UIViewController {
         $0.layer.cornerRadius = 10
     }
     
+    // MARK: - Color select Collectionview
+    private var colorCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: 40, height: 40)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+        layout.scrollDirection = .horizontal
+        
+        let collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: layout)
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
     
     // MARK: - ViewDidLoad
     
@@ -327,6 +341,7 @@ class MogakInitViewController: UIViewController {
         self.configureRepeat()
         self.configureDate()
         self.configureEndDate()
+        self.configureColorCollectionView()
         
         let today = startCalendar.today!
         self.headerTitle.text = setYearAndMonth(of: today)
@@ -341,6 +356,22 @@ class MogakInitViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+    }
+    
+    private func configureColorCollectionView() {
+        colorCollectionView.register(MogakInitColorCell.self, forCellWithReuseIdentifier: MogakInitColorCell.identifier)
+        colorCollectionView.dataSource = self
+        colorCollectionView.delegate = self
+        colorCollectionView.tag = 3
+        
+        contentView.addSubview(colorCollectionView)
+        
+        colorCollectionView.snp.makeConstraints({
+            $0.top.equalTo(choiceDateLabel.snp.bottom).offset(10)
+            $0.leading.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview()
+            $0.height.equalTo(40)
+        })
     }
     
     private func configureView() {
@@ -631,6 +662,17 @@ class MogakInitViewController: UIViewController {
                 $0.height.equalTo(212)
             })
             
+            choiceDateLabel.snp.remakeConstraints({
+                $0.top.equalTo(termExplanationLabel.snp.bottom).offset(40)
+                $0.leading.equalToSuperview().inset(20)
+            })
+            
+            self.view.layoutIfNeeded()
+        } else {
+            choiceDateLabel.snp.remakeConstraints({
+                $0.top.equalTo(endTextField.snp.bottom).offset(40)
+                $0.leading.equalToSuperview().inset(20)
+            })
             
             self.view.layoutIfNeeded()
         }
@@ -995,6 +1037,8 @@ extension MogakInitViewController: UICollectionViewDataSource {
             return categoryList.count
         } else if collectionView.tag == 2 {
             return repeatList.count
+        } else if collectionView.tag == 3 {
+            return titleColorPalette.count
         }
         //        return categoryList.count
         return 3
@@ -1011,6 +1055,21 @@ extension MogakInitViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeue(Reusable.repeatCell, for: indexPath)
             cell.textLabel.text = repeatList[indexPath.item]
             return cell
+        } else if collectionView.tag == 3 {
+            guard let cell = colorCollectionView.dequeueReusableCell(withReuseIdentifier:  MogakInitColorCell.identifier, for: indexPath) as? MogakInitColorCell else {return UICollectionViewCell()}
+            
+            cell.color = UIColor(hex: titleColorPalette[indexPath.row])
+//                    if titleColorPalette[indexPath.row] == titleBgColor { //만약에 지금 보여줘야 하는 셀이 타이틀 백그라운드 색이랑 같다면 해당 컬러차트 표시
+//                        isColorSelected = true
+//                        cell.innerView.backgroundColor = .white
+//                        collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+//                        changeCompleteBtn()
+//                    }
+                    
+                    cell.setUpColorView()
+                    cell.setUpInnerView()
+                    
+                    return cell
         }
         
         return UICollectionViewCell()
@@ -1070,6 +1129,10 @@ extension MogakInitViewController: UICollectionViewDelegate {
             }
             print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
             
+        } else if collectionView.tag == 3 {
+            if !isColorSelected {
+                isColorSelected = true
+            }
         }
     }
 }
@@ -1097,6 +1160,8 @@ extension MogakInitViewController: UICollectionViewDelegateFlowLayout {
             
             return CGSize(width: size.width + 37, height: size.height + 32)
             
+        } else if collectionView.tag == 3 {
+            return CGSize(width: 40, height: 40)
         }
         return CGSize()
     }
