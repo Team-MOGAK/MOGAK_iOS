@@ -1,1 +1,1 @@
-echo "*.pbxproj binary merge=union"
+*.pbxproj binary merge=union
