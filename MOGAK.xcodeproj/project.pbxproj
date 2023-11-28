@@ -10,13 +10,12 @@
 		0E16A07A5135254924AA7BBC /* Pods_MOGAK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5C70052B46096077CFF257 /* Pods_MOGAK.framework */; };
 		4D3077512AF3D841001FDD77 /* ShowModalArtListModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */; };
 		4D3077532AF3E990001FDD77 /* ShowModalArtListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */; };
-		4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModalViewController.swift */; };
+		4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModal.swift */; };
 		4D6C6DF32B10E8AB00206DD6 /* ModalartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6C6DF22B10E8AB00206DD6 /* ModalartModel.swift */; };
 		4D6C6DF52B10E8DE00206DD6 /* ModalartRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6C6DF42B10E8DE00206DD6 /* ModalartRouter.swift */; };
 		4D6C6E042B14D4F900206DD6 /* OnBoardingForthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6C6E032B14D4F900206DD6 /* OnBoardingForthViewController.swift */; };
 		4D6C6E062B14DC5600206DD6 /* OnBoardingPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6C6E052B14DC5600206DD6 /* OnBoardingPageController.swift */; };
 		4D725C0E2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D725C0D2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift */; };
-		4D725C102AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */; };
 		4D742A052AEE8AFE0002DBCF /* ColorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D742A042AEE8AFE0002DBCF /* ColorCell.swift */; };
 		4D7847FC2B03AAA00004DB45 /* AskDeleteModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */; };
 		4D78481A2B06543A0004DB45 /* ModalartNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7848192B06543A0004DB45 /* ModalartNetwork.swift */; };
@@ -122,13 +121,12 @@
 		3A5C70052B46096077CFF257 /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListModal.swift; sourceTree = "<group>"; };
 		4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListCell.swift; sourceTree = "<group>"; };
-		4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetModalartTitleModalViewController.swift; sourceTree = "<group>"; };
+		4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetModalartTitleModal.swift; sourceTree = "<group>"; };
 		4D6C6DF22B10E8AB00206DD6 /* ModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartModel.swift; sourceTree = "<group>"; };
 		4D6C6DF42B10E8DE00206DD6 /* ModalartRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartRouter.swift; sourceTree = "<group>"; };
 		4D6C6E032B14D4F900206DD6 /* OnBoardingForthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingForthViewController.swift; sourceTree = "<group>"; };
 		4D6C6E052B14DC5600206DD6 /* OnBoardingPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingPageController.swift; sourceTree = "<group>"; };
 		4D725C0D2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedModalArtMainTitleModal.swift; sourceTree = "<group>"; };
-		4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtomModalSheet.swift; sourceTree = "<group>"; };
 		4D742A042AEE8AFE0002DBCF /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
 		4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskDeleteModal.swift; sourceTree = "<group>"; };
 		4D7848192B06543A0004DB45 /* ModalartNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartNetwork.swift; sourceTree = "<group>"; };
@@ -278,7 +276,6 @@
 			children = (
 				4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */,
 				4DF224FE2AEBEEB3002FC286 /* ButtonWithMenu.swift */,
-				4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -289,7 +286,7 @@
 				4D725C0D2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift */,
 				4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */,
 				4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */,
-				4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModalViewController.swift */,
+				4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModal.swift */,
 			);
 			path = Modal;
 			sourceTree = "<group>";
@@ -824,7 +821,6 @@
 				4D3077512AF3D841001FDD77 /* ShowModalArtListModal.swift in Sources */,
 				9C2EF7F62A76351D00E8C8F4 /* ScorllView+Ext.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
-				4D725C102AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift in Sources */,
 				6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */,
 				6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */,
 				6CD4A8852A93BF3C00E7DEFD /* CertificationModalVC.swift in Sources */,
@@ -849,7 +845,7 @@
 				9C2EF7F22A6D1B1F00E8C8F4 /* RepeatViewCell.swift in Sources */,
 				9C82D44A2A95159800CBC1C3 /* MogakModels.swift in Sources */,
 				6CD4A8862A93BF4500E7DEFD /* CircularProgressView.swift in Sources */,
-				4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModalViewController.swift in Sources */,
+				4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModal.swift in Sources */,
 				9C2EF7FA2A7E050B00E8C8F4 /* UILabel+Ext.swift in Sources */,
 				656A53E02A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift in Sources */,
 				6CD4A8842A93BF2900E7DEFD /* ScheduleTimerVC.swift in Sources */,

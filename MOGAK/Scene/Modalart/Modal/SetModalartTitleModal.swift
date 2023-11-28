@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
-class SetModalartTitleModalViewController: UIViewController {
+class SetModalartTitleModal: UIViewController {
     //MARK: - properties
     //모다라트 타이틀
     var modalArtTitle: String = ""
@@ -169,7 +169,7 @@ class SetModalartTitleModalViewController: UIViewController {
 }
 
 
-extension SetModalartTitleModalViewController {
+extension SetModalartTitleModal {
     //MARK: - 뷰들 레이아웃 잡기
     private func configureLayout() {
         self.view.addSubviews(titleLabel, titleSetTextField, colorCollectionView, btnStackView)
@@ -205,7 +205,7 @@ extension SetModalartTitleModalViewController {
 }
 
 
-extension SetModalartTitleModalViewController: UITextFieldDelegate {
+extension SetModalartTitleModal: UITextFieldDelegate {
     //MARK: - 텍스트필드 글자수 제한
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let currentText = textField.text else { return false }
@@ -225,7 +225,7 @@ extension SetModalartTitleModalViewController: UITextFieldDelegate {
 }
 
 
-extension SetModalartTitleModalViewController: UICollectionViewDataSource{
+extension SetModalartTitleModal: UICollectionViewDataSource{
     //MARK: - 한 섹션안에 컬러 차트의 개수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         titleColorPalette.count
@@ -252,7 +252,7 @@ extension SetModalartTitleModalViewController: UICollectionViewDataSource{
 }
 
 
-extension SetModalartTitleModalViewController: UICollectionViewDelegate {
+extension SetModalartTitleModal: UICollectionViewDelegate {
     //MARK: - 컬러가 선택되었을 때
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print(#fileID, #function, #line, "- selected🔥")

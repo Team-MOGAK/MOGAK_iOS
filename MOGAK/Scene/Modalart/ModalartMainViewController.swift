@@ -378,7 +378,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         }
         else if cellType == ModalartMainCell.identifier {
             let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
-            let bottomSheetVC = SetModalartTitleModalViewController()
+            let bottomSheetVC = SetModalartTitleModal()
             if let sheet = bottomSheetVC.sheetPresentationController {
                 if #available(iOS 16.0, *) {
                     sheet.detents = [.custom() { context in
