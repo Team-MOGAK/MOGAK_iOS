@@ -21,6 +21,7 @@
 		4D742A052AEE8AFE0002DBCF /* ColorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D742A042AEE8AFE0002DBCF /* ColorCell.swift */; };
 		4D7847FC2B03AAA00004DB45 /* AskDeleteModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */; };
 		4D78481A2B06543A0004DB45 /* ModalartNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7848192B06543A0004DB45 /* ModalartNetwork.swift */; };
+		4D725C102AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */; };
 		4D7861B02AD25C06006B8E88 /* AppleLoginManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861AF2AD25C06006B8E88 /* AppleLoginManage.swift */; };
 		4D7861B32AD25C3F006B8E88 /* GoogleLoginManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861B22AD25C3F006B8E88 /* GoogleLoginManage.swift */; };
 		4D7861B52AD25C50006B8E88 /* KakaoLoginManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */; };
@@ -135,6 +136,7 @@
 		4D742A042AEE8AFE0002DBCF /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
 		4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskDeleteModal.swift; sourceTree = "<group>"; };
 		4D7848192B06543A0004DB45 /* ModalartNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartNetwork.swift; sourceTree = "<group>"; };
+		4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtomModalSheet.swift; sourceTree = "<group>"; };
 		4D7861AF2AD25C06006B8E88 /* AppleLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleLoginManage.swift; sourceTree = "<group>"; };
 		4D7861B22AD25C3F006B8E88 /* GoogleLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleLoginManage.swift; sourceTree = "<group>"; };
 		4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoLoginManage.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */,
 				4D0151352AE0247C007E3F6B /* CustomButtomModalSheet.swift */,
 				4DF224FE2AEBEEB3002FC286 /* ButtonWithMenu.swift */,
+				4D725C0F2AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -831,6 +834,7 @@
 				4D3077512AF3D841001FDD77 /* ShowModalArtListModal.swift in Sources */,
 				9C2EF7F62A76351D00E8C8F4 /* ScorllView+Ext.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
+				4D725C102AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift in Sources */,
 				6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */,
 				6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */,
 				6CD4A8852A93BF3C00E7DEFD /* CertificationModalVC.swift in Sources */,

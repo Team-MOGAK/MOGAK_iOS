@@ -16,7 +16,11 @@ class CustomBottomModalSheet: UIViewController {
     var bottomHeight: CGFloat = 300.0
     
     //bottomModalSheet가 view의 상단에서 떨어진 거리
+<<<<<<< HEAD
     var bottomSheetViewTopConstraint: Constraint!
+=======
+    private var bottomSheetViewTopConstraint: Constraint!
+>>>>>>> develop2
     
     //기존의 화면을 흐려지게 함(즉, 모달의 배경이 되는 화면이 보이도록 함)
     private let dimmedBackgroundView: UIView = {
@@ -29,7 +33,11 @@ class CustomBottomModalSheet: UIViewController {
     // vc를 메모리에 올릴때 UIView생성후 주입시켜주세요!!
     var bottomModalSheetView: UIView!
     
+<<<<<<< HEAD
     var indicatorView: UIView = {
+=======
+    private let indicatorView: UIView = {
+>>>>>>> develop2
         let view = UIView()
         view.backgroundColor = .systemGray3
         view.layer.cornerRadius = 3
@@ -42,6 +50,7 @@ class CustomBottomModalSheet: UIViewController {
         
         setupGestureRecognizer()
         configureLayout()
+<<<<<<< HEAD
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
@@ -49,12 +58,17 @@ class CustomBottomModalSheet: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+=======
+>>>>>>> develop2
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         showBottomModalSheet()
+<<<<<<< HEAD
 //        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+=======
+>>>>>>> develop2
     }
     
     //MARK: - GestureRecognizer 세팅 작업
@@ -77,8 +91,13 @@ class CustomBottomModalSheet: UIViewController {
 
         let changeConstant = (safeAreaHeight + bottomPadding) - bottomHeight
         self.bottomSheetViewTopConstraint.update(offset: changeConstant)
+<<<<<<< HEAD
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseIn, animations: {
             self.dimmedBackgroundView.alpha = 0.3
+=======
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn, animations: {
+            self.dimmedBackgroundView.alpha = 0.5
+>>>>>>> develop2
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
@@ -89,7 +108,11 @@ class CustomBottomModalSheet: UIViewController {
         let bottomPadding = view.safeAreaInsets.bottom
         self.bottomSheetViewTopConstraint.update(offset: bottomPadding + safeAreaHeight)
         
+<<<<<<< HEAD
         UIView.animate(withDuration: 0.3, delay: 0 , options:.curveLinear, animations: {
+=======
+        UIView.animate(withDuration: 0.5, delay: 0 , options:.curveLinear, animations: {
+>>>>>>> develop2
             self.dimmedBackgroundView.alpha = 0.0
             
             self.view.layoutIfNeeded()
@@ -116,6 +139,7 @@ class CustomBottomModalSheet: UIViewController {
             }
         }
     }
+<<<<<<< HEAD
     
     @objc func keyboardWillShow(_ sender: Notification) {
         guard let keyboardSize = (sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
@@ -132,6 +156,8 @@ class CustomBottomModalSheet: UIViewController {
         self.bottomModalSheetView.frame.origin.y = screenSize.height - (self.bottomHeight + bottomPadding + 10)
         
     }
+=======
+>>>>>>> develop2
 
 }
 
@@ -163,3 +189,7 @@ extension CustomBottomModalSheet {
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop2
