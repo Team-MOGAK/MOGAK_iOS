@@ -77,8 +77,8 @@ class CustomBottomModalSheet: UIViewController {
 
         let changeConstant = (safeAreaHeight + bottomPadding) - bottomHeight
         self.bottomSheetViewTopConstraint.update(offset: changeConstant)
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn, animations: {
-            self.dimmedBackgroundView.alpha = 0.5
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseIn, animations: {
+            self.dimmedBackgroundView.alpha = 0.3
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
@@ -89,7 +89,7 @@ class CustomBottomModalSheet: UIViewController {
         let bottomPadding = view.safeAreaInsets.bottom
         self.bottomSheetViewTopConstraint.update(offset: bottomPadding + safeAreaHeight)
         
-        UIView.animate(withDuration: 0.5, delay: 0 , options:.curveLinear, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0 , options:.curveLinear, animations: {
             self.dimmedBackgroundView.alpha = 0.0
             
             self.view.layoutIfNeeded()

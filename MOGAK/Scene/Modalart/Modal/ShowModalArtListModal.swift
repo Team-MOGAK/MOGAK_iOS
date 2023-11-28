@@ -12,10 +12,10 @@ import SnapKit
 class ShowModalArtListModal: UIViewController {
     //MARK: - properties
     //모다라트 리스트들 -> 이 개수만큼 반복문을 돌려서
-    var modalArtNameList: [String] = []
+    var modalArtNameList: [ModalartList] = []
     
     //선택한 모다라트로 변경함
-    var changeToSelectedModalart: ((_ modalArtListNum: Int, _ modalartTitle: String) -> ())? = nil
+    var changeToSelectedModalart: ((_ modalartInfo: ModalartList, _ listIndex: Int) -> ())? = nil
     
     private var dimmedBackgroundView: UIView = {
         let view = UIView()
@@ -40,7 +40,8 @@ class ShowModalArtListModal: UIViewController {
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        modalArtNameList.append("모다라트 추가")
+        modalArtNameList.append(ModalartList(id: 0, title: "모다라트 추가"))
+//        modalArtNameList.append("모다라트 추가")
         configureLayout()
         dimmedBackGroundSetting()
         setUpTableView()
@@ -105,8 +106,8 @@ extension ShowModalArtListModal: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(#fileID, #function, #line, "- selectedRow는?⭐️: \(indexPath.row)")
         let modalArtNum = indexPath.row //몇번쨰 모다라트인지
-        let modalArtTitle = modalArtNameList[modalArtNum]
-        changeToSelectedModalart?(modalArtNum, modalArtTitle)
+        let modalartInfo = modalArtNameList[modalArtNum]
+        changeToSelectedModalart?(modalartInfo, modalArtNum)
         self.dismiss(animated: false)
     }
 
@@ -116,7 +117,6 @@ extension ShowModalArtListModal: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print(#fileID, #function, #line, "- modalArtNamList count🔥: \(modalArtNameList.count)")
         return modalArtNameList.count
-//        return 10
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -125,8 +125,8 @@ extension ShowModalArtListModal: UITableViewDataSource {
         if indexPath.row == modalArtNameList.count - 1 { //맨 마지막 데이터일 경우 선이 안보이도록 설정
             cell.separatorInset = UIEdgeInsets(top: 0, left: modalArtListTableView.bounds.size.width, bottom: 0, right: 0);
         }
-        cell.modalartName = modalArtNameList[indexPath.row]
-        print(#fileID, #function, #line, "- ⭐️: \(modalArtNameList[indexPath.row])")
+        cell.modalartName = modalArtNameList[indexPath.row].title
+//        print(#fileID, #function, #line, "- ⭐️: \(modalArtNameList[indexPath.row])")
         cell.configureLayout()
         cell.setUpLabel()
         return cell

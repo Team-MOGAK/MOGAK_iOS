@@ -20,7 +20,7 @@ class ModalartMainCell: UICollectionViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = DesignSystemColor.white.value
-        label.font = UIFont.pretendard(.semiBold, size: 18)
+        label.font = UIFont.pretendard(.semiBold, size: 16)
         label.textAlignment = .center
         return label
     }()

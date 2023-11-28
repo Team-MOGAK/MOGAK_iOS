@@ -7,9 +7,10 @@
 
 import Foundation
 import Alamofire
+let BASE_URL = "https://mogak.shop:8081/"
 
 class ApiManager {
-    let BASE_URL = ""
+    
     static let shared = ApiManager()
     
     private init() {}
@@ -29,7 +30,7 @@ class ApiManager {
     struct EmptyResponse: Decodable {} // 빈 데이터 구조체
     
     func getData<T: Decodable>(url: String, parameters: [String: Any]? = nil, completion: @escaping (APIResult<T>) -> Void) {
-        AF.request(url, method: .post, parameters: parameters)
+        AF.request(url, method: .get, parameters: parameters)
             .validate()
             .responseDecodable(of: T.self) { response in
                 let statusCode = response.response?.statusCode ?? 0

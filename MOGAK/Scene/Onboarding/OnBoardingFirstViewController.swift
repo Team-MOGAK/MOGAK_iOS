@@ -11,12 +11,12 @@ import SnapKit
 class OnBoardingFirstViewController: UIViewController {
     
     private let titleLabel = UILabel().then {
-        $0.text = "가장 자극받을 수 있는\n게시물을\n매일 추천해드려요."
+        $0.text = "되고 싶거나 이루고 싶은 \n목표를 설정해 \n의욕을 강화해보세요."
         $0.numberOfLines = 3
         $0.textColor = .black
         $0.textAlignment = .center
-        $0.font = UIFont.pretendard(.regular, size: 30)
-        $0.asFont(targetString: "가장 자극받을 수 있는", font: UIFont.pretendard(.semiBold, size: 30))
+        $0.font = UIFont.pretendard(.medium, size: 28)
+//        $0.asFont(targetString: "가장 자극받을 수 있는", font: UIFont.pretendard(.semiBold, size: 30))
     }
     
     private let image = UIImageView().then {
@@ -25,8 +25,8 @@ class OnBoardingFirstViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = UIColor(hex: "ffffff")
+//        view.backgroundColor = UIColor(hex: "ffffff")
+        self.view.backgroundColor = DesignSystemColor.gray2.value
         configure()
     }
     
@@ -40,11 +40,36 @@ class OnBoardingFirstViewController: UIViewController {
         })
         
         image.snp.makeConstraints({
-            $0.top.equalTo(self.titleLabel.snp.bottom).offset(45)
-            $0.width.equalToSuperview().multipliedBy(0.86)
-            $0.height.equalToSuperview().multipliedBy(0.46)
+            $0.leading.equalToSuperview().offset(35)
+            $0.bottom.equalToSuperview().offset(-35)
             $0.centerX.equalToSuperview()
         })
     }
 
 }
+
+#if DEBUG
+import SwiftUI
+struct Preview: UIViewControllerRepresentable {
+    
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        OnBoardingFirstViewController()
+    }
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct ViewController_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
+        }
+    }
+}
+#endif

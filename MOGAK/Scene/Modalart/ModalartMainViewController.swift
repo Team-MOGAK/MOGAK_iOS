@@ -12,17 +12,17 @@ import SnapKit
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - 임시 데이터들
-//    var modalArtNameArr: [String] = ["내 모다라트"]
-    var modalArtNameArr: [String] = ["김라영의 모다라트", "운동하기", "내 모다라트3"] //modalArtName만 String배열로 받고 지금 보여주는 모다라트가 몇번째 모다라트인지 알고 있어야 한다
-    var nowShowModalArtNum: Int = 0 //현재 보여지는 모다라트의 번호
-    var mogakCategory: [(String, String)] = [("운동", "10키로 감량1"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량2"), ("운동", "10키로 감량"), ("운동", "10키로 감량3"), ("운동", "10키로 감량4")]
-//    var mogakCategory: [(String, String)] = []
-//    var modalArtMainCellBgColor: String = "475FFD" //나중에 받아와서 변경할 에정
-    var modalArtMainCellBgColor: String = "BFC3D4" //나중에 받아와서 변경할 에정
+    var modalArtNameArr: [String] = ["김라영의 모다라트", "운동하기", "내 모다라트3"]
+    var modalartName: String = "" ///현재 보여지는 모다라트 타이틀
+    var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+    var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
+    var nowShowModalArtIndex: Int = 0
+    var mogakData: [MogakCategory] = []
+    
+    var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
     
     private lazy var modalArtNameLabel: UILabel = {
         let label = UILabel()
-        label.text = modalArtNameArr[nowShowModalArtNum] //데이터 받아오면 그 모다라트 이름으로 변경 필요
         label.font = DesignSystemFont.semibold20L140.value
         label.textColor = DesignSystemColor.black.value
         return label
@@ -49,6 +49,8 @@ class ModalartMainViewController: UIViewController {
         return collectionView
     }()
     
+    let modalartNetwork = ModalartNetwork()
+    
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,6 +58,121 @@ class ModalartMainViewController: UIViewController {
         self.view.backgroundColor = DesignSystemColor.signatureBag.value
         collectionViewSetting()
         configureLayout()
+        getModalartAllList()
+    }
+    
+    //MARK: - 모다라트 전체 리스트 가져오기
+    func getModalartAllList() {
+        modalartNetwork.getModalartList { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+            case .success(let list):
+                guard let modalartList = list else { return }
+                self.modalartList = modalartList
+                print(#fileID, #function, #line, "- modalartList checking:\(self.modalartList)")
+                
+                if modalartList.isEmpty {
+                    self.modalartName = "내 모다라트"
+                    self.modalArtMainCellBgColor = "BFC3D4"
+                }
+                else {
+                    guard let firstData = modalartList.first else { return }
+                    self.nowShowModalArtNum = firstData.id
+                    self.nowShowModalArtIndex = 0
+                    self.getModalartDetailInfo(id: self.nowShowModalArtNum)
+                }
+            }
+        }
+    }
+
+    //MARK: - 단일 모다라트 디테일 정보 가져오기
+    func getModalartDetailInfo(id: Int) {
+        modalartNetwork.getDetailModalartInfo(modalartId: id) { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            case .success(let modalInfo):
+                guard let modalInfo = modalInfo else { return }
+
+                self.nowShowModalArtNum = modalInfo.id
+                self.modalartName = modalInfo.title
+                self.modalArtNameLabel.text = modalInfo.title
+                self.modalArtMainCellBgColor = modalInfo.color
+                self.mogakData = modalInfo.mogakCategory ?? []
+                self.modalArtCollectionView.reloadData()
+            }
+        }
+    }
+
+    //MARK: - 모다라트 생성 요청
+    func createModalart() {
+        let color = "BFC3D4"
+        let modalartLast = self.modalartList.last ?? ModalartList(id: 0, title: "")
+        
+        let createdId = modalartLast.id + 1
+        let createdTitle = "내 모다라트\(createdId)"
+
+        let data = ModalartMainData(id: createdId, title: createdTitle, color: color)
+        
+        modalartNetwork.createDetailModalart(data: data) { result in
+            switch result {
+            case .success(let modalartMainData):
+                print(#fileID, #function, #line, "- modalartMainData🌸: \(modalartMainData)")
+                self.nowShowModalArtNum = modalartMainData.id
+                self.modalartName = modalartMainData.title
+                self.modalArtNameLabel.text = modalartMainData.title
+                self.modalArtMainCellBgColor = modalartMainData.color
+                self.mogakData = []
+                self.modalartList.append(ModalartList(id: modalartMainData.id, title: modalartMainData.title))
+                self.modalArtCollectionView.reloadData()
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    //MARK: - 모다라트 삭제 요청
+    func deleteModalart() {
+        modalartNetwork.deleteModalart(id: self.nowShowModalArtNum) { result in
+            switch result {
+            case .success(let responseResult):
+                if responseResult {
+                    self.getModalartAllList()
+//                    if self.nowShowModalArtIndex == 0{ //현재 삭제하려고 하는 모다라트가 첫번째 모다라트일 경우 -> 그 다음 모다라트 보여주기 //-> 삭제하고 그다음 모다라트 get
+//                        print(#fileID, #function, #line, "- 현재 모다라트는 0번쨰:\(self.nowShowModalArtIndex)")
+////                        self.modalartList.remove(at: 0)
+////                        self.getModalartDetailInfo(id: self.modalartList[0].id)
+//                        self.getModalartAllList()
+//                    }
+//                    else { //기타 -> 앞에 모다라트가 있을꺼니까 바로 앞 모다라트 보여주기
+//                        self.modalartList.remove(at: self.nowShowModalArtIndex) //3
+//                        self.nowShowModalArtIndex = self.nowShowModalArtIndex - 1
+//                        self.getModalartDetailInfo(id: self.modalartList[self.nowShowModalArtIndex].id)
+//                    }
+//                    self.modalArtCollectionView.reloadData()
+                }
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+            }
+        }
+        
+    }
+    
+    func editModalart(_ changeTitle: String, _ changeColor: String) {
+        let data = ModalartMainData(id: self.nowShowModalArtNum, title: changeTitle, color: changeColor)
+        modalartNetwork.editModalart(data: data) { result in
+            switch result {
+            case .success(let modalartMainData):
+                self.modalartName = modalartMainData.title
+                self.modalArtMainCellBgColor = modalartMainData.color
+                self.modalArtNameLabel.text = modalartMainData.title
+                self.modalartList[self.nowShowModalArtIndex] = ModalartList(id: modalartMainData.id, title: modalartMainData.title)
+                self.modalArtCollectionView.reloadData()
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
     }
     
     //MARK: - viewDidAppear
@@ -74,36 +191,42 @@ class ModalartMainViewController: UIViewController {
     @objc private func showModalartListTapped() {
         print(#fileID, #function, #line, "- 모다라트 추가 버튼 탭")
         let showModalartListModalVC = ShowModalArtListModal()
-        showModalartListModalVC.modalArtNameList = modalArtNameArr
+        showModalartListModalVC.modalArtNameList = modalartList
         
         ///모다라트 리스트를 보여주는 모달에서 원하는 리스트를 선택했을 경우
-        showModalartListModalVC.changeToSelectedModalart = { num, title in
-            let hasModalArtNameChecking: Bool = title.prefix(6) != "내 모다라트" //모다라트 타이틀이 설정됬는지 체크
-            let modalArtNameIsAddModalart: Bool = title == "모다라트 추가" //모다라트 추가 리스트를 클릭했는지 체크
+        showModalartListModalVC.changeToSelectedModalart = { modalArtData, listIndex in
+            let num = modalArtData.id
+            let title = modalArtData.title
             
-            if hasModalArtNameChecking && !modalArtNameIsAddModalart { //모다라트 타이틀 설정됨
-                self.mogakCategory = [("딴스", "bbbb"), ("aaaa", "aaaaa"),("bb", "cccc")]
-                self.modalArtNameLabel.text = title
-            }
-            else if hasModalArtNameChecking && modalArtNameIsAddModalart { //모다라트 추가 클릭
-                self.modalArtNameLabel.text = "내 모다라트\(num + 1)"
-                self.modalArtNameArr.append("내 모다라트\(num + 1)")
-                self.mogakCategory = []
-            }
-            else { //모다라트 타이틀 설정 안됨
-                print(#fileID, #function, #line, "- 내 모다라트로 아직 타이틀 설정안됨")
-                self.mogakCategory = []
-                self.modalArtNameLabel.text = title
-            }
-            print(#fileID, #function, #line, "- modalArtNameArrcount🍀: \(self.modalArtNameArr.count)")
+            ///모다라트 타이틀이 설정됬는지 체크
+            let hasModalArtNameChecking: Bool = title.prefix(6) != "내 모다라트"
+            ///모다라트 추가 리스트를 클릭했는지 체크
+            let modalArtNameIsAddModalart: Bool = title == "모다라트 추가"
+            
             self.nowShowModalArtNum = num
-            self.modalArtCollectionView.reloadData()
+            self.nowShowModalArtIndex = listIndex
+            ///모다라트 타이틀 설정됨
+            if hasModalArtNameChecking && !modalArtNameIsAddModalart {
+                self.getModalartDetailInfo(id: num)
+            }
+            ///모다라트 추가 클릭
+            else if hasModalArtNameChecking && modalArtNameIsAddModalart {
+                self.createModalart()
+            }
+            ///모다라트 타이틀 설정 안됨
+            else {
+                self.mogakData = []
+                self.modalArtNameLabel.text = title
+                self.modalartName = title
+                self.modalArtCollectionView.reloadData()
+            }
         }
         
         showModalartListModalVC.modalPresentationStyle = .overFullScreen
         showModalartListModalVC.modalTransitionStyle = .crossDissolve
         self.present(showModalartListModalVC, animated: false)
     }
+
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
     @objc private func tacoBtnTapped() {
@@ -112,36 +235,54 @@ class ModalartMainViewController: UIViewController {
         
         ///모다라트 추가하기
         let addModalArtAction = UIAlertAction(title: "모다라트 추가", style: .default) { _ in
-            // 모다라트를 계속적으로 추가할 수 있게 할 것인지
-            let nextModalArtName: String = "내 모다라트" + String(self.modalArtNameArr.count + 1)
-            self.modalArtNameArr.append(nextModalArtName)
-            self.modalArtNameLabel.text = nextModalArtName
-            self.nowShowModalArtNum = self.modalArtNameArr.count - 1
-            self.mogakCategory = [("딴스", "bbbb"), ("뇨뇽", "aaaaa"),("냐냥", "cccc")]
-            self.modalArtCollectionView.reloadData()
+            self.createModalart()
         }
         
         ///모다라트 삭제하기
         let deleteModalArtAction = UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in
-            if self.modalArtNameArr.count == 1 { //현재 삭제하려고 하는 모다라트가 마지막 하나일 경우
-                self.modalArtNameLabel.text = "내 모다라트"
-                self.modalArtNameArr = ["내 모다라트"]
-                self.nowShowModalArtNum = 0
-                self.mogakCategory = []
+            //삭제하기 선택시 -> 정말 삭제하시겠습니까?라는 alert을 띄우기
+            if self.modalartList.isEmpty {
+                return
+            } else {
+                let bottomSheetVC = AskDeleteModal()
+                if let sheet = bottomSheetVC.sheetPresentationController {
+                    if #available(iOS 16.0, *) {
+                        sheet.detents = [.custom() { context in
+                            return 239
+                        }]
+                    } else {
+                        sheet.detents = [.medium()]
+                    }
+                    sheet.prefersGrabberVisible = true
+                }
+                bottomSheetVC.startDelete = {
+                    if self.modalartList.count == 1 { //현재 삭제하려고 하는 모다라트가 마지막 하나일 경우 -> 다시 하나 생성
+    //                    self.modalArtNameLabel.text = "내 모다라트"
+    //                    self.modalArtNameArr = ["내 모다라트"]
+    //                    self.nowShowModalArtIndex = 0
+    //                    self.mogakCategory = []
+                        self.createModalart()
+                    } else {
+                        self.deleteModalart()
+                    }
+                }
+                self.present(bottomSheetVC, animated: true)
+
+//                else if self.nowShowModalArtNum == firstaModalartId{ //현재 삭제하려고 하는 모다라트가 첫번째 모다라트일 경우 -> 그 다음 모다라트 보여주기 //-> 삭제하고 그다음 모다라트 get
+//                    self.modalartList.remove(at: self.nowShowModalArtIndex)
+//                    self.nowShowModalArtNum = self.nowShowModalArtNum
+//                    self.modalArtNameLabel.text = self.modalArtNameArr[self.nowShowModalArtNum]
+//                    self.mogakCategory = [] //여기서 데이터를 다시 불러와야 한다.
+//                }
+//                else { //기타 -> 앞에 모다라트가 있을꺼니까 바로 앞 모다라트 보여주기
+//                    self.modalArtNameArr.remove(at: self.nowShowModalArtIndex)
+//                    self.nowShowModalArtNum = self.nowShowModalArtNum - 1
+//                    self.modalArtNameLabel.text = self.modalArtNameArr[self.nowShowModalArtNum]
+//                    self.mogakCategory = [] //여기서 데이터를 다시 불러와야 한다.
+//                }
+//                self.modalArtCollectionView.reloadData()
             }
-            else if self.nowShowModalArtNum == 0 { //현재 삭제하려고 하는 모다라트가 첫번째 모다라트일 경우 -> 그 다음 모다라트 보여주기
-                self.modalArtNameArr.remove(at: self.nowShowModalArtNum)
-                self.nowShowModalArtNum = self.nowShowModalArtNum
-                self.modalArtNameLabel.text = self.modalArtNameArr[self.nowShowModalArtNum]
-                self.mogakCategory = [] //여기서 데이터를 다시 불러와야 한다.
-            }
-            else { //기타 -> 앞에 모다라트가 있을꺼니까 바로 앞 모다라트 보여주기
-                self.modalArtNameArr.remove(at: self.nowShowModalArtNum)
-                self.nowShowModalArtNum = self.nowShowModalArtNum - 1
-                self.modalArtNameLabel.text = self.modalArtNameArr[self.nowShowModalArtNum]
-                self.mogakCategory = [] //여기서 데이터를 다시 불러와야 한다.
-            }
-            self.modalArtCollectionView.reloadData()
+
         }
         
         ///액션sheet취소
@@ -178,12 +319,11 @@ extension ModalartMainViewController {
         //모다라트 사이즈 설정
         guard let window = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         let screenWidthSize = window.screen.bounds.width
-        let modalArtWidthSize = screenWidthSize - 70 //모각 사이간격이 10, padding이 20
+        let modalArtWidthSize = screenWidthSize - 50 //모각 사이간격이 10, padding이 20
         
         //MARK: - 모다라트 이름 라벨 레이아웃
         modalArtNameLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
-//            $0.top.equalToSuperview().offset(60)
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(10)
         }
         
@@ -202,10 +342,11 @@ extension ModalartMainViewController {
         }
         
         modalArtCollectionView.snp.makeConstraints{
-            $0.width.equalTo(modalArtWidthSize)
+//            $0.width.equalTo(modalArtWidthSize)
+            $0.leading.equalToSuperview().offset(20)
             $0.height.equalTo(520)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(modalArtNameLabel.snp.top).offset(50)
+            $0.centerY.equalToSuperview()
         }
     }
 }
@@ -216,45 +357,51 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
         
         guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
-        if cellType == EmptyMogakCell.identifier && modalArtNameArr[nowShowModalArtNum] == "내 모다라트" {
+        if cellType == EmptyMogakCell.identifier {
             print(#fileID, #function, #line, "- 아무것도 없는 모각 셀")
-            if modalArtNameArr[nowShowModalArtNum] == "내 모다라트" {
-                let bottomSheetVC = CustomBottomModalSheet()
-                bottomSheetVC.bottomHeight = 200
-                let bottomSheetView = NeedModalArtMainTitleModal()
-                bottomSheetView.vc = bottomSheetVC
-                bottomSheetVC.bottomModalSheetView = bottomSheetView
-                bottomSheetVC.modalPresentationStyle = .overFullScreen
-                bottomSheetVC.modalTransitionStyle = .crossDissolve
+            if String(modalartName.prefix(6)) == "내 모다라트" {
+                let bottomSheetVC = NeedModalArtMainTitleModal()
+                if let sheet = bottomSheetVC.sheetPresentationController {
+                    if #available(iOS 16.0, *) {
+                        sheet.detents = [.custom() { context in
+                            return 200
+                        }]
+                    } else {
+                        sheet.detents = [.medium()]
+                    }
+                    sheet.prefersGrabberVisible = true
+                }
                 self.present(bottomSheetVC, animated: true)
             } else {
                 print(#fileID, #function, #line, "- 작은 모다라트 설정으로 이동")
             }
         }
         else if cellType == ModalartMainCell.identifier {
-            print(#fileID, #function, #line, "- 모다라트 중앙 셀 설정")
-            //ModalArtMainCell의 goalLableTitle을 여기서 가지고 올 수가 없기 때문에 모다라트 타이틀로 결정을 해야 한다 -> 즉, 모다라트 타이틀의 앞 여섯글자가 내 모다라트와 동일한 경우 아직 목표 설정이 안된것!
-            //그러므로 모다라트의 이름이 절대 내 모다라트이면 안된다! -> 내 모다라트라는 이름으로 할 경우 alert을 띄워야 한다고 생각함
-            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) != "내 모다라트"
-            let bottomSheetVC = SetModalArtNameModalVC()
-
-            bottomSheetVC.titleSetTextField.text = hasModalArtNameChecking ? modalArtNameArr[nowShowModalArtNum] : nil
-            bottomSheetVC.isTitleSetUp = hasModalArtNameChecking ? true : false
-            bottomSheetVC.titleBgColor = modalArtMainCellBgColor
-            print(#fileID, #function, #line, "- modalArtTitle⭐️: \(modalArtNameArr[nowShowModalArtNum])")
-            bottomSheetVC.changeMainMogak = { bgColor, modalartTitle in
-                print(#fileID, #function, #line, "- 모다라트 중앙 모각 세팅🔥: \(bgColor)")
-                print(#fileID, #function, #line, "- 모다라트 중앙 모각 세팅🔥: \(modalartTitle)")
-                
-                self.modalArtNameLabel.text = modalartTitle
-                self.modalArtMainCellBgColor = bgColor
-                self.modalArtNameArr[self.nowShowModalArtNum] = modalartTitle
-                self.modalArtCollectionView.reloadItems(at: [indexPath])
+            let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
+            let bottomSheetVC = SetModalartTitleModalViewController()
+            if let sheet = bottomSheetVC.sheetPresentationController {
+                if #available(iOS 16.0, *) {
+                    sheet.detents = [.custom() { context in
+                        return 292
+                    }]
+                } else {
+                    sheet.detents = [.medium()]
+                }
+                sheet.prefersGrabberVisible = true
             }
-            bottomSheetVC.modalPresentationStyle = .overFullScreen
-            bottomSheetVC.modalTransitionStyle = .crossDissolve
-            
+
+            bottomSheetVC.titleSetTextField.text = hasModalArtNameChecking ? modalartName : nil
+            bottomSheetVC.isTitleSetUp = hasModalArtNameChecking ? true : false
+            bottomSheetVC.titleBgColor = hasModalArtNameChecking ? modalArtMainCellBgColor : ""
+
+            bottomSheetVC.changeMainMogak = { bgColor, modalartTitle in
+                self.editModalart(modalartTitle, bgColor)
+            }
+
             self.present(bottomSheetVC, animated: true)
+        }
+        else {
+            print(#fileID, #function, #line, "- 모각 보여주는 곳으로 이동:\(cellType)")
         }
     }
 }
@@ -281,10 +428,10 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         
         ///4번재 row는 중앙 셀이므로 중앙 셀을 표시
         if(row == 4) {
-            let hasModalArtNameChecking: Bool = String(modalArtNameArr[nowShowModalArtNum].prefix(6)) != "내 모다라트"
+            let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
             mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? modalArtMainCellBgColor : "BFC3D4"
             print(#fileID, #function, #line, "- 내 모다라트 이름 확인:\(hasModalArtNameChecking)")
-            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalArtNameArr[nowShowModalArtNum] : "큰 목표 \n추가"//
+            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalartName : "큰 목표 \n추가"//
             mainMogakCell.cellDataSetting()
             return mainMogakCell
         } else { //그외에는 일반 셀
@@ -294,18 +441,18 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     
     //MARK: - 중앙 셀을 기준으로 중앙 셀 앞에 있는 셀인지 뒤에 있는 셀인지 체크
     func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-        if (mogakCategory.count > row && row < 4) { //0, 1, 2, 3 row
-            mogakCell.goalCategoryLabelText = mogakCategory[row].0
-            mogakCell.goalContentLabelText = mogakCategory[row].1
-            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
-            mogakCell.goalCategoryLabelTextColor = "475FFD"
+        if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
+            mogakCell.goalCategoryLabelText = mogakData[row].bigCategory?.name ?? ""
+            mogakCell.goalContentLabelText = mogakData[row].title ?? ""
+//            mogakCell.goalCategoryLabelBackgoundColor = "009967"
+            mogakCell.goalCategoryLabelTextColor = mogakData[row].color ?? "009967"
             mogakCell.cellDataSetting()
             return mogakCell
-        } else if (mogakCategory.count > row - 1 && row > 4) { //5, 6, 7, 8 row
-            mogakCell.goalCategoryLabelText = mogakCategory[row - 1].0
-            mogakCell.goalContentLabelText = mogakCategory[row - 1].1
-            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
-            mogakCell.goalCategoryLabelTextColor = "475FFD"
+        } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
+            mogakCell.goalCategoryLabelText = mogakData[row].bigCategory?.name ?? ""
+            mogakCell.goalContentLabelText = mogakData[row].title ?? ""
+//            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
+            mogakCell.goalCategoryLabelTextColor = mogakData[row].color ?? "475FFD"
             mogakCell.cellDataSetting()
             return mogakCell
         } else {

@@ -14,7 +14,7 @@ class MogakCell: UICollectionViewCell {
     static let identifier: String = "MogakCell"
     var goalCategoryLabelText: String = ""
     var goalCategoryLabelTextColor: String = "475FFD"
-    var goalCategoryLabelBackgoundColor: String = "E8EBFE" //헥사코드로 진행할 예정
+//    var goalCategoryLabelBackgoundColor: String = "E8EBFE" //헥사코드로 진행할 예정
     
     var goalContentLabelText: String = ""
     
@@ -26,8 +26,6 @@ class MogakCell: UICollectionViewCell {
         label.clipsToBounds = true
         label.font = UIFont.pretendard(.medium, size: 12)
         label.textAlignment = .center
-        label.backgroundColor = UIColor(hex: self.goalCategoryLabelBackgoundColor)
-        label.textColor = UIColor(hex: self.goalCategoryLabelTextColor)
         return label
     }()
     
@@ -63,7 +61,7 @@ class MogakCell: UICollectionViewCell {
     func cellDataSetting() {
         print(#fileID, #function, #line, "- mogakCell⭐️ : \(goalContentLabelText)")
         self.goalCategoryLabel.text = goalCategoryLabelText
-        self.goalCategoryLabel.backgroundColor = UIColor(hex: goalCategoryLabelBackgoundColor)
+        self.goalCategoryLabel.backgroundColor = UIColor(hex: goalCategoryLabelTextColor).withAlphaComponent(0.1)
         self.goalCategoryLabel.textColor = UIColor(hex: goalCategoryLabelTextColor)
         self.goalContentLabel.text = goalContentLabelText
     }
@@ -84,7 +82,7 @@ extension MogakCell {
         }
         
         goalContentLabel.snp.makeConstraints {
-            $0.top.equalTo(goalCategoryLabel.snp.bottom).offset(22)
+            $0.top.equalTo(goalCategoryLabel.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
         }
