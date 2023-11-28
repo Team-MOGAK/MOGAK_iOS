@@ -21,7 +21,7 @@ class CustomBottomModalSheet: UIViewController {
     //기존의 화면을 흐려지게 함(즉, 모달의 배경이 되는 화면이 보이도록 함)
     private let dimmedBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray3
+        view.backgroundColor = DesignSystemColor.black.value
         return view
     }()
     
@@ -31,7 +31,7 @@ class CustomBottomModalSheet: UIViewController {
     
     private let indicatorView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray3
+        view.backgroundColor = DesignSystemColor.gray3.value
         view.layer.cornerRadius = 3
         
         return view
@@ -70,7 +70,7 @@ class CustomBottomModalSheet: UIViewController {
         let changeConstant = (safeAreaHeight + bottomPadding) - bottomHeight
         self.bottomSheetViewTopConstraint.update(offset: changeConstant)
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseIn, animations: {
-            self.dimmedBackgroundView.alpha = 0.5
+            self.dimmedBackgroundView.alpha = 0.7
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
@@ -139,4 +139,3 @@ extension CustomBottomModalSheet {
         }
     }
 }
-
