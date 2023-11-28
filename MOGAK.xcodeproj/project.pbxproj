@@ -784,8 +784,6 @@
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
 				9C2EF7F62A76351D00E8C8F4 /* ScorllView+Ext.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,
-				4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModal.swift in Sources */,
-				4D725C102AE2D6DD0063A2E3 /* CustomButtomModalSheet.swift in Sources */,
 				6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */,
 				6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */,
 				6CD4A8852A93BF3C00E7DEFD /* CertificationModalVC.swift in Sources */,
