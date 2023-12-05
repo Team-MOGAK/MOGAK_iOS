@@ -305,9 +305,9 @@ class MemoirDetailViewController: UIViewController {
         return label
     }()
 
-    // 루틴 걸린시간
+    // 루틴 걸린시간 -> 회차로 수정
     private let routineOverallTimeLabel: UILabel = UILabel().then {
-        $0.text = "1시간 20분"
+        $0.text = "1회차"
         $0.textColor = UIColor(hex: "475FFD")
         $0.font = UIFont.pretendard(.regular, size: 14)
     }

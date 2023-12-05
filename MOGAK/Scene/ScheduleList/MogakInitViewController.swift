@@ -13,7 +13,7 @@ import FSCalendar
 import Alamofire
 
 class MogakInitViewController: UIViewController {
-    private let titleColorPalette: [String] = ["475FFD", "11D796", "009967", "FF2323", "D9D9D9", "F98A08", "FF6827", "9C31FF"]
+    private let titleColorPalette: [String] = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
     
     private var isColorSelected: Bool = false
     
@@ -600,6 +600,7 @@ class MogakInitViewController: UIViewController {
     
     // MARK: - objc
     
+    // MARK: - toggle
     @objc private func toggleSwitchChanged(_ sender: UISwitch) {
         // 토글 스위치의 상태에 따라 collectionView와 끝 텍스트필드 종료 상태를 변경
         
@@ -672,6 +673,13 @@ class MogakInitViewController: UIViewController {
             choiceDateLabel.snp.remakeConstraints({
                 $0.top.equalTo(endTextField.snp.bottom).offset(40)
                 $0.leading.equalToSuperview().inset(20)
+            })
+            
+            completeButton.snp.remakeConstraints({
+                //            $0.bottom.equalTo(self.scrollView.frameLayoutGuide.snp.bottom).offset(-24)
+                $0.bottom.equalToSuperview().offset(-24)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(52)
             })
             
             self.view.layoutIfNeeded()
@@ -879,7 +887,7 @@ extension MogakInitViewController: UITextFieldDelegate {
     }
     // 키보드 안 올라오게
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        if textField == startTextField {
+        if textField == startTextField { // 시작날짜
             [startNextButton, headerTitle, startPreviousButton, startCalendar].forEach({$0.isHidden = false})
             [endNextButton, endHeaderTitle, endPreviousButton, endCalendar].forEach({$0.isHidden = true})
             
@@ -936,13 +944,17 @@ extension MogakInitViewController: UITextFieldDelegate {
                 $0.height.equalTo(52)
             })
             
+            choiceDateLabel.snp.remakeConstraints({
+                $0.top.equalTo(endTextField.snp.bottom).offset(40)
+                $0.leading.equalToSuperview().offset(20)
+            })
             
             contentView.snp.makeConstraints({
                 $0.bottom.equalTo(completeButton.snp.bottom).offset(16)
             })
             
             
-        } else if textField == endTextField {
+        } else if textField == endTextField { // 종료날짜
             [startNextButton, headerTitle, startPreviousButton, startCalendar].forEach({$0.isHidden = true})
             
             [endNextButton, endHeaderTitle, endPreviousButton, endCalendar].forEach({$0.isHidden = false})
@@ -1011,9 +1023,15 @@ extension MogakInitViewController: UITextFieldDelegate {
             })
             
             completeButton.snp.remakeConstraints({
-                $0.top.equalTo(self.endCalendar.snp.bottom).offset(16)
+                //$0.top.equalTo(self.endCalendar.snp.bottom).offset(16)
+                $0.top.equalTo(choiceDateLabel.snp.bottom).offset(62)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(52)
+            })
+            
+            choiceDateLabel.snp.remakeConstraints({
+                $0.top.equalTo(endCalendar.snp.bottom).offset(16)
+                $0.leading.equalToSuperview().offset(20)
             })
             
             contentView.snp.remakeConstraints({

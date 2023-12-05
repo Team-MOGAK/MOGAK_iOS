@@ -255,8 +255,9 @@ class MyHistoryViewController: UIViewController {
         self.configureTableView()
         self.configureButton()
         
-        let defaultSelectedIndexPath = IndexPath(item: 0, section: 0)
-        segmentCollectionView.selectItem(at: defaultSelectedIndexPath, animated: false, scrollPosition: .top)
+//        let defaultSelectedIndexPath = IndexPath(item: 0, section: 0)
+//        segmentCollectionView.selectItem(at: defaultSelectedIndexPath, animated: false, scrollPosition: .init())
+//        collectionView(segmentCollectionView, didSelectItemAt: defaultSelectedIndexPath)
     }
     
     override func viewWillLayoutSubviews() {
@@ -520,6 +521,7 @@ class MyHistoryViewController: UIViewController {
         self.navigationController?.pushViewController(pageVC, animated: true)
     }
     
+    var segmentFirstLoaded: Bool = false
 }
 
 extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -531,6 +533,20 @@ extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewD
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? SegmentCollectionViewCell else {
             return UICollectionViewCell()
         }
+        // 카테고리 디폴트 셀 설정(첫번째로)
+        if indexPath.row == 0 && segmentFirstLoaded == false {
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+            cell.isSelected = true
+            cell.textLabel.textColor = UIColor(hex: "24252E")
+            cell.underLineView.fadeIn()
+            configureTableViewData(forSelectedItem: smallModalartList[indexPath.item])
+            // 선택된 셀의 인덱스를 저장
+            selectedSmallModalartIndexPath = indexPath
+            listTableView.reloadData()
+            segmentFirstLoaded.toggle()
+        }
+
+//        cell.isSelectedCell = indexPath == defaultSegmentIndexPath
         cell.textLabel.text = smallModalartList[indexPath.item]
         
         return cell
@@ -539,6 +555,7 @@ extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedCell = collectionView.cellForItem(at: indexPath) as! SegmentCollectionViewCell
         
+        selectedCell.isSelected = true
         // 선택된 셀의 텍스트 색 변경, 언더라인 보이게
         selectedCell.textLabel.textColor = UIColor(hex: "24252E")
         //selectedCell.underLineView.isHidden = false
@@ -547,6 +564,7 @@ extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewD
         // 이전에 선택된 셀이 있다면 텍스트 색 변경, 언더라인 안보이게
         if let prevSelectedIndexPath = selectedSmallModalartIndexPath, prevSelectedIndexPath != indexPath {
             if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? SegmentCollectionViewCell {
+                prevSelectedCell.isSelected = false
                 prevSelectedCell.textLabel.textColor = UIColor(hex: "BFC3D4")
                 //prevSelectedCell.underLineView.isHidden = true
                 prevSelectedCell.underLineView.fadeOut()
@@ -677,11 +695,11 @@ extension MyHistoryViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
         let memoirVC = MemoirDetailViewController()
-        
+        // timeUsed -> 회차로 수정
         if let title = cell.titleLabel.text,
            let smallGoal = cell.smallGoalLabel.text,
            let date = cell.dateLabel.text {
-            memoirVC.configureMemoirData(category: smallGoal, timeUsed: "2시간 22분", jogakName: title, date: date, memoirText: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.")
+            memoirVC.configureMemoirData(category: smallGoal, timeUsed: "1회차", jogakName: title, date: date, memoirText: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.")
         }
         memoirVC.modalPresentationStyle = .fullScreen
         self.navigationController?.pushViewController(memoirVC, animated: true)

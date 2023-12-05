@@ -120,7 +120,7 @@ class ListTableViewCell: UITableViewCell {
     
     private let thumbNailView: UIImageView = {
         let imageView = UIImageView()
-        //imageView.image = UIImage(named: "cuteBokdol")
+        imageView.image = UIImage(named: "cuteBokdol")
         //imageView.backgroundColor = .white
         imageView.contentMode = .scaleToFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
