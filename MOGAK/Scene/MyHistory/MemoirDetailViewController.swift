@@ -129,17 +129,17 @@ class MemoirDetailViewController: UIViewController {
 //            let editAction = UIAlertAction(title: "수정하기", style: .default) { _ in
 //                // Edit action
 //                let navigationController = UINavigationController(rootViewController: ConfirmEdittingSheetViewController())
-//                
+//
 //                navigationController.isNavigationBarHidden = true
-//                
+//
 //                self.present(navigationController, animated: true, completion: nil)
 //            }
 //            let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) { _ in
 //                // Delete action
 //                let navigationController = UINavigationController(rootViewController: ConfirmDeletingFeedSheetViewController())
-//                
+//
 //                navigationController.isNavigationBarHidden = true
-//                
+//
 //                self.present(navigationController, animated: true, completion: nil)
 //            }
 //            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)

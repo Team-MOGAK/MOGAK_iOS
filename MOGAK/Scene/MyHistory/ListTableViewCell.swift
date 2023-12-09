@@ -264,7 +264,7 @@ class ListTableViewCell: UITableViewCell {
         }
         
 //        containerView.addSubview(thumbNailView)
-//        
+//
 //        thumbNailView.snp.makeConstraints({
 //            $0.centerY.equalToSuperview()
 //            $0.leading.equalTo(containerView).inset(20)

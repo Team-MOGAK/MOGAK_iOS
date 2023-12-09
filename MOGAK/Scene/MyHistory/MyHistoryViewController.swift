@@ -10,6 +10,19 @@ import SnapKit
 
 class MyHistoryViewController: UIViewController {
     
+    //MARK: - 임시 데이터들
+    var modalArtNameArr: [String] = ["김라영의 모다라트", "운동하기", "내 모다라트3"]
+    var modalartName: String = "" ///현재 보여지는 모다라트 타이틀
+    var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+    var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
+    var nowShowModalArtIndex: Int = 0
+    var mogakData: [MogakCategory] = []
+    
+    var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
+    ///
+    
+    let modalartNetwork = ModalartNetwork()
+    
     var selectedSmallModalartIndexPath: IndexPath?
     private var tableViewData: [[String]] = []
     //    override func viewWillAppear(_ animated: Bool) {
@@ -115,6 +128,7 @@ class MyHistoryViewController: UIViewController {
         button.setTitleColor(.black, for: .normal)
         button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
         button.tintColor = .black
+        button.addTarget(self, action: #selector(showModalartListTapped), for: .touchUpInside)
         
         let intervalSpacing = 6.0
         let halfIntervalSpacing = intervalSpacing / 2
@@ -126,6 +140,99 @@ class MyHistoryViewController: UIViewController {
         
         return button
     }()
+    
+    //MARK: - 모다라트 전체 리스트 가져오기
+    func getModalartAllList() {
+        modalartNetwork.getModalartList { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+            case .success(let list):
+                guard let modalartList = list else { return }
+                self.modalartList = modalartList
+                print(#fileID, #function, #line, "- modalartList checking:\(self.modalartList)")
+                
+                if modalartList.isEmpty {
+                    self.modalartName = "내 모다라트"
+                    self.modalArtMainCellBgColor = "BFC3D4"
+                }
+                else {
+                    guard let firstData = modalartList.first else { return }
+                    self.nowShowModalArtNum = firstData.id
+                    self.nowShowModalArtIndex = 0
+                    self.getModalartDetailInfo(id: self.nowShowModalArtNum)
+                }
+            }
+        }
+        getModalartDetailInfo(id: nowShowModalArtNum)
+    }
+    
+    //MARK: - 현재 생성된 모다라트 리스트 보여줌
+    @objc private func showModalartListTapped() {
+        print(#fileID, #function, #line, "- 모다라트 추가 버튼 탭")
+        let showModalartListModalVC = ShowModalArtListModal()
+        showModalartListModalVC.modalArtNameList = modalartList
+        
+        ///모다라트 리스트를 보여주는 모달에서 원하는 리스트를 선택했을 경우
+        showModalartListModalVC.changeToSelectedModalart = { modalArtData, listIndex in
+            let num = modalArtData.id
+            let title = modalArtData.title
+            
+            ///모다라트 타이틀이 설정됬는지 체크
+            let hasModalArtNameChecking: Bool = title.prefix(6) != "내 모다라트"
+            ///모다라트 추가 리스트를 클릭했는지 체크
+            let modalArtNameIsAddModalart: Bool = title == "모다라트 추가"
+            
+            self.nowShowModalArtNum = num
+            self.nowShowModalArtIndex = listIndex
+            ///모다라트 타이틀 설정됨
+            if hasModalArtNameChecking && !modalArtNameIsAddModalart {
+                self.getModalartDetailInfo(id: num)
+            }
+            ///모다라트 추가 클릭
+//            else if hasModalArtNameChecking && modalArtNameIsAddModalart {
+//                self.createModalart()
+//            }
+            ///모다라트 타이틀 설정 안됨
+            else {
+                self.mogakData = []
+                //self.modalArtNameLabel.text = title
+                self.modalartName = title
+                //self.modalArtCollectionView.reloadData()
+            }
+        }
+        
+        showModalartListModalVC.modalPresentationStyle = .overFullScreen
+        showModalartListModalVC.modalTransitionStyle = .crossDissolve
+        self.present(showModalartListModalVC, animated: false)
+    }
+
+    //MARK: - 단일 모다라트 디테일 정보 가져오기
+    func getModalartDetailInfo(id: Int) {
+        modalartNetwork.getDetailModalartInfo(modalartId: id) { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            case .success(let modalInfo):
+                guard let modalInfo = modalInfo else { return }
+
+                self.nowShowModalArtNum = modalInfo.id
+                self.modalartName = modalInfo.title
+                self.selectModalart.setTitle(modalInfo.title, for: .normal)
+                self.modalArtMainCellBgColor = modalInfo.color
+                self.mogakData = modalInfo.mogakCategory ?? []
+                //print(self.mogakData[0].bigCategory?.name)
+                //self.modalArtCollectionView.reloadData()
+                self.smallModalartList = []
+                for i in self.mogakData {
+                    self.smallModalartList.append((i.bigCategory?.name)!)
+                }
+                self.segmentCollectionView.reloadData()
+            }
+        }
+    }
+    
+    
     
     // MARK: - scrollview for segment
     private let segmentScrollView: UIScrollView = {
@@ -239,9 +346,8 @@ class MyHistoryViewController: UIViewController {
         return collectionView
     }()
     
-    private let smallModalartList: [String] = [
-        "직무", "자격증", "시험", "건강",
-        "카테고리", "진행중", "진행중", "진행중"
+    private var smallModalartList: [String] = [
+        
     ]
     
     override func viewDidLoad() {
@@ -254,6 +360,7 @@ class MyHistoryViewController: UIViewController {
         self.configureSegmentCollectionView()
         self.configureTableView()
         self.configureButton()
+        getModalartAllList()
         
 //        let defaultSelectedIndexPath = IndexPath(item: 0, section: 0)
 //        segmentCollectionView.selectItem(at: defaultSelectedIndexPath, animated: false, scrollPosition: .init())
@@ -273,6 +380,7 @@ class MyHistoryViewController: UIViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         print("viewWillAppear")
+        getModalartAllList()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -373,7 +481,7 @@ class MyHistoryViewController: UIViewController {
         
 //        var scrollViewWidth: Float = 0.0
 //        let items = ["직무", "자격증", "시험", "건강", "카테고리", "진행중", "진행중", "진행중"]
-//        
+//
 //        for (index, element) in items.enumerated() {
 //            let size = element.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)])
 //            segmentControl.setWidth(size.width, forSegmentAt: index)
@@ -417,7 +525,7 @@ class MyHistoryViewController: UIViewController {
 //            segmentControl.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
 //            segmentControl.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
 //            segmentControl.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-//            
+//
 //            segmentControl.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             
             segmentControl.topAnchor.constraint(equalTo: segmentScrollView.topAnchor),
@@ -505,6 +613,7 @@ class MyHistoryViewController: UIViewController {
     
     @objc private func floatingButtonTapped() {
         let mogakVC = MogakInitViewController()
+        //let mogakVC = JogakInitViewController()
         //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }
@@ -583,13 +692,13 @@ extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewD
         switch selectedItem {
         case smallModalartList[0]:
             tableViewData = [
-                ["DDF7FF", "자격증 공부 1시간", "직무", "1회차", "00ABE1"], 
+                ["DDF7FF", "자격증 공부 1시간", "직무", "1회차", "00ABE1"],
                 ["DDF7FF", "자격증 공부 1시간", "직무", "2회차", "00ABE1"],
                 ["DDF7FF", "자격증 공부 1시간", "직무", "3회차", "00ABE1"]
             ]
         case smallModalartList[1]:
             tableViewData = [
-                ["DDF7FF", "자격증 공부 1시간", "자격증", "1회차", "00ABE1"], 
+                ["DDF7FF", "자격증 공부 1시간", "자격증", "1회차", "00ABE1"],
                 ["DDF7FF", "자격증 공부 1시간", "자격증", "2회차", "00ABE1"],
                 ["DDF7FF", "자격증 공부 1시간", "자격증", "3회차", "00ABE1"]
             ]
@@ -704,7 +813,7 @@ extension MyHistoryViewController: UITableViewDelegate, UITableViewDataSource {
         memoirVC.modalPresentationStyle = .fullScreen
         self.navigationController?.pushViewController(memoirVC, animated: true)
 //        let detailVC = JogakDetailViewController()
-//        
+//
 //        if let status = cell.smallGoalLabel.text,
 //           let category = cell.episodeLabel.text,
 //           let title = cell.titleLabel.text,
