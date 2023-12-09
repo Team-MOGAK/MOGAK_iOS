@@ -13,7 +13,7 @@ import Then
 class EmptyMogakCell: UICollectionViewCell {
     static let identifier = "EmptyMogakCell"
     
-    private lazy var goalLabel : UILabel = {
+    private lazy var goalLabel : CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 6, bottom: 6, left: 12, right: 12)
         label.text = "작은목표"
         label.layer.cornerRadius = 8
@@ -25,11 +25,19 @@ class EmptyMogakCell: UICollectionViewCell {
         return label
     }()
     
+    private lazy var addImage : UIImageView = {
+        let imageView = UIImageView()
+        let image = UIImage(systemName: "plus.circle.fill")
+        imageView.image = image
+        imageView.tintColor = DesignSystemColor.gray2.value
+        return imageView
+    }()
+    
     private lazy var addBtn : UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(named: "mogakPlusBtn"), for: .normal)
         btn.contentMode = .scaleToFill
-        btn.addTarget(self, action: #selector(addBtnTapped), for: .touchUpInside)
+//        btn.addTarget(self, action: #selector(addBtnTapped), for: .touchUpInside)
         return btn
     }()
     
@@ -56,19 +64,19 @@ class EmptyMogakCell: UICollectionViewCell {
 //MARK: - 오토레이아웃 잡기
 extension EmptyMogakCell {
     private func configureLayout() {
-        self.addSubviews(goalLabel, addBtn)
+        self.addSubviews(goalLabel, addImage)
         
         goalLabel.snp.makeConstraints {
             $0.width.equalTo(73)
             $0.height.equalTo(26)
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().offset(40)
-            $0.bottom.equalTo(self.addBtn.snp.top).offset(-22)
         }
         
-        addBtn.snp.makeConstraints {
+        addImage.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(50)
+            $0.top.equalTo(goalLabel.snp.bottom).offset(20)
+            $0.size.equalTo(40)
         }
     }
 }
