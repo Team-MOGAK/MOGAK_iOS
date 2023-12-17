@@ -201,7 +201,7 @@ extension UIView {
 
 extension LoginViewController {
     func login(email: String) {
-        let url = ApiConstants.baseURL + "/api/users/login/\(email)"
+        let url = ApiConstants.BaseURL + "/api/users/login/\(email)"
         
         let headers: HTTPHeaders = [
             "accept": "application/json"

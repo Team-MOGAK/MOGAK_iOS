@@ -36,14 +36,6 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
         buttonView.layer.cornerRadius = 10
         return buttonView
     }()
-    private lazy var cameraButton : UIButton = {
-        let cameraButton = UIButton()
-        cameraButton.setImage(UIImage(named: "camera"), for: .normal)
-        cameraButton.backgroundColor = .clear //백그라운드색
-        cameraButton.layer.cornerRadius = 5 //둥글기
-        cameraButton.addTarget(self, action: #selector(cameraclicked), for: .touchUpInside)
-        return cameraButton
-    }()
     
     
     private lazy var stopButton : UIButton = {
@@ -66,19 +58,22 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
         return keepGoButton
     }()
     
-    var circularProgressView = CircularProgressView()
+    private lazy var calendarImage : UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "calendar")
+        return image
+    }()
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setUI()
-        circularProgressView.isHidden = true
     }
     
     //MARK: - setUI
     func setUI(){
-        [titleLabel,subtitleLabel,buttonView,stopButton,keepGoButton,cameraButton].forEach{view.addSubview($0)}
+        [titleLabel,subtitleLabel,buttonView,stopButton,keepGoButton,calendarImage].forEach{view.addSubview($0)}
         titleLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().inset(48)
@@ -94,39 +89,32 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
             $0.top.equalTo(subtitleLabel.snp.bottom).offset(24)
             $0.bottom.equalTo(stopButton.snp.top).offset(-34)
         }
-        cameraButton.snp.makeConstraints{
-            $0.centerX.centerY.equalTo(buttonView)
-        }
         
         stopButton.snp.makeConstraints{ //좋아요
-            $0.leading.equalToSuperview().inset(200)
+            $0.width.equalTo(170)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
             $0.trailing.equalToSuperview().inset(20)
         }
         keepGoButton.snp.makeConstraints{ //괜찮아요
-            $0.trailing.equalToSuperview().inset(200)
+            $0.width.equalTo(170)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
             $0.leading.equalToSuperview().inset(20)
-            
+        }
+        calendarImage.snp.makeConstraints{
+            $0.centerX.centerY.equalTo(buttonView)
+            $0.top.equalTo(buttonView).offset(15)
         }
     }
     //MARK: - @objc func
     
-    @objc func cameraclicked(){
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .camera
-        self.present(imagePickerController, animated: true)
-    }
-    
-    //홈으로가기
     @objc func scheduleRecord(){
         self.dismiss(animated: true) {
+            
             let newVC = RecordingViewController()
             newVC.modalPresentationStyle = .fullScreen
-
+            
             if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
                 RecordingVC.present(newVC, animated: true, completion: nil)
             }
@@ -134,8 +122,13 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
     }
     
     @objc func dismissModal(){
-        self.dismiss(animated: true){ [self] in
-            circularProgressView.resumeTimer()
+        self.dismiss(animated: true){[weak self] in
+            guard self != nil else { return }
+            
+            let scheduleVC = ScheduleStartViewController()
+            
+            scheduleVC.showToast(message: "오늘 한 일이 추가되었습니다.", font: DesignSystemFont.regular14L150.value)
+            
         }
     }
 }

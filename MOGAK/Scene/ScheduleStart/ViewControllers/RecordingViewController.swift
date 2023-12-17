@@ -120,6 +120,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         return textView
     }()
     
+    let galleryCell = GalleryCollectionViewCell()
+    
     
     //MARK: - galleryCollectioview
     private lazy var galleryCollectionView : UICollectionView = {
@@ -261,7 +263,6 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         print("back home")
     }
     
-    let textViewPlaceHolder = "asd"
 }
 
 //MARK: - exteinson CollectioView
@@ -343,10 +344,13 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
             for i in 0..<assets.count {
                 self.selectedImages.append(assets[i])
             }
+            
             self.convertAssetToImage()
-            //self.delegate?.didPickImagesToUpload(images: self.userSelectedImages)
+            self.galleryCollectionView.reloadData()
+            print("reload Collection view")
         })
     }
+    //사진을 고르고 난 뒤에 사진의 데이터 타입은 PHAsset 이라는 점이다. 즉, UIImage 타입이 아니기 때문에 바로 UIImageView 에 띄운다거나 그러지는 못한다. 그러기 위해서 convertAssetToImages( ) 함수를 하나 더 정의해야한다.
     
     func convertAssetToImage() {
         if selectedImages.count != 0 {
@@ -360,19 +364,14 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
                     thumbnail = result!
                 }
                 
-                let data = thumbnail.jpegData(compressionQuality: 0.7)
-                let newImage = UIImage(data: data!)
-                //self.convertAssetToImages()
-                //                        self.selectedImages.append(newImage! as UIImage)
+                //                let data = thumbnail.jpegData(compressionQuality: 0.7)
+                //                let newImage = UIImage(data: data!)
+                
+                
+                //                self.galleryCell.setImages.append(newImage! as UIImage)
             }
         }
     }
-    
-    //사진을 고르고 난 뒤에 사진의 데이터 타입은 PHAsset 이라는 점이다. 즉, UIImage 타입이 아니기 때문에 바로 UIImageView 에 띄운다거나 그러지는 못한다. 그러기 위해서 convertAssetToImages( ) 함수를 하나 더 정의해야한다.
-    //    func convertAssetToImages() {
-    //
-    //    }
-    
     
 }
 

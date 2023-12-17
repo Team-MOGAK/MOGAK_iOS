@@ -78,7 +78,7 @@ extension DesignSystemFont {
         case .bold22L100:
             return UIFont.pretendard(.bold, size: 22)
         case .semibold20L140:
-            return UIFont.pretendard(.semiBold, size: 20)
+            return UIFont.pretendard(.semiBold, size: 22)
         case .semibold18L100:
             return UIFont.pretendard(.semiBold, size: 18)
         case .medium16L100:

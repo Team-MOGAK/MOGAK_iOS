@@ -1,15 +1,15 @@
 //
-//  PauseModalVC.swift
+//  deSetRoutineModal.swift
 //  MOGAK
 //
-//  Created by 안세훈 on 2023/08/11.
+//  Created by 안세훈 on 12/10/23.
 //
 
-import UIKit
+
 import SnapKit
 import Then
 
-class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
+class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
     private lazy var jogaktitleLabel : UILabel = {
         let label = UILabel()
@@ -21,7 +21,7 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
      let subtitleLabel : UILabel = {
         let label = UILabel()
-         label.text = "이 조각은 루틴으로 지정되어 있어요!\n루틴을 해제하시겠어요?"
+         label.text = "이 조각은 루틴으로 지정되지 않았어요\n오늘 추가한 조각을 꾸준히 해볼까요?"
         label.numberOfLines = 2
         label.textAlignment = .center
         label.font = UIFont(name: "Pretendard", size: 14)
@@ -51,13 +51,13 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
     let CellVC = ScheduleTableViewCell()
     
-    
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setUI()
-        }
+        
+    }
     
     //MARK: - setUI
     func setUI(){
@@ -115,22 +115,22 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
 //Preview code
 #if DEBUG
 import SwiftUI
-struct SetRoutineModalVCRepresentable: UIViewControllerRepresentable {
+struct deSetRoutineModalVCRepresentable: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiView: UIViewController,context: Context) {
         // leave this empty
     }
     @available(iOS 13.0.0, *)
     func makeUIViewController(context: Context) -> UIViewController{
-        SetRoutineModal()
+        deSetRoutineModal()
     }
 }
 @available(iOS 13.0, *)
-struct SelectJogakModalRepresentable_PreviewProvider: PreviewProvider {
+struct deSetRoutineModalRepresentable_PreviewProvider: PreviewProvider {
     static var previews: some View {
         Group {
             if #available(iOS 14.0, *) {
-                SetRoutineModalVCRepresentable()
+                deSetRoutineModalVCRepresentable()
                     .ignoresSafeArea()
                     .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
                     .previewDevice(PreviewDevice(rawValue: "iPhone 15pro"))

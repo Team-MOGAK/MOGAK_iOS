@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Then
 
 class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
     
@@ -14,9 +15,9 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     
     lazy var cellImage : UIImageView = {
         let cellImage = UIImageView()
-        //cellImage.clipsToBounds = true
         cellImage.backgroundColor = .clear //백그라운드색
         cellImage.layer.cornerRadius = 5 //둥글기
+        cellImage.image  = UIImage(named: "emptySquareCheckmark")
         return cellImage
     }()
     
@@ -38,24 +39,46 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     
     let selectJogakModal = SelectJogakModal()
     
-    //MARK: - @objc
+    
+//MARK: - @objc
     @objc func ButtonClicked(){
         guard let parentViewController = self.parentVC else {
-            print("Error: Parent view controller not found.")
             return
         }
         
         let setroutine = SetRoutineModal()
+        let desetroutine = deSetRoutineModal()
+        
         setroutine.modalPresentationStyle = .formSheet
+        desetroutine.modalPresentationStyle = .formSheet
         
-        parentViewController.present(setroutine,animated: true)
-        
-        if let sheet = setroutine.sheetPresentationController{
-            sheet.detents = [.medium()]
-            sheet.delegate = self
-            sheet.prefersGrabberVisible = true
+        if cellImage.image == UIImage(named: "emptySquareCheckmark"){
+            parentViewController.present(desetroutine,animated: true)
+            
+            if let desetsheet = desetroutine.sheetPresentationController{
+                if #available(iOS 16.0, *) {
+                    desetsheet.detents = [.custom { context in
+                        return 200
+                    }]
+                    desetsheet.delegate = self
+                    desetsheet.prefersGrabberVisible = true
+                }
+                
+            }
+        }else{
+            parentViewController.present(setroutine,animated: true)
+            
+            if let setsheet = setroutine.sheetPresentationController{
+                if #available(iOS 16.0, *) {
+                    setsheet.detents = [.custom { context in
+                        return 200
+                    }]
+                    setsheet.delegate = self
+                    setsheet.prefersGrabberVisible = true
+                }
+                
+            }
         }
-        
         
         print("cell button clicked")
     }
@@ -65,6 +88,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         CellUI()
+        
     }
     
     override func layoutSubviews() {
@@ -77,6 +101,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         
         fatalError("init(coder:) has not been implemented")
     }
+    
     //MARK: - UI
     
     private func CellUI(){
@@ -105,10 +130,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         contentView.layer.shadowRadius = 10
         
     }
-    func cellconfigure(with mogak: SelectJogakModal.Mogak, indexPath : IndexPath){
-        let mogak = selectJogakModal.mogakList[indexPath.row]
-        cellLabel.text = mogak.jogak //cell
-    }
+    
     
 }
 

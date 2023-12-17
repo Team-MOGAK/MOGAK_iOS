@@ -252,7 +252,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 extension NicknameViewController {
     func validateNickname(nickName: String) {
         
-        let url = ApiConstants.baseURL + "/api/users/\(nickName)/verify"
+        let url = ApiConstants.BaseURL + "/api/users/\(nickName)/verify"
         
         AF.request(url, method: .post)
             .validate(statusCode: 200..<300)
