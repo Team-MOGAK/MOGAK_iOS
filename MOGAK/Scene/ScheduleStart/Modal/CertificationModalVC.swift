@@ -105,8 +105,11 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
         calendarImage.snp.makeConstraints{
             $0.centerX.centerY.equalTo(buttonView)
             $0.top.equalTo(buttonView).offset(15)
+            $0.leading.equalTo(buttonView).offset(85)
+            $0.trailing.equalTo(buttonView).offset(-68)
         }
     }
+    
     //MARK: - @objc func
     
     @objc func scheduleRecord(){

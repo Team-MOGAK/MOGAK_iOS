@@ -14,7 +14,7 @@ class SelectJogakModal : UIViewController{
     
     let currentDate = Date()
     var TableViewReload : (()->())? //tableviewreload
-    var SelectJogaklist : [String] = []
+    var SelectJogaklist : [String] = ["312","asd"]
     
     //MARK: - Basic Properties
     
@@ -84,8 +84,6 @@ class SelectJogakModal : UIViewController{
     lazy var MogakTableView: UITableView = {
         let table = UITableView()
         table.backgroundColor = .white
-        table.dataSource = self
-        table.delegate = self
         return table
     }()
     
@@ -144,6 +142,8 @@ class SelectJogakModal : UIViewController{
         MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakCell")
         
         MogakTableView.reloadData()
+        MogakTableView.dataSource = self
+        MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
         MogakTableView.rowHeight = UITableView.automaticDimension
         
@@ -193,7 +193,8 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
         print("JogakLabel: \(jogakLabel) 추가됨!")
         
         self.SelectJogaklist.append(jogakLabel)
-        print("SelectJogaklist after addition: \(self.SelectJogaklist)")
+        
+        print("SelectJogaklist에 추가: \(self.SelectJogaklist)")
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -227,6 +228,8 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
             
             self?.TableViewReload?()
             print("추가 후의 SelectJogaklist: \(self?.SelectJogaklist ?? [])")
+            print(self?.SelectJogaklist.count as Any)
+            self?.MogakTableView.reloadData()
         }
         
     }

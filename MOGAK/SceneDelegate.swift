@@ -16,8 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = scene as? UIWindowScene else { return }
         
-        lazy var firstVC: UIViewController = TabBarViewController()
-        //lazy var firstVC: UIViewController = RecordingViewController()
+        //lazy var firstVC: UIViewController = TabBarViewController()
+        lazy var firstVC: UIViewController = RecordingViewController()
         //        let isFirst = UserDefaults.isFirstAppLauch()
         
         //        if isFirst {

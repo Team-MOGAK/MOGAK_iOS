@@ -8,14 +8,13 @@
 import UIKit
 import SnapKit
 import Then
-import BSImagePicker
-import Photos
+import PhotosUI
 
 protocol RecordingVCdelegate {
     func moveRecordingVC()
 }
 
-class RecordingViewController : UIViewController, UIScrollViewDelegate{
+class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerViewControllerDelegate{
     
     //MARK: - Properties
     
@@ -96,6 +95,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         cellLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
         return cellLabel
     }()
+    
     //MARK: - TextView
     
     private let textViewLabel : UILabel = {
@@ -119,13 +119,16 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         textView.backgroundColor = .clear
         return textView
     }()
+
+    
+    private var selections = [String : PHPickerResult]()
+    private var selectedAssetIdentifiers = [String]()
     
     let galleryCell = GalleryCollectionViewCell()
     
     
     //MARK: - galleryCollectioview
     private lazy var galleryCollectionView : UICollectionView = {
-        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal // 가로 스크롤 활성화
         
@@ -133,10 +136,18 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         view.isScrollEnabled = true
         view.delegate = self
         view.dataSource = self
+        view.backgroundColor = .clear
         return view
     }()
     
-    var selectedImages: [PHAsset] = []
+    private lazy var galleryStackView : UIStackView = {
+        let stackview  = UIStackView()
+        stackview.spacing = 12
+        stackview.axis = .horizontal
+        //stackview.distribution = .equalCentering
+        stackview.backgroundColor = .clear
+        return stackview
+    }()
     
     private lazy var finishButton : UIButton = {
         let button = UIButton()
@@ -161,7 +172,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
     func setUI(){
         [popButton,titleLabel].forEach{view.addSubview($0)}
         
-        contentView.addSubviews(categoryLabel,mogakLabel,textbackgroundView,textView,jogakView,jogakViewImage,jogakLabel,textViewLabel,galleryCollectionView,finishButton)
+        contentView.addSubviews(categoryLabel,mogakLabel,textbackgroundView,textView,jogakView,jogakViewImage,jogakLabel,textViewLabel,galleryStackView,galleryCollectionView,finishButton)
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -243,6 +254,12 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(72)
         }
+        galleryStackView.snp.makeConstraints{
+            $0.top.equalTo(textbackgroundView.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(72)
+        }
+        
         finishButton.snp.makeConstraints{
             $0.top.equalTo(galleryCollectionView.snp.bottom).offset(20)
             $0.leading.trailing.equalTo(galleryCollectionView)
@@ -256,6 +273,91 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate{
         galleryCollectionView.delegate = self
         galleryCollectionView.register(GalleryCollectionViewCell.self, forCellWithReuseIdentifier: "GalleryCollectionViewCell")
     }
+    
+    //MARK: - Gallery Setting
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            
+            picker.dismiss(animated: true)
+            
+            var newSelections = [String: PHPickerResult]()
+            
+                    for result in results {
+                  let identifier = result.assetIdentifier!
+                  newSelections[identifier] = selections[identifier] ?? result
+              }
+            
+            selections = newSelections
+            selectedAssetIdentifiers = results.compactMap { $0.assetIdentifier }
+            
+            if selections.isEmpty {
+                galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            } else {
+                displayImage()
+                for index in 0..<min(4, self.selectedAssetIdentifiers.count) {
+                      if let cell = self.galleryCollectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? GalleryCollectionViewCell {
+                          cell.grayView.backgroundColor = .clear
+                          cell.plusView.tintColor = .clear
+                      }
+                  }
+            }
+        }
+    
+    
+    private func displayImage() {
+        let dispatchGroup = DispatchGroup()
+           // identifier와 이미지로 dictionary를 만듬 (selectedAssetIdentifiers의 순서에 따라 이미지를 받을 예정입니다.)
+           var imagesDict = [String: UIImage]()
+
+           for (identifier, result) in selections {
+               
+               dispatchGroup.enter()
+                           
+               let itemProvider = result.itemProvider
+               // 만약 itemProvider에서 UIImage로 로드가 가능하다면?
+               if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                   // 로드 핸들러를 통해 UIImage를 처리해 줍시다. (비동기적으로 동작)
+                   itemProvider.loadObject(ofClass: UIImage.self) { image, error in
+                       
+                       guard let image = image as? UIImage else { return }
+                       
+                       imagesDict[identifier] = image
+                       dispatchGroup.leave()
+                   }
+               }
+           }
+           
+           dispatchGroup.notify(queue: DispatchQueue.main) { [weak self] in
+               
+               guard let self = self else { return }
+               
+               // 먼저 스택뷰의 서브뷰들을 모두 제거함
+               self.galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+                    
+               // 선택한 이미지의 순서대로 정렬하여 스택뷰에 올리기
+               for identifier in self.selectedAssetIdentifiers {
+                   guard let image = imagesDict[identifier] else { return }
+                   self.addImage(image)
+                   
+               }
+           }
+       
+    }
+        
+    private func addImage(_ image: UIImage) {
+        let imageView = UIImageView()
+        imageView.image = image
+        imageView.layer.cornerRadius = 14
+        imageView.layer.masksToBounds = true
+        imageView.backgroundColor = .clear
+        imageView.snp.makeConstraints {
+            $0.width.height.equalTo(72)
+        }
+        
+        galleryStackView.addArrangedSubview(imageView)
+        
+    }
+
     
     //MARK: - @objc func
     @objc func backhome(){
@@ -279,11 +381,7 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
         guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
             return UICollectionViewCell()
         }
-        if indexPath.row < selectedImages.count {
-            let imageAsset = selectedImages[indexPath.row]
-            // cell에 이미지를 설정하는 코드
-            // cell.image = UIImage(data: data) 또는 다른 방식으로 이미지를 설정하세요
-        }
+      
         return cell
     }
     
@@ -308,71 +406,18 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
     
     
     public func cellClicked(){
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = PHPickerFilter.any(of: [.images])
+        configuration.selectionLimit = 4
+        configuration.selection = .ordered
+        configuration.preferredAssetRepresentationMode = .current
+        configuration.preselectedAssetIdentifiers = selectedAssetIdentifiers
         
-        let imagePicker = ImagePickerController()
-        imagePicker.settings.selection.max = 4
-        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-        imagePicker.modalPresentationStyle = .fullScreen
-        imagePicker.settings.theme.selectionStyle = .numbered
-        imagePicker.doneButtonTitle = "완료"
-        imagePicker.doneButton.tintColor = .black
-        imagePicker.cancelButton.tintColor = .black
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
         
-        // ImagePicker에서 이미지를 선택한 후의 처리
-        //        imagePicker.onFin ish = { [weak self] assets in
-        //            guard let self = self else { return }
-        //
-        //
-        //
-        //            // 이미지 선택이 완료된 경우 처리할 내용을 추가할 수도 있음
-        //        }
-        
-        
-        // BSImagePicker를 표시
-        self.presentImagePicker(imagePicker, animated: true, select: { (asset) in
-            // 선택한 이미지에 대한 처리를 할 수도 있음
-        }, deselect: { (asset) in
-            print("이미지 선택 해제")
-            // 이미지 선택 해제 시 처리할 내용을 추가할 수도 있음
-        }, cancel: { (assets) in
-            // 이미지 선택을 취소한 경우 처리할 내용을 추가할 수도 있음
-            print("이미지 선택 취소")
-        }, finish: { (assets) in
-            // 이미지 선택을 끝낼 경우 처리할 내용을 추가할 수동 있음
-            
-            print("이미지 선택 끝")
-            for i in 0..<assets.count {
-                self.selectedImages.append(assets[i])
-            }
-            
-            self.convertAssetToImage()
-            self.galleryCollectionView.reloadData()
-            print("reload Collection view")
-        })
+        self.present(picker, animated: true, completion: nil)
     }
-    //사진을 고르고 난 뒤에 사진의 데이터 타입은 PHAsset 이라는 점이다. 즉, UIImage 타입이 아니기 때문에 바로 UIImageView 에 띄운다거나 그러지는 못한다. 그러기 위해서 convertAssetToImages( ) 함수를 하나 더 정의해야한다.
-    
-    func convertAssetToImage() {
-        if selectedImages.count != 0 {
-            for i in 0 ..< selectedImages.count {
-                let imageManager = PHImageManager.default()
-                let option = PHImageRequestOptions()
-                option.isSynchronous = true
-                var thumbnail = UIImage()
-                imageManager.requestImage(for: selectedImages[i], targetSize: CGSize(width: selectedImages[i].pixelWidth, height: selectedImages[i].pixelHeight), contentMode: .aspectFill, options: option) {
-                    (result, info) in
-                    thumbnail = result!
-                }
-                
-                //                let data = thumbnail.jpegData(compressionQuality: 0.7)
-                //                let newImage = UIImage(data: data!)
-                
-                
-                //                self.galleryCell.setImages.append(newImage! as UIImage)
-            }
-        }
-    }
-    
 }
 
 
@@ -392,33 +437,9 @@ extension RecordingViewController : UITextViewDelegate{
         }
     }
     
-    //        func textViewDidBeginEditing(_ textView: UITextView) {
-    //            if textView.text == textViewPlaceHolder {
-    //                print(#fileID, #function, #line, "- ?")
-    //                textView.text = "asd"
-    //                textView.textColor = .black
-    //            }
-    //        }
-    //
-    //        //MARK: - 리뷰 textView에 입력이 끝났을 경우
-    //        func textViewDidEndEditing(_ textView: UITextView) {
-    //            if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-    //                textView.text = textViewPlaceHolder
-    //                //textView.textColor = textBorderColor
-    //            }
-    //        }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if textView.isFirstResponder && !textView.text.isEmpty {
-            textView.resignFirstResponder()
-        }
-    }
     
-    // 리턴 키 입력 시 키보드 내림
-    func textViewShouldReturn(_ textView: UITextView) -> Bool {
-        textView.resignFirstResponder()
-        return true
-    }
+    
 }
 
 

@@ -142,7 +142,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.configureCalendar()
         self.tableSetting()
         tableViewUI() //table뷰 보여줌
-
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -160,7 +160,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = true
-
+        
     }
     
     //MARK: - Calendar func
@@ -179,15 +179,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //날짜 선택 콜백 메소드
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        
         ScheduleTableView.reloadData()
         fetchdailyjogak()
         
-        blankimage.isHidden = false
-        blankLabel.isHidden = false
-        makeModalArt.isHidden = false
-        ScheduleTableView.isHidden = true
-        motiveLabel.isHidden = true
         
     }
     
@@ -199,7 +193,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         
         _ = selectJogakModal.mogakList.filter { $0.jogakDate.isSameDay(as: date) }
-           return 1
+        return 1
     }
     
     // Default Event Dot 색상 분기처리 - FSCalendarDelegateAppearance
@@ -336,25 +330,25 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return Calendar.current.date(byAdding: .weekOfMonth, value: -1, to: date)!
     }
     
-//MARK: - 햄치즈토스트 팝업
- 
+    //MARK: - 햄치즈토스트 팝업
+    
     func showToast(message : String, font: UIFont) {
-            let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 112, y: self.view.frame.size.height-150, width: 224, height: 29))
-            toastLabel.backgroundColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 0.7)
-            toastLabel.textColor = UIColor.white
-            toastLabel.font = font
-            toastLabel.textAlignment = .center;
-            toastLabel.text = message
-            toastLabel.alpha = 1.0
-            toastLabel.layer.cornerRadius = 16;
-            toastLabel.clipsToBounds  =  true
-            self.view.addSubview(toastLabel)
-            UIView.animate(withDuration: 3.0, delay: 0.1, options: .curveEaseOut, animations: {
-                 toastLabel.alpha = 0.0
-            }, completion: {(isCompleted) in
-                toastLabel.removeFromSuperview()
-            })
-        }
+        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 112, y: self.view.frame.size.height-150, width: 224, height: 29))
+        toastLabel.backgroundColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 0.7)
+        toastLabel.textColor = UIColor.white
+        toastLabel.font = font
+        toastLabel.textAlignment = .center;
+        toastLabel.text = message
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 16;
+        toastLabel.clipsToBounds  =  true
+        self.view.addSubview(toastLabel)
+        UIView.animate(withDuration: 3.0, delay: 0.1, options: .curveEaseOut, animations: {
+            toastLabel.alpha = 0.0
+        }, completion: {(isCompleted) in
+            toastLabel.removeFromSuperview()
+        })
+    }
     
     //MARK: - @objc
     
@@ -374,6 +368,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     @objc func goSchedule(_ sender : UIButton){
+        print("여기 모다라트 만드는거 연결")
         ScheduleTableView.reloadData()
     }
     
@@ -393,10 +388,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             
             print("reload data")
             
-            }
+        }
         
         present(selectJogak, animated: true, completion: nil)
-    
+        
         if let sheet = selectJogak.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.delegate = self
@@ -442,7 +437,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
         
-        underView.isHidden = true
         underView.addSubview(motiveLabel)
         underView.addSubview(ScheduleTableView)
         ScheduleTableView.snp.makeConstraints{
@@ -453,18 +447,12 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     }
     
     func tableViewUI(){
-        blankimage.isHidden = true
-        makeModalArt.isHidden = true
-        blankLabel.isHidden = true
-        
         ScheduleTableView.reloadData()
-        
         self.ScheduleTableView.rowHeight = 80 //셀 높이
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
-        ScheduleTableView.isHidden = false
-        motiveLabel.isHidden = false
-        underView.isHidden = false
+        
+        
     }
     
     //MARK: -  Cell설정
@@ -481,7 +469,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
             
-            
             present(Certificate, animated: true)
             
             if let sheet = Certificate.sheetPresentationController {
@@ -496,7 +483,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
             
         }
-
+        
     }
     
     
@@ -508,7 +495,23 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //cell의 개수
-        return selectJogakModal.SelectJogaklist.count
+        let numberOfJogak = selectJogakModal.SelectJogaklist.count
+        
+        if numberOfJogak == 0 {
+            blankimage.isHidden = false
+            blankLabel.isHidden = false
+            makeModalArt.isHidden = false
+            motiveLabel.isHidden = true
+            
+        } else {
+            blankimage.isHidden = true
+            blankLabel.isHidden = true
+            makeModalArt.isHidden = true
+            motiveLabel.isHidden = false
+            
+        }
+        
+        return numberOfJogak
     }
     
     //MARK: - cellUI
@@ -516,10 +519,11 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
-            
+        
         
         print(cell.cellLabel.text as Any)
         
+        cell.cellLabel.text = selectJogakModal.SelectJogaklist[indexPath.row] //cell label
         
         cell.contentView.backgroundColor = .white
         cell.selectionStyle = .none //클릭시 화면 안바뀜
@@ -532,7 +536,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
     }
     
-//MARK: - API
+    //MARK: - API
     func fetchdailyjogak() {
         let headers: HTTPHeaders = [
             "Authorization": ApiConstants.Accesstoken
@@ -543,6 +547,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         request.responseDecodable { (data: DataResponse<JogakDaily, AFError>) in
             switch data.result {
             case .success(let jogakDaily):
+                //isUserInteractionEnabled = false
                 print(jogakDaily)
                 print("성공")
                 
@@ -554,7 +559,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             }
         }
     }
-
-
+    
+    
 }
 

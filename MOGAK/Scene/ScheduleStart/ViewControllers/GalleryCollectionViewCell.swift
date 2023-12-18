@@ -12,7 +12,6 @@ class GalleryCollectionViewCell : UICollectionViewCell {
     
     static let id = "GalleryCollectionViewCell"
     
-    var imageViews: [UIImageView] = []
     
     lazy var grayView : UIView = {
         let view = UIView()
@@ -21,7 +20,7 @@ class GalleryCollectionViewCell : UICollectionViewCell {
         return view
     }()
     
-    private lazy var plusView : UIImageView = {
+     lazy var plusView : UIImageView = {
         let view = UIImageView()
         view.image = UIImage(systemName: "plus.circle.fill")
         view.tintColor = UIColor(hex: "#BFC3D4")
@@ -49,28 +48,5 @@ class GalleryCollectionViewCell : UICollectionViewCell {
             $0.centerX.centerY.equalTo(grayView)
             $0.width.height.equalTo(30)
         }
-    }
-    
-    func setImages(_ images: [UIImage]) {
-        for imageView in imageViews { //ㅅㅂㄴ
-            imageView.removeFromSuperview()
-        }
-        imageViews.removeAll()
-        
-        for (index, image) in images.enumerated() {
-            let imageView = UIImageView(image: image)
-            imageView.contentMode = .scaleAspectFill
-            imageView.clipsToBounds = true
-            grayView.addSubview(imageView)
-            imageViews.append(imageView)
-            
-            // Adjust the position of each imageView based on the index
-            imageView.snp.makeConstraints {
-                $0.width.height.equalTo(72)
-                $0.left.equalTo(grayView).offset(index * 80) // Adjust spacing as needed
-                $0.centerY.equalTo(grayView)
-            }
-        }
-        
     }
 }

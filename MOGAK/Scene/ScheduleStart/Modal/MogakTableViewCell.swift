@@ -163,42 +163,41 @@ class MogakTableViewCell: UITableViewCell {
         jogakImageView.image = UIImage(systemName: "square")
     }
     
-    @objc func JogakStackViewTap(){
-        
+    @objc func JogakStackViewTap() {
         guard let jogakLabel = JogakLabel.text, !jogakLabel.isEmpty else {
             print("JogakLabel 텍스트가 nil이거나 비어 있습니다.")
             return
         }
-        
+
         if let currentImage = jogakImageView.image,
-           currentImage == UIImage(systemName: "square") {
-            if let filledImage = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value,renderingMode: .alwaysOriginal){
+           let filledImage = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal) {
+
+            if currentImage == UIImage(systemName: "square") {
                 jogakImageView.image = filledImage
-                
-                if let jogakLabel = JogakLabel.text {
-                    
-                    jogakClickClosure?(jogakLabel)
-                    
-                    print("SelectJogaklist after removal: \(parentViewController?.SelectJogaklist ?? [])")
-                    print("선택된 JogakLabel: \(jogakLabel)")
-                    
-                }
-                
-            }
-            else {
+                print("이미지를 선택 상태로 변경했습니다.")
+            } else {
                 jogakImageView.image = UIImage(systemName: "square")
-                
-                jogakClickClosure?(jogakLabel)
-                
                 jogakClickClosure = nil
-                
-                if let jogakLabel = JogakLabel.text, !jogakLabel.isEmpty,
-                   let parentVC = parentViewController,
+
+                if let parentVC = parentViewController,
                    let index = parentVC.SelectJogaklist.firstIndex(of: jogakLabel) {
                     parentVC.SelectJogaklist.remove(at: index)
                 }
+
+                print("이미지를 원래 상태로 변경했습니다.")
+            }
+
+            jogakClickClosure?(jogakLabel)
+            let schedulcell = ScheduleTableViewCell()
+            if currentImage == UIImage(systemName: "square") {
+                print("선택된 JogakLabel: \(jogakLabel)")
+                schedulcell.cellLabel.text = jogakLabel
+            } else {
+                print("\(jogakLabel) 선택이 해제되었습니다.")
             }
         }
-        
     }
 }
+
+
+

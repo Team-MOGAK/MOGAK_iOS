@@ -89,11 +89,11 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         CellUI()
         
+        
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0))
     }
     
@@ -128,7 +128,6 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         layer.shadowOffset = CGSize(width: 10, height: 10)
         layer.shadowOpacity = 0.06
         contentView.layer.shadowRadius = 10
-        
     }
     
     
