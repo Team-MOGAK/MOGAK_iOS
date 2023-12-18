@@ -142,7 +142,7 @@ class ListTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
+    // 이미지 url 추가하기
     func configure(backColor: UIColor, titleText: String, statusText: String, categoryText: String, statusTextColor: UIColor) {
         smallGoalView.backgroundColor = backColor
         titleLabel.text = titleText

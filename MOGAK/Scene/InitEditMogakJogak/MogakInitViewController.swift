@@ -1376,7 +1376,7 @@ extension MogakInitViewController {
 //
 //
 //        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
-        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory,  startAt: startAt, endAt: endAt, color: color)
+        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, startAt: startAt, endAt: endAt, color: color)
         print(data)
         
         

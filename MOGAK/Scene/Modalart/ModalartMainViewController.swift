@@ -449,10 +449,10 @@ extension ModalartMainViewController: UICollectionViewDataSource {
             mogakCell.cellDataSetting()
             return mogakCell
         } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
-            mogakCell.goalCategoryLabelText = mogakData[row].bigCategory?.name ?? ""
-            mogakCell.goalContentLabelText = mogakData[row].title ?? ""
+            mogakCell.goalCategoryLabelText = mogakData[row - 1].bigCategory?.name ?? ""
+            mogakCell.goalContentLabelText = mogakData[row - 1].title ?? ""
 //            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
-            mogakCell.goalCategoryLabelTextColor = mogakData[row].color ?? "475FFD"
+            mogakCell.goalCategoryLabelTextColor = mogakData[row - 1].color ?? "475FFD"
             mogakCell.cellDataSetting()
             return mogakCell
         } else {

@@ -25,6 +25,7 @@ class MyHistoryViewController: UIViewController {
     
     var selectedSmallModalartIndexPath: IndexPath?
     private var tableViewData: [[String]] = []
+    var MemoirListTableViewData: [MemoirContent] = []
     //    override func viewWillAppear(_ animated: Bool) {
     //        super.viewWillAppear(animated)
     //        self.tabBarController?.tabBar.isHidden = false
@@ -227,7 +228,10 @@ class MyHistoryViewController: UIViewController {
                 for i in self.mogakData {
                     self.smallModalartList.append((i.bigCategory?.name)!)
                 }
+                self.smallModalartList = self.smallModalartList.uniqued()
+                self.segmentFirstLoaded = false
                 self.segmentCollectionView.reloadData()
+                
             }
         }
     }
@@ -612,8 +616,8 @@ class MyHistoryViewController: UIViewController {
     }
     
     @objc private func floatingButtonTapped() {
-        let mogakVC = MogakInitViewController()
-        //let mogakVC = JogakInitViewController()
+        //let mogakVC = MogakInitViewController()
+        let mogakVC = JogakInitViewController()
         //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }
@@ -860,4 +864,18 @@ extension UIView {
         )
     }
     
+}
+
+extension MyHistoryViewController {
+    
+}
+
+
+
+// MARK: - Extension : 배열 중복 제거
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var set = Set<Element>()
+        return filter { set.insert($0).inserted }
+    }
 }

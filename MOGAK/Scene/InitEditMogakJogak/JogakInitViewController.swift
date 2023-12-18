@@ -15,6 +15,9 @@ import Alamofire
 
 class JogakInitViewController: UIViewController {
     
+    fileprivate let gregorian = Calendar(identifier: .gregorian)
+    let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)
+    
     private let today: Date = {
         return Date()
     }()
@@ -33,6 +36,8 @@ class JogakInitViewController: UIViewController {
     // 달력 현재 페이지
     private var currentPage: Date?
     private var endCurrentPage: Date?
+    
+    private let calendarHelper = DateHelper.shared.calendar
     
     // 선택된 셀의 인덱스를 저장하는 Set
     var selectedRepeatIndexPaths = Set<IndexPath>()
@@ -172,8 +177,10 @@ class JogakInitViewController: UIViewController {
         return textField
     }()
     
-    private let endCalendar : FSCalendar = {
+    private let calendar : FSCalendar = {
         let calendar = FSCalendar(frame: .zero)
+        
+        
         calendar.weekdayHeight = 15
         calendar.headerHeight = 0
         calendar.transitionCoordinator.cachedMonthSize.height = 193
@@ -189,10 +196,14 @@ class JogakInitViewController: UIViewController {
         calendar.appearance.todayColor = .clear
         calendar.appearance.selectionColor = UIColor(hex: "475FFD")
         //calendar.register(FSCalendarCell.self, forCellReuseIdentifier: "cell")
-        calendar.register(DatePickerCalendarCell.self, forCellReuseIdentifier: "cell")
-        
+        //calendar.register(DatePickerCalendarCell.self, forCellReuseIdentifier: "cell")
+        //calendar.register(DIYCalendarCell.self, forCellReuseIdentifier: "cell")
+        //calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
+
         calendar.locale = Locale(identifier: "ko_KR")
         calendar.scope = .month
+        
+        calendar.appearance.borderRadius = 0.2
         
         calendar.isHidden = true
         return calendar
@@ -263,11 +274,12 @@ class JogakInitViewController: UIViewController {
 //
         self.configureCompleteButton()
         
-        endCalendar.allowsMultipleSelection = true
-        endCalendar.scrollDirection = .vertical
-        endCalendar.today = nil
-        endCalendar.swipeToChooseGesture.isEnabled = true
-        endCalendar.clipsToBounds = true
+        calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
+        calendar.allowsMultipleSelection = true
+        calendar.scrollDirection = .horizontal
+        calendar.today = nil
+        calendar.swipeToChooseGesture.isEnabled = false
+        calendar.clipsToBounds = true
     }
     
     // MARK: - configure UI
@@ -385,9 +397,9 @@ class JogakInitViewController: UIViewController {
     
     private func configureEndDate() {
         [endLabel, endExplanationLabel,  endTextField].forEach(contentView.addSubview(_:))
-        [endHeaderTitle, endPreviousButton, endNextButton, endCalendar].forEach(contentView.addSubview(_:))
+        [endHeaderTitle, endPreviousButton, endNextButton, calendar].forEach(contentView.addSubview(_:))
         self.endTextField.delegate = self
-        self.endCalendar.delegate = self
+        self.calendar.delegate = self
         
         endExplanationLabel.snp.makeConstraints({
             $0.top.equalTo(self.routineRepeatCollectionView.snp.bottom).offset(16)
@@ -424,7 +436,7 @@ class JogakInitViewController: UIViewController {
             $0.width.height.equalTo(16)
         })
         
-        endCalendar.snp.makeConstraints({
+        calendar.snp.makeConstraints({
             $0.top.equalTo(self.endHeaderTitle.snp.bottom).offset(22)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(212)
@@ -452,7 +464,7 @@ class JogakInitViewController: UIViewController {
         endLabel.isHidden = !sender.isOn
         
         if !sender.isOn {
-            [endNextButton, endHeaderTitle, endPreviousButton, endCalendar].forEach({$0.isHidden = true})
+            [endNextButton, endHeaderTitle, endPreviousButton, calendar].forEach({$0.isHidden = true})
             
             endPreviousButton.snp.remakeConstraints({
                 $0.top.equalTo(self.endLabel.snp.bottom).offset(43)
@@ -471,7 +483,7 @@ class JogakInitViewController: UIViewController {
                 $0.width.height.equalTo(16)
             })
             
-            endCalendar.snp.remakeConstraints({
+            calendar.snp.remakeConstraints({
                 $0.top.equalTo(self.endHeaderTitle.snp.bottom).offset(22)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(212)
@@ -491,7 +503,7 @@ class JogakInitViewController: UIViewController {
         dateComponents.month = 1
         
         self.endCurrentPage = cal.date(byAdding: dateComponents, to: self.endCurrentPage ?? self.today)
-        self.endCalendar.setCurrentPage(self.endCurrentPage!, animated: true)
+        self.calendar.setCurrentPage(self.endCurrentPage!, animated: true)
         
         // DateFormatter를 사용하여 "YYYY년 M월" 형식으로 변환하여 출력
         let dateFormatter = DateFormatter()
@@ -510,7 +522,7 @@ class JogakInitViewController: UIViewController {
         dateComponents.month = -1
         
         self.endCurrentPage = cal.date(byAdding: dateComponents, to: self.endCurrentPage ?? self.today)
-        self.endCalendar.setCurrentPage(self.endCurrentPage!, animated: true)
+        self.calendar.setCurrentPage(self.endCurrentPage!, animated: true)
         
         // DateFormatter를 사용하여 "YYYY년 M월" 형식으로 변환하여 출력
         let dateFormatter = DateFormatter()
@@ -543,7 +555,7 @@ extension JogakInitViewController: UITextFieldDelegate {
             return true
         }
         else if textField == endTextField { // 종료날짜
-            [endNextButton, endHeaderTitle, endPreviousButton, endCalendar].forEach({$0.isHidden = false})
+            [endNextButton, endHeaderTitle, endPreviousButton, calendar].forEach({$0.isHidden = false})
             //Get the size of the text to be displayed in the endLabel
             let text = endLabel.text ?? ""
             let textSize = (text as NSString).boundingRect(with: CGSize(width: .greatestFiniteMagnitude, height: endLabel.bounds.height),
@@ -556,7 +568,7 @@ extension JogakInitViewController: UITextFieldDelegate {
 //                $0.width.equalToSuperview().multipliedBy(1.0)
 //            })
             completeButton.snp.remakeConstraints({
-                $0.top.equalTo(endCalendar.snp.bottom).offset(50)
+                $0.top.equalTo(calendar.snp.bottom).offset(50)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(50)
                 $0.bottom.equalToSuperview().offset(-15)
@@ -658,6 +670,20 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
 //        endTextField.text = selectedDateStr
 //    }
     
+    func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
+        let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position)
+        
+        return cell
+    }
+    
+    func calendar(_ calendar: FSCalendar, willDisplay cell: FSCalendarCell, for date: Date, at monthPosition: FSCalendarMonthPosition) {
+        self.configureCell(cell, for: date, at: monthPosition)
+    }
+    
+//    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillSelectionColorFor date: Date) -> UIColor? {
+//        return appearance.selectionColor
+//    }
+    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         // nothing selected:
         if firstDate == nil {
@@ -665,7 +691,6 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             datesRange = [firstDate!]
             
             print("datesRange contains: \(datesRange!)")
-            
             return
         }
         
@@ -678,7 +703,6 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
                 datesRange = [firstDate!]
                 
                 print("datesRange contains: \(datesRange!)")
-                
                 return
             }
             
@@ -694,11 +718,16 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             
             print("datesRange contains: \(datesRange!)")
             
+            for days in calendar.selectedDates {
+                configureVisibleCells()
+            }
+            
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy/M/d(EEE)"
             let selectedDateStr = dateFormatter.string(from: lastDate!)
             print("종료 Selected Date: \(selectedDateStr)")
             endTextField.text = selectedDateStr
+            
             return
         }
         
@@ -715,6 +744,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             
             print("datesRange contains: \(datesRange!)")
         }
+        
     }
     
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
@@ -726,6 +756,114 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
         
         self.endHeaderTitle.text = dateString
     }
+}
+
+extension JogakInitViewController {
+    
+    /*
+    func configureVisibleCells() {
+        self.calendar.visibleCells().forEach { (cell) in
+            let date = self.calendar.date(for: cell)
+            let position = self.calendar.monthPosition(for: cell)
+            self.configureCell(cell, for: date, at: position)
+        }
+    }
+    
+    func configureCell(_ cell: FSCalendarCell?, for date: Date?, at position: FSCalendarMonthPosition) {
+        let diyCell = (cell as! DIYCalendarCell)
+        // configure selection layer
+        if position == .current {
+            
+            var selectionType = SelectionType.none
+
+            if calendar.selectedDates.contains(date!) {
+                let previousDate = self.gregorian.date(byAdding: .day, value: -1, to: date!)!
+                let nextDate = self.gregorian.date(byAdding: .day, value: 1, to: date!)!
+                if calendar.selectedDates.contains(date!) {
+                    if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(nextDate) {
+                        diyCell.selectionLayer!.fillColor = highlightedColorForRange.cgColor
+                        selectionType = .middle
+                    }
+                    else if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(date!) {
+                        selectionType = .single // .rightBorder
+                    }
+                    else if calendar.selectedDates.contains(nextDate) {
+                        selectionType = .single // .leftBorder
+                    }
+                    else {
+                        selectionType = .middle //.single
+                    }
+                }
+            }
+        }
+    }*/
+    
+    private func configureCell(_ cell: FSCalendarCell?, for date: Date?, at position: FSCalendarMonthPosition) {
+//        guard let cell = cell as? CalendarCell else {
+//            print("제발2제발2")
+//            return
+//        }
+        if let cell = calendar.cell(for: date!, at: position) as? CalendarCell {
+            var selectionType = SelectionType.none
+
+            if let date = date,
+                let cellCalendar = cell.calendar,
+                cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
+               let previousDate = self.calendarHelper.date(byAdding: .day, value: -1, to: date),
+                let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
+
+                if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(nextDate) {
+                    selectionType = .middle
+                } else if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(date) {
+                    selectionType = .rightBorder
+                } else if cellCalendar.selectedDates.contains(nextDate) {
+                    selectionType = .leftBorder
+                } else {
+                    selectionType = .single
+                }
+            } else if let date = date, date.isEqual() {
+                selectionType = .today
+            } else {
+                selectionType = .none
+            }
+        cell.selectionType = selectionType
+        print("selectselectselectselect")
+        }
+//            var selectionType = SelectionType.none
+//
+//            if let date = date,
+//                let cellCalendar = cell.calendar,
+//                cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
+//               let previousDate = self.calendarHelper.date(byAdding: .day, value: -1, to: date),
+//                let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
+//
+//                if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(nextDate) {
+//                    selectionType = .middle
+//                } else if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(date) {
+//                    selectionType = .rightBorder
+//                } else if cellCalendar.selectedDates.contains(nextDate) {
+//                    selectionType = .leftBorder
+//                } else {
+//                    selectionType = .single
+//                }
+//            } else if let date = date, date.isEqual() {
+//                selectionType = .today
+//            } else {
+//                selectionType = .none
+//            }
+//        cell.selectionType = selectionType
+//        print("selectselectselectselect")
+    }
+
+        private func configureVisibleCells() {
+            print("제발")
+            calendar.visibleCells().forEach { (cell) in
+                let date = calendar.date(for: cell)
+                let position = calendar.monthPosition(for: cell)
+                configureCell(cell, for: date, at: position)
+            }
+        }
+    
 }
 
 @available(iOS 17.0, *)
