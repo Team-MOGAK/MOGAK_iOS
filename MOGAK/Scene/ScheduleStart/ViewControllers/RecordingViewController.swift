@@ -119,7 +119,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         textView.backgroundColor = .clear
         return textView
     }()
-
+    
     
     private var selections = [String : PHPickerResult]()
     private var selectedAssetIdentifiers = [String]()
@@ -144,7 +144,6 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         let stackview  = UIStackView()
         stackview.spacing = 12
         stackview.axis = .horizontal
-        //stackview.distribution = .equalCentering
         stackview.backgroundColor = .clear
         return stackview
     }()
@@ -168,6 +167,11 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         setCollectionView()
         setUI()
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+             self.view.endEditing(true)
+       }
+    
     
     func setUI(){
         [popButton,titleLabel].forEach{view.addSubview($0)}
@@ -256,8 +260,9 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         }
         galleryStackView.snp.makeConstraints{
             $0.top.equalTo(textbackgroundView.snp.bottom).offset(28)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.equalToSuperview().inset(20)
             $0.height.equalTo(72)
+            
         }
         
         finishButton.snp.makeConstraints{
@@ -277,87 +282,90 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
     //MARK: - Gallery Setting
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        
+        picker.dismiss(animated: true)
+        
+        var newSelections = [String: PHPickerResult]()
+        
+        for result in results {
+            let identifier = result.assetIdentifier!
+            newSelections[identifier] = selections[identifier] ?? result
+        }
+        
+        selections = newSelections
+        selectedAssetIdentifiers = results.compactMap { $0.assetIdentifier }
+        
+        if selections.isEmpty {
+            galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
             
-            picker.dismiss(animated: true)
+            print("empty")
             
-            var newSelections = [String: PHPickerResult]()
-            
-                    for result in results {
-                  let identifier = result.assetIdentifier!
-                  newSelections[identifier] = selections[identifier] ?? result
-              }
-            
-            selections = newSelections
-            selectedAssetIdentifiers = results.compactMap { $0.assetIdentifier }
-            
-            if selections.isEmpty {
-                galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-            } else {
-                displayImage()
-                for index in 0..<min(4, self.selectedAssetIdentifiers.count) {
-                      if let cell = self.galleryCollectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? GalleryCollectionViewCell {
-                          cell.grayView.backgroundColor = .clear
-                          cell.plusView.tintColor = .clear
-                      }
-                  }
+        } else {
+            displayImage()
+            //사진이 있을때 .clear
+            for index in 0..<min(4, self.selectedAssetIdentifiers.count) {
+                if index < self.selectedAssetIdentifiers.count,
+                   let cell = self.galleryCollectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? GalleryCollectionViewCell {
+                    
+                    cell.grayView.backgroundColor = .clear
+                    cell.plusView.tintColor = .clear
+                }
             }
         }
-    
+    }
     
     private func displayImage() {
         let dispatchGroup = DispatchGroup()
-           // identifier와 이미지로 dictionary를 만듬 (selectedAssetIdentifiers의 순서에 따라 이미지를 받을 예정입니다.)
-           var imagesDict = [String: UIImage]()
-
-           for (identifier, result) in selections {
-               
-               dispatchGroup.enter()
-                           
-               let itemProvider = result.itemProvider
-               // 만약 itemProvider에서 UIImage로 로드가 가능하다면?
-               if itemProvider.canLoadObject(ofClass: UIImage.self) {
-                   // 로드 핸들러를 통해 UIImage를 처리해 줍시다. (비동기적으로 동작)
-                   itemProvider.loadObject(ofClass: UIImage.self) { image, error in
-                       
-                       guard let image = image as? UIImage else { return }
-                       
-                       imagesDict[identifier] = image
-                       dispatchGroup.leave()
-                   }
-               }
-           }
-           
-           dispatchGroup.notify(queue: DispatchQueue.main) { [weak self] in
-               
-               guard let self = self else { return }
-               
-               // 먼저 스택뷰의 서브뷰들을 모두 제거함
-               self.galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-                    
-               // 선택한 이미지의 순서대로 정렬하여 스택뷰에 올리기
-               for identifier in self.selectedAssetIdentifiers {
-                   guard let image = imagesDict[identifier] else { return }
-                   self.addImage(image)
-                   
-               }
-           }
-       
-    }
+        // identifier와 이미지로 dictionary를 만듬 (selectedAssetIdentifiers의 순서에 따라 이미지를 받을 예정입니다.)
+        var imagesDict = [String: UIImage]()
         
+        for (identifier, result) in selections {
+            
+            dispatchGroup.enter()
+            
+            let itemProvider = result.itemProvider
+            // 만약 itemProvider에서 UIImage로 로드가 가능하다면?
+            if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                // 로드 핸들러를 통해 UIImage를 처리해 줍시다. (비동기적으로 동작)
+                itemProvider.loadObject(ofClass: UIImage.self) { image, error in
+                    guard let image = image as? UIImage else { return }
+                    imagesDict[identifier] = image
+                    dispatchGroup.leave()
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: DispatchQueue.main) { [weak self] in
+            guard let self = self else { return }
+            
+            // 먼저 스택뷰의 서브뷰들을 모두 제거함
+            self.galleryStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            
+            // 선택한 이미지의 순서대로 정렬하여 스택뷰에 올리기
+            for identifier in self.selectedAssetIdentifiers {
+                guard let image = imagesDict[identifier] else { return }
+                self.addImage(image)
+                
+            }
+        }
+        
+    }
+    
     private func addImage(_ image: UIImage) {
-        let imageView = UIImageView()
-        imageView.image = image
-        imageView.layer.cornerRadius = 14
-        imageView.layer.masksToBounds = true
-        imageView.backgroundColor = .clear
-        imageView.snp.makeConstraints {
+        let myimageView = UIImageView()
+        myimageView.image = image
+        myimageView.layer.cornerRadius = 14
+        myimageView.layer.masksToBounds = true
+        myimageView.backgroundColor = .clear
+        
+        myimageView.snp.makeConstraints {
             $0.width.height.equalTo(72)
         }
         
-        galleryStackView.addArrangedSubview(imageView)
+        galleryStackView.addArrangedSubview(myimageView)
         
     }
-
+    
     
     //MARK: - @objc func
     @objc func backhome(){
@@ -381,7 +389,7 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
         guard let cell = galleryCollectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCollectionViewCell", for: indexPath) as? GalleryCollectionViewCell else {
             return UICollectionViewCell()
         }
-      
+        
         return cell
     }
     
