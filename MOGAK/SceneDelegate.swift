@@ -9,15 +9,16 @@ import UIKit
 import AuthenticationServices
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        guard let windowScene = scene as? UIWindowScene else { return }
+        guard let _ = scene as? UIWindowScene else { return }
+        setRootViewController(scene)
         
-        lazy var firstVC: UIViewController = TabBarViewController()
-//        lazy var firstVC: UIViewController = AppGuideViewController()
+//        lazy var firstVC: UIViewController = LoginViewController()
+//        lazy var firstVC: UIViewController = TabBarViewController()
+//        lazy var firstVC: UIViewController 0= AppGuideViewController()
 
         //        let isFirst = UserDefaults.isFirstAppLauch()
         
@@ -28,16 +29,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //        }
         
         //firstVC = UINavigationController(rootViewController: LoginViewController())
-//        firstVC = UINavigationController(rootViewController: AppGuideViewController())
-        
-        window = UIWindow(windowScene: windowScene)
-        
-        window?.rootViewController = firstVC
-        
-        window?.makeKeyAndVisible()
-        window?.windowScene = windowScene
-        
-        
+        //firstVC = UINavigationController(rootViewController: AppGuideViewController())
+//        window = UIWindow(windowScene: windowScene)
+//
+//        window?.rootViewController = firstVC
+//
+//        window?.makeKeyAndVisible()
+//        window?.windowScene = windowScene
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -87,5 +85,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     
+}
+
+enum StartViewControllerType {
+    case login
+    case onBoarding
+    
+    var vc: UIViewController {
+        switch self {
+        case .login: return LoginViewController()
+//        case .login: return TabBarViewController()
+        case .onBoarding: return AppGuideViewController()
+        }
+    }
+}
+
+extension SceneDelegate {
+    private func setRootViewController(_ scene: UIScene) {
+        if Storage.isFirstTime() {
+            setRootViewContrller(scene, type: .onBoarding)
+        } else {
+            setRootViewContrller(scene, type: .login)
+        }
+    }
+    
+    private func setRootViewContrller(_ scene: UIScene, type: StartViewControllerType) {
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            print(#fileID, #function, #line, "- 어떤 type의 data인지 확인하기⭐️: \(type)")
+            window.rootViewController = type.vc //그에 맞게 Rootview를 변경해준다
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+    }
+}
+
+public class Storage {
+    static func isFirstTime() -> Bool {
+        let defaults = UserDefaults.standard //defaults DB를 가지고 온다
+        if defaults.object(forKey: "isFirstTime") == nil { //해당 DB에서 isFirstTime이라는 키가 있느지 체크한다
+            defaults.set(true, forKey: "isFirstTime")
+            return true
+        } else {
+            return false
+        }
+    }
 }
 

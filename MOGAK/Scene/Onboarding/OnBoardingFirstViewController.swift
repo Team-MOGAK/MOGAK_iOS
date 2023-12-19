@@ -38,12 +38,15 @@ class OnBoardingFirstViewController: UIViewController {
             $0.top.equalToSuperview().offset(64)
             $0.centerX.equalToSuperview()
         })
+
         
         image.snp.makeConstraints({
             $0.leading.equalToSuperview().offset(35)
-            $0.bottom.equalToSuperview().offset(-35)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(66)
+            $0.height.equalToSuperview().multipliedBy(0.5)
             $0.centerX.equalToSuperview()
         })
+        
     }
 
 }

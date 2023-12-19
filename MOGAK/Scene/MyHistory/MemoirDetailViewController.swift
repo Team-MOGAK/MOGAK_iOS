@@ -730,8 +730,8 @@ class MemoirDetailViewController: UIViewController {
 //    }
 //}
 
- @available(iOS 17.0, *)
- #Preview("MemoirDetailVC") {
-     MemoirDetailViewController()
- }
+// @available(iOS 17.0, *)
+// #Preview("MemoirDetailVC") {
+//     MemoirDetailViewController()
+// }
  

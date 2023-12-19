@@ -30,8 +30,10 @@ enum ModalartRouter: URLRequestConvertible {
     
     //헤더
     var headers: HTTPHeaders {
+        
         switch self {
         default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
+//        default: return HTTPHeaders(["accept":"application/json"])
         }
     }
     

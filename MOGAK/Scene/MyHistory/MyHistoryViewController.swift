@@ -698,10 +698,10 @@ extension MyHistoryViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-@available(iOS 17.0, *)
-#Preview("MyHistoryVC") {
-    MyHistoryViewController()
-}
+//@available(iOS 17.0, *)
+//#Preview("MyHistoryVC") {
+//    MyHistoryViewController()
+//}
 
 extension UIView {
     

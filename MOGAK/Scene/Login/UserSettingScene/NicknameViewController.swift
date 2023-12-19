@@ -157,7 +157,7 @@ class NicknameViewController: UIViewController {
         // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
         
         if let text = nicknameTextField.text {
-            registerUserInfo.nickName = text
+//            registerUserInfo.nickName.send(text)
             print("저장된 닉네임 - \(registerUserInfo.nickName)")
             validateNickname(nickName: text)
         }
@@ -225,7 +225,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
             // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
             let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
             if let imageURL = info[.imageURL] as? URL {
-                registerUserInfo.profileImage = imageURL.absoluteString
+//                registerUserInfo.profileImage.send(imageURL.absoluteString)
                 print("저장된 이미지 주소 \(registerUserInfo.profileImage)")
                 
                 // Kingfisher를 사용하여 버튼 이미지를 설정합니다.
