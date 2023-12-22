@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 
 class ModalartNetwork {
+    static let shared = ModalartNetwork()
     //MARK: - 모다라트 상세 내용 API
     func getDetailModalartInfo(modalartId: Int = 4, completionHandler: @escaping (Result<ModalartInfo?, Error>) -> Void) {
 
@@ -23,6 +24,19 @@ class ModalartNetwork {
                 case .success(let data):
                     print(#fileID, #function, #line, "- data: \(String(describing: data.result?.title))")
                     completionHandler(.success(data.result))
+                }
+            }
+    }
+    
+    func getDetailMogakData(modalartId: Int, completionHandler: @escaping((Result<DetailMogakResponse?, Error>) -> Void)) {
+        AF.request(ModalartRouter.getDetailMogakData(modaratId: modalartId))
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: DetailMogakResponse.self) { (response: DataResponse<DetailMogakResponse, AFError>) in
+                switch response.result {
+                case .success(let data):
+                    completionHandler(.success(data))
+                case .failure(let error):
+                    completionHandler(.failure(error))
                 }
             }
     }
@@ -79,7 +93,6 @@ class ModalartNetwork {
               }
 
           }
-
     }
     
     func editModalart(data: ModalartMainData, completionHandler: @escaping(Result<ModalartMainData, Error>) -> Void) {

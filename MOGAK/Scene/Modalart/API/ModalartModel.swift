@@ -72,3 +72,35 @@ struct DeleteModalartResponse: Codable {
 
 // MARK: - Result
 struct DeleteModalartResult: Codable {}
+
+struct DetailMogakResponse: Codable {
+    let time, status, code, message: String?
+    let result: DetailMogak?
+}
+
+// MARK: - Result
+struct DetailMogak: Codable {
+    let mogaks: [DetailMogakData]?
+    let size: Int?
+}
+
+// MARK: - Mogak
+struct DetailMogakData: Codable {
+    let mogakId: Int
+    let title, state: String
+    let bigCategory: MainCategory
+    let smallCategory: String?
+    let color: String?
+    let startAt, endAt: String?
+    
+    enum CodingKeys : String, CodingKey {
+        case mogakId = "id"
+        case title, state, bigCategory, smallCategory, color, startAt, endAt
+    }
+}
+
+// MARK: - BigCategory
+struct MainCategory: Codable {
+    let id: Int
+    let name: String
+}

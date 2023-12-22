@@ -11,7 +11,6 @@ import Kingfisher
 import Alamofire
 
 class NicknameViewController: UIViewController {
-    
     let registerUserInfo = RegisterUserInfo.shared
     let apiManger = ApiManager.shared
     

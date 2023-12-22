@@ -93,8 +93,8 @@ enum StartViewControllerType {
     
     var vc: UIViewController {
         switch self {
-        case .login: return LoginViewController()
-//        case .login: return TabBarViewController()
+//        case .login: return LoginViewController()
+        case .login: return TabBarViewController()
         case .onBoarding: return AppGuideViewController()
         }
     }

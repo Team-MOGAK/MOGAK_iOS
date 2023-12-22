@@ -16,8 +16,9 @@ class ModalartMainViewController: UIViewController {
     var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
     var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
     var nowShowModalArtIndex: Int = 0
-    var mogakData: [MogakCategory] = []
-    let modalartNetwork = ModalartNetwork() ///API 통신
+    var mogakData: [DetailMogakData] = []
+    let modalartNetwork = ModalartNetwork.shared ///API 통신
+    let mogakNetwork = MogakDetailNetwork.shared
     
     var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
     
@@ -90,8 +91,21 @@ class ModalartMainViewController: UIViewController {
                 self.modalartName = modalInfo.title
                 self.modalArtNameLabel.text = modalInfo.title
                 self.modalArtMainCellBgColor = modalInfo.color
-                self.mogakData = modalInfo.mogakCategory ?? []
+                
                 self.modalArtCollectionView.reloadData()
+            }
+        }
+        getDetailMogakData(id: id)
+    }
+    
+    func getDetailMogakData(id: Int) {
+        modalartNetwork.getDetailMogakData(modalartId: id) { result in
+            switch result {
+            case .success(let data):
+                self.mogakData = data?.result?.mogaks ?? []
+                self.modalArtCollectionView.reloadData()
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }
     }
@@ -134,7 +148,25 @@ class ModalartMainViewController: UIViewController {
                 print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
             }
         }
-        
+    }
+    
+    //MARK: - 선택한 모각의 모든 조각들 가져오기
+    func getMogakDetail(_ mogakData: DetailMogakData) {
+        mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId) { result in
+            switch result {
+            case .success(let jogakList):
+                print(#fileID, #function, #line, "- jogakList: \(jogakList)")
+                guard let jogakList = jogakList else { return }
+                let mogakMainVC = MogakMainViewController()
+                mogakMainVC.mogakList = self.mogakData
+                mogakMainVC.selectedMogak = mogakData
+                mogakMainVC.jogakList = jogakList
+                mogakMainVC.modalartId = self.nowShowModalArtNum
+                self.navigationController?.pushViewController(mogakMainVC, animated: true)
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
     }
     
     func editModalart(_ changeTitle: String, _ changeColor: String) {
@@ -381,13 +413,8 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         }
         else {
             let row = indexPath.row
-            
-            let mogakMainVC = MogakMainViewController()
-            mogakMainVC.mogakList = mogakData
-            mogakMainVC.selectedMogak = row <= 4 ? mogakData[row] : mogakData[row - 1]
-            #warning("여기 스크롤이동 되나 확인해보기")
-//            mogakMainVC.mogakListCollectionView.scrollToItem(at: IndexPath(row: row <= 4 ? row : row - 1, section: 0), at: .bottom, animated: true)
-            self.navigationController?.pushViewController(mogakMainVC, animated: true)
+            let selectedMogak = row <= 4 ? self.mogakData[row] : self.mogakData[row - 1]
+            self.getMogakDetail(selectedMogak)
         }
     }
 }

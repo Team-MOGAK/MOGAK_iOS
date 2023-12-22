@@ -118,16 +118,20 @@ class LoginViewController: UIViewController {
                 print(#fileID, #function, #line, "- isLogined🔥: \(isLogined)")
                 let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime")
                 print(#fileID, #function, #line, "- isFirstTime: \(isFirstTime)")
-                if isFirstTime {
-                    let termAgreeNavigationVC = TermsAgreeViewController()
-                    let navigationController = UINavigationController(rootViewController: termAgreeNavigationVC)
-                    self.view.window?.rootViewController = navigationController
-                } else {
-                    let tabBarController = TabBarViewController()
+                let tabBarController = TabBarViewController()
 
-                    self.view.window?.rootViewController = tabBarController
+                self.view.window?.rootViewController = tabBarController
 
-                }
+//                if isFirstTime {
+//                    let termAgreeNavigationVC = TermsAgreeViewController()
+//                    let navigationController = UINavigationController(rootViewController: termAgreeNavigationVC)
+//                    self.view.window?.rootViewController = navigationController
+//                } else {
+//                    let tabBarController = TabBarViewController()
+//
+//                    self.view.window?.rootViewController = tabBarController
+//
+//                }
                 
             } else {
                 print(#fileID, #function, #line, "- 로그인 완료 안됨: \(isLogined)")

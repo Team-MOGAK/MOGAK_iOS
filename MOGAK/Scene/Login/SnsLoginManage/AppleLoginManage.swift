@@ -108,16 +108,14 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         print(#fileID, #function, #line, "- 애플 로그인 성공🍎")
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-
+            
+            
             guard let appleIDToken = appleIDCredential.identityToken else {
                 print("Unable to fetch identity token")
                 return
             }
             guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { return }
     
-            print(#fileID, #function, #line, "- apple User Info🍎 - \(String(describing: RegisterUserInfo.shared.userName))")
-
-
             if let authorizationCode = appleIDCredential.authorizationCode,
                let codeString = String(data: authorizationCode, encoding: .utf8) {
                 print(#fileID, #function, #line, "- codeString🔥: \(codeString)")
@@ -134,16 +132,9 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                             UserDefaults.standard.set(data.tokens.accessToken, forKey: "accessToken")
                             UserDefaults.standard.set(data.tokens.refreshToken, forKey: "refreshToken")
                             UserDefaults.standard.synchronize()
-                            
+                            let userEmail = appleIDCredential.email ?? "이메일 제공안함"
+                            self.registerUserInfo.userEmail = userEmail
                             self.registerUserInfo.loginState = true
-//                            let mainViewController = TabBarViewController()
-//                            let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-//                            guard let delegate = sceneDelegate else {
-//                                // 에러 알림
-//                                print(#fileID, #function, #line, "- error")
-//                                return
-//                            }
-//                            delegate.window?.rootViewController = mainViewController
                         }
                     }
 
