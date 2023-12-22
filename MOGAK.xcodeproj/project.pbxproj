@@ -95,6 +95,9 @@
 		D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */; };
 		D1A8EC152AD56F0F00FE1648 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */; };
 		D1D10D7C2AF9173A0039A00C /* MogakTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */; };
+		D1D803492B34044C00781B38 /* ModalartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D803482B34044C00781B38 /* ModalartModel.swift */; };
+		D1D8034B2B3406BB00781B38 /* ShowModalArtListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8034A2B3406BB00781B38 /* ShowModalArtListCell.swift */; };
+		D1D8034D2B3406C000781B38 /* ShowModalArtListModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8034C2B3406C000781B38 /* ShowModalArtListModal.swift */; };
 		D1E43CEF2B24C8D000058C8C /* deSetRoutineModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */; };
 /* End PBXBuildFile section */
 
@@ -121,8 +124,6 @@
 		6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmViewController.swift; sourceTree = "<group>"; };
 		6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetRoutineModal.swift; sourceTree = "<group>"; };
-		6C7F95D82A928B9100255ED1 /* ScheduleTimerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleTimerVC.swift; sourceTree = "<group>"; };
-		6C89F6BD2A82A61300E5B1FE /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 		6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelModalVC.swift; sourceTree = "<group>"; };
 		6CC638BA2A922B21009BC333 /* RecordingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingViewController.swift; sourceTree = "<group>"; };
 		6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificationModalVC.swift; sourceTree = "<group>"; };
@@ -194,6 +195,9 @@
 		D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectJogakModal.swift; sourceTree = "<group>"; };
 		D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakTableViewCell.swift; sourceTree = "<group>"; };
+		D1D803482B34044C00781B38 /* ModalartModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModalartModel.swift; path = ../../../../Downloads/ModalartModel.swift; sourceTree = "<group>"; };
+		D1D8034A2B3406BB00781B38 /* ShowModalArtListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShowModalArtListCell.swift; path = ../../../../../../Downloads/ShowModalArtListCell.swift; sourceTree = "<group>"; };
+		D1D8034C2B3406C000781B38 /* ShowModalArtListModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShowModalArtListModal.swift; path = ../../../../../../Downloads/ShowModalArtListModal.swift; sourceTree = "<group>"; };
 		D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deSetRoutineModal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -272,15 +276,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		6C33C0A02A8699F300A56D46 /* TimerView */ = {
-			isa = PBXGroup;
-			children = (
-				6C7F95D82A928B9100255ED1 /* ScheduleTimerVC.swift */,
-				6C89F6BD2A82A61300E5B1FE /* CircularProgressView.swift */,
-			);
-			path = TimerView;
-			sourceTree = "<group>";
-		};
 		6C33C0A12A874D6200A56D46 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -301,6 +296,8 @@
 				6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */,
 				6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */,
 				D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */,
+				D1D8034C2B3406C000781B38 /* ShowModalArtListModal.swift */,
+				D1D8034A2B3406BB00781B38 /* ShowModalArtListCell.swift */,
 				D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */,
 				D1187A6F2B132D2400589718 /* PaddingLabel.swift */,
 				D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */,
@@ -345,7 +342,6 @@
 			children = (
 				6CFDCACE2A89492700A7A73C /* Modal */,
 				6C33C0A12A874D6200A56D46 /* ViewControllers */,
-				6C33C0A02A8699F300A56D46 /* TimerView */,
 			);
 			path = ScheduleStart;
 			sourceTree = "<group>";
@@ -475,6 +471,7 @@
 			children = (
 				9CCB39D62A91186200968CDB /* ApiManager.swift */,
 				9CCB39D82A9118CC00968CDB /* ApiConstants.swift */,
+				D1D803482B34044C00781B38 /* ModalartModel.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -704,6 +701,7 @@
 				9C2EF80A2A86624400E8C8F4 /* FriendDetailPageViewController.swift in Sources */,
 				9CCB39D92A9118CC00968CDB /* ApiConstants.swift in Sources */,
 				9C2EF7FE2A7FA55B00E8C8F4 /* JogakDetailViewController.swift in Sources */,
+				D1D8034B2B3406BB00781B38 /* ShowModalArtListCell.swift in Sources */,
 				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
 				652C05DC2A7404B4004CE9C4 /* Data.swift in Sources */,
 				9CFA7D262A4591AB003E80A7 /* ScheduleReportViewController.swift in Sources */,
@@ -716,6 +714,7 @@
 				6C4EE4E62A7AA15100DE0D5C /* SettingViewController.swift in Sources */,
 				9C2EF7EE2A6CFB6000E8C8F4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */,
+				D1D8034D2B3406C000781B38 /* ShowModalArtListModal.swift in Sources */,
 				6544766E2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift in Sources */,
 				9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
@@ -748,6 +747,7 @@
 				9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* OnBoardingThirdViewController.swift in Sources */,
 				9CCB39DD2A92677100968CDB /* JoinModel.swift in Sources */,
+				D1D803492B34044C00781B38 /* ModalartModel.swift in Sources */,
 				9C2EF8002A7FAC9B00E8C8F4 /* JogakDetailCell.swift in Sources */,
 				6574D3532A89417700F53A69 /* FeedDetailCommentTableViewCell.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* OnBoardingThirdViewController.swift in Sources */,

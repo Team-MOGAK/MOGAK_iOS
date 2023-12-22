@@ -12,9 +12,10 @@ struct ApiConstants {
     static let join = BaseURL + "/api/users/join"
     
     static let JogakDailyURL = BaseURL + "/api/modarats/mogaks/jogaks/daily"
-    static let JogakRoutineURL = "/api/modarats/mogaks/jogaks/routine"
+    static let JogakRoutineURL = BaseURL + "/api/modarats/mogaks/jogaks/routine"
+    static let JogakTodayURL = BaseURL + "/api/modarats/mogaks/jogaks/today"
     
-   static let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
+    static let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
     
 }
 
@@ -39,6 +40,28 @@ struct JogakDaily: Codable {
 
     struct Jogak: Codable {
         let jogakId: Int
+        let mogakTitle: String
+        let category: String
+        let title: String
+
+        // Jogak의 CodingKeys 추가
+        enum CodingKeys: String, CodingKey {
+            case jogakId, mogakTitle, category, title
+        }
+    }
+}
+//MARK: - JogakToday
+
+struct JogakToday: Codable {
+    let time: String
+    let status: String
+    let code: String
+    let message: String
+    let size: Int? //안에 데이터가 있는지 없는지 모름 ㅎㅎ
+    let jogaks: [Jogak]? //안에 데이터가 있는지 없는지 모름 ㅎㅎ
+
+    struct Jogak: Codable {
+        let jogakId: Int 
         let mogakTitle: String
         let category: String
         let title: String

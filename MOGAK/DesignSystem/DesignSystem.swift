@@ -23,6 +23,8 @@ enum DesignSystemColor {
     case orange
     case pink
     case lavender
+    case gray3
+    case black
 }
 
 extension DesignSystemColor {
@@ -56,6 +58,10 @@ extension DesignSystemColor {
             return UIColor(hex: "FFE8E8")
         case .lavender:
             return UIColor(hex: "E8EBFE")
+        case .gray3:
+            return UIColor(hex: "BFC3D4")
+        case .black:
+            return UIColor(hex: "000000")
         }
     }
 }

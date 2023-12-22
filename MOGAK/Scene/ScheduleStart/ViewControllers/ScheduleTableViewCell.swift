@@ -37,8 +37,20 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         return cellButton
     }()
     
-    let selectJogakModal = SelectJogakModal()
+    lazy var recodelabel: UILabel? = {
+        let label = UILabel()
+        label.numberOfLines = 4
+        label.font = UIFont(name: "PretendardVariable-Regular", size: 12)
+        label.textColor = UIColor(red: 0.431, green: 0.441, blue: 0.483, alpha: 1)
+        return label
+    }()
+
+    lazy var recodeimageView: UIImageView? = {
+        let imageView = UIImageView()
+        return imageView
+    }()
     
+    let selectJogakModal = SelectJogakModal()
     
 //MARK: - @objc
     @objc func ButtonClicked(){
@@ -102,28 +114,41 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     //MARK: - UI
     
     private func CellUI(){
         contentView.addSubview(cellImage)
         contentView.addSubview(cellLabel)
         contentView.addSubview(cellButton)
+        contentView.addSubview(recodelabel!)
+        contentView.addSubview(recodeimageView!)
         
         cellImage.snp.makeConstraints{
             $0.width.height.equalTo(20)
             $0.leading.equalTo(contentView).offset(10)
             $0.centerY.equalTo(contentView)
         }
+        
         cellLabel.snp.makeConstraints{
             $0.centerY.equalTo(cellImage)
             $0.leading.equalTo(cellImage.snp.trailing).offset(10)
         }
+        
         cellButton.snp.makeConstraints{
             $0.width.height.equalTo(30)
             $0.trailing.equalTo(contentView).offset(-16)
             $0.centerY.equalTo(contentView)
         }
+        recodelabel?.snp.makeConstraints{
+//            $0.trailing.equalToSuperview().offset(16)
+//            $0.bottom.equalToSuperview().offset(24)
+            $0.centerX.centerY.equalToSuperview()
+        }
         
+        recodeimageView?.snp.makeConstraints{
+            $0.centerX.centerY.equalToSuperview()
+        }
         layer.shadowColor = UIColor.darkGray.cgColor         //그림자 효과 추후 적용 예정
         layer.shadowOffset = CGSize(width: 10, height: 10)
         layer.shadowOpacity = 0.06

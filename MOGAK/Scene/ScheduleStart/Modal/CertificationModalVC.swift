@@ -11,9 +11,8 @@ import Then
 
 class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate{
     
-    private lazy var titleLabel : UILabel = {
+     lazy var titleLabel : UILabel = {
         let titleLabel = UILabel()
-        titleLabel.text = "조각을 시작하기 전에\n 내 실천 인증 사진을 남겨주세요."
         titleLabel.numberOfLines = 2
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)
         titleLabel.textAlignment = .center

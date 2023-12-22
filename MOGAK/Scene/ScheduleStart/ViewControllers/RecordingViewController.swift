@@ -115,16 +115,19 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
     
     private lazy var textView : UITextView = {
         let textView = UITextView()
-        textView.delegate = self
+        textView.text = "오늘 당신의 조각은 어떠셨나요?\n느낀 점이나 기억에 남는 것을 공유해보세요"
+        textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
         textView.backgroundColor = .clear
         return textView
     }()
     
-    
     private var selections = [String : PHPickerResult]()
+    private var imagesDict = [String: UIImage]()
+    
     private var selectedAssetIdentifiers = [String]()
     
     let galleryCell = GalleryCollectionViewCell()
+    let schduleVC = ScheduleStartViewController()
     
     
     //MARK: - galleryCollectioview
@@ -164,6 +167,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         self.scrollView.delegate = self
+        self.textView.delegate = self
         setCollectionView()
         setUI()
     }
@@ -290,6 +294,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         for result in results {
             let identifier = result.assetIdentifier!
             newSelections[identifier] = selections[identifier] ?? result
+            
+            
         }
         
         selections = newSelections
@@ -373,6 +379,17 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         print("back home")
     }
     
+    @objc func clickbutton(){
+        
+        if let text = textView.text{
+            NotificationCenter.default.post(name: NSNotification.Name( "RecordText"), object: text)
+        }
+        self.dismiss(animated: true)
+        print(textView.text!)
+        schduleVC.ScheduleTableView.reloadData()
+    }
+    
+    
 }
 
 //MARK: - exteinson CollectioView
@@ -408,7 +425,6 @@ extension RecordingViewController : UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("\(indexPath.section), \(indexPath.row)")
-        
         cellClicked()
     }
     
@@ -444,10 +460,23 @@ extension RecordingViewController : UITextViewDelegate{
             textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
         }
     }
-    
-    
-    
-    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in : currentText) else {return false}
+        
+        let changeText = currentText.replacingCharacters(in: stringRange, with: text)
+        
+        if changeText.count > 0{
+            finishButton.backgroundColor = DesignSystemColor.signature.value
+            finishButton.addTarget(self, action: #selector(clickbutton), for: .touchUpInside)
+            
+        }else{
+            finishButton.backgroundColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
+            
+        }
+        
+        return changeText.count > 0
+    }
 }
 
 

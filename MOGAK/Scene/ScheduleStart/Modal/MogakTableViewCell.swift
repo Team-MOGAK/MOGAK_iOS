@@ -34,15 +34,13 @@ class MogakTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textColor = .gray
         label.font = UIFont.systemFont(ofSize: 18)
-        
         return label
     }()
     
-    let jogakImageView : UIImageView = {
+    var jogakImageView : UIImageView = {
         let image = UIImageView()
         image.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
         return image
-        
     }()
     
     let MogakButtonView : UIImageView = {

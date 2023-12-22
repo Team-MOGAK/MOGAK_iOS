@@ -111,7 +111,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return underView
     }()
     
-    private lazy var ScheduleTableView : UITableView = {
+    lazy var ScheduleTableView : UITableView = {
         let ScheduleTableView = UITableView()
         ScheduleTableView.layer.cornerRadius = 10
         return ScheduleTableView
@@ -148,7 +148,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.ScheduleTableView.reloadData()
-        fetchdailyjogak()
+        fetchTodayjogak()
         
     }
     
@@ -180,8 +180,13 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     //날짜 선택 콜백 메소드
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         ScheduleTableView.reloadData()
-        fetchdailyjogak()
         
+        if Calendar.current.isDateInToday(date) {
+            fetchTodayjogak()
+            print("\(date)")
+        } else {
+            fetchDailyjogak()
+        }
         
     }
     
@@ -436,6 +441,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.delegate = self
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
+        ScheduleTableView.rowHeight = UITableView.automaticDimension
         
         underView.addSubview(motiveLabel)
         underView.addSubview(ScheduleTableView)
@@ -452,22 +458,26 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
         
-        
     }
     
-    //MARK: -  Cell설정
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { //셀 클릭시 이벤트
+    //MARK: -  Cell설정 (셀로부터 이동되는 정보들)
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){ //셀 클릭
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
             
             return
         }
-        cell.contentView.backgroundColor = UIColor.white
         
+        cell.contentView.backgroundColor = UIColor.white
         let Certificate = CertificationModalVC()
+        let Rvc = RecordingViewController()
         Certificate.modalPresentationStyle = .pageSheet
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
+            Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n회고록을 적으시겠어요?"
+            Rvc.jogakLabel.text = cell.cellLabel.text
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
             
             present(Certificate, animated: true)
             
@@ -483,9 +493,20 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
             
         }
-        
     }
     
+    @objc func dataReceived(_ notification : Notification){
+        if let text = notification.object as? String{
+            
+            print("Received text: \(text)")
+            
+            if let indexPath = ScheduleTableView.indexPathForSelectedRow {
+                let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell
+                cell?.recodelabel?.text = text
+                
+            }
+        }
+    }
     
     //MARK: - Cell Selction
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -520,9 +541,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
         
-        
-        print(cell.cellLabel.text as Any)
-        
         cell.cellLabel.text = selectJogakModal.SelectJogaklist[indexPath.row] //cell label
         
         cell.contentView.backgroundColor = .white
@@ -537,7 +555,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     }
     
     //MARK: - API
-    func fetchdailyjogak() {
+    func fetchDailyjogak() {
         let headers: HTTPHeaders = [
             "Authorization": ApiConstants.Accesstoken
         ]
@@ -560,6 +578,49 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    
+    func fetchTodayjogak() {
+        let headers: HTTPHeaders = [
+            "Authorization": ApiConstants.Accesstoken
+        ]
+        
+        let request = AF.request(ApiConstants.JogakTodayURL, headers: headers)
+        
+        request.responseDecodable { (data: DataResponse<JogakToday, AFError>) in
+            switch data.result {
+            case .success(let jogakToday):
+                // API 조회 성공
+                if jogakToday.code == "success" { // 성공적으로 조회된 경우
+                    if let jogakList = jogakToday.jogaks {
+                        // jogakList를 사용하여 필요한 작업 수행
+                        print(jogakToday)
+                        for jogak in jogakList {
+                            if jogak.jogakId == 4 {
+                                // jogakId가 4인 경우에 대한 처리
+                                print("Found Jogak with ID 4:")
+                                print("Jogak ID: \(jogak.jogakId)")
+                                print("Mogak Title: \(jogak.mogakTitle)")
+                                print("Category: \(jogak.category)")
+                                print("Title: \(jogak.title)")
+                                // 여기서 원하는 동작 수행
+                                // 예: 특정 함수 호출 또는 화면 전환 등
+                            }
+                        }
+                    } else {
+                        // jogaks가 nil인 경우 (데이터 없음)
+                        print("No jogaks available for today")
+                        print(jogakToday)
+                    }
+                } else {
+                    // 서버로부터 오류 응답이 온 경우
+                    print("Error: \(jogakToday.code), \(jogakToday.message)")
+                    
+                }
+                
+            case .failure(let error):
+                // 오류가 발생한 경우 처리합니다.
+                print("Error: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 

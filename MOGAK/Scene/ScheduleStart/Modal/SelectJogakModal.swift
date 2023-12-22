@@ -16,6 +16,13 @@ class SelectJogakModal : UIViewController{
     var TableViewReload : (()->())? //tableviewreload
     var SelectJogaklist : [String] = ["312","asd"]
     
+    var modalArtNameArr: [String] = ["김라영의 모다라트", "운동하기", "내 모다라트3"]
+        var modalartName: String = "" ///현재 보여지는 모다라트 타이틀
+        var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+        var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
+        var nowShowModalArtIndex: Int = 0
+        var mogakData: [MogakCategory] = []
+    
     //MARK: - Basic Properties
     
     private lazy var contentView : UIView = {
@@ -151,16 +158,45 @@ class SelectJogakModal : UIViewController{
     //MARK: - 모다라트 변경
     
     @objc func tapLabel(){
-        if labelImage.image == UIImage(systemName: "chevron.down"){
-            labelImage.image = UIImage(systemName: "chevron.up")
-            print("up")
-        }else{
-            labelImage.image = UIImage(systemName: "chevron.down")
-            print("down")
-        }
-        
+        print(#fileID, #function, #line, "- 모다라트 추가 버튼 탭")
+                let showModalartListModalVC = ShowModalArtListModal()
+                showModalartListModalVC.modalArtNameList = modalartList
+                
+                ///모다라트 리스트를 보여주는 모달에서 원하는 리스트를 선택했을 경우
+                showModalartListModalVC.changeToSelectedModalart = { modalArtData, listIndex in
+                    let num = modalArtData.id
+                    let title = modalArtData.title
+                    
+                    ///모다라트 타이틀이 설정됬는지 체크
+                    let hasModalArtNameChecking: Bool = title.prefix(6) != "내 모다라트"
+                    ///모다라트 추가 리스트를 클릭했는지 체크
+                    let modalArtNameIsAddModalart: Bool = title == "모다라트 추가"
+                    
+                    self.nowShowModalArtNum = num
+                    self.nowShowModalArtIndex = listIndex
+                    ///모다라트 타이틀 설정됨
+                    if hasModalArtNameChecking && !modalArtNameIsAddModalart {
+                        //self.getModalartDetailInfo(id: num)
+                    }
+                    ///모다라트 추가 클릭
+                    else if hasModalArtNameChecking && modalArtNameIsAddModalart {
+                        //self.createModalart()
+                    }
+                    ///모다라트 타이틀 설정 안됨
+                    else {
+                        self.mogakData = []
+                        //self.modalArtNameLabel.text = title
+                        self.modalartName = title
+                       // self.modalArtCollectionView.reloadData()
+                    }
+                }
+                
+                showModalartListModalVC.modalPresentationStyle = .overFullScreen
+                showModalartListModalVC.modalTransitionStyle = .crossDissolve
+                self.present(showModalartListModalVC, animated: true)
         print("taplabel")
     }
+    
 }
 
 extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
@@ -177,12 +213,12 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
             mogakCell.configure(with: mogak)
             
             mogakCell.jogakClickClosure = { [weak self] jogakLabel in
-                        
+                
                 print("JogakLabel: \(jogakLabel) 클릭됨!")
-                        // self?.SelectJogaklist에 접근 가능
+                // self?.SelectJogaklist에 접근 가능
                 self?.handleJogakSelection(jogakLabel)
             }
-
+            
         }
         
         return cell
@@ -213,7 +249,7 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
             } else {
                 cell.MogakButtonView.image = UIImage(systemName: "chevron.down")
             }
-                  
+            
             print("상태 \(cell.JogakLabel.isHidden)")
             
         }
