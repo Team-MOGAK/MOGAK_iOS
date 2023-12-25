@@ -25,8 +25,16 @@ struct MogakMainData: Codable {
 }
 
 struct CreateMogakMainData: Codable {
-    let mogakId: Int
+//    let mogakId: Int
+//    let title: String
+    let id: Int
     let title: String
+    let state: String?
+    let bigCategory: BigCategory
+    let smallCategory: String?
+    let color: String?
+    let startAt: String
+    let endAt: String
 }
 
 struct EditMogakResponse: Codable {
@@ -36,7 +44,7 @@ struct EditMogakResponse: Codable {
 
 struct EditMogakMainData: Codable {
     let mogakId: Int
-    let title: String
+    let updatedAt: String
 }
 
 // MARK: - 회고록 조회 Response

@@ -55,6 +55,7 @@
 		65B139332A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */; };
 		65B139352A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */; };
 		65C119EC2A7941FE0040DFFB /* CategoryFilterSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */; };
+		65E27E9C2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E27E9B2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift */; };
 		65F880E62A86AD35005543C9 /* FeedDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F880E52A86AD35005543C9 /* FeedDetailViewController.swift */; };
 		65F880E82A86B0C7005543C9 /* UIImage+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F880E72A86B0C7005543C9 /* UIImage+Ext.swift */; };
 		6C3502362A6EC24E00080017 /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */; };
@@ -180,6 +181,7 @@
 		65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmEdittingFeedSheetViewController.swift; sourceTree = "<group>"; };
 		65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDeletingFeedSheetViewController.swift; sourceTree = "<group>"; };
 		65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterSheetView.swift; sourceTree = "<group>"; };
+		65E27E9B2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCategoryDetailCollectionViewCell.swift; sourceTree = "<group>"; };
 		65F880E52A86AD35005543C9 /* FeedDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailViewController.swift; sourceTree = "<group>"; };
 		65F880E72A86B0C7005543C9 /* UIImage+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Ext.swift"; sourceTree = "<group>"; };
 		6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				65852B312AFB830B008200E3 /* SegmentCollectionViewCell.swift */,
 				65AEDB812B0264FA00B7A3F1 /* MemoirDetailViewController.swift */,
 				657736192B124680009F0465 /* MogakInitColorCell.swift */,
+				65E27E9B2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift */,
 			);
 			path = MyHistory;
 			sourceTree = "<group>";
@@ -904,6 +907,7 @@
 				9CE426F62A5EA04F001629DC /* NameCell.swift in Sources */,
 				652C05DA2A73AB34004CE9C4 /* LocationFilterTableViewCell.swift in Sources */,
 				4D3077532AF3E990001FDD77 /* ShowModalArtListCell.swift in Sources */,
+				65E27E9C2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift in Sources */,
 				4D6C6E062B14DC5600206DD6 /* OnBoardingPageController.swift in Sources */,
 				652586BB2B24C4AE00ED9B92 /* HistoryNetwork.swift in Sources */,
 				655A21FF2B282F3C00321E77 /* CalendarCell.swift in Sources */,
@@ -1087,7 +1091,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DSRQ5VPU2Y;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";

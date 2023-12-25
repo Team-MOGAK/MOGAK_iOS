@@ -24,7 +24,9 @@ class MyHistoryViewController: UIViewController {
     let modalartNetwork = ModalartNetwork()
     
     var selectedSmallModalartIndexPath: IndexPath?
+    var selectedMogakCategoryIndexPath: IndexPath?
     private var tableViewData: [[String]] = []
+    private var mogakCategoryViewData: [String] = []
     var MemoirListTableViewData: [MemoirContent] = []
     //    override func viewWillAppear(_ animated: Bool) {
     //        super.viewWillAppear(animated)
@@ -125,7 +127,7 @@ class MyHistoryViewController: UIViewController {
         button.titleLabel?.font = UIFont.pretendard(.semiBold, size: 20)
         button.tintColor = UIColor(hex: "FFFFFF")
         
-        button.setTitle("인턴 합격하기", for: .normal)
+        button.setTitle("", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
         button.tintColor = .black
@@ -208,6 +210,8 @@ class MyHistoryViewController: UIViewController {
         self.present(showModalartListModalVC, animated: false)
     }
 
+    private var groupedMogakData: [String: [MogakCategory]] = [:]
+    
     //MARK: - 단일 모다라트 디테일 정보 가져오기
     func getModalartDetailInfo(id: Int) {
         modalartNetwork.getDetailModalartInfo(modalartId: id) { result in
@@ -226,17 +230,37 @@ class MyHistoryViewController: UIViewController {
                 //self.modalArtCollectionView.reloadData()
                 self.smallModalartList = []
                 for i in self.mogakData {
-                    self.smallModalartList.append((i.bigCategory?.name)!)
+                    self.smallModalartList.append((i.bigCategory?.name)!) // bigCategory로 grouping 하는거 추가하기
                 }
                 self.smallModalartList = self.smallModalartList.uniqued()
                 self.segmentFirstLoaded = false
                 self.segmentCollectionView.reloadData()
                 
+                // test
+                self.groupedMogakData = self.groupMogaksByCategory(mogakData: self.mogakData)
+                print("-----------------grouping 테스트------------------")
+                print(self.groupedMogakData)
+                print("-----------------grouping 테스트------------------")
             }
         }
     }
     
+    func groupMogaksByCategory(mogakData: [MogakCategory]) -> [String: [MogakCategory]] {
+        let groupedCategories = Dictionary(grouping: mogakData) { (mogakCategory) -> String in
+            return mogakCategory.bigCategory?.name ?? "Unknown"
+        }
+        
+        return groupedCategories
+    }
     
+    func titlesForSelectedCategory(selectedCategory: String, groupedCategories: [String: [MogakCategory]]) -> [String] {
+        guard let selectedCategoryItems = groupedCategories[selectedCategory] else {
+            return []
+        }
+        
+        let titles = selectedCategoryItems.map { $0.title ?? "" }
+        return titles
+    }
     
     // MARK: - scrollview for segment
     private let segmentScrollView: UIScrollView = {
@@ -347,12 +371,26 @@ class MyHistoryViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.tag = 1
+        return collectionView
+    }()
+    
+    private lazy var mogakCategoryCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.tag = 2
         return collectionView
     }()
     
     private var smallModalartList: [String] = [
         
     ]
+    
+    private var mogakTitleList: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -362,6 +400,7 @@ class MyHistoryViewController: UIViewController {
         self.configureSelectModalart()
         //self.configureSegment()
         self.configureSegmentCollectionView()
+        self.configureMogakCategoryCollectionView()
         self.configureTableView()
         self.configureButton()
         getModalartAllList()
@@ -559,7 +598,8 @@ class MyHistoryViewController: UIViewController {
         listTableView.snp.makeConstraints({
             //$0.top.equalTo(self.containerView.snp.bottom)
             //$0.top.equalTo(self.segmentScrollView.snp.bottom)
-            $0.top.equalTo(self.segmentCollectionView.snp.bottom)
+            //$0.top.equalTo(self.segmentCollectionView.snp.bottom)
+            $0.top.equalTo(self.mogakCategoryCollectionView.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         })
@@ -579,6 +619,21 @@ class MyHistoryViewController: UIViewController {
             $0.top.equalTo(selectModalart.snp.bottom).offset(12)
             //$0.top.equalTo(segmentScrollView.snp.bottom).offset(12)
             $0.height.equalTo(46)
+        })
+    }
+    
+    private func configureMogakCategoryCollectionView() {
+        mogakCategoryCollectionView.delegate = self
+        mogakCategoryCollectionView.dataSource = self
+        
+        mogakCategoryCollectionView.register(MogakCategoryDetailCollectionViewCell.self, forCellWithReuseIdentifier: "mogakCategoryCell")
+        
+        self.view.addSubview(mogakCategoryCollectionView)
+        
+        mogakCategoryCollectionView.snp.makeConstraints({
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(segmentCollectionView.snp.bottom).offset(16)
+            $0.height.equalTo(43)
         })
     }
     
@@ -616,8 +671,8 @@ class MyHistoryViewController: UIViewController {
     }
     
     @objc private func floatingButtonTapped() {
-        //let mogakVC = MogakInitViewController()
-        let mogakVC = JogakInitViewController()
+        let mogakVC = MogakInitViewController()
+        //let mogakVC = JogakInitViewController()
         //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }
@@ -635,60 +690,121 @@ class MyHistoryViewController: UIViewController {
     }
     
     var segmentFirstLoaded: Bool = false
+    var mogakCategoryFirstLoaded: Bool = false
 }
 
 extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return smallModalartList.count
+        if collectionView.tag == 1 {
+            return smallModalartList.count
+        } else if collectionView.tag == 2 {
+            return mogakTitleList.count
+        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? SegmentCollectionViewCell else {
-            return UICollectionViewCell()
-        }
-        // 카테고리 디폴트 셀 설정(첫번째로)
-        if indexPath.row == 0 && segmentFirstLoaded == false {
-            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
-            cell.isSelected = true
-            cell.textLabel.textColor = UIColor(hex: "24252E")
-            cell.underLineView.fadeIn()
-            configureTableViewData(forSelectedItem: smallModalartList[indexPath.item])
-            // 선택된 셀의 인덱스를 저장
-            selectedSmallModalartIndexPath = indexPath
-            listTableView.reloadData()
-            segmentFirstLoaded.toggle()
-        }
+        if collectionView.tag == 1 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? SegmentCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            // 카테고리 디폴트 셀 설정(첫번째로)
+            if indexPath.row == 0 && segmentFirstLoaded == false {
+                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+                cell.isSelected = true
+                cell.textLabel.textColor = UIColor(hex: "24252E")
+                cell.underLineView.fadeIn()
+                
+                self.mogakTitleList = titlesForSelectedCategory(selectedCategory: cell.textLabel.text!, groupedCategories: groupedMogakData)
+                self.mogakCategoryCollectionView.reloadData()
+                
+                configureTableViewData(forSelectedItem: smallModalartList[indexPath.item])
+                // 선택된 셀의 인덱스를 저장
+                selectedSmallModalartIndexPath = indexPath
+                listTableView.reloadData()
+                segmentFirstLoaded.toggle()
+            }
 
-//        cell.isSelectedCell = indexPath == defaultSegmentIndexPath
-        cell.textLabel.text = smallModalartList[indexPath.item]
-        
-        return cell
+    //        cell.isSelectedCell = indexPath == defaultSegmentIndexPath
+            cell.textLabel.text = smallModalartList[indexPath.item]
+            
+            return cell
+        }
+        else if collectionView.tag == 2 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mogakCategoryCell", for: indexPath) as? MogakCategoryDetailCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            // 첫번째로 디폴트 셀 설정
+            if indexPath.row == 0 && mogakCategoryFirstLoaded == false {
+                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+                cell.isSelected = true
+                cell.mogakNameLabel.textColor = UIColor(hex: "F1F3FA")
+                cell.mogakNameView.backgroundColor = UIColor(hex: "24252E")
+                selectedMogakCategoryIndexPath = indexPath
+                
+                // tableview 구성하는 함수 추가해야함
+                
+                mogakCategoryFirstLoaded.toggle()
+            }
+            
+            cell.mogakNameLabel.text = mogakTitleList[indexPath.item]
+            return cell
+        }
+        return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedCell = collectionView.cellForItem(at: indexPath) as! SegmentCollectionViewCell
-        
-        selectedCell.isSelected = true
-        // 선택된 셀의 텍스트 색 변경, 언더라인 보이게
-        selectedCell.textLabel.textColor = UIColor(hex: "24252E")
-        //selectedCell.underLineView.isHidden = false
-        selectedCell.underLineView.fadeIn()
-        
-        // 이전에 선택된 셀이 있다면 텍스트 색 변경, 언더라인 안보이게
-        if let prevSelectedIndexPath = selectedSmallModalartIndexPath, prevSelectedIndexPath != indexPath {
-            if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? SegmentCollectionViewCell {
-                prevSelectedCell.isSelected = false
-                prevSelectedCell.textLabel.textColor = UIColor(hex: "BFC3D4")
-                //prevSelectedCell.underLineView.isHidden = true
-                prevSelectedCell.underLineView.fadeOut()
+        if collectionView.tag == 1 {
+            let selectedCell = collectionView.cellForItem(at: indexPath) as! SegmentCollectionViewCell
+            
+            selectedCell.isSelected = true
+            // 선택된 셀의 텍스트 색 변경, 언더라인 보이게
+            selectedCell.textLabel.textColor = UIColor(hex: "24252E")
+            //selectedCell.underLineView.isHidden = false
+            selectedCell.underLineView.fadeIn()
+            
+            // 이전에 선택된 셀이 있다면 텍스트 색 변경, 언더라인 안보이게
+            if let prevSelectedIndexPath = selectedSmallModalartIndexPath, prevSelectedIndexPath != indexPath {
+                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? SegmentCollectionViewCell {
+                    prevSelectedCell.isSelected = false
+                    prevSelectedCell.textLabel.textColor = UIColor(hex: "BFC3D4")
+                    //prevSelectedCell.underLineView.isHidden = true
+                    prevSelectedCell.underLineView.fadeOut()
+                }
             }
+            
+            // 선택된 셀의 인덱스를 저장
+            selectedSmallModalartIndexPath = indexPath
+            
+            mogakCategoryFirstLoaded = false
+            
+            self.mogakTitleList = titlesForSelectedCategory(selectedCategory: selectedCell.textLabel.text!, groupedCategories: groupedMogakData)
+            self.mogakCategoryCollectionView.reloadData()
+            
         }
-        
-        // 선택된 셀의 인덱스를 저장
-        selectedSmallModalartIndexPath = indexPath
-        
-        configureTableViewData(forSelectedItem: smallModalartList[indexPath.item])
-        listTableView.reloadData()
+        else if collectionView.tag == 2 {
+            let selectedCell = collectionView.cellForItem(at: indexPath) as! MogakCategoryDetailCollectionViewCell
+            
+            selectedCell.isSelected = true
+            selectedCell.mogakNameLabel.textColor = UIColor(hex: "F1F3FA")
+            selectedCell.mogakNameView.backgroundColor = UIColor(hex: "24252E")
+            // tableview 구성하는 함수 추가해야함
+            
+            // 이전에 선택된 셀이 있다면 텍스트 색 변경, 뷰 하얗게
+            if let prevSelectedIndexPath = selectedMogakCategoryIndexPath, prevSelectedIndexPath != indexPath {
+                if let prevSelectedCell = collectionView.cellForItem(at: prevSelectedIndexPath) as? MogakCategoryDetailCollectionViewCell {
+                    prevSelectedCell.isSelected = false
+                    prevSelectedCell.mogakNameLabel.textColor = UIColor(hex: "BFC3D4")
+                    prevSelectedCell.mogakNameView.backgroundColor = UIColor(hex: "FFFFFF")
+                }
+            }
+            
+            // 선택된 셀의 인덱스를 저장
+            selectedMogakCategoryIndexPath = indexPath
+            
+            configureTableViewData(forSelectedItem: smallModalartList[indexPath.item])
+            listTableView.reloadData()
+        }
     }
     
     private func configureTableViewData(forSelectedItem selectedItem: String) {
@@ -750,14 +866,28 @@ extension MyHistoryViewController: UICollectionViewDataSource, UICollectionViewD
 
 extension MyHistoryViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? SegmentCollectionViewCell else {
-            return .zero
+        if collectionView.tag == 1 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? SegmentCollectionViewCell else {
+                return .zero
+            }
+            cell.textLabel.sizeToFit()
+            cell.underLineView.sizeToFit()
+            
+            let cellWidth = cell.textLabel.frame.width + 64
+            
+            return CGSize(width: cellWidth, height: 46)
         }
-        cell.textLabel.sizeToFit()
-        
-        let cellWidth = cell.textLabel.frame.width + 64
-        
-        return CGSize(width: cellWidth, height: 46)
+        else if collectionView.tag == 2 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "mogakCategoryCell", for: indexPath) as? MogakCategoryDetailCollectionViewCell else {
+                return .zero
+            }
+            cell.mogakNameLabel.sizeToFit()
+            cell.mogakNameView.sizeToFit()
+            
+            let cellWidth = cell.mogakNameLabel.frame.width + 64
+            return CGSize(width: 100, height: 43)
+        }
+        return .zero
     }
 }
 
@@ -812,7 +942,7 @@ extension MyHistoryViewController: UITableViewDelegate, UITableViewDataSource {
         if let title = cell.titleLabel.text,
            let smallGoal = cell.smallGoalLabel.text,
            let date = cell.dateLabel.text {
-            memoirVC.configureMemoirData(category: smallGoal, timeUsed: "1회차", jogakName: title, date: date, memoirText: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.")
+            memoirVC.configureMemoirData(category: smallGoal, timeUsed: "1회차", jogakName: title, date: date, memoirText: "오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.오늘은 펀딩프로젝트에 대한 회고록을 작성했다. 예전에 했던 프로젝트에서 부족했던점과 느꼈던 점, 다양한 사람들과의 소통방식을 다시 되돌아보고 나의 경험을 하나씩 정리해가며 포트폴리오를 만들예정이다. 우리 모각러들도 항상 화이팅!! 오늘은 11월 14일,, 제 생일입니다.")
         }
         memoirVC.modalPresentationStyle = .fullScreen
         self.navigationController?.pushViewController(memoirVC, animated: true)
