@@ -37,6 +37,7 @@ struct CreateMogakMainData: Codable {
     let endAt: String
 }
 
+// MARK: - 모각수정 Response
 struct EditMogakResponse: Codable {
     let time, status, code, message: String?
     let result: EditMogakMainData
@@ -45,6 +46,56 @@ struct EditMogakResponse: Codable {
 struct EditMogakMainData: Codable {
     let mogakId: Int
     let updatedAt: String
+}
+
+// MARK: - 모각수정 Request body
+struct EditMogakRequestMainData: Codable {
+    let mogakId: Int
+    let title: String
+    let bigCategory: String
+    //let smallCategory: String
+    let startAt: String
+    let endAt: String
+    let color: String
+}
+
+// MARK: - 조각생성 Request body
+struct CreateJogakRequestMainData: Codable {
+    let mogakId: Int
+    let title: String
+    let isRoutine: Bool
+    let days: [String]?
+    let today: String?
+    let endDate: String?
+}
+
+// MARK: - 조각생성 Response
+struct CreateJogakResponse: Codable {
+    let time, status, code, message: String?
+    let result: CreateJogakMainData
+}
+
+struct CreateJogakMainData: Codable {
+    let jogakId: Int
+    let mogakTitle: String
+    let category: String
+    let title: String
+    let isRoutine: Bool
+    let startDate: String?
+    let endDate: String?
+}
+
+// MARK: - 조각수정 Request body
+struct EditJogakRequestMainData: Codable {
+    let title: String
+    let isRoutine: Bool
+    let days: [String]?
+    let endDate: String?
+}
+
+// MARK: - 조각수정 Response
+struct EditJogakResponse: Codable {
+    let time, status, code, message: String?
 }
 
 // MARK: - 회고록 조회 Response

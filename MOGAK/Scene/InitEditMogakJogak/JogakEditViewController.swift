@@ -1,9 +1,10 @@
 //
-//  JogakInitViewController.swift
+//  JogakEditViewController.swift
 //  MOGAK
 //
-//  Created by 이재혁 on 12/7/23.
+//  Created by 이재혁 on 12/29/23.
 //
+
 
 import UIKit
 import UIKit
@@ -13,8 +14,8 @@ import ReusableKit
 import FSCalendar
 import Alamofire
 
-class JogakInitViewController: UIViewController {
-    var currentMogakId: Int = 0
+class JogakEditViewController: UIViewController {
+    var currentJogakId: Int = 0
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)
@@ -313,7 +314,7 @@ class JogakInitViewController: UIViewController {
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
         
-        self.title = "조각 생성"
+        self.title = "조각 수정"
         self.navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.pretendard(.semiBold, size: 18)]
         self.navigationController?.navigationBar.backIndicatorImage = UIImage(systemName: "chevron.left")
         self.navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(systemName: "chevron.left")
@@ -540,13 +541,13 @@ class JogakInitViewController: UIViewController {
     }
     
     @objc private func completeButtonTapped() {
-        createJogak()
+        editJogak()
         print("")
     }
     
 }
 
-extension JogakInitViewController: UITextFieldDelegate {
+extension JogakEditViewController: UITextFieldDelegate {
     // 리턴 키 입력 시 키보드 내림
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -583,7 +584,7 @@ extension JogakInitViewController: UITextFieldDelegate {
     }
 }
 
-extension JogakInitViewController: UICollectionViewDataSource {
+extension JogakEditViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return routineRepeatList.count
     }
@@ -595,7 +596,7 @@ extension JogakInitViewController: UICollectionViewDataSource {
     }
 }
 
-extension JogakInitViewController: UICollectionViewDelegate {
+extension JogakEditViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
         
@@ -621,7 +622,7 @@ extension JogakInitViewController: UICollectionViewDelegate {
     }
 }
 
-extension JogakInitViewController: UICollectionViewDelegateFlowLayout {
+extension JogakEditViewController: UICollectionViewDelegateFlowLayout {
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel().then {
@@ -636,7 +637,7 @@ extension JogakInitViewController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - 캘린더 관련
-extension JogakInitViewController {
+extension JogakEditViewController {
     private func setYearAndMonth(of date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy년 M월"
@@ -665,7 +666,7 @@ extension JogakInitViewController {
     }
 }
 
-extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
+extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
 //    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
 //        let dateFormatter = DateFormatter()
 //        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
@@ -766,7 +767,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
     }
 }
 
-extension JogakInitViewController {
+extension JogakEditViewController {
     
     /*
     func configureVisibleCells() {
@@ -874,7 +875,7 @@ extension JogakInitViewController {
     
 }
 
-extension JogakInitViewController {
+extension JogakEditViewController {
     // MARK: - 루틴 요일 통신 위해 영어로 변환
     func routineDaysIntoEng() -> [String] {
         var englishDays: [String] = []
@@ -906,15 +907,14 @@ extension JogakInitViewController {
 
 // MARK: - 통신 코드
 
-extension JogakInitViewController {
-    // 조각 생성
-    func createJogak() {
-        //let mogakId = currentMogakId
-        let mogakId = 14
+extension JogakEditViewController {
+    // 조각 수정
+    func editJogak() {
+        //let jogakId = currentJogakId
+        let jogakId = 18
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
         let isRoutine = toggleButton.isOn
         let days: [String]?
-        let createJogakToday: String?
         let createJogakEndDate: String?
         
         if isRoutine {
@@ -923,26 +923,24 @@ extension JogakInitViewController {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             
-            createJogakToday = dateFormatter.string(from: today)//"2023-12-29"
             createJogakEndDate = endDate
         } else {
             days = nil
-            createJogakToday = nil
             createJogakEndDate = nil
         }
 
         
-        let data = CreateJogakRequestMainData(mogakId: mogakId, title: jogakTitle, isRoutine: isRoutine, days: days, today: createJogakToday, endDate: createJogakEndDate)
+        let data = EditJogakRequestMainData(title: jogakTitle, isRoutine: isRoutine, days: days, endDate: createJogakEndDate)
         
         print(data)
         
         let mogakNetwork = MogakNetwork()
         
-        mogakNetwork.createJogak(data: data) {
+        mogakNetwork.editJogak(data: data, jogakId: jogakId) {
             result in
             switch result {
-            case .success(let jogakMainData):
-                print(#fileID, #function, #line, "- jogakMainData: \(jogakMainData)")
+            case .success(let message):
+                print(#fileID, #function, #line, "- jogakMainData: \(message)")
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
@@ -950,9 +948,4 @@ extension JogakInitViewController {
         
         
     }
-}
-
-@available(iOS 17.0, *)
-#Preview("JogakInitVC") {
-    JogakInitViewController()
 }

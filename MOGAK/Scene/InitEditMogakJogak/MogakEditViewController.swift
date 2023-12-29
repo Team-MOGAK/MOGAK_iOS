@@ -13,12 +13,18 @@ import FSCalendar
 import Alamofire
 
 class MogakEditViewController: UIViewController {
-
+    let mogakNetwork = MogakNetwork()
+    
     // MARK: - 데이터
-    var currentModalartId: Int = 0
+    private var currentModalartId: Int = 0
+    private var currentMogakId: Int = 25
     var currentBigCategory: String = ""
     var currentSmallCategory: String = ""
     var mogakData: [MogakMainData] = []
+    
+    var currentStartDate: String = ""
+    var currentEndDate: String = ""
+    var currentColor: String = ""
     
     private let titleColorPalette: [String] = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
     
@@ -103,7 +109,7 @@ class MogakEditViewController: UIViewController {
     private let categoryList: [String] = [
         "자격증", "대외활동", "운동", "인사이트",
         "공모전", "직무공부", "산업분석", "어학",
-        "강연/강의", "프로젝트", "스터디", "기타"
+        "강연,강의", "프로젝트", "스터디", "기타"
     ]
     
     private let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
@@ -117,6 +123,27 @@ class MogakEditViewController: UIViewController {
         $0.backgroundColor = .white
         $0.register(Reusable.categoryCell)
     }
+    
+    private let etcTextField : UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "카테고리 이름을 적어주세요."
+        textField.font = UIFont.pretendard(.medium, size: 16)
+        textField.borderStyle = .none
+        //        textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
+        textField.leftViewMode = .unlessEditing
+        
+        textField.isHidden = true
+        return textField
+    }()
+    
+    private let etcUnderLineView : UIView = {
+        let view = UIView()
+        view.layer.borderColor = UIColor(hex: "EEF0F8").cgColor
+        view.layer.borderWidth = 1
+        
+        view.isHidden = true
+        return view
+    }()
     
     // MARK: - 기간 선택
     private let repeatLabel = UILabel().then {
@@ -155,7 +182,7 @@ class MogakEditViewController: UIViewController {
     
     // MARK: - 날짜선택
     
-    private let choiceDateLabel = UILabel().then {
+    private let choiceColorLabel = UILabel().then {
         $0.text = "색상 선택"
         $0.textColor = UIColor(hex: "24252E")
         $0.font = UIFont.pretendard(.semiBold, size: 14)
@@ -374,7 +401,7 @@ class MogakEditViewController: UIViewController {
         contentView.addSubview(colorCollectionView)
         
         colorCollectionView.snp.makeConstraints({
-            $0.top.equalTo(choiceDateLabel.snp.bottom).offset(10)
+            $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview()
             $0.height.equalTo(40)
@@ -438,9 +465,13 @@ class MogakEditViewController: UIViewController {
     
     private func configureCategory() {
         [categoryLabel, categoryCollectionView, categoryExplanationLabel].forEach({contentView.addSubview($0)})
+        [etcTextField, etcUnderLineView].forEach({contentView.addSubview($0)})
+        
         self.categoryCollectionView.delegate = self
         self.categoryCollectionView.dataSource = self
         self.categoryCollectionView.tag = 1
+        
+        self.etcTextField.delegate = self
         
         categoryLabel.snp.makeConstraints({
             $0.top.equalTo(self.mogakUnderLineView.snp.bottom).offset(40)
@@ -455,7 +486,18 @@ class MogakEditViewController: UIViewController {
         categoryCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.categoryExplanationLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(116)
+            $0.height.equalTo(160)
+        })
+        
+        etcTextField.snp.makeConstraints({
+            $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        })
+        
+        etcUnderLineView.snp.makeConstraints({
+            $0.top.equalTo(self.etcTextField.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(2)
         })
     }
     
@@ -470,7 +512,7 @@ class MogakEditViewController: UIViewController {
         collectionViewHeightConstraint.isActive = true
         
         repeatLabel.snp.makeConstraints({
-            $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(40)
+            $0.top.equalTo(self.etcUnderLineView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(20)
         })
         
@@ -495,13 +537,13 @@ class MogakEditViewController: UIViewController {
     }
     
     private func configureDate() {
-        [choiceDateLabel, startLabel, startTextField].forEach({contentView.addSubview($0)})
+        [choiceColorLabel, startLabel, startTextField].forEach({contentView.addSubview($0)})
         [headerTitle, startPreviousButton, startNextButton].forEach({contentView.addSubviews($0)})
         [startCalendar].forEach({contentView.addSubview($0)})
         self.startTextField.delegate = self
         self.startCalendar.delegate = self
         
-        choiceDateLabel.snp.makeConstraints({
+        choiceColorLabel.snp.makeConstraints({
             //$0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
             $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(40)
             $0.leading.equalToSuperview().offset(20)
@@ -598,6 +640,7 @@ class MogakEditViewController: UIViewController {
         completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         completeButton.snp.makeConstraints({
             //            $0.bottom.equalTo(self.scrollView.frameLayoutGuide.snp.bottom).offset(-24)
+            $0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
             $0.bottom.equalToSuperview().offset(-24)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(52)
@@ -670,14 +713,20 @@ class MogakEditViewController: UIViewController {
                 $0.height.equalTo(212)
             })
             
-            choiceDateLabel.snp.remakeConstraints({
+            choiceColorLabel.snp.remakeConstraints({
                 $0.top.equalTo(termExplanationLabel.snp.bottom).offset(40)
                 $0.leading.equalToSuperview().inset(20)
             })
             
+            completeButton.snp.remakeConstraints({
+                $0.bottom.equalToSuperview().offset(-24)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(52)
+            })
+            
             self.view.layoutIfNeeded()
         } else {
-            choiceDateLabel.snp.remakeConstraints({
+            choiceColorLabel.snp.remakeConstraints({
                 $0.top.equalTo(endTextField.snp.bottom).offset(40)
                 $0.leading.equalToSuperview().inset(20)
             })
@@ -687,6 +736,13 @@ class MogakEditViewController: UIViewController {
                 $0.bottom.equalToSuperview().offset(-24)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(52)
+                $0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
+            })
+            
+            endLabel.snp.remakeConstraints({
+                $0.top.equalTo(startLabel.snp.bottom).offset(52)
+                $0.leading.equalToSuperview().offset(20)
+                $0.width.equalTo(28)
             })
             
             self.view.layoutIfNeeded()
@@ -716,7 +772,7 @@ class MogakEditViewController: UIViewController {
                     $0.height.equalTo(52)
                 })
                 
-                self.choiceDateLabel.snp.remakeConstraints({
+                self.choiceColorLabel.snp.remakeConstraints({
                     $0.top.equalTo(self.endCalendar.snp.bottom).offset(40)
                     $0.leading.equalToSuperview().offset(20)
                 })
@@ -806,7 +862,7 @@ class MogakEditViewController: UIViewController {
         }
     }
     
-    @objc private func completeButtonTapped() {
+    /* @objc private func completeButtonTapped() {
         if let title = mogakTextField.text,
            let start = startTextField.text,
            let end = endTextField.text {
@@ -880,8 +936,13 @@ class MogakEditViewController: UIViewController {
         } else {
             print("버튼 옵셔널 해제 실패")
         }
+    } */
+    @objc private func completeButtonTapped() {
+        //createMogak()
+        editMogak()
+        self.navigationController?.popViewController(animated: true)
     }
-
+    
 }
 
 // MARK: - 익스텐션
@@ -938,10 +999,19 @@ extension MogakEditViewController: UITextFieldDelegate {
                 $0.height.equalTo(52)
             })
             
+            startLabel.snp.remakeConstraints({
+                //$0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(55)
+                $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(20)
+                $0.leading.equalToSuperview().offset(20)
+                //$0.width.equalTo(startTextSize.width)
+                $0.width.equalTo(28)
+            })
+            
             endLabel.snp.remakeConstraints({
                 $0.top.equalTo(self.startCalendar.snp.bottom).offset(50)
                 $0.leading.equalToSuperview().offset(20)
-                $0.width.equalTo(textSize.width)
+                //$0.width.equalTo(textSize.width)
+                $0.width.equalTo(28)
             })
             
             endTextField.snp.makeConstraints({
@@ -951,13 +1021,25 @@ extension MogakEditViewController: UITextFieldDelegate {
                 $0.height.equalTo(52)
             })
             
-            choiceDateLabel.snp.remakeConstraints({
+            choiceColorLabel.snp.remakeConstraints({
                 $0.top.equalTo(endTextField.snp.bottom).offset(40)
                 $0.leading.equalToSuperview().offset(20)
             })
             
-            contentView.snp.makeConstraints({
-                $0.bottom.equalTo(completeButton.snp.bottom).offset(16)
+//            contentView.snp.makeConstraints({
+//                $0.bottom.equalTo(completeButton.snp.bottom).offset(16)
+//            })
+            colorCollectionView.snp.remakeConstraints({
+                $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
+                $0.leading.equalToSuperview().offset(20)
+                $0.trailing.equalToSuperview()
+                $0.height.equalTo(40)
+            })
+            
+            completeButton.snp.remakeConstraints({
+                $0.top.equalTo(colorCollectionView.snp.bottom).offset(30)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.bottom.equalToSuperview().offset(-22)
             })
             
             
@@ -982,7 +1064,8 @@ extension MogakEditViewController: UITextFieldDelegate {
                 //$0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(55)
                 $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(20)
                 $0.leading.equalToSuperview().offset(20)
-                $0.width.equalTo(startTextSize.width)
+                //$0.width.equalTo(startTextSize.width)
+                $0.width.equalTo(28)
             })
             
             startTextField.snp.makeConstraints({
@@ -995,7 +1078,8 @@ extension MogakEditViewController: UITextFieldDelegate {
             endLabel.snp.remakeConstraints({
                 $0.top.equalTo(self.startLabel.snp.bottom).offset(52)
                 $0.leading.equalToSuperview().offset(20)
-                $0.width.equalTo(textSize.width)
+                //$0.width.equalTo(textSize.width)
+                $0.width.equalTo(28)
             })
             
             endTextField.snp.makeConstraints({
@@ -1031,21 +1115,36 @@ extension MogakEditViewController: UITextFieldDelegate {
             
             completeButton.snp.remakeConstraints({
                 //$0.top.equalTo(self.endCalendar.snp.bottom).offset(16)
-                $0.top.equalTo(choiceDateLabel.snp.bottom).offset(62)
+                $0.top.equalTo(colorCollectionView.snp.bottom).offset(30)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(52)
             })
             
-            choiceDateLabel.snp.remakeConstraints({
+            choiceColorLabel.snp.remakeConstraints({
                 $0.top.equalTo(endCalendar.snp.bottom).offset(16)
                 $0.leading.equalToSuperview().offset(20)
             })
             
-            contentView.snp.remakeConstraints({
-                $0.bottom.equalTo(completeButton.snp.bottom).offset(30)
-                $0.width.equalToSuperview().multipliedBy(1.0)
+//            contentView.snp.remakeConstraints({
+//                $0.bottom.equalTo(completeButton.snp.bottom).offset(30)
+//                $0.width.equalToSuperview().multipliedBy(1.0)
+//            })
+            
+            colorCollectionView.snp.remakeConstraints({
+                $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
+                $0.leading.equalToSuperview().offset(20)
+                $0.trailing.equalToSuperview()
+                $0.height.equalTo(40)
+            })
+            
+            completeButton.snp.remakeConstraints({
+                $0.top.equalTo(colorCollectionView.snp.bottom).offset(30)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.bottom.equalToSuperview().offset(-22)
             })
         } else if textField == mogakTextField {
+            return true
+        } else if textField == etcTextField {
             return true
         }
         return false
@@ -1114,8 +1213,8 @@ extension MogakEditViewController: UICollectionViewDelegate {
             // 선택된 셀의 배경색 변경
             selectedCell.contentView.backgroundColor = UIColor(hex: "475FFD")
             selectedCell.textLabel.textColor = UIColor(hex: "FFFFFF")
-            self.currentSmallCategory = selectedCell.textLabel.text!
-            print(currentSmallCategory)
+            self.currentBigCategory = selectedCell.textLabel.text!
+            print(currentBigCategory)
             
             // 이전에 선택된 셀이 있다면 배경색 변경
             if let prevSelectedIndexPath = selectedCategoryIndexPath, prevSelectedIndexPath != indexPath {
@@ -1133,6 +1232,16 @@ extension MogakEditViewController: UICollectionViewDelegate {
                 categorySelectedList = cellText
             }
             print("클릭 시 categorySelectedList === \(categorySelectedList)")
+            
+            // 기타 카테고리 선택 시 텍스트필드 뜨도록
+            if indexPath.item == categoryList.count - 1 {
+                // 마지막 셀인 경우, UITextField hidden 속성을 해제
+                [etcTextField, etcUnderLineView].forEach({$0.isHidden = false})
+            }
+            else {
+                [etcTextField, etcUnderLineView].forEach({$0.isHidden = true})
+            }
+            
         } else if collectionView.tag == 2 {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
             
@@ -1160,6 +1269,8 @@ extension MogakEditViewController: UICollectionViewDelegate {
             if !isColorSelected {
                 isColorSelected = true
             }
+            currentColor = titleColorPalette[indexPath.row]
+            print(currentColor)
         }
     }
 }
@@ -1212,6 +1323,14 @@ extension MogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
             let selectedDateStr = dateFormatter.string(from: date)
             print("시작 Selected Date: \(selectedDateStr)")
             startTextField.text = selectedDateStr
+            
+            // api 통신을 위한 2nd dateFormatter
+            let dateFormatter2 = DateFormatter()
+            dateFormatter2.dateFormat = "yyyy-MM-dd"
+            let selectedStartDateStr = dateFormatter2.string(from: date)
+            print("api통신 위한 시작 Date: \(selectedStartDateStr)")
+            currentStartDate = selectedStartDateStr
+            
         } else if calendar == endCalendar {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy/M/d(EEE)"
@@ -1219,6 +1338,12 @@ extension MogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
             print("종료 Selected Date: \(selectedDateStr)")
             endTextField.text = selectedDateStr
             
+            // api 통신을 위한 2nd dateFormatter
+            let dateFormatter2 = DateFormatter()
+            dateFormatter2.dateFormat = "yyyy-MM-dd"
+            let selectedEndDateStr = dateFormatter2.string(from: date)
+            print("api통신 위한 종료 Date: \(selectedEndDateStr)")
+            currentEndDate = selectedEndDateStr
         }
     }
     
@@ -1241,65 +1366,75 @@ extension MogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
 extension MogakEditViewController {
     // 모각 생성
     // MARK: - 재혁 코드
-    func createMogak() {
-        let id = currentModalartId
-        let createdTitle = mogakTextField.text
+    func editMogak() {
+        //let id = currentModalartId
+        let id = currentMogakId
+        let editedTitle = mogakTextField.text
         let bigCategory = currentBigCategory
         let smallCategory = currentSmallCategory
-        var startAt: String = ""
-        var endAt: String = ""
-        if toggleButton.isOn {
-            startAt = startTextField.text!
-            endAt = endTextField.text!
-        } else {
-            startAt = ""
-            endAt = ""
+        var startAt: String = currentStartDate
+        var endAt: String = currentEndDate
+        var color: String = "#" + currentColor
+        
+        //
+        //
+        //        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
+        
+        let editedData = EditMogakRequestMainData(mogakId: id, title: editedTitle!, bigCategory: currentBigCategory, startAt: currentStartDate, endAt: currentEndDate, color: color)
+        print("")
+        
+        mogakNetwork.editMogak(data: editedData) {
+            result in
+            switch result {
+            case .success(let mogakEditedData):
+                print(#fileID, #function, #line, "- editedMogakData: \(mogakEditedData)")
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
         }
-//
-//
-//        let data = MogakMainData(modaratId: id, title: createdTitle, bigCategory: bigCategory, smallCategory: currentSmallCategory, startAt: <#T##String#>, endAt: <#T##String#>, color: <#T##String#>)
+        //self.navigationController?.popToViewController(, animated: false)
     }
     
     
     // MARK: - 이전 버전(강현님 코드)
-    func initMogak(title: String, category: String, days: [String], start: String, end: String) {
-        let path = "/api/mogaks"
-        
-        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
-        
-        let headers: HTTPHeaders = [
-            "Authorization": "Bearer \(accessToken)",
-            "accept": "application/json",
-            "Content-Type": "application/json"
-        ]
-        
-        let parameters: [String: Any] = [
-            "title": title,
-            "category": category,
-            "days": days,
-            "startAt": start,
-            "endAt": end
-        ]
-        
-        NetworkManager.shared.post(path: path, parameters: parameters, headers: headers) { response in
-            switch response.result {
-            case .success(let data):
-                guard let jsonData = data else {
-                    print("No data received")
-                    return
-                }
-                if let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
-                    print("모각 생성 완료 \(responseModel)")
-                    self.navigationController?.popViewController(animated: true)
-                } else {
-                    print("디코딩 실패")
-                }
-            case .failure(let error):
-                print("실패 \(error)")
-                print("token \(accessToken)")
-                debugPrint(response)
-            }
-        }
-    }
+//    func initMogak(title: String, category: String, days: [String], start: String, end: String) {
+//        let path = "/api/mogaks"
+//        
+//        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
+//        
+//        let headers: HTTPHeaders = [
+//            "Authorization": "Bearer \(accessToken)",
+//            "accept": "application/json",
+//            "Content-Type": "application/json"
+//        ]
+//        
+//        let parameters: [String: Any] = [
+//            "title": title,
+//            "category": category,
+//            "days": days,
+//            "startAt": start,
+//            "endAt": end
+//        ]
+//        
+//        NetworkManager.shared.post(path: path, parameters: parameters, headers: headers) { response in
+//            switch response.result {
+//            case .success(let data):
+//                guard let jsonData = data else {
+//                    print("No data received")
+//                    return
+//                }
+//                if let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
+//                    print("모각 생성 완료 \(responseModel)")
+//                    self.navigationController?.popViewController(animated: true)
+//                } else {
+//                    print("디코딩 실패")
+//                }
+//            case .failure(let error):
+//                print("실패 \(error)")
+//                print("token \(accessToken)")
+//                debugPrint(response)
+//            }
+//        }
+//    }
     
 }

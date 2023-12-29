@@ -34,7 +34,7 @@ class MogakNetwork {
     }
     
     // MARK: - 모각수정 API
-    func editMogak(data: MogakMainData, completionHandler: @escaping (Result<EditMogakMainData, Error>) -> Void) {
+    func editMogak(data: EditMogakRequestMainData, completionHandler: @escaping (Result<EditMogakMainData, Error>) -> Void) {
         AF.request(MogakRouter.editMogak(data: data))
             .responseDecodable(of: EditMogakResponse.self) {
                 (response: DataResponse<EditMogakResponse, AFError>) in
@@ -43,7 +43,8 @@ class MogakNetwork {
                     print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                     completionHandler(.failure(error))
                 case .success(let data):
-                    print(#fileID, #function, #line, "- data titla: \(data.result.mogakId)") //수정 필요
+                    print(#fileID, #function, #line, "- data titla: \(data.result.mogakId)")
+                    print(#fileID, #function, #line, "- data updatedAt: \(data.result.updatedAt)")//수정 필요
                     completionHandler(.success(data.result))
                 }
             }
@@ -64,7 +65,48 @@ class MogakNetwork {
 //                }
 //            }
 //    }
+    
+    // MARK: - 조각생성 API
+    func createJogak(data: CreateJogakRequestMainData, completionHandler: @escaping (Result<CreateJogakMainData, Error>) -> Void) {
+        AF.request(MogakRouter.createJogak(data: data))
+            .responseDecodable(of: CreateJogakResponse.self) {
+                (response: DataResponse<CreateJogakResponse, AFError>) in
+                switch response.result {
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                    completionHandler(.failure(error))
+                case .success(let data):
+                    print(#fileID, #function, #line, "- data jogakId: \(data.result.jogakId)")
+                    print(#fileID, #function, #line, "- data mogakTitle: \(data.result.mogakTitle)")
+                    print(#fileID, #function, #line, "- data category: \(data.result.category)")
+                    print(#fileID, #function, #line, "- data isRoutine: \(data.result.isRoutine)")
+                    print(#fileID, #function, #line, "- data title: \(data.result.title)")
+                    print(#fileID, #function, #line, "- data start: \(data.result.startDate)")
+                    print(#fileID, #function, #line, "- data end: \(data.result.endDate)")
+                    completionHandler(.success(data.result))
+                }
+            }
+    }
+    
+    // MARK: - 조각수정 API
+    func editJogak(data: EditJogakRequestMainData, jogakId: Int, completionHandler: @escaping (Result<EditJogakResponse, Error>) -> Void) {
+        AF.request(MogakRouter.editJogak(data: data, jogakId: jogakId))
+            .responseDecodable(of: EditJogakResponse.self) {
+                (response: DataResponse<EditJogakResponse, AFError>) in
+                switch response.result {
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                    completionHandler(.failure(error))
+                case .success(let data):
+                    print(#fileID, #function, #line, "- data: \(data.message)")
+                    completionHandler(.success(data))
+                }
+            }
+    }
 }
+
+
+
 
 //class MemoirNetwork {
 //    // MARK: - 회고록 리스트 조회

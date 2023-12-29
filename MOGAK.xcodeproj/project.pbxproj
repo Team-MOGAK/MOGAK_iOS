@@ -51,6 +51,7 @@
 		6577361A2B124680009F0465 /* MogakInitColorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657736192B124680009F0465 /* MogakInitColorCell.swift */; };
 		6582BDE72A6A786200C87FDE /* NetworkingFeedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */; };
 		65852B322AFB830B008200E3 /* SegmentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65852B312AFB830B008200E3 /* SegmentCollectionViewCell.swift */; };
+		659E93702B3EED8200AC61B8 /* JogakEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659E936F2B3EED8200AC61B8 /* JogakEditViewController.swift */; };
 		65AEDB822B0264FA00B7A3F1 /* MemoirDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AEDB812B0264FA00B7A3F1 /* MemoirDetailViewController.swift */; };
 		65B139332A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */; };
 		65B139352A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */; };
@@ -177,6 +178,7 @@
 		657736192B124680009F0465 /* MogakInitColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakInitColorCell.swift; sourceTree = "<group>"; };
 		6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingFeedTableViewCell.swift; sourceTree = "<group>"; };
 		65852B312AFB830B008200E3 /* SegmentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentCollectionViewCell.swift; sourceTree = "<group>"; };
+		659E936F2B3EED8200AC61B8 /* JogakEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakEditViewController.swift; sourceTree = "<group>"; };
 		65AEDB812B0264FA00B7A3F1 /* MemoirDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoirDetailViewController.swift; sourceTree = "<group>"; };
 		65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmEdittingFeedSheetViewController.swift; sourceTree = "<group>"; };
 		65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDeletingFeedSheetViewController.swift; sourceTree = "<group>"; };
@@ -349,8 +351,9 @@
 				652586B72B24C44000ED9B92 /* API */,
 				652586BE2B24C4F600ED9B92 /* DatePickerCalendarCell.swift */,
 				652586C02B24C52000ED9B92 /* JogakInitViewController.swift */,
-				652586C22B24C54900ED9B92 /* MogakEditViewController.swift */,
+				659E936F2B3EED8200AC61B8 /* JogakEditViewController.swift */,
 				9C2EF7E82A6C2A7600E8C8F4 /* MogakInitViewController.swift */,
+				652586C22B24C54900ED9B92 /* MogakEditViewController.swift */,
 				655E95C42B274A2C003ED696 /* DIYCalendarCell.swift */,
 				655A21FC2B282EE900321E77 /* DateHelper.swift */,
 				655A21FE2B282F3C00321E77 /* CalendarCell.swift */,
@@ -842,6 +845,7 @@
 			files = (
 				4DF224FF2AEBEEB3002FC286 /* ButtonWithMenu.swift in Sources */,
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
+				659E93702B3EED8200AC61B8 /* JogakEditViewController.swift in Sources */,
 				9C2EF8082A83D9E700E8C8F4 /* MyPageEditViewController.swift in Sources */,
 				9CE426E52A5A3976001629DC /* OnBoardingFirstViewController.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
@@ -1091,7 +1095,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = L597NTA7LF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -1130,7 +1134,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DSRQ5VPU2Y;
+				DEVELOPMENT_TEAM = L597NTA7LF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";

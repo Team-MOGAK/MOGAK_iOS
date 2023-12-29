@@ -12,12 +12,16 @@ enum MogakRouter: URLRequestConvertible {
     
     case createMogak(data: MogakMainData)
     case deleteMogak(mogakId: Int)
-    case editMogak(data: MogakMainData)
+    case editMogak(data: EditMogakRequestMainData)
+    case createJogak(data: CreateJogakRequestMainData)
+    case editJogak(data: EditJogakRequestMainData, jogakId: Int)
     
     var endPoint: String {
         switch self {
         case .createMogak, .editMogak: return "api/modarats/mogaks"
         case .deleteMogak(let mogakId): return "api/modarats/mogaks/\(mogakId)"
+        case .createJogak: return "api/modarats/mogaks/jogaks"
+        case .editJogak(_, let jogakId): return "api/modarats/mogaks/jogaks/\(jogakId)"
         }
     }
     
@@ -29,9 +33,9 @@ enum MogakRouter: URLRequestConvertible {
     
     var method: HTTPMethod {
         switch self {
-        case .createMogak: return .post
+        case .createMogak, .createJogak: return .post
         case .deleteMogak: return .delete
-        case .editMogak: return .put
+        case .editMogak, .editJogak: return .put
         }
     }
     
@@ -54,6 +58,10 @@ enum MogakRouter: URLRequestConvertible {
         case .deleteMogak(let mogakId):
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .editMogak(let data):
+            request = try JSONParameterEncoder().encode(data, into: request)
+        case .createJogak(let data):
+            request = try JSONParameterEncoder().encode(data, into: request)
+        case .editJogak(let data,_):
             request = try JSONParameterEncoder().encode(data, into: request)
         }
         

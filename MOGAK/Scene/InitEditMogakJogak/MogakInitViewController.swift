@@ -108,7 +108,7 @@ class MogakInitViewController: UIViewController {
     private let categoryList: [String] = [
         "자격증", "대외활동", "운동", "인사이트",
         "공모전", "직무공부", "산업분석", "어학",
-        "강연/강의", "프로젝트", "스터디", "기타"
+        "강연,강의", "프로젝트", "스터디", "기타"
     ]
     
     private let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
@@ -1365,32 +1365,31 @@ extension MogakInitViewController {
     // MARK: - 재혁 코드
     func createMogak() {
         //let id = currentModalartId
-        let id = 32
+        let id = 25
         let createdTitle = mogakTextField.text
         let bigCategory = currentBigCategory
         let smallCategory = currentSmallCategory
         var startAt: String = currentStartDate
         var endAt: String = currentEndDate
         var color: String = "#" + currentColor
-
-//
-//
-//        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
+        
+        //
+        //
+        //        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
         let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, startAt: startAt, endAt: endAt, color: color)
         print(data)
         
         
-         mogakNetwork.createMogak(data: data) {
-         result in
-         switch result {
-         case .success(let mogakMainData):
-             print(#fileID, #function, #line, "- mogakMainData: \(mogakMainData)")
-         case .failure(let error):
-             print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-         }
-     }
-         
-        
+        mogakNetwork.createMogak(data: data) {
+            result in
+            switch result {
+            case .success(let mogakMainData):
+                print(#fileID, #function, #line, "- mogakMainData: \(mogakMainData)")
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
+        //self.navigationController?.popToViewController(, animated: false)
     }
     
     
