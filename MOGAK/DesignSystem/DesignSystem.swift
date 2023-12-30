@@ -79,8 +79,10 @@ enum DesignSystemFont {
     case semibold18L100
     case medium16L100
     case medium16L150
+    case medium18140
     case semibold14L150
     case regular14L150
+    case regular16L150
     case medium12L150
     
 }
@@ -98,10 +100,14 @@ extension DesignSystemFont {
             return UIFont.pretendard(.medium, size: 16)
         case .medium16L150:
             return UIFont.pretendard(.medium, size: 16)
+        case .medium18140:
+            return UIFont.pretendard(.medium, size: 18)
         case .semibold14L150:
             return UIFont.pretendard(.semiBold, size: 14)
         case .regular14L150:
             return UIFont.pretendard(.regular, size: 14)
+        case .regular16L150:
+            return UIFont.pretendard(.regular, size: 16)
         case .medium12L150:
             return UIFont.pretendard(.regular, size: 14)
         }
@@ -124,6 +130,10 @@ extension DesignSystemFont {
         case .regular14L150:
             return 1.26
         case .medium12L150:
+            return 1.26
+        case .medium18140:
+            return 1.26
+        case .regular16L150:
             return 1.26
         }
     }

@@ -788,17 +788,10 @@ class MemoirDetailViewController: UIViewController {
 //    }
 //}
 
-
-//extension MemoirDetailViewController: UISCrollViewDelegate {
-//    func scrollViewDidScroll(_ scrollView: UISCrollView) {
-//        //self.feedImagePageControl.currentPage = Int(round(image))
-//    }
-//}
-
- @available(iOS 17.0, *)
- #Preview("MemoirDetailVC") {
-     MemoirDetailViewController()
- }
+// @available(iOS 17.0, *)
+// #Preview("MemoirDetailVC") {
+//     MemoirDetailViewController()
+// }
  
 extension MemoirDetailViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

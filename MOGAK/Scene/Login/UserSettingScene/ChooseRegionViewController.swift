@@ -40,7 +40,7 @@ class ChooseRegionViewController: UIViewController {
     
     private lazy var nextButton : UIButton = {
         let button = UIButton()
-        button.setTitle("다음", for: .normal)
+        button.setTitle("완료", for: .normal)
         button.backgroundColor = UIColor(hex: "BFC3D4")
         button.titleLabel?.textColor = .white
         button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
@@ -63,6 +63,7 @@ class ChooseRegionViewController: UIViewController {
     
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
+//        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = Bar
         self.navigationController?.navigationBar.tintColor = .gray
     }
     
@@ -175,7 +176,7 @@ extension ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource
         if let cell = tableView.cellForRow(at: indexPath) as? RegionCell {
             if let region = cell.name.text {
                 print("Selected cell's region: \(region)")
-                RegisterUserInfo.shared.userRegion = region
+//                RegisterUserInfo.shared.userRegion = region
             }
         }
     }
@@ -196,39 +197,39 @@ extension ChooseRegionViewController {
         
         let url = ApiConstants.join
         
-        let parameters: Parameters = [
-            "nickname": "\(RegisterUserInfo.shared.nickName!)",
-            "job": "\(RegisterUserInfo.shared.userJob!)",
-            "address": "\(RegisterUserInfo.shared.userRegion!)",
-            "email": "\(userEmail!)"
-        ]
+//        let parameters: Parameters = [
+//            "nickname": "\(RegisterUserInfo.shared.nickName!)",
+//            "job": "\(RegisterUserInfo.shared.userJob!)",
+//            "address": "\(RegisterUserInfo.shared.userRegion!)",
+//            "email": "\(userEmail!)"
+//        ]
         
-        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
-            .responseJSON { response in
-                switch response.result {
-                case .success(let data):
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
-                        do {
-                            let decoder = JSONDecoder()
-                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
-                            print("Decoded data: \(decodedData)")
-                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
-                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
-
-                            let mainVC = TabBarViewController()
-                            mainVC.modalPresentationStyle = .fullScreen
-                            self.present(mainVC, animated: true)
-                        } catch {
-                            print("Decoding error: \(error)")
-                        }
-                    } else {
-                        print("Invalid response data format")
-                    }
-                case .failure(let error):
-                    print("Error: \(error)")
-                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
-                }
-            }
+//        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+//            .responseJSON { response in
+//                switch response.result {
+//                case .success(let data):
+//                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
+//                        do {
+//                            let decoder = JSONDecoder()
+//                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
+//                            print("Decoded data: \(decodedData)")
+//                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
+//                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
+//
+//                            let mainVC = TabBarViewController()
+//                            mainVC.modalPresentationStyle = .fullScreen
+//                            self.present(mainVC, animated: true)
+//                        } catch {
+//                            print("Decoding error: \(error)")
+//                        }
+//                    } else {
+//                        print("Invalid response data format")
+//                    }
+//                case .failure(let error):
+//                    print("Error: \(error)")
+//                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
+//                }
+//            }
     }
     
     

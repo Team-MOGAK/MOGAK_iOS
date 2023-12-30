@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 import SnapKit
 
 class ChooseJobViewController: UIViewController {
@@ -271,7 +272,7 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
                if let nameLabel = cell.textLabel?.text {
                    print("Selected cell's nameLabel: \(nameLabel)")
-                   RegisterUserInfo.shared.userJob = nameLabel
+//                   RegisterUserInfo.shared.userJob.send(nameLabel)
                }
            }
     }
