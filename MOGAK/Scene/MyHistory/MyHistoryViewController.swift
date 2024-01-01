@@ -671,9 +671,9 @@ class MyHistoryViewController: UIViewController {
     }
     
     @objc private func floatingButtonTapped() {
-        let mogakVC = MogakInitViewController()
+        //let mogakVC = MogakInitViewController()
         //let mogakVC = JogakInitViewController()
-        //let mogakVC = MogakEditViewController()
+        let mogakVC = MogakEditViewController()
         //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)
     }

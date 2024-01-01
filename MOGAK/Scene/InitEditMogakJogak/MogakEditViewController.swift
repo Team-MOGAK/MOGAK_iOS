@@ -372,9 +372,9 @@ class MogakEditViewController: UIViewController {
         self.configureNavBar()
         self.configureMogakTop()
         self.configureCategory()
-        self.configureRepeat()
-        self.configureDate()
-        self.configureEndDate()
+        //self.configureRepeat()
+        //self.configureDate()
+        //self.configureEndDate()
         self.configureColorCollectionView()
         
         let today = startCalendar.today!
@@ -398,7 +398,15 @@ class MogakEditViewController: UIViewController {
         colorCollectionView.delegate = self
         colorCollectionView.tag = 3
         
+        contentView.addSubview(choiceColorLabel)
         contentView.addSubview(colorCollectionView)
+        
+        choiceColorLabel.snp.makeConstraints({
+            //$0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
+            //$0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(40)
+            $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(40)
+            $0.leading.equalToSuperview().offset(20)
+        })
         
         colorCollectionView.snp.makeConstraints({
             $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
@@ -486,7 +494,7 @@ class MogakEditViewController: UIViewController {
         categoryCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.categoryExplanationLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(160)
+            $0.height.equalTo(120)
         })
         
         etcTextField.snp.makeConstraints({
@@ -537,17 +545,11 @@ class MogakEditViewController: UIViewController {
     }
     
     private func configureDate() {
-        [choiceColorLabel, startLabel, startTextField].forEach({contentView.addSubview($0)})
+        [startLabel, startTextField].forEach({contentView.addSubview($0)})
         [headerTitle, startPreviousButton, startNextButton].forEach({contentView.addSubviews($0)})
         [startCalendar].forEach({contentView.addSubview($0)})
         self.startTextField.delegate = self
         self.startCalendar.delegate = self
-        
-        choiceColorLabel.snp.makeConstraints({
-            //$0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
-            $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
-        })
         
         startLabel.snp.makeConstraints({
             //$0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(30)
@@ -640,7 +642,7 @@ class MogakEditViewController: UIViewController {
         completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         completeButton.snp.makeConstraints({
             //            $0.bottom.equalTo(self.scrollView.frameLayoutGuide.snp.bottom).offset(-24)
-            $0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
+            //$0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
             $0.bottom.equalToSuperview().offset(-24)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(52)
@@ -1237,9 +1239,23 @@ extension MogakEditViewController: UICollectionViewDelegate {
             if indexPath.item == categoryList.count - 1 {
                 // 마지막 셀인 경우, UITextField hidden 속성을 해제
                 [etcTextField, etcUnderLineView].forEach({$0.isHidden = false})
+                
+                choiceColorLabel.snp.remakeConstraints({
+                    $0.top.equalTo(self.etcUnderLineView.snp.bottom).offset(40)
+                    $0.leading.equalToSuperview().offset(20)
+                })
+                
+                self.view.layoutIfNeeded()
             }
             else {
                 [etcTextField, etcUnderLineView].forEach({$0.isHidden = true})
+                
+                choiceColorLabel.snp.remakeConstraints({
+                    $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(40)
+                    $0.leading.equalToSuperview().offset(20)
+                })
+                
+                self.view.layoutIfNeeded()
             }
             
         } else if collectionView.tag == 2 {
