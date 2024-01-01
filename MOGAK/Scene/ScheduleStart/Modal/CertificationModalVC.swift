@@ -112,16 +112,19 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
     //MARK: - @objc func
     
     @objc func scheduleRecord(){
-        self.dismiss(animated: true) {
-            
-            let newVC = RecordingViewController()
-            newVC.modalPresentationStyle = .fullScreen
-            
-            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
-                RecordingVC.present(newVC, animated: true, completion: nil)
-                newVC.jogakLabel.text = self.titleLabel.text
-            }
-        }
+//        self.dismiss(animated: true) {
+            let alert = UIAlertController(title: "타이틀", message: "메세지공간", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alert.addAction(confirm)
+            present(alert, animated: true, completion: nil)
+//            let newVC = RecordingViewController()
+//            newVC.modalPresentationStyle = .fullScreen
+//            
+//            if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
+//                RecordingVC.present(newVC, animated: true, completion: nil)
+//                newVC.jogakLabel.text = self.titleLabel.text
+//            }
+//        }
     }
     
     @objc func dismissModal(){
