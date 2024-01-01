@@ -90,7 +90,6 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
     
     var jogakLabel : UILabel = {
         let cellLabel = UILabel()
-        cellLabel.text = "기획 아티클 읽기"
         cellLabel.textColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 1)
         cellLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
         return cellLabel
@@ -118,6 +117,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
         textView.text = "오늘 당신의 조각은 어떠셨나요?\n느낀 점이나 기억에 남는 것을 공유해보세요"
         textView.textColor = UIColor(red: 0.5, green: 0.518, blue: 0.592, alpha: 1)
         textView.backgroundColor = .clear
+        textView.font = UIFont(name: "PretendardVariable-Regular", size: 30)
+        textView.clipsToBounds = true
         return textView
     }()
     
@@ -180,7 +181,7 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
     func setUI(){
         [popButton,titleLabel].forEach{view.addSubview($0)}
         
-        contentView.addSubviews(categoryLabel,mogakLabel,textbackgroundView,textView,jogakView,jogakViewImage,jogakLabel,textViewLabel,galleryStackView,galleryCollectionView,finishButton)
+        contentView.addSubviews(categoryLabel,mogakLabel,textbackgroundView,textView,jogakView,jogakViewImage,jogakLabel,textViewLabel,galleryCollectionView,galleryStackView,finishButton)
         
         popButton.snp.makeConstraints{
             $0.top.equalTo(view.safeAreaLayoutGuide)
@@ -313,8 +314,8 @@ class RecordingViewController : UIViewController, UIScrollViewDelegate,PHPickerV
                 if index < self.selectedAssetIdentifiers.count,
                    let cell = self.galleryCollectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? GalleryCollectionViewCell {
                     
-                    cell.grayView.backgroundColor = .clear
-                    cell.plusView.tintColor = .clear
+//                    cell.grayView.backgroundColor = .clear
+//                    cell.plusView.tintColor = .clear
                 }
             }
         }
@@ -472,10 +473,8 @@ extension RecordingViewController : UITextViewDelegate{
             
         }else{
             finishButton.backgroundColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
-            
         }
-        
-        return changeText.count > 0
+        return changeText.count < 350
     }
 }
 

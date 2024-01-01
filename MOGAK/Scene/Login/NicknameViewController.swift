@@ -159,7 +159,7 @@ class NicknameViewController: UIViewController {
         if let text = nicknameTextField.text {
             registerUserInfo.nickName = text
             print("저장된 닉네임 - \(registerUserInfo.nickName)")
-            validateNickname(nickName: text)
+//            validateNickname(nickName: text)
         }
         
         
@@ -249,26 +249,26 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
     
 }
 // 네트워크 코드
-extension NicknameViewController {
-    func validateNickname(nickName: String) {
-        
-        let url = ApiConstants.BaseURL + "/api/users/\(nickName)/verify"
-        
-        AF.request(url, method: .post)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: ValidateNicknameModel.self) { response in
-                switch response.result {
-                case .success(let response):
-                    if response.status == "OK" {
-                        print("성공")
-                        let chooseJobVC = ChooseJobViewController()
-                        chooseJobVC.modalPresentationStyle = .fullScreen
-                        self.navigationController?.pushViewController(chooseJobVC, animated: true)
-                    }
-                case .failure(let error):
-                    print("error \(error)")
-                }
-            }
+//extension NicknameViewController {
+//    func validateNickname(nickName: String) {
+//        
+//        let url = ApiConstants.BaseURL + "/api/users/\(nickName)/verify"
+//        
+//        AF.request(url, method: .post)
+//            .validate(statusCode: 200..<300)
+//            .responseDecodable(of: ValidateNicknameModel.self) { response in
+//                switch response.result {
+//                case .success(let response):
+//                    if response.status == "OK" {
+//                        print("성공")
+//                        let chooseJobVC = ChooseJobViewController()
+//                        chooseJobVC.modalPresentationStyle = .fullScreen
+//                        self.navigationController?.pushViewController(chooseJobVC, animated: true)
+//                    }
+//                case .failure(let error):
+//                    print("error \(error)")
+//                }
+//            }
         //        ApiManager.shared.getData(url: url) { (result: <ValidateNickNameModel>) in
         //            switch result {
         //            case .success:
@@ -290,6 +290,6 @@ extension NicknameViewController {
         //                print("이상한 응답")
         //            }
         //        }
-    }
-}
+//    }
+//}
 

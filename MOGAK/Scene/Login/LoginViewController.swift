@@ -164,7 +164,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             }
             
             if let email = UserDefaults.standard.string(forKey: "userEmail") {
-                login(email: "hyun123@naver.com")
+               // login(email: "hyun123@naver.com")
             }
             //Move to NextPage
             
@@ -199,37 +199,37 @@ extension UIView {
     }
 }
 
-extension LoginViewController {
-    func login(email: String) {
-        let url = ApiConstants.BaseURL + "/api/users/login/\(email)"
-        
-        let headers: HTTPHeaders = [
-            "accept": "application/json"
-        ]
-        
-        AF.request(url, method: .post, headers: headers)
-            .response { response in
-                if let headerFields = response.response?.allHeaderFields as? [String: String] {
-                    if let authorization = headerFields["Authorization"] {
-                        print("Authorization Header: \(authorization)")
-                        UserDefaults.standard.set(authorization, forKey: "accessToken")
-                        let mainVC = TabBarViewController()
-                        mainVC.modalPresentationStyle = .fullScreen
-                        self.present(mainVC, animated: true)
-                    } else {
-                        let validVC = TermsAgreeViewController()
-                        validVC.modalPresentationStyle = .fullScreen
-                        self.navigationController?.pushViewController(validVC, animated: true)
-                    }
-                    
-                    // Print all header fields
-                    print("All Headers: \(headerFields)")
-                }
-                
-                if let data = response.data {
-                    // Process the data here
-                }
-            }
-        
-    }
-}
+//extension LoginViewController {
+//    func login(email: String) {
+//        let url = ApiConstants.BaseURL + "/api/users/login/\(email)"
+//        
+//        let headers: HTTPHeaders = [
+//            "accept": "application/json"
+//        ]
+//        
+//        AF.request(url, method: .post, headers: headers)
+//            .response { response in
+//                if let headerFields = response.response?.allHeaderFields as? [String: String] {
+//                    if let authorization = headerFields["Authorization"] {
+//                        print("Authorization Header: \(authorization)")
+//                        UserDefaults.standard.set(authorization, forKey: "accessToken")
+//                        let mainVC = TabBarViewController()
+//                        mainVC.modalPresentationStyle = .fullScreen
+//                        self.present(mainVC, animated: true)
+//                    } else {
+//                        let validVC = TermsAgreeViewController()
+//                        validVC.modalPresentationStyle = .fullScreen
+//                        self.navigationController?.pushViewController(validVC, animated: true)
+//                    }
+//                    
+//                    // Print all header fields
+//                    print("All Headers: \(headerFields)")
+//                }
+//                
+//                if let data = response.data {
+//                    // Process the data here
+//                }
+//            }
+//        
+//    }
+//}

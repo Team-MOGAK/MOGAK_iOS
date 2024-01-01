@@ -66,12 +66,15 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         
         if cellImage.image == UIImage(named: "emptySquareCheckmark"){
             parentViewController.present(desetroutine,animated: true)
+        
+            desetroutine.jogaktitleLabel.text = cellLabel.text
             
             if let desetsheet = desetroutine.sheetPresentationController{
                 if #available(iOS 16.0, *) {
                     desetsheet.detents = [.custom { context in
                         return 200
                     }]
+                    
                     desetsheet.delegate = self
                     desetsheet.prefersGrabberVisible = true
                 }
@@ -79,6 +82,8 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             }
         }else{
             parentViewController.present(setroutine,animated: true)
+            
+            setroutine.jogaktitleLabel.text = cellLabel.text
             
             if let setsheet = setroutine.sheetPresentationController{
                 if #available(iOS 16.0, *) {
@@ -140,10 +145,13 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             $0.trailing.equalTo(contentView).offset(-16)
             $0.centerY.equalTo(contentView)
         }
-        recodelabel?.snp.makeConstraints{
-//            $0.trailing.equalToSuperview().offset(16)
-//            $0.bottom.equalToSuperview().offset(24)
-            $0.centerX.centerY.equalToSuperview()
+        recodelabel?.snp.makeConstraints {
+            $0.leading.equalTo(cellLabel.snp.trailing).offset(10)
+               $0.top.equalTo(contentView).offset(10) // Adjust top constraint as needed
+               $0.trailing.equalTo(contentView).offset(-16)
+               $0.bottom.lessThanOrEqualTo(contentView).offset(-10) // Adjust bottom constraint as needed
+               
+               $0.height.greaterThanOrEqualTo(0) // 최소 높이를 0으로 설정하거나 필요에 따라 조절
         }
         
         recodeimageView?.snp.makeConstraints{
@@ -153,9 +161,26 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         layer.shadowOffset = CGSize(width: 10, height: 10)
         layer.shadowOpacity = 0.06
         contentView.layer.shadowRadius = 10
+        
+        
     }
     
-    
+    func calculateRecodelabelHeight() -> CGFloat {
+        guard let recodelabel = self.recodelabel else {
+            return 0
+        }
+
+        let label = UILabel()
+        label.text = recodelabel.text // 실제 recodelabel의 텍스트를 사용합니다
+        label.font = recodelabel.font // 실제 recodelabel의 폰트를 사용합니다
+        label.numberOfLines = recodelabel.numberOfLines
+        label.lineBreakMode = recodelabel.lineBreakMode
+
+        let labelSize = label.sizeThatFits(CGSize(width: recodelabel.frame.width, height: CGFloat.greatestFiniteMagnitude))
+
+        return labelSize.height
+    }
+
 }
 
 extension UITableViewCell { //VC에 접근

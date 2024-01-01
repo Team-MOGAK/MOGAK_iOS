@@ -148,7 +148,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.ScheduleTableView.reloadData()
-        fetchTodayjogak()
+        //fetchTodayjogak()
         
     }
     
@@ -182,10 +182,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         ScheduleTableView.reloadData()
         
         if Calendar.current.isDateInToday(date) {
-            fetchTodayjogak()
+           // fetchTodayjogak()
             print("\(date)")
         } else {
-            fetchDailyjogak()
+           // fetchDailyjogak()
         }
         
     }
@@ -197,7 +197,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     //MARK: - 날짜에 이벤트 dots
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         
-        _ = selectJogakModal.mogakList.filter { $0.jogakDate.isSameDay(as: date) }
         return 1
     }
     
@@ -441,7 +440,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.delegate = self
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
-        ScheduleTableView.rowHeight = UITableView.automaticDimension
+        ScheduleTableView.translatesAutoresizingMaskIntoConstraints = false
         
         underView.addSubview(motiveLabel)
         underView.addSubview(ScheduleTableView)
@@ -454,7 +453,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     func tableViewUI(){
         ScheduleTableView.reloadData()
-        self.ScheduleTableView.rowHeight = 80 //셀 높이
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
         
@@ -468,14 +466,14 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         }
         
         cell.contentView.backgroundColor = UIColor.white
+        
         let Certificate = CertificationModalVC()
-        let Rvc = RecordingViewController()
+        
         Certificate.modalPresentationStyle = .pageSheet
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
             Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n회고록을 적으시겠어요?"
-            Rvc.jogakLabel.text = cell.cellLabel.text
             
             NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
             
@@ -551,76 +549,45 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         return cell
         
-        
     }
     
-    //MARK: - API
-    func fetchDailyjogak() {
-        let headers: HTTPHeaders = [
-            "Authorization": ApiConstants.Accesstoken
-        ]
-        
-        let request = AF.request(ApiConstants.JogakDailyURL, headers: headers)
-        
-        request.responseDecodable { (data: DataResponse<JogakDaily, AFError>) in
-            switch data.result {
-            case .success(let jogakDaily):
-                //isUserInteractionEnabled = false
-                print(jogakDaily)
-                print("성공")
-                
-            case .failure(let error):
-                // 오류가 발생한 경우 처리합니다.
-                print(error)
-                print("실패")
-                
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
+                return 80.0 // recodelabel이 없을 때의 기본 높이를 사용합니다
             }
+
+            // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
+            let recodelabelHeight = cell.calculateRecodelabelHeight()
+
+            // 동적 높이를 기본 셀 높이에 추가합니다
+            return 80.0 + recodelabelHeight
         }
     }
     
-    func fetchTodayjogak() {
-        let headers: HTTPHeaders = [
-            "Authorization": ApiConstants.Accesstoken
-        ]
-        
-        let request = AF.request(ApiConstants.JogakTodayURL, headers: headers)
-        
-        request.responseDecodable { (data: DataResponse<JogakToday, AFError>) in
-            switch data.result {
-            case .success(let jogakToday):
-                // API 조회 성공
-                if jogakToday.code == "success" { // 성공적으로 조회된 경우
-                    if let jogakList = jogakToday.jogaks {
-                        // jogakList를 사용하여 필요한 작업 수행
-                        print(jogakToday)
-                        for jogak in jogakList {
-                            if jogak.jogakId == 4 {
-                                // jogakId가 4인 경우에 대한 처리
-                                print("Found Jogak with ID 4:")
-                                print("Jogak ID: \(jogak.jogakId)")
-                                print("Mogak Title: \(jogak.mogakTitle)")
-                                print("Category: \(jogak.category)")
-                                print("Title: \(jogak.title)")
-                                // 여기서 원하는 동작 수행
-                                // 예: 특정 함수 호출 또는 화면 전환 등
-                            }
-                        }
-                    } else {
-                        // jogaks가 nil인 경우 (데이터 없음)
-                        print("No jogaks available for today")
-                        print(jogakToday)
-                    }
-                } else {
-                    // 서버로부터 오류 응답이 온 경우
-                    print("Error: \(jogakToday.code), \(jogakToday.message)")
-                    
-                }
-                
-            case .failure(let error):
-                // 오류가 발생한 경우 처리합니다.
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-    }
-}
+    
+//    //MARK: - API
+//    func fetchDailyjogak() {
+//        let headers: HTTPHeaders = [
+//            "Authorization": ApiConstants.Accesstoken
+//        ]
+//        
+//        let request = AF.request(ApiConstants.JogakDailyURL, headers: headers)
+//        
+//        request.responseDecodable { (data: DataResponse<JogakDaily, AFError>) in
+//            switch data.result {
+//            case .success(let jogakDaily):
+//                //isUserInteractionEnabled = false
+//                print(jogakDaily)
+//                print("성공")
+//                
+//            case .failure(let error):
+//                // 오류가 발생한 경우 처리합니다.
+//                print(error)
+//                print("실패")
+//                
+//            }
+//        }
+//    }
+//    
+
 

@@ -9,19 +9,26 @@ import Foundation
 import UIKit
 import SnapKit
 import Then
+import Alamofire
 
 class SelectJogakModal : UIViewController{
     
-    let currentDate = Date()
     var TableViewReload : (()->())? //tableviewreload
-    var SelectJogaklist : [String] = ["312","asd"]
+    //셀
+    var SelectJogaklist : [String] = ["312","asd"] // 루틴으로 지정된 조각
     
-    var modalArtNameArr: [String] = ["김라영의 모다라트", "운동하기", "내 모다라트3"]
-        var modalartName: String = "" ///현재 보여지는 모다라트 타이틀
-        var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
-        var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
-        var nowShowModalArtIndex: Int = 0
-        var mogakData: [MogakCategory] = []
+    //모다라트
+    var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+    var nowShowModalArtNum: Int = 0
+    var nowShowModalArtIndex: Int = 0
+    
+    
+    var mogakDataCategory: [MogakCategory] = []
+    
+    var jogakData: [JogakDetail] = []
+    var mogakData: [DetailMogakData] = []
+    
+    let Apinetwork =  ApiNetwork.shared
     
     //MARK: - Basic Properties
     
@@ -31,15 +38,20 @@ class SelectJogakModal : UIViewController{
         return view
     }()
     
-    private lazy var mainLabel : UILabel = {
+    private lazy var mainLabel : UIButton = {
+        let btn = UIButton()
+        btn.setTitle("내 모다라트", for: .normal)
+        btn.titleLabel?.font = DesignSystemFont.semibold20L140.value
+        btn.setTitleColor(.black, for: .normal)
+        btn.isUserInteractionEnabled = true
+        btn.addTarget(self, action: #selector(tapModalart), for: .touchUpInside)
+        return btn
+    }()
+    
+    //모다라트 리스트 라벨
+    lazy var listLabel: UILabel = {
         let label = UILabel()
-        label.text = "내 모다라트"
         label.textColor = .black
-        label.font = DesignSystemFont.semibold20L140.value
-        label.isUserInteractionEnabled = true
-        
-        let mainLabeltap = UITapGestureRecognizer(target: self, action: #selector(tapLabel))
-        label.addGestureRecognizer(mainLabeltap)
         return label
     }()
     
@@ -48,9 +60,6 @@ class SelectJogakModal : UIViewController{
         image.image = UIImage(systemName: "chevron.down")
         image.tintColor = UIColor(hex: "#6E707B")
         image.isUserInteractionEnabled = true
-        
-        let imagetap = UITapGestureRecognizer(target: self, action: #selector(tapLabel))
-        image.addGestureRecognizer(imagetap)
         return image
     }()
     
@@ -66,27 +75,7 @@ class SelectJogakModal : UIViewController{
     
     //클로저는 보내는 VC에서 설정 : String에서 보내고 받는쪽은 Void
     
-    //MARK: - Mogak 구조체
-    struct Mogak {
-        var mogaktitle: String
-        var mogaktitleColor : UIColor
-        var jogak: String
-        var ViewColor: UIColor
-        var jogakimage : UIImage
-        var jogakDate: Date
-    }
-    
     //MARK: - modalart정보를 받는 곳
-    
-    var mogakList: [Mogak] = [
-        Mogak(mogaktitle: "10키로 감량!", mogaktitleColor: DesignSystemColor.mint.value, jogak: "공복 유산소", ViewColor: DesignSystemColor.brightmint.value, jogakimage:UIImage(systemName: "square")!, jogakDate: Date()),
-        
-        Mogak(mogaktitle: "자격증 4개따기", mogaktitleColor: DesignSystemColor.orange.value, jogak: "ㅁㅇㄴ", ViewColor: DesignSystemColor.yellow.value, jogakimage:UIImage(systemName: "square")!, jogakDate: Date()),
-        
-        Mogak(mogaktitle: "시험 합격", mogaktitleColor: DesignSystemColor.ruby.value, jogak: "이건 세번쩨 조각", ViewColor: DesignSystemColor.pink.value, jogakimage:UIImage(systemName: "square")!, jogakDate: Date()),
-        
-        Mogak(mogaktitle: "공모전에서 수상하기", mogaktitleColor: DesignSystemColor.signature.value, jogak: "ㅁㄴ", ViewColor: DesignSystemColor.lavender.value,jogakimage:UIImage(systemName: "square")!, jogakDate: Date())
-    ]
     
     lazy var MogakTableView: UITableView = {
         let table = UITableView()
@@ -104,10 +93,14 @@ class SelectJogakModal : UIViewController{
         tableSetUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        getModalart()
+    }
+    
     //MARK: - UIsetting
     
     func setUI(){
-        view.addSubviews(mainLabel,labelImage,contentView)
+        view.addSubviews(mainLabel,listLabel,labelImage,contentView)
         contentView.addSubviews(MogakTableView,addButton)
         
         contentView.snp.makeConstraints{
@@ -125,7 +118,7 @@ class SelectJogakModal : UIViewController{
             $0.bottom.equalToSuperview()
         }
         
-        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakCell")
+        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
         
         addButton.snp.makeConstraints{
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
@@ -146,7 +139,7 @@ class SelectJogakModal : UIViewController{
             $0.edges.equalTo(contentView)
         }
         
-        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakCell")
+        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
         
         MogakTableView.reloadData()
         MogakTableView.dataSource = self
@@ -156,61 +149,134 @@ class SelectJogakModal : UIViewController{
         
     }
     //MARK: - 모다라트 변경
-    
-    @objc func tapLabel(){
-        print(#fileID, #function, #line, "- 모다라트 추가 버튼 탭")
-                let showModalartListModalVC = ShowModalArtListModal()
-                showModalartListModalVC.modalArtNameList = modalartList
-                
-                ///모다라트 리스트를 보여주는 모달에서 원하는 리스트를 선택했을 경우
-                showModalartListModalVC.changeToSelectedModalart = { modalArtData, listIndex in
-                    let num = modalArtData.id
-                    let title = modalArtData.title
-                    
-                    ///모다라트 타이틀이 설정됬는지 체크
-                    let hasModalArtNameChecking: Bool = title.prefix(6) != "내 모다라트"
-                    ///모다라트 추가 리스트를 클릭했는지 체크
-                    let modalArtNameIsAddModalart: Bool = title == "모다라트 추가"
-                    
-                    self.nowShowModalArtNum = num
-                    self.nowShowModalArtIndex = listIndex
-                    ///모다라트 타이틀 설정됨
-                    if hasModalArtNameChecking && !modalArtNameIsAddModalart {
-                        //self.getModalartDetailInfo(id: num)
-                    }
-                    ///모다라트 추가 클릭
-                    else if hasModalArtNameChecking && modalArtNameIsAddModalart {
-                        //self.createModalart()
-                    }
-                    ///모다라트 타이틀 설정 안됨
-                    else {
-                        self.mogakData = []
-                        //self.modalArtNameLabel.text = title
-                        self.modalartName = title
-                       // self.modalArtCollectionView.reloadData()
-                    }
-                }
-                
-                showModalartListModalVC.modalPresentationStyle = .overFullScreen
-                showModalartListModalVC.modalTransitionStyle = .crossDissolve
-                self.present(showModalartListModalVC, animated: true)
+    @objc func tapModalart(){
+        setupMenu()
         print("taplabel")
     }
+    
+    //MARK: - 모다라트 리스트 조회
+    private func getModalart(){
+        Apinetwork.getModalartList{ result in
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let list):
+                guard let modalartList = list else { return }
+                self.modalartList = modalartList
+                print("\(self.modalartList)")
+                
+                if modalartList.isEmpty {
+                    self.mainLabel.setTitle("내 모다라트", for: .normal)
+                } else {
+                    guard let firstData = modalartList.first else { return }
+                    self.nowShowModalArtNum = firstData.id
+                    self.nowShowModalArtIndex = 0
+                    self.setupMenu()
+                }
+            }
+        }
+        
+        
+    }
+    
+    //MARK: - 모다라트 리스트 보는 UImenu
+    func setupMenu(){
+        var menuActions: [UIAction] = []
+        for modalartInfo in modalartList {
+            let action = UIAction(
+                title: modalartInfo.title,
+                handler: { [unowned self] _ in
+                    //리스트 라벨
+                    self.listLabel.text = modalartInfo.title
+                    //선택시 모다라트 변경
+                    self.mainLabel.setTitle(modalartInfo.title, for: .normal)
+                    self.getModalartDetailInfo(id: modalartInfo.id)
+                    
+                    //테이블 뷰 리로딩
+                    self.MogakTableView.reloadData()
+                }
+            )
+            menuActions.append(action)
+        }
+        
+        let modalartListMenu = UIMenu(children: menuActions)
+        
+        //mainLabel.addInteraction(UIContextMenuInteraction(delegate: self))
+        
+        mainLabel.menu = modalartListMenu
+        mainLabel.showsMenuAsPrimaryAction = true
+    }
+    
+    //MARK: - 한 모다라트에 대응하는 모각 보기
+    func getModalartDetailInfo(id: Int) {
+        Apinetwork.getDetailModalartInfo(modalartId: id) { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                
+            case .success(let modalInfo):
+                guard let modalInfo = modalInfo else { return }
+                self.getDetailMogakData(id: modalInfo.id)
+                print("\(modalInfo.id) 의 id인 모각")
+            }
+            
+        }
+        
+    }
+    
+    func getDetailMogakData(id: Int) {
+        Apinetwork.getDetailMogakData(modalartId: id) { result in
+            switch result {
+            case .success(let data):
+                if let mogakDataArray = data?.result?.mogaks{
+                    self.mogakData = mogakDataArray     //모각 데이터 받아옴
+                    for mogakData in mogakDataArray {
+                        print(mogakData)
+                    }
+                    self.MogakTableView.reloadData()
+                    
+                } else {
+                    print("모다라트에 해당하는 모각 데이터가 없습니다.")
+                }
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
+    }
+//MARK: - 한 모각에 대응하는 조각보기
+    func getDetailJogakData(id : Int){
+        Apinetwork.getAllMogakDetailJogaks(mogakId: id){result in
+            switch result{
+            case.success(let data):
+                if let jogakDetailArray = data {
+                    self.jogakData = jogakDetailArray
+                    
+                } else {
+                    print("JogakDetailArray나 result가 nil입니다.")
+                }
+                
+            case.failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     
 }
 
 extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mogakList.count
+        return mogakData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MogakCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MogakTableViewCell", for: indexPath)
         
         if let mogakCell = cell as? MogakTableViewCell {
-            let mogak = mogakList[indexPath.row]
-            mogakCell.configure(with: mogak)
+            
+            let mogakDataItem = mogakData[indexPath.row]
+            mogakCell.configureMogak(with: mogakDataItem)
             
             mogakCell.jogakClickClosure = { [weak self] jogakLabel in
                 
@@ -241,16 +307,31 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     //MARK: - 셀 클릭시 반응
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if let cell = tableView.cellForRow(at: indexPath) as? MogakTableViewCell {//
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? MogakTableViewCell {
+            
+            let jogakDataItem = jogakData //조각 호출
+            cell.configureJogak(with: jogakDataItem)
+            
             cell.JogakStackView.isHidden = !cell.JogakStackView.isHidden
+            
             
             if cell.JogakStackView.isHidden {
                 cell.MogakButtonView.image = UIImage(systemName: "chevron.up")
+                
+                
             } else {
                 cell.MogakButtonView.image = UIImage(systemName: "chevron.down")
+                
+                
+                let selectedMogakData = mogakData[indexPath.row]
+                print("Selected Mogak Data: \(selectedMogakData)")
+                
+                let mogakId = selectedMogakData.mogakId
+                getDetailJogakData(id: mogakId)
             }
             
-            print("상태 \(cell.JogakLabel.isHidden)")
+            //print("상태 \(cell.JogakLabel.isHidden)")
             
         }
         tableView.beginUpdates()
@@ -260,8 +341,8 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in
-            print("테이블 뷰 리로드 클로저 ㅇㅇ")
             
+            print("테이블 뷰 리로드 클로저 ㅇㅇ")
             self?.TableViewReload?()
             print("추가 후의 SelectJogaklist: \(self?.SelectJogaklist ?? [])")
             print(self?.SelectJogaklist.count as Any)
@@ -279,6 +360,21 @@ extension Date {
     }
 }
 
+//extension SelectJogakModal : UIContextMenuInteractionDelegate{
+//
+//    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+//        return UIContextMenuConfiguration(
+//                    identifier: nil,
+//                    previewProvider: nil,
+//                    actionProvider: { _ in
+//                        return self.modalartListMenu
+//                    }
+//                )
+//
+//    }
+//
+//
+//}
 
 
 

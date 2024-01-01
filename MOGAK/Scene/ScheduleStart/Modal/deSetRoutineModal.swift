@@ -11,9 +11,8 @@ import Then
 
 class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
-    private lazy var jogaktitleLabel : UILabel = {
+     lazy var jogaktitleLabel : UILabel = {
         let label = UILabel()
-        label.text = "조각이 들어갈 부분"
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = UIColor(hex: "24252E")
         return label

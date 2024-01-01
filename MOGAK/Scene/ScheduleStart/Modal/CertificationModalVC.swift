@@ -119,6 +119,7 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
             
             if let RecordingVC = UIApplication.shared.keyWindow?.rootViewController {
                 RecordingVC.present(newVC, animated: true, completion: nil)
+                newVC.jogakLabel.text = self.titleLabel.text
             }
         }
     }
