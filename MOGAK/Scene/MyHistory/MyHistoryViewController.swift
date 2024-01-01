@@ -230,7 +230,7 @@ class MyHistoryViewController: UIViewController {
                 //self.modalArtCollectionView.reloadData()
                 self.smallModalartList = []
                 for i in self.mogakData {
-                    self.smallModalartList.append((i.bigCategory?.name)!) // bigCategory로 grouping 하는거 추가하기
+                    self.smallModalartList.append((i.bigCategory.name)) // bigCategory로 grouping 하는거 추가하기
                 }
                 self.smallModalartList = self.smallModalartList.uniqued()
                 self.segmentFirstLoaded = false
@@ -247,7 +247,7 @@ class MyHistoryViewController: UIViewController {
     
     func groupMogaksByCategory(mogakData: [MogakCategory]) -> [String: [MogakCategory]] {
         let groupedCategories = Dictionary(grouping: mogakData) { (mogakCategory) -> String in
-            return mogakCategory.bigCategory?.name ?? "Unknown"
+            return mogakCategory.bigCategory.name ?? "Unknown"
         }
         
         return groupedCategories
@@ -671,8 +671,8 @@ class MyHistoryViewController: UIViewController {
     }
     
     @objc private func floatingButtonTapped() {
-        //let mogakVC = MogakInitViewController()
-        let mogakVC = JogakInitViewController()
+        let mogakVC = MogakInitViewController()
+        //let mogakVC = JogakInitViewController()
         //let mogakVC = MogakEditViewController()
         //        let testVC = TestViewController()
         self.navigationController?.pushViewController(mogakVC, animated: true)

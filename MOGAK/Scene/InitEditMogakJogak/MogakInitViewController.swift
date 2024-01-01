@@ -149,17 +149,20 @@ class MogakInitViewController: UIViewController {
         $0.text = "기간선택"
         $0.font = UIFont.pretendard(.semiBold, size: 14)
         $0.textColor = UIColor(hex: "24252E")
+        $0.isHidden = true
     }
     
     private let termExplanationLabel = UILabel().then {
         $0.text = "언제 시작하고 언제까지 유지할지 선택해주세요."
         $0.font = UIFont.pretendard(.regular, size: 14)
         $0.textColor = UIColor(hex: "6E707B")
+        $0.isHidden = true
     }
     
     private lazy var toggleButton = UISwitch().then {
         $0.isOn = false
         $0.addTarget(self, action: #selector(toggleSwitchChanged(_:)), for: .valueChanged)
+        $0.isHidden = true
     }
     
     private let repeatList: [String] = [
@@ -371,9 +374,9 @@ class MogakInitViewController: UIViewController {
         self.configureNavBar()
         self.configureMogakTop()
         self.configureCategory()
-        self.configureRepeat()
-        self.configureDate()
-        self.configureEndDate()
+        //self.configureRepeat()
+        //self.configureDate()
+        //self.configureEndDate()
         self.configureColorCollectionView()
         
         let today = startCalendar.today!
@@ -397,7 +400,15 @@ class MogakInitViewController: UIViewController {
         colorCollectionView.delegate = self
         colorCollectionView.tag = 3
         
+        contentView.addSubview(choiceColorLabel)
         contentView.addSubview(colorCollectionView)
+        
+        choiceColorLabel.snp.makeConstraints({
+            //$0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
+            //$0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(40)
+            $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(40)
+            $0.leading.equalToSuperview().offset(20)
+        })
         
         colorCollectionView.snp.makeConstraints({
             $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
@@ -451,7 +462,7 @@ class MogakInitViewController: UIViewController {
         })
         
         mogakTextField.snp.makeConstraints({
-            $0.top.equalTo(self.mogakLabel.snp.bottom).offset(5)
+            $0.top.equalTo(self.mogakLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
         })
         
@@ -485,7 +496,7 @@ class MogakInitViewController: UIViewController {
         categoryCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.categoryExplanationLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(160)
+            $0.height.equalTo(120)
         })
         
         etcTextField.snp.makeConstraints({
@@ -513,52 +524,50 @@ class MogakInitViewController: UIViewController {
         repeatLabel.snp.makeConstraints({
             $0.top.equalTo(self.etcUnderLineView.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(20)
+            $0.height.equalTo(0)
         })
         
         toggleButton.snp.makeConstraints({
             $0.trailing.equalToSuperview().offset(-24)
             $0.centerY.equalTo(self.repeatLabel.snp.centerY)
             $0.width.equalTo(60)
-            $0.height.equalTo(26)
+            $0.height.equalTo(0)
         })
         
         termExplanationLabel.snp.makeConstraints({
             $0.top.equalTo(self.repeatLabel.snp.bottom).offset(10)
             $0.leading.equalToSuperview().offset(20)
+            $0.height.equalTo(0)
         })
         
         repeatCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(12)
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-80)
-            $0.height.equalTo(116)
+            $0.height.equalTo(0)
         })
     }
     
     private func configureDate() {
-        [choiceColorLabel, startLabel, startTextField].forEach({contentView.addSubview($0)})
+        [startLabel, startTextField].forEach({contentView.addSubview($0)})
         [headerTitle, startPreviousButton, startNextButton].forEach({contentView.addSubviews($0)})
         [startCalendar].forEach({contentView.addSubview($0)})
         self.startTextField.delegate = self
         self.startCalendar.delegate = self
         
-        choiceColorLabel.snp.makeConstraints({
-            //$0.top.equalTo(self.repeatCollectionView.snp.bottom).offset(40)
-            $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
-        })
-        
         startLabel.snp.makeConstraints({
             //$0.top.equalTo(self.choiceDateLabel.snp.bottom).offset(30)
             $0.top.equalTo(self.termExplanationLabel.snp.bottom).offset(20)
             $0.leading.equalToSuperview().offset(20)
+            $0.height.equalTo(0)
         })
         
         startTextField.snp.makeConstraints({
             $0.centerY.equalTo(self.startLabel.snp.centerY)
             $0.leading.equalTo(self.startLabel.snp.trailing).offset(19)
             $0.trailing.equalToSuperview().offset(-20)
-            $0.height.equalTo(52)
+            //$0.height.equalTo(52)
+            $0.height.equalTo(0)
         })
         
         
@@ -578,7 +587,7 @@ class MogakInitViewController: UIViewController {
         startNextButton.snp.makeConstraints({
             $0.centerY.equalTo(self.startPreviousButton.snp.centerY)
             $0.leading.equalTo(self.headerTitle.snp.trailing).offset(4)
-            $0.width.height.equalTo(16)
+            $0.width.equalTo(16)
             $0.height.equalTo(0)
         })
         
@@ -600,36 +609,42 @@ class MogakInitViewController: UIViewController {
         endLabel.snp.makeConstraints({
             $0.top.equalTo(self.startLabel.snp.bottom).offset(52)
             $0.leading.equalToSuperview().offset(20)
+            $0.height.equalTo(0)
         })
         
         endTextField.snp.makeConstraints({
             $0.centerY.equalTo(self.endLabel.snp.centerY)
             $0.leading.equalTo(self.endLabel.snp.trailing).offset(19)
             $0.trailing.equalToSuperview().offset(-20)
-            $0.height.equalTo(52)
+            //$0.height.equalTo(52)
+            $0.height.equalTo(0)
         })
         
         endPreviousButton.snp.makeConstraints({
             $0.top.equalTo(self.endLabel.snp.bottom).offset(43)
             $0.leading.equalToSuperview().offset(20)
-            $0.width.height.equalTo(16)
+            //$0.width.height.equalTo(16)
+            $0.height.equalTo(0)
         })
         
         endHeaderTitle.snp.makeConstraints({
             $0.centerY.equalTo(self.endPreviousButton.snp.centerY)
             $0.leading.equalTo(self.endPreviousButton.snp.trailing).offset(4)
+            $0.height.equalTo(0)
         })
         
         endNextButton.snp.makeConstraints({
             $0.centerY.equalTo(self.endPreviousButton.snp.centerY)
             $0.leading.equalTo(self.endHeaderTitle.snp.trailing).offset(4)
-            $0.width.height.equalTo(16)
+            $0.width.equalTo(16)
+            $0.height.equalTo(0)
         })
         
         endCalendar.snp.makeConstraints({
             $0.top.equalTo(self.endHeaderTitle.snp.bottom).offset(22)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(212)
+            //$0.height.equalTo(212)
+            $0.height.equalTo(0)
         })
         
     }
@@ -639,7 +654,7 @@ class MogakInitViewController: UIViewController {
         completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         completeButton.snp.makeConstraints({
             //            $0.bottom.equalTo(self.scrollView.frameLayoutGuide.snp.bottom).offset(-24)
-            $0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
+            //$0.top.equalTo(colorCollectionView.snp.bottom).offset(28)
             $0.bottom.equalToSuperview().offset(-24)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(52)
@@ -1034,7 +1049,7 @@ extension MogakInitViewController: UITextFieldDelegate {
             })
             
             completeButton.snp.remakeConstraints({
-                $0.top.equalTo(colorCollectionView.snp.bottom).offset(30)
+                //$0.top.equalTo(colorCollectionView.snp.bottom).offset(30)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.bottom.equalToSuperview().offset(-22)
             })
@@ -1234,9 +1249,23 @@ extension MogakInitViewController: UICollectionViewDelegate {
             if indexPath.item == categoryList.count - 1 {
                 // 마지막 셀인 경우, UITextField hidden 속성을 해제
                 [etcTextField, etcUnderLineView].forEach({$0.isHidden = false})
+                
+                choiceColorLabel.snp.remakeConstraints({
+                    $0.top.equalTo(self.etcUnderLineView.snp.bottom).offset(40)
+                    $0.leading.equalToSuperview().offset(20)
+                })
+                
+                self.view.layoutIfNeeded()
             }
             else {
                 [etcTextField, etcUnderLineView].forEach({$0.isHidden = true})
+                
+                choiceColorLabel.snp.remakeConstraints({
+                    $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(40)
+                    $0.leading.equalToSuperview().offset(20)
+                })
+                
+                self.view.layoutIfNeeded()
             }
             
         } else if collectionView.tag == 2 {
