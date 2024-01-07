@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import Combine
 import AuthenticationServices
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var cancellables = Set<AnyCancellable>()
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -46,26 +48,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        appleIDProvider.getCredentialState(forUserID: "/*user의 고유 ID값(xxxxx.xxxxxxxxxx.xxxx)*/") { (credentialState, error) in
-            switch credentialState {
-            case .authorized:
-                print("authorized")
-                // The Apple ID credential is valid.
-                DispatchQueue.main.async {
-                    //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
-                    self.window?.rootViewController = TabBarViewController()
+        RegisterUserInfo.shared.$loginState.sink { loginState in
+            if let loginState = loginState {
+                if loginState {
+                    if RegisterUserInfo.shared.userIsRegistered {
+                        self.setRootViewContrller(scene, type: .main)
+                    } else {
+                        self.setRootViewContrller(scene, type: .termAgree)
+
+                    }
+                }else {
+                    self.setRootViewContrller(scene, type: .login)
+//                    print(#fileID, #function, #line, "- 로그인 완료
                 }
-            case .revoked:
-                print("revoked")
-            case .notFound:
-                // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
-                print("notFound")
-                
-            default:
-                break
             }
         }
+        .store(in: &cancellables)
+
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -89,12 +88,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 enum StartViewControllerType {
     case login
+    case termAgree
+    case main
     case onBoarding
     
     var vc: UIViewController {
         switch self {
-//        case .login: return LoginViewController()
-        case .login: return TabBarViewController()
+        case .login: return LoginViewController()
+        case .termAgree: return TermsAgreeViewController()
+        case .main: return TabBarViewController()
+//        case .login: return TabBarViewController()
         case .onBoarding: return AppGuideViewController()
         }
     }
@@ -102,9 +105,15 @@ enum StartViewControllerType {
 
 extension SceneDelegate {
     private func setRootViewController(_ scene: UIScene) {
+        let refreshToken = UserDefaults.standard.string(forKey: "refreshToken")
+        print(#fileID, #function, #line, "- refreshToken: \(refreshToken)")
         if Storage.isFirstTime() {
             setRootViewContrller(scene, type: .onBoarding)
-        } else {
+        }
+        else if refreshToken != "" {
+            setRootViewContrller(scene, type: .main)
+        }
+        else {
             setRootViewContrller(scene, type: .login)
         }
     }
@@ -127,7 +136,8 @@ public class Storage {
             defaults.set(true, forKey: "isFirstTime")
             return true
         } else {
-            return false
+            let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime") //isFirstTime인지 체크하기
+            return isFirstTime
         }
     }
 }

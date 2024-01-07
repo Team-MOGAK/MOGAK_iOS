@@ -9,14 +9,18 @@ import UIKit
 import SnapKit
 import Kingfisher
 import Alamofire
+import Combine
 
 class NicknameViewController: UIViewController {
     let registerUserInfo = RegisterUserInfo.shared
     let apiManger = ApiManager.shared
+    var nicknameAndImageChange: Bool = false
+    var profileImageChange: Bool = false
+    var cancellables = Set<AnyCancellable>()
     
     private let setNicknameLabel : UILabel = {
         let label = UILabel()
-        label.text = "닉네임설정"
+        label.text = "프로필 설정"
         label.font = UIFont.pretendard(.bold, size: 24)
         label.textColor = .black
         return label
@@ -33,6 +37,11 @@ class NicknameViewController: UIViewController {
     private lazy var setProfile = UIButton().then {
         $0.setImage(UIImage(named: "setProfile"), for: .normal)
         $0.addTarget(self, action: #selector(settingProfileImage), for: .touchUpInside)
+    }
+    
+    private lazy var deleteImageButton = UIButton().then {
+        $0.setImage(UIImage(named: "deleteIcon"), for: .normal)
+        $0.addTarget(self, action: #selector(deleteProfileImage), for: .touchUpInside)
     }
     
     private lazy var nicknameTextField : UITextField = {
@@ -72,14 +81,35 @@ class NicknameViewController: UIViewController {
         return button
     }()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isHidden = false
         view.backgroundColor = .white
         self.configureNavBar()
         self.configureLabel()
         self.configureSetProfile()
         self.configureTextField()
         self.configureButton()
+        self.configureDeleteButton()
+        
+        registerUserInfo.$profileImage.sink { image in
+            if self.nicknameAndImageChange && self.profileImageChange {
+                self.nextButton.isUserInteractionEnabled = true
+                self.nextButton.backgroundColor = UIColor(hex: "475FFD")
+            }
+            
+            if image != nil {
+                self.setProfile.setImage(self.registerUserInfo.profileImage, for: .normal)
+            } else {
+                self.deleteImageButton.isHidden = true
+            }
+        }
+        .store(in: &cancellables)
     }
     
     override func viewDidLayoutSubviews() {
@@ -107,7 +137,8 @@ class NicknameViewController: UIViewController {
     
     private func configureSetProfile() {
         self.view.addSubview(setProfile)
-        
+        self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
+        self.setProfile.clipsToBounds = true
         setProfile.snp.makeConstraints({
             $0.width.height.equalTo(100)
             $0.top.equalTo(self.subLabel.snp.bottom).offset(100)
@@ -141,6 +172,16 @@ class NicknameViewController: UIViewController {
         })
     }
     
+    private func configureDeleteButton() {
+        self.view.addSubview(deleteImageButton)
+        if registerUserInfo.profileImage != nil {
+            deleteImageButton.snp.makeConstraints { make in
+                make.top.equalTo(self.setProfile.snp.top)
+                make.leading.equalTo(self.setProfile.snp.leading)
+            }
+        }
+    }
+    
     
     // MARK: - objc
     
@@ -152,17 +193,28 @@ class NicknameViewController: UIViewController {
         present(imagePickerController, animated: true, completion: nil)
     }
     
+    @objc private func deleteProfileImage() {
+        self.setProfile.setImage(UIImage(named: "setProfile"), for: .normal)
+        registerUserInfo.profileImage = nil
+        profileImageChange = true
+    }
+    
     @objc private func nextButtonIsClicked() {
         // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
-        
-        if let text = nicknameTextField.text {
-//            registerUserInfo.nickName.send(text)
-            print("저장된 닉네임 - \(registerUserInfo.nickName)")
-            validateNickname(nickName: text)
+        print(#fileID, #function, #line, "- nicknameTextField.text⭐️: \(nicknameTextField.text)")
+        let nicknameText = nicknameTextField.text ?? ""
+        if nicknameText != "" {
+            if nicknameAndImageChange {
+                nicknameChange(nickname: nicknameText)
+                if profileImageChange {
+                    profileImageChangeRequest()
+                }
+            } else {
+                validateNickname(nickName: nicknameText)
+            }
+        } else if nicknameAndImageChange && profileImageChange {
+            profileImageChangeRequest()
         }
-        
-        
-        //
     }
 }
 
@@ -184,7 +236,7 @@ extension NicknameViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text else { return }
-        
+
         if text.validateNickname() {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor(hex: "475FFD")
@@ -220,13 +272,12 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
         if let image = info[.originalImage] as? UIImage {
             // 가져온 이미지를 버튼 이미지로 설정합니다.
             setProfile.setImage(image, for: .normal)
-            
+            profileImageChange = true
+            registerUserInfo.profileImage = image
             // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
             let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
             if let imageURL = info[.imageURL] as? URL {
-//                registerUserInfo.profileImage.send(imageURL.absoluteString)
-                print("저장된 이미지 주소 \(registerUserInfo.profileImage)")
-                
+
                 // Kingfisher를 사용하여 버튼 이미지를 설정합니다.
                 setProfile.kf.setImage(with: imageURL, for: .normal, placeholder: image, options: options, completionHandler: { result in
                     switch result {
@@ -250,16 +301,18 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 // 네트워크 코드
 extension NicknameViewController {
     func validateNickname(nickName: String) {
+        print(#fileID, #function, #line, "- nickname: \(nickName)")
+        let nicknameRequest = NicknameChangeRequest(nickname: nickName)
         
-        let url = ApiConstants.baseURL + "/api/users/\(nickName)/verify"
-        
-        AF.request(url, method: .post)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: ValidateNicknameModel.self) { response in
+        AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
+            .responseDecodable(of: ValidateNicknameModel.self) { [self] response in
                 switch response.result {
                 case .success(let response):
-                    if response.status == "OK" {
+                    print(#fileID, #function, #line, "- response: \(response)")
+                    if response.code == "success" {
                         print("성공")
+                        self.registerUserInfo.nickName = self.nicknameTextField.text
+                        
                         let chooseJobVC = ChooseJobViewController()
                         chooseJobVC.modalPresentationStyle = .fullScreen
                         self.navigationController?.pushViewController(chooseJobVC, animated: true)
@@ -268,27 +321,49 @@ extension NicknameViewController {
                     print("error \(error)")
                 }
             }
-        //        ApiManager.shared.getData(url: url) { (result: <ValidateNickNameModel>) in
-        //            switch result {
-        //            case .success:
-        //                print("success")
-        //            case .failure(.statusCode(let statusCode)):
-        //                if statusCode == 409 {
-        //                    print("Duplicate User Error: User already exists.")
-        //                    self.tfSubLabel.text = "중복된 닉네임입니다."
-        //                    self.tfSubLabel.textColor = UIColor(hex: "FF2323")
-        //                } else if statusCode == 200 {
-        //                    // 페이지 이동
-        //                    let chooseJobVC = ChooseJobViewController()
-        //                    chooseJobVC.modalPresentationStyle = .fullScreen
-        //                    self.navigationController?.pushViewController(chooseJobVC, animated: true)
-        //                }
-        //            case .failure(.requestFailed):
-        //                print("요청 실패")
-        //            case .failure(.invalidResponse):
-        //                print("이상한 응답")
-        //            }
-        //        }
+    }
+    
+    func nicknameChange(nickname: String) {
+        let nicknameRequest = NicknameChangeRequest(nickname: nickname)
+        
+        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest), interceptor: CommonLoginManage())
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let decoder = JSONDecoder()
+                    if response.response?.statusCode == 200 {
+                        let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
+                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+                        self.registerUserInfo.nickName = nickname
+                        if !self.profileImageChange {
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    } else {
+                        let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: data)
+                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+                        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
+                        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                        self.present(nicknameErrorAlert, animated: true)
+                    }
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error)")
+                }
+            }
+    }
+    
+    func profileImageChangeRequest() {
+        let userNetwork = UserNetwork.shared
+        guard let profileImage = registerUserInfo.profileImage else { return }
+        userNetwork.userImageChange(profileImage) { result in
+            switch result {
+            case .success(let success):
+                print(#fileID, #function, #line, "- success: \(success)")
+                self.navigationController?.popViewController(animated: true)
+            case .failure(let failure):
+                print(#fileID, #function, #line, "- failure: \(failure)")
+            }
+        }
     }
 }
 

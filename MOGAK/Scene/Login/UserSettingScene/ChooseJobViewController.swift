@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import SnapKit
+import Alamofire
 
 class ChooseJobViewController: UIViewController {
     
@@ -20,6 +21,8 @@ class ChooseJobViewController: UIViewController {
     private var selectedIndexPath: IndexPath?
     
     var selectedIndexPaths: Set<IndexPath> = []
+    
+    var changeJob: Bool = false
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -71,8 +74,14 @@ class ChooseJobViewController: UIViewController {
         return button
     }()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isHidden = false
         view.backgroundColor = .white
         
         self.configureNavBar()
@@ -157,8 +166,35 @@ class ChooseJobViewController: UIViewController {
     }
     
     @objc private func nextButtonIsClicked() {
-        let regionVC = ChooseRegionViewController()
-        self.navigationController?.pushViewController(regionVC, animated: true)
+        if changeJob {
+//            self.dismiss(animated: true)
+            self.changeJobRequest()
+        } else {
+            let regionVC = ChooseRegionViewController()
+            self.navigationController?.pushViewController(regionVC, animated: true)
+        }
+        
+    }
+    
+    func changeJobRequest() {
+        let jobRequest = JobChangeRequest(job: RegisterUserInfo.shared.userJob ?? "")
+        
+//        AF.request(UserRouter.jobChange(job: jobRequest))
+        AF.request(UserRouter.jobChange(job: jobRequest), interceptor: CommonLoginManage())
+            .responseData(completionHandler: { response in
+                print(#fileID, #function, #line, "- response: \(response)")
+                switch response.result {
+                case .success(let data):
+                    let decoder = JSONDecoder()
+                    let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
+                    print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+                    print(#fileID, #function, #line, "- RegisterData: \(RegisterUserInfo.shared.userJob)")
+                    self.navigationController?.popViewController(animated: true)
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error)")
+                }
+            })
+            
     }
 }
 
@@ -271,8 +307,8 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
         // 선택된 셀의 정보 가져오기
            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
                if let nameLabel = cell.textLabel?.text {
+                   RegisterUserInfo.shared.userJob = nameLabel
                    print("Selected cell's nameLabel: \(nameLabel)")
-//                   RegisterUserInfo.shared.userJob.send(nameLabel)
                }
            }
     }

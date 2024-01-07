@@ -12,7 +12,7 @@ class ModalartNetwork {
     static let shared = ModalartNetwork()
     //MARK: - 모다라트 상세 내용 API
     func getDetailModalartInfo(modalartId: Int = 4, completionHandler: @escaping (Result<ModalartInfo?, Error>) -> Void) {
-
+        
 //        AF.request(ModalartRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())
         AF.request(ModalartRouter.detailModalart(modaratId: modalartId))
             .validate(statusCode: 200..<300)

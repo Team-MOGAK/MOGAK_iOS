@@ -33,7 +33,6 @@ enum ModalartRouter: URLRequestConvertible {
     
     //헤더
     var headers: HTTPHeaders {
-        
         switch self {
         default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
 //        default: return HTTPHeaders(["accept":"application/json"])
@@ -65,7 +64,7 @@ enum ModalartRouter: URLRequestConvertible {
         
         switch self {
         case .getModalartList:
-            request = try URLEncoding.queryString.encode(request, with: parameters)
+            request = try URLEncoding.queryString.encode(request, with: parameters) //body가 필요없을떄
         case .detailModalart:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .getDetailMogakData:
@@ -73,7 +72,7 @@ enum ModalartRouter: URLRequestConvertible {
         case .delteModalart:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .createModalrt(let data):
-            request = try JSONParameterEncoder().encode(data, into: request)
+            request = try JSONParameterEncoder().encode(data, into: request) //body가 필요할때
         case .editModalart(let data):
             request = try JSONParameterEncoder().encode(data, into: request)
         }

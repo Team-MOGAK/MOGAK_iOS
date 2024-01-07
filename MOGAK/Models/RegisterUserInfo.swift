@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import UIKit
 
 class RegisterUserInfo {
     static let shared = RegisterUserInfo()
@@ -21,9 +22,11 @@ class RegisterUserInfo {
 //    var userRegion : CurrentValueSubject<String?, Never> = CurrentValueSubject("")
 //    var userId: CurrentValueSubject<String?, Never> = CurrentValueSubject("")
 //    var userAccessToken: CurrentValueSubject<String?, Never> = CurrentValueSubject("")
-    @Published var loginState: Bool = false
+    @Published var loginState: Bool? = nil
+    
+    @Published var userIsRegistered: Bool = false
 
-    @Published var profileImage : String? = ""
+    @Published var profileImage : UIImage? = nil
     @Published var nickName : String? = ""
     @Published var userName : String? = ""
     @Published var userEmail : String? = ""

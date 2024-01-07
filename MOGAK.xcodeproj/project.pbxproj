@@ -368,6 +368,7 @@
 			children = (
 				9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */,
 				4DF83CF42B18BDDF00E1BD6D /* MypageWebViewController.swift */,
+				9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */,
 			);
 			path = MyPage;
 			sourceTree = "<group>";
@@ -553,7 +554,6 @@
 				9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */,
 				9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */,
 				9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */,
-				9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */,
 				9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */,
 			);
 			path = ScheduleList;
