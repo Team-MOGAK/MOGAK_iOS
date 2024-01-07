@@ -20,7 +20,7 @@ class ApiNetwork{
                 .responseDecodable(of: ModalartListResponse.self) { (response: DataResponse<ModalartListResponse, AFError>) in
                     switch response.result {
                     case .failure(let error):
-                        print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                        //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                         completionHandler(.failure(error))
                     case .success(let data):
                         completionHandler(.success(data.modalartList))
@@ -35,7 +35,7 @@ class ApiNetwork{
                 .responseDecodable(of: ModalartDetailInfo.self) { (response: DataResponse<ModalartDetailInfo, AFError>) in
                     switch response.result {
                     case .failure(let error):
-                        print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                        //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                         completionHandler(.failure(error))
                     case .success(let data):
                         //print(#fileID, #function, #line, "- data: \(String(describing: data.result?.title))")
@@ -57,7 +57,7 @@ class ApiNetwork{
                 }
         }
     
-//MARK: - 조각 조회
+//MARK: - 모각에 대응하는 조각 조회
     func getAllMogakDetailJogaks(mogakId: Int, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
         AF.request(ApiRouter.getJogakList(mogakId: mogakId))
                 .validate(statusCode: 200..<300)
@@ -72,49 +72,19 @@ class ApiNetwork{
         }
     
 //MARK: - 일일 조각 조회
-//    func getJogakToday(completionHandler: @escaping (Result<[JogakConstants]?, Error>) -> Void) {
-//        AF.request(JogakRouter.JogakToday)
-//            .validate(statusCode: 200..<300)
-//            .responseDecodable(completionHandler: <#T##(DataResponse<Decodable, AFError>) -> Void#>)
-//        let request = AF.request(ApiConstants.JogakTodayURL, headers: headers)
-//        
-//        request.responseDecodable { (data: DataResponse<JogakToday, AFError>) in
-//            switch data.result {
-//            case .success(let jogakToday):
-//                // API 조회 성공
-//                if jogakToday.code == "success" { // 성공적으로 조회된 경우
-//                    if let jogakList = jogakToday.dailyJogaks {
-//                        // jogakList를 사용하여 필요한 작업 수행
-//                        print(jogakToday)
-//                        for jogak in jogakList {
-//                            if jogak.dailyJogakId == 4 {
-//                                // jogakId가 4인 경우에 대한 처리
-//                                print("Found Jogak with ID 4:")
-//                                print("Jogak ID: \(jogak.dailyJogakId)")
-//                                print("Mogak Title: \(jogak.mogakTitle)")
-//                                print("Category: \(jogak.category)")
-//                                print("Title: \(jogak.title)")
-//                                // 여기서 원하는 동작 수행
-//                                // 예: 특정 함수 호출 또는 화면 전환 등
-//                            }
-//                        }
-//                    } else {
-//                        // jogaks가 nil인 경우 (데이터 없음)
-//                        print("No jogaks available for today")
-//                        print(jogakToday)
-//                    }
-//                } else {
-//                    // 서버로부터 오류 응답이 온 경우
-//                    print("Error: \(jogakToday.code), \(jogakToday.message)")
-//                    
-//                }
-//                
-//            case .failure(let error):
-//                // 오류가 발생한 경우 처리합니다.
-//                print("Error: \(error.localizedDescription)")
-//            }
-//        }
-//    }
+    func getCheckDailyJogak(DailyDate : String, completionHandler : @escaping(Result<[JogakDailyCheck]?, Error>)-> Void) {
+        AF.request(ApiRouter.getJogakDailyCheck(DailyDate: DailyDate))
+               .validate(statusCode: 200..<300)
+               .responseDecodable(of: JogakDailyCheck.self) { response in
+                   switch response.result {
+                   case .success(let jogakDailyResponse):
+                       completionHandler(.success([jogakDailyResponse]))
+                       //print("ApiNetwork.swift에서 success뜸", jogakDailyResponse.result)
+                   case .failure(let error):
+                       completionHandler(.failure(error))
+                   }
+               }
+    }
     //MARK: -
 
 }

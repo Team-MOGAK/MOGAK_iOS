@@ -15,7 +15,8 @@ class MogakTableViewCell: UITableViewCell {
     weak var parentViewController: SelectJogakModal?
     var jogakClickClosure : ((String) -> ())?
     
-    
+    //MARK: - Mogak
+
     private let MogakLabel : BasePaddingLabel = {
         let label = BasePaddingLabel(padding: UIEdgeInsets(top:12,left:20,bottom:12,right:20))
         label.font = UIFont(name: "Pretendard-Medium", size: 18)
@@ -62,7 +63,11 @@ class MogakTableViewCell: UITableViewCell {
         stackView.spacing = 10
         return stackView
     }()
-    
+    //MARK: - jogak
+
+    var jogakLabels: [UILabel] = []
+    var jogakImageViews: [UIImageView] = []
+    var jogakLabelStackViews: [UIStackView] = []
     
     //MARK: - Life Cycle
     
@@ -127,7 +132,7 @@ class MogakTableViewCell: UITableViewCell {
         if mogakData.color == nil{
             MogakLabel.textColor = DesignSystemColor.signature.value
             MogakLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
-            
+            MogakView.backgroundColor = .lightGray
         }else{
             MogakLabel.backgroundColor = UIColor(hex: mogakData.color ?? "").withAlphaComponent(0.1)
             MogakLabel.textColor = UIColor(hex: mogakData.color ?? "")
@@ -135,10 +140,6 @@ class MogakTableViewCell: UITableViewCell {
         }
         
     }
-    
-    var jogakLabels: [UILabel] = []
-       var jogakImageViews: [UIImageView] = []
-       var jogakLabelStackViews: [UIStackView] = []
     
     func configureJogak(with jogakDataArray: [JogakDetail]) {
         
@@ -157,7 +158,12 @@ class MogakTableViewCell: UITableViewCell {
             
             let jogakimageView = UIImageView()
             jogakimageView.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
-            jogakimageView.image = UIImage(systemName: "square")
+            
+            if jogakData.isRoutine == false{
+                jogakimageView.image = UIImage(systemName: "square")
+            }else{
+                jogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+            }
             
             jogakimageView.snp.makeConstraints{
                 $0.height.width.equalTo(20)
@@ -170,12 +176,12 @@ class MogakTableViewCell: UITableViewCell {
             jogakLabelStackView.spacing = 10
             
             let tapjogakStackView = UITapGestureRecognizer(target: self, action: #selector(JogakStackViewTap))
-            jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
             
-            
-            //            JogakLabelStackView.snp.makeConstraints{
-            //                $0.height.equalTo(20)
-            //            }
+            if jogakData.isRoutine == false{
+                jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
+            }else{
+                print("isRoutine이 true라서 터치안댐ㅇㅇ")
+            }
             
             jogakLabelStackView.addArrangedSubview(jogakimageView)
             jogakLabelStackView.addArrangedSubview(jogakLabel)
@@ -186,7 +192,7 @@ class MogakTableViewCell: UITableViewCell {
             jogakImageViews.append(jogakimageView)
             jogakLabelStackViews.append(jogakLabelStackView)
             
-            print(jogakLabels)
+            print(jogakData)
             
         }
         

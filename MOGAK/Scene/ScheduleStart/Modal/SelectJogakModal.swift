@@ -27,7 +27,7 @@ class SelectJogakModal : UIViewController{
     
     var jogakData: [JogakDetail] = []
     var mogakData: [DetailMogakData] = []
-    
+//    let scheduleVC = ScheduleStartViewController()
     let Apinetwork =  ApiNetwork.shared
     
     //MARK: - Basic Properties
@@ -95,6 +95,7 @@ class SelectJogakModal : UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         getModalart()
+        
     }
     
     //MARK: - UIsetting
@@ -113,19 +114,20 @@ class SelectJogakModal : UIViewController{
             $0.top.equalToSuperview().offset(36)
         }
         
-        MogakTableView.snp.makeConstraints{
-            $0.top.leading.trailing.equalTo(contentView)
-            $0.bottom.equalToSuperview()
-        }
-        
-        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
-        
         addButton.snp.makeConstraints{
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(48)
             
         }
+        MogakTableView.snp.makeConstraints{
+            $0.top.leading.trailing.equalTo(contentView)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(48)
+        }
+        
+        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
+        
+        
         labelImage.snp.makeConstraints{
             $0.width.height.equalTo(16)
             $0.centerY.equalTo(mainLabel)
@@ -145,8 +147,6 @@ class SelectJogakModal : UIViewController{
         MogakTableView.dataSource = self
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
-        MogakTableView.rowHeight = UITableView.automaticDimension
-        
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -231,7 +231,7 @@ class SelectJogakModal : UIViewController{
                 if let mogakDataArray = data?.result?.mogaks{
                     self.mogakData = mogakDataArray     //모각 데이터 받아옴
                     for mogakData in mogakDataArray {
-                        print(mogakData)
+                        print(mogakData.title)
                     }
                     self.MogakTableView.reloadData()
                     
@@ -243,13 +243,18 @@ class SelectJogakModal : UIViewController{
             }
         }
     }
-//MARK: - 한 모각에 대응하는 조각보기
+    //MARK: - 한 모각에 대응하는 조각보기
     func getDetailJogakData(id : Int){
         Apinetwork.getAllMogakDetailJogaks(mogakId: id){result in
             switch result{
             case.success(let data):
                 if let jogakDetailArray = data {
                     self.jogakData = jogakDetailArray
+                    
+//                    if let cell = self.MogakTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MogakTableViewCell {
+//                        
+//                        cell.configureJogak(with: jogakDetailArray)
+//                    }
                     
                 } else {
                     print("JogakDetailArray나 result가 nil입니다.")
@@ -268,6 +273,10 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return mogakData.count
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -307,11 +316,23 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     //MARK: - 셀 클릭시 반응
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
         if let cell = tableView.cellForRow(at: indexPath) as? MogakTableViewCell {
+            
+//            let selectedMogakData = mogakData[indexPath.row]
+//            print("Selected Mogak Data: \(selectedMogakData)")
+//            
+//            let mogakId = selectedMogakData.mogakId
+//            getDetailJogakData(id: mogakId)
+            
+            let selectedMogakData = mogakData[indexPath.row]
+            print("Selected Mogak Data: \(selectedMogakData)")
+            
+            let mogakId = selectedMogakData.mogakId
+            getDetailJogakData(id: mogakId)
             
             let jogakDataItem = jogakData //조각 호출
             cell.configureJogak(with: jogakDataItem)
+            
             
             cell.JogakStackView.isHidden = !cell.JogakStackView.isHidden
             
@@ -319,21 +340,13 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
             if cell.JogakStackView.isHidden {
                 cell.MogakButtonView.image = UIImage(systemName: "chevron.up")
                 
-                
             } else {
                 cell.MogakButtonView.image = UIImage(systemName: "chevron.down")
-                
-                
-                let selectedMogakData = mogakData[indexPath.row]
-                print("Selected Mogak Data: \(selectedMogakData)")
-                
-                let mogakId = selectedMogakData.mogakId
-                getDetailJogakData(id: mogakId)
+            
             }
             
-            //print("상태 \(cell.JogakLabel.isHidden)")
-            
         }
+        
         tableView.beginUpdates()
         tableView.endUpdates()
     }

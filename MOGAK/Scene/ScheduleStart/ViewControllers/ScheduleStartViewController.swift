@@ -13,6 +13,10 @@ import Alamofire
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
+    var dailyJogak: [String] = []
+    
+    let Apinetwork =  ApiNetwork.shared
+    
     
     //MARK: - Properties
     
@@ -147,8 +151,16 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        self.CheckDailyJogaks(DailyDate: dateString)
         self.ScheduleTableView.reloadData()
-        //fetchTodayjogak()
+        
         
     }
     
@@ -177,21 +189,17 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         headerLabel.text = headerDataFormatter.string(from: currentPage)
     }
     
-    //날짜 선택 콜백 메소드
+    //MARK: - 날짜 선택 콜백 메소드
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         ScheduleTableView.reloadData()
         
-        if Calendar.current.isDateInToday(date) {
-           // fetchTodayjogak()
-            print("\(date)")
-        } else {
-           // fetchDailyjogak()
-        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd" // 원하는 날짜 형식으로 변경
         
-    }
-    
-    // 날짜 선택 해제 콜백 메소드
-    func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        let dateString = dateFormatter.string(from: date)
+        
+        print(dateString)
+        self.CheckDailyJogaks(DailyDate: dateString)
         
     }
     //MARK: - 날짜에 이벤트 dots
@@ -334,8 +342,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return Calendar.current.date(byAdding: .weekOfMonth, value: -1, to: date)!
     }
     
-    //MARK: - 햄치즈토스트 팝업
-    
+//MARK: - 햄치즈토스트 팝업 맨~
     func showToast(message : String, font: UIFont) {
         let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 112, y: self.view.frame.size.height-150, width: 224, height: 29))
         toastLabel.backgroundColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 0.7)
@@ -353,6 +360,36 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             toastLabel.removeFromSuperview()
         })
     }
+//MARK: - 일일 조각 API 호출 맨~
+    func CheckDailyJogaks(DailyDate: String){
+        Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
+            switch result {
+            case .success(let jogakDailyChecks):
+                if let jogakDailyChecks = jogakDailyChecks {
+                    print("일일 조각 성공적으로 가져옴:")
+                    
+                    self.dailyJogak = []
+                    
+                    for jogakDailyCheck in jogakDailyChecks {
+                        let result = jogakDailyCheck.result
+                        
+                        for dailyJogak in result.dailyJogaks {
+                            self.dailyJogak.append(dailyJogak.title)
+                        }
+                    }
+                    print(self.dailyJogak)
+                    self.ScheduleTableView.reloadData()
+                } else {
+                    print("일일 조각을 위한 nil 배열 수신.")
+                }
+            case .failure(let error):
+                print("뷰컨에서 failure",error)
+            }
+        }
+        
+        
+    }
+    
     
     //MARK: - @objc
     
@@ -513,8 +550,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //cell의 개수
-        let numberOfJogak = selectJogakModal.SelectJogaklist.count
+        let numberOfJogak = dailyJogak.count
         
         if numberOfJogak == 0 {
             blankimage.isHidden = false
@@ -535,11 +571,10 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     //MARK: - cellUI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { //cell 재활용
-        
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
         
-        cell.cellLabel.text = selectJogakModal.SelectJogaklist[indexPath.row] //cell label
+        cell.cellLabel.text = dailyJogak[indexPath.row]
         
         cell.contentView.backgroundColor = .white
         cell.selectionStyle = .none //클릭시 화면 안바뀜
@@ -553,41 +588,16 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
-                return 80.0 // recodelabel이 없을 때의 기본 높이를 사용합니다
-            }
-
-            // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
-            let recodelabelHeight = cell.calculateRecodelabelHeight()
-
-            // 동적 높이를 기본 셀 높이에 추가합니다
-            return 80.0 + recodelabelHeight
+            return 80.0 // recodelabel이 없을 때의 기본 높이를 사용합니다
         }
+        
+        // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
+        let recodelabelHeight = cell.calculateRecodelabelHeight()
+        
+        // 동적 높이를 기본 셀 높이에 추가합니다
+        return 80.0 + recodelabelHeight
     }
-    
-    
-//    //MARK: - API
-//    func fetchDailyjogak() {
-//        let headers: HTTPHeaders = [
-//            "Authorization": ApiConstants.Accesstoken
-//        ]
-//        
-//        let request = AF.request(ApiConstants.JogakDailyURL, headers: headers)
-//        
-//        request.responseDecodable { (data: DataResponse<JogakDaily, AFError>) in
-//            switch data.result {
-//            case .success(let jogakDaily):
-//                //isUserInteractionEnabled = false
-//                print(jogakDaily)
-//                print("성공")
-//                
-//            case .failure(let error):
-//                // 오류가 발생한 경우 처리합니다.
-//                print(error)
-//                print("실패")
-//                
-//            }
-//        }
-//    }
-//    
+}
+
 
 
