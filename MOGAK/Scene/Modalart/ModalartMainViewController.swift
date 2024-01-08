@@ -385,6 +385,10 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 self.present(bottomSheetVC, animated: true)
             } else {
                 print(#fileID, #function, #line, "- 작은 모다라트 설정으로 이동")
+                let mogakInitVC = MogakInitViewController()
+                mogakInitVC.currentModalartId = nowShowModalArtNum
+                print("모다라트 아이디 : \(mogakInitVC.currentModalartId)")
+                self.navigationController?.pushViewController(mogakInitVC, animated: true)
             }
         }
         else if cellType == ModalartMainCell.identifier {

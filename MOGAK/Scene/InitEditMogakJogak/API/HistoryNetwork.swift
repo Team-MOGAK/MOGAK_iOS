@@ -51,20 +51,20 @@ class MogakNetwork {
     }
     
     // MARK: - 모각삭제 API
-//    func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-//        print(#fileID, #function, #line, "- mogakId: \(mogakId)")
-//        AF.request(MogakRouter.deleteMogak(mogakId: mogakId)).validate()
-//            .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-//                switch response.result {
-//                case .failure(let error):
-//                    print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
-//                    completionHandler(.failure(error))
-//                case .success(_):
-//                    print(#fileID, #function, #line, "- data")
-//                    completionHandler(.success(true))
-//                }
-//            }
-//    }
+    func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        print(#fileID, #function, #line, "- mogakId: \(mogakId)")
+        AF.request(MogakRouter.deleteMogak(mogakId: mogakId)).validate()
+            .responseData(emptyResponseCodes: [200, 204, 205]) { response in
+                switch response.result {
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+                    completionHandler(.failure(error))
+                case .success(_):
+                    print(#fileID, #function, #line, "- data")
+                    completionHandler(.success(true))
+                }
+            }
+    }
     
     // MARK: - 조각생성 API
     func createJogak(data: CreateJogakRequestMainData, completionHandler: @escaping (Result<CreateJogakMainData, Error>) -> Void) {

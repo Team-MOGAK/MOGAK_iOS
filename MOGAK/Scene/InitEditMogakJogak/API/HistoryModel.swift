@@ -59,6 +59,11 @@ struct EditMogakRequestMainData: Codable {
     let color: String
 }
 
+// MARK: - 모각삭제 Response
+struct DeleteMogakResponse: Codable {
+    let time, status, code, message, result: String?
+}
+
 // MARK: - 조각생성 Request body
 struct CreateJogakRequestMainData: Codable {
     let mogakId: Int

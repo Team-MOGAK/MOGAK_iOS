@@ -1393,8 +1393,8 @@ extension MogakInitViewController {
     // 모각 생성
     // MARK: - 재혁 코드
     func createMogak() {
-        //let id = currentModalartId
-        let id = 25
+        let id = currentModalartId
+        //let id = 25
         let createdTitle = mogakTextField.text
         let bigCategory = currentBigCategory
         let smallCategory = currentSmallCategory
