@@ -24,7 +24,7 @@ class MogakDetailNetwork: NSObject {
     }
     
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
-    //MARK: - 모다라트 삭제 요청 API
+    //MARK: - 모각 삭제 요청 API
     func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
 //        AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
         AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId))

@@ -25,8 +25,21 @@ struct LoginRequest: Codable {
     }
 }
 
+struct LoginFailResponse: Codable {
+    let time, code, message: String?
+    let status: Int
+}
+
 // MARK: - Welcome
 struct LoginResponse: Codable {
+//    let time, status, code, message: String?
+    let time, code, message: String?
+    let status: String
+    let result: LoginRealData?
+}
+
+// MARK: - Result
+struct LoginRealData: Codable {
     let isRegistered: Bool
     let userID: Int
     let tokens: Tokens
@@ -38,9 +51,21 @@ struct LoginResponse: Codable {
     }
 }
 
+struct RefreshTokenResponse: Codable {
+//    let time, status, code, message: String?
+    let time, code, message: String?
+    let status: String
+    let result: Tokens?
+}
+
 // MARK: - Tokens
 struct Tokens: Codable {
     let accessToken, refreshToken: String
+}
+
+struct LogoutResponse: Codable {
+    let time, status, code, message: String
+    let result: String?
 }
 
 
@@ -122,17 +147,33 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                 let loginRequestTokenData = LoginRequest(idToken: idTokenString)
                 
                 AF.request(LoginRouter.login(data: loginRequestTokenData))
+//                    .responseData(completionHandler: { response in
+//
+//                        if response.response?.statusCode == 200 {
+//                            let decoder = JSONDecoder()
+//                            let decodeDate = decoder.decode(LoginResponse.self, from: response)
+//                        }
+//                    })
                     .responseDecodable(of: LoginResponse.self) { (response: DataResponse<LoginResponse, AFError> ) in
+                        
                         switch response.result {
                         case .failure(let error):
                             print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                         case .success(let data):
                             print(#fileID, #function, #line, "- sucess")
-                            print(#fileID, #function, #line, "- data.tokens: \(data.tokens)")
-                            UserDefaults.standard.set(data.tokens.accessToken, forKey: "accessToken")
-                            UserDefaults.standard.set(data.tokens.refreshToken, forKey: "refreshToken")
-                            UserDefaults.standard.synchronize()
+                            print(#fileID, #function, #line, "- data: \(data)")
+                            if let dataResult = data.result {
+                                print(#fileID, #function, #line, "- accessToken: \(dataResult.tokens.accessToken)")
+                                UserDefaults.standard.set(dataResult.tokens.accessToken, forKey: "accessToken")
+                                UserDefaults.standard.set(dataResult.tokens.refreshToken, forKey: "refreshToken")
+                                UserDefaults.standard.set(dataResult.userID, forKey: "userId")
+                                UserDefaults.standard.synchronize()
+                                
+                                self.registerUserInfo.userIsRegistered = dataResult.isRegistered//유저가 등록이 되어져
+                            }
+
                             let userEmail = appleIDCredential.email ?? "이메일 제공안함"
+//                             있는지 확인
                             self.registerUserInfo.userEmail = userEmail
                             self.registerUserInfo.loginState = true
                         }

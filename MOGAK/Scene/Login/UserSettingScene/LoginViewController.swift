@@ -113,30 +113,25 @@ class LoginViewController: UIViewController {
 
     @objc private func appleLoginClicked() {
         AppleLoginManage.shared.startSignInWithAppleFlow()
-        registerUserInfo.$loginState.sink { isLogined in
-            if isLogined {
-                print(#fileID, #function, #line, "- isLogined🔥: \(isLogined)")
-                let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime")
-                print(#fileID, #function, #line, "- isFirstTime: \(isFirstTime)")
-                let tabBarController = TabBarViewController()
-
-                self.view.window?.rootViewController = tabBarController
-
-//                if isFirstTime {
-//                    let termAgreeNavigationVC = TermsAgreeViewController()
-//                    let navigationController = UINavigationController(rootViewController: termAgreeNavigationVC)
-//                    self.view.window?.rootViewController = navigationController
-//                } else {
-//                    let tabBarController = TabBarViewController()
-//
-//                    self.view.window?.rootViewController = tabBarController
-//
+//        registerUserInfo.$loginState.sink { loginState in
+//            if let loginState = loginState {
+//                if loginState {
+//                    if self.registerUserInfo.userIsRegistered {
+//                        let tabBarController = TabBarViewController()
+//                        self.view.window?.rootViewController = tabBarController
+//                    } else {
+//                        let termAgreeNavigationVC = TermsAgreeViewController()
+//                        let navigationController = UINavigationController(rootViewController: termAgreeNavigationVC)
+//                        self.view.window?.rootViewController = navigationController
+//                    }
+//                }else {
+//                    print(#fileID, #function, #line, "- 로그인 완료 안됨: \(loginState)")
+//                    let loginViewController = LoginViewController()
+//                    self.present(loginViewController, animated: false)
+////                    self.view.window?.rootViewController = loginViewController
 //                }
-                
-            } else {
-                print(#fileID, #function, #line, "- 로그인 완료 안됨: \(isLogined)")
-            }
-        }
-        .store(in: &cancellables)
+//            }
+//        }
+//        .store(in: &cancellables)
     }
 }

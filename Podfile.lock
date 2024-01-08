@@ -8,6 +8,7 @@ PODS:
     - ReusableKit/Core (= 4.0.0)
   - ReusableKit/Core (4.0.0)
   - SnapKit (5.6.0)
+  - SwiftyJSON (4.3.0)
   - Then (3.0.0)
 
 DEPENDENCIES:
@@ -16,6 +17,7 @@ DEPENDENCIES:
   - Kingfisher (~> 5.0)
   - ReusableKit
   - SnapKit (~> 5.6.0)
+  - SwiftyJSON (~> 4.0)
   - Then
 
 SPEC REPOS:
@@ -25,6 +27,7 @@ SPEC REPOS:
     - Kingfisher
     - ReusableKit
     - SnapKit
+    - SwiftyJSON
     - Then
 
 SPEC CHECKSUMS:
@@ -33,8 +36,9 @@ SPEC CHECKSUMS:
   Kingfisher: a3c03d702433fa6cfedabb2bddbe076fb8f2e902
   ReusableKit: 8caaff6dc6e2d4c12beb395010086930454b12c3
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 711740ad764dd16e2be0bf8e39c65ac144c4aee4
+PODFILE CHECKSUM: b9a296ce5bab212f021e8a29249b3f38143ebc09
 
 COCOAPODS: 1.12.1

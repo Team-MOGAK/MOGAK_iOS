@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Then
 import WebKit
+import Combine
 
 enum WebUrl: String {
     case noti = "https://www.google.com" //공지사항
@@ -18,6 +19,8 @@ enum WebUrl: String {
 }
 
 class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerDelegate {
+    var cancellables = Set<AnyCancellable>()
+    
     private lazy var profileView : UIView = {
         let uiview = UIView()
         uiview.backgroundColor = DesignSystemColor.signature.value
@@ -33,13 +36,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     }
     
     private let name = UILabel().then {
-        $0.text = "김동동"
+        $0.text = RegisterUserInfo.shared.nickName ?? "김동동"
         $0.font = UIFont.pretendard(.bold, size: 22)
         $0.textColor = UIColor.white
     }
     
     private let job = UILabel().then {
-        $0.text = "서비스기획자/PM"
+        $0.text = RegisterUserInfo.shared.userJob ?? "서비스기획자/PM"
         $0.font = UIFont.pretendard(.medium, size: 12)
         $0.textColor = UIColor.white
     }
@@ -188,6 +191,31 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         self.configureProfile()
         self.configureSetting()
         self.viewConnectGestureSetting()
+        
+        UserNetwork.shared.getUserData { result in
+            switch result {
+            case .success(let success):
+                print(#fileID, #function, #line, "- success: \(success)")
+            case .failure(let failure):
+                print(#fileID, #function, #line, "- failure: \(failure)")
+            }
+        }
+        
+        RegisterUserInfo.shared.$nickName.sink { nickname in
+            self.name.text = nickname
+        }
+        .store(in: &cancellables)
+        
+        RegisterUserInfo.shared.$userJob.sink(receiveValue: { job in
+            self.job.text = job
+        })
+        .store(in: &cancellables)
+        
+        RegisterUserInfo.shared.$profileImage.sink { image in
+            self.profileImage.image = image
+        }
+        .store(in: &cancellables)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {

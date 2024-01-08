@@ -11,11 +11,13 @@ import Alamofire
 enum LoginRouter: URLRequestConvertible {
     case login(data: LoginRequest)
     case getNewAccessToken(refreshToken: String)
+    case logout
     
     var endPoint: String {
         switch self {
         case .login: return "api/auth/login"
         case .getNewAccessToken: return "api/auth/refresh"
+        case .logout: return "api/auth/logout"
         }
     }
     
@@ -49,6 +51,8 @@ enum LoginRouter: URLRequestConvertible {
             print(#fileID, #function, #line, "- data: \(data)")
             request = try JSONParameterEncoder().encode(data, into: request)
         case .getNewAccessToken:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
+        case .logout:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         }
         

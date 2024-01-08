@@ -64,7 +64,6 @@ class MogakMainViewController: UIViewController {
             if let vc = self.navigationController?.viewControllers.last as? ModalartMainViewController {
                 vc.getDetailMogakData(id: self.modalartId)
             }
-
         }
     }
     
@@ -136,9 +135,39 @@ class MogakMainViewController: UIViewController {
         self.present(actionSheet, animated: true)
     }
     
+   
+    
+}
+
+extension MogakMainViewController {
+    private func configureLayout() {
+        self.view.addSubviews(mogakListCollectionView, mogakMandalartCollectionView)
+        
+        mogakListCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview()
+            make.height.equalTo(50)
+        }
+        
+        mogakMandalartCollectionView.snp.makeConstraints{
+//            $0.width.equalTo(modalArtWidthSize)
+            $0.leading.equalToSuperview().offset(20)
+            $0.height.equalTo(520)
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+        }
+    }
+}
+
+//MARK: - API 통신
+extension MogakMainViewController {
     //MARK: - 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
+        ///유저 액션 막기
+        self.view.isUserInteractionEnabled = false
         mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId) { result in
+            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):
                 print(#fileID, #function, #line, "- jogakList: \(jogakList)")
@@ -151,9 +180,11 @@ class MogakMainViewController: UIViewController {
         }
     }
     
-    
+    //MARK: - 모각 삭제
     func deleteMogak() {
+        self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteMogak(mogakId: selectedMogak.mogakId) { result in
+            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let responseResult):
                 if responseResult {
@@ -165,8 +196,11 @@ class MogakMainViewController: UIViewController {
         }
     }
     
+    //MARK: - 모각데이터 가져오기
     func getDetailMogakData() {
+        self.view.isUserInteractionEnabled = false
         modalartNetwork.getDetailMogakData(modalartId: self.modalartId) { result in
+            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let data):
                 self.mogakList = data?.result?.mogaks ?? []
@@ -190,36 +224,17 @@ class MogakMainViewController: UIViewController {
         }
     }
     
+    //MARK: - 조각 삭제
     func deleteJogak(_ jogakId: Int) {
+        self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteJogak(jogakId: jogakId) { result in
+            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(_):
                 self.getMogakDetail(self.selectedMogak)
             case .failure(let failure):
                 print(#fileID, #function, #line, "- error: \(failure)")
             }
-        }
-    }
-    
-}
-
-extension MogakMainViewController {
-    private func configureLayout() {
-        self.view.addSubviews(mogakListCollectionView, mogakMandalartCollectionView)
-        
-        mogakListCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview()
-            make.height.equalTo(50)
-        }
-        
-        mogakMandalartCollectionView.snp.makeConstraints{
-//            $0.width.equalTo(modalArtWidthSize)
-            $0.leading.equalToSuperview().offset(20)
-            $0.height.equalTo(520)
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
         }
     }
 }
@@ -282,27 +297,31 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.mogakMandalartCollectionView {
-            let row = indexPath.row
-            let bottomSheetVC = JogakSimpleModalViewController()
-            bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
-            let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
-            bottomSheetVC.jogakData = jogakData
-            
-            if let sheet = bottomSheetVC.sheetPresentationController {
-                if #available(iOS 16, *) {
-                    sheet.detents = [.custom() { context in
-                        let bottomHeight = jogakData.isRoutine ? 238 : 200
-                        return CGFloat(bottomHeight)
-                    }]
-                } else {
-                    sheet.detents = [.medium()]
+            guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
+            if cellType != EmptyJogakCell.identifier {
+                let row = indexPath.row
+                let bottomSheetVC = JogakSimpleModalViewController()
+                bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
+                let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
+                bottomSheetVC.jogakData = jogakData
+                
+                if let sheet = bottomSheetVC.sheetPresentationController {
+                    if #available(iOS 16, *) {
+                        sheet.detents = [.custom() { context in
+                            let bottomHeight = jogakData.isRoutine ? 238 : 200
+                            return CGFloat(bottomHeight)
+                        }]
+                    } else {
+                        sheet.detents = [.medium()]
+                    }
+                    sheet.prefersGrabberVisible = true
                 }
-                sheet.prefersGrabberVisible = true
+                bottomSheetVC.startDeleteJogak = {
+                    self.deleteJogak(jogakData.jogakID)
+                }
+                self.present(bottomSheetVC, animated: true)
             }
-            bottomSheetVC.startDeleteJogak = {
-                self.deleteJogak(jogakData.jogakID)
-            }
-            self.present(bottomSheetVC, animated: true)
+            
         } else if collectionView == self.mogakListCollectionView {
             let row = indexPath.row
             self.selectedMogak = self.mogakList[row]

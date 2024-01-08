@@ -8,7 +8,5 @@
 import Foundation
 
 struct ValidateNicknameModel: Codable {
-    let time: String
-    let status: String
-    let code, message: String
+    let time, status, code, message: String?
 }

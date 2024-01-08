@@ -12,6 +12,7 @@ pod 'Alamofire'
 pod 'ReusableKit'
 pod 'FSCalendar'
 pod 'Kingfisher', '~> 5.0'
+pod 'SwiftyJSON', '~> 4.0'
 
 
 post_install do |installer|
