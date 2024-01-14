@@ -21,27 +21,31 @@ class CommonLoginManage: RequestInterceptor {
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         guard let requestToken = UserDefaults.standard.string(forKey: "refreshToken") else { return }
         print(#fileID, #function, #line, "- refreshToken check: \(requestToken)")
-        let registerUserInfo = RegisterUserInfo.shared
-        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
-//            completion(.doNotRetryWithError(error))
-            registerUserInfo.loginState = false
-            return
-        }
         
-        AF.request(LoginRouter.getNewAccessToken(refreshToken: requestToken))
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: RefreshTokenResponse.self) { (response: DataResponse<RefreshTokenResponse, AFError> ) in
-                switch response.result {
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completion(.doNotRetry)
-                case .success(let data):
-                    UserDefaults.standard.set(data.result?.accessToken, forKey: "accessToken")
-                    UserDefaults.standard.set(data.result?.refreshToken, forKey: "refreshToken")
-                    completion(.retry)
+        guard let response = request.task?.response as? HTTPURLResponse else { return }
+        
+        if response.statusCode == 401 {
+            AF.request(LoginRouter.getNewAccessToken(refreshToken: requestToken))
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: RefreshTokenResponse.self) { (response: DataResponse<RefreshTokenResponse, AFError> ) in
+                    switch response.result {
+                    case .failure(let error):
+                        print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                        completion(.doNotRetry)
+                    case .success(let data):
+                        UserDefaults.standard.set(data.result?.accessToken, forKey: "accessToken")
+                        UserDefaults.standard.set(data.result?.refreshToken, forKey: "refreshToken")
+                        completion(.retry)
+                    }
+                    
                 }
-                
-            }
+        } else if response.statusCode == 404 || response.statusCode == 409 {
+            completion(.doNotRetry)
+        } else {
+            completion(.doNotRetryWithError(error))
+            UserDefaults.standard.set("", forKey: "refreshToken")
+            RegisterUserInfo.shared.loginState = false
+        }
             
     }
 }

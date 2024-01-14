@@ -12,12 +12,14 @@ enum LoginRouter: URLRequestConvertible {
     case login(data: LoginRequest)
     case getNewAccessToken(refreshToken: String)
     case logout
+    case withDraw
     
     var endPoint: String {
         switch self {
         case .login: return "api/auth/login"
         case .getNewAccessToken: return "api/auth/refresh"
         case .logout: return "api/auth/logout"
+        case .withDraw: return "api/auth/withdraw"
         }
     }
     
@@ -53,6 +55,8 @@ enum LoginRouter: URLRequestConvertible {
         case .getNewAccessToken:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .logout:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
+        case .withDraw:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         }
         

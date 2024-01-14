@@ -12,61 +12,7 @@ import Security
 import Combine
 import Alamofire
 
-struct SignInWithAppleResult {
-    let token: String
-    let nonce: String
-}
 
-struct LoginRequest: Codable {
-    let idToken: String
-    
-    enum CodingKeys: String, CodingKey {
-        case idToken = "id_token"
-    }
-}
-
-struct LoginFailResponse: Codable {
-    let time, code, message: String?
-    let status: Int
-}
-
-// MARK: - Welcome
-struct LoginResponse: Codable {
-//    let time, status, code, message: String?
-    let time, code, message: String?
-    let status: String
-    let result: LoginRealData?
-}
-
-// MARK: - Result
-struct LoginRealData: Codable {
-    let isRegistered: Bool
-    let userID: Int
-    let tokens: Tokens
-
-    enum CodingKeys: String, CodingKey {
-        case isRegistered
-        case userID = "userId"
-        case tokens
-    }
-}
-
-struct RefreshTokenResponse: Codable {
-//    let time, status, code, message: String?
-    let time, code, message: String?
-    let status: String
-    let result: Tokens?
-}
-
-// MARK: - Tokens
-struct Tokens: Codable {
-    let accessToken, refreshToken: String
-}
-
-struct LogoutResponse: Codable {
-    let time, status, code, message: String
-    let result: String?
-}
 
 
 final class AppleLoginManage: NSObject {

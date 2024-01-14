@@ -14,7 +14,7 @@ import UIKit
 class UserNetwork {
     static let shared = UserNetwork()
     //MARK: - 닉네임 검증
-    func nicknameVerify(_ nickname: String, completionHandler: @escaping(Result<String, Error>) -> Void) {
+    func nicknameVerify(_ nickname: String, completionHandler: @escaping(Result<String, AFError>) -> Void) {
         let nicknameRequest = NicknameChangeRequest(nickname: nickname)
         AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
             .validate(statusCode: 200..<300)
@@ -22,12 +22,17 @@ class UserNetwork {
                 switch response.result {
                 case .success(let nicknameVerify):
                     if nicknameVerify.code == "success" {
-                        return completionHandler(.success(""))
-                    } else {
-                        return completionHandler(.success(nicknameVerify.message))
+                        return completionHandler(.success("성공"))
                     }
+//                    else {
+//                        return completionHandler(.success(nicknameVerify.message))
+//                    }
                 case .failure(let error):
-                    completionHandler(.failure(error))
+                    
+                    if response.response?.statusCode == 409 {
+                        completionHandler(.failure(error.asAFError(orFailWith: "올바르지 않은 닉네임")))
+                    }
+                    
                 }
             }
     }
@@ -52,14 +57,7 @@ class UserNetwork {
             let jsonData = jsonString.data(using: String.Encoding.utf8)!
             
             multipartFormData.append(jsonData, withName: "request", mimeType: "application/json")
-            
-//            for (key, value) in parameters {
-//                if key == "request" {
-//                    let dataAlamoDic = try! JSONSerialization.data(withJSONObject: value, options: .prettyPrinted) //이렇게 했더니 json으로 파싱이 잘 안됨
-//                    multipartFormData.append("\(dataAlamoDic)".data(using: .utf8)!, withName: key as String, mimeType: "application/json")
-//                }
-//            }
-            
+
             if let profileImg = profileImg {
                 if let image = profileImg.jpegData(compressionQuality: 1) {
                     multipartFormData.append(image, withName: "multipartFile", fileName: "\(userData.nickname)_\(Date().timeIntervalSince1970).jpeg", mimeType: "image/jpeg")
@@ -83,33 +81,42 @@ class UserNetwork {
     //MARK: - 유저 닉네임 변경
     func nicknameChange(_ nickname: String, completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
         let nicknameRequest = NicknameChangeRequest(nickname: nickname)
-        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest))
+        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
-            .responseDecodable(of: UserInfoChangeResponse.self) { response in
+            .responseDecodable(of: ChangeSuccessResponse.self) { (response: DataResponse<ChangeSuccessResponse, AFError>) in
                 switch response.result {
-                case .success(let nicknameChange):
-                    print(#fileID, #function, #line, "- nickname change: \(nicknameChange)")
-                    completionHandler(.success(true))
                 case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
+                    print(#fileID, #function, #line, "- error: \(error)")
+                    if response.response?.statusCode == 409 {
+                        completionHandler(.failure(APIError.invalidNickname))
+                    } else if response.response?.statusCode == 404{
+                        completionHandler(.failure(APIError.NotExistUser("존재하지 않는 유저입니다. 모각으로 문의주세요!")))
+                    } else {
+                        completionHandler(.failure(error))
+                    }
+                case .success(let data):
+                    print(#fileID, #function, #line, "- nickname change: \(data)")
+                    completionHandler(.success(true))
                 }
             }
     }
     
     //MARK: - 유저 직무 변경
     func jobChange(_ job: JobChangeRequest, completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
-        AF.request(UserRouter.jobChange(job: job))
+        AF.request(UserRouter.jobChange(job: job), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
-            
             .responseDecodable(of: UserInfoChangeResponse.self) { response in
                 switch response.result {
                 case .success(let nicknameChange):
                     print(#fileID, #function, #line, "- nickname change: \(nicknameChange)")
                     completionHandler(.success(true))
                 case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
+                    if response.response?.statusCode == 404 {
+                        completionHandler(.failure(APIError.NotExistJob("존재하지 않는 직업입니다")))
+                    } else {
+                        completionHandler(.failure(error))
+                    }
+                    
                 }
             }
     }

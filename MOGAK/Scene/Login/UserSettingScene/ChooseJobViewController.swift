@@ -178,22 +178,31 @@ class ChooseJobViewController: UIViewController {
     
     func changeJobRequest() {
         let jobRequest = JobChangeRequest(job: RegisterUserInfo.shared.userJob ?? "")
-        
-//        AF.request(UserRouter.jobChange(job: jobRequest))
-        AF.request(UserRouter.jobChange(job: jobRequest), interceptor: CommonLoginManage())
-            .responseData(completionHandler: { response in
-                print(#fileID, #function, #line, "- response: \(response)")
-                switch response.result {
-                case .success(let data):
-                    let decoder = JSONDecoder()
-                    let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
-                    print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-                    print(#fileID, #function, #line, "- RegisterData: \(RegisterUserInfo.shared.userJob)")
+        UserNetwork.shared.jobChange(jobRequest) { result in
+            switch result {
+            case .success(let success):
+                if success {
                     self.navigationController?.popViewController(animated: true)
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
                 }
-            })
+            case .failure(let failure):
+                print(#fileID, #function, #line, "- failure: \(failure)")
+            }
+        }
+//        AF.request(UserRouter.jobChange(job: jobRequest))
+//        AF.request(UserRouter.jobChange(job: jobRequest), interceptor: CommonLoginManage())
+//            .responseData(completionHandler: { response in
+//                print(#fileID, #function, #line, "- response: \(response)")
+//                switch response.result {
+//                case .success(let data):
+//                    let decoder = JSONDecoder()
+//                    let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
+//                    print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+//                    print(#fileID, #function, #line, "- RegisterData: \(RegisterUserInfo.shared.userJob)")
+//                    
+//                case .failure(let error):
+//                    print(#fileID, #function, #line, "- error: \(error)")
+//                }
+//            })
             
     }
 }

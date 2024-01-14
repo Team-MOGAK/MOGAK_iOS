@@ -16,28 +16,48 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         guard let _ = scene as? UIWindowScene else { return }
-        setRootViewController(scene)
+//        setRootViewController(scene)
         
-//        lazy var firstVC: UIViewController = LoginViewController()
-//        lazy var firstVC: UIViewController = TabBarViewController()
-//        lazy var firstVC: UIViewController 0= AppGuideViewController()
+        RegisterUserInfo.shared.$loginState.sink { loginState in
+            let refreshToken = UserDefaults.standard.string(forKey: "refreshToken")
 
-        //        let isFirst = UserDefaults.isFirstAppLauch()
-        
-        //        if isFirst {
-        //            firstVC = UINavigationController(rootViewController: AppGuideViewController())
-        //        } else if !UserDefaults.standard.isPermAgreed {
-        //            firstVC = PermAgreeViewController()
-        //        }
-        
-        //firstVC = UINavigationController(rootViewController: LoginViewController())
-        //firstVC = UINavigationController(rootViewController: AppGuideViewController())
-//        window = UIWindow(windowScene: windowScene)
-//
-//        window?.rootViewController = firstVC
-//
-//        window?.makeKeyAndVisible()
-//        window?.windowScene = windowScene
+            print(#fileID, #function, #line, "- sceneDelegate refreshToken: \(refreshToken)")
+            if let loginState = loginState {
+                if loginState {
+                    if RegisterUserInfo.shared.userIsRegistered {
+                        self.setRootViewContrller(scene, type: .main)
+                    } else {
+                        self.setRootViewContrller(scene, type: .termAgree)
+                    }
+                }else {
+//                    if Storage.isFirstTime() {
+//                        self.setRootViewContrller(scene, type: .onBoarding)
+//                    }
+//                    else if refreshToken != "" {
+//                        self.setRootViewContrller(scene, type: .main)
+//                    }
+//                    else {
+//                        self.setRootViewContrller(scene, type: .login)
+//                    }
+                    self.setRootViewContrller(scene, type: .main)
+//                    self.setRootViewContrller(scene, type: .login)
+//                    print(#fileID, #function, #line, "- 로그인 완료
+                }
+            } else {
+//                if Storage.isFirstTime() {
+//                    self.setRootViewContrller(scene, type: .onBoarding)
+//                }
+//                else if refreshToken != "" {
+//                    self.setRootViewContrller(scene, type: .main)
+//                }
+//                else {
+//                    self.setRootViewContrller(scene, type: .login)
+//                }
+                self.setRootViewContrller(scene, type: .main)
+//                self.setRootViewContrller(scene, type: .login)
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -48,22 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        RegisterUserInfo.shared.$loginState.sink { loginState in
-            if let loginState = loginState {
-                if loginState {
-                    if RegisterUserInfo.shared.userIsRegistered {
-                        self.setRootViewContrller(scene, type: .main)
-                    } else {
-                        self.setRootViewContrller(scene, type: .termAgree)
-
-                    }
-                }else {
-                    self.setRootViewContrller(scene, type: .login)
-//                    print(#fileID, #function, #line, "- 로그인 완료
-                }
-            }
-        }
-        .store(in: &cancellables)
+        
 
     }
     
@@ -120,11 +125,20 @@ extension SceneDelegate {
     
     private func setRootViewContrller(_ scene: UIScene, type: StartViewControllerType) {
         if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            print(#fileID, #function, #line, "- 어떤 type의 data인지 확인하기⭐️: \(type)")
-            window.rootViewController = type.vc //그에 맞게 Rootview를 변경해준다
-            self.window = window
-            window.makeKeyAndVisible()
+            DispatchQueue.main.async {
+                let window = UIWindow(windowScene: windowScene)
+                print(#fileID, #function, #line, "- 어떤 type의 data인지 확인하기⭐️: \(type)")
+                if type == .termAgree {
+                    let navigationController = UINavigationController(rootViewController: type.vc)
+                    window.rootViewController = navigationController
+                } else {
+                    window.rootViewController = type.vc //그에 맞게 Rootview를 변경해준다
+                }
+                
+                self.window = window
+                window.makeKeyAndVisible()
+            }
+            
         }
     }
 }

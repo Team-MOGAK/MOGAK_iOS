@@ -402,7 +402,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 }
                 self.present(bottomSheetVC, animated: true)
             } else {
-                print(#fileID, #function, #line, "- 작은 모다라트 설정으로 이동")
+                print(#fileID, #function, #line, "- 설정 버튼 클릭?⭐️작은 모다라트 설정으로 이동")
             }
         }
         else if cellType == ModalartMainCell.identifier {
@@ -474,17 +474,11 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
         print(#fileID, #function, #line, "- mogakData.count⭐️: \(mogakData.count)")
         if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
-            mogakCell.goalCategoryLabelText = mogakData[row].bigCategory.name
-            mogakCell.goalContentLabelText = mogakData[row].title
-//            mogakCell.goalCategoryLabelBackgoundColor = "009967"
-            mogakCell.goalCategoryLabelTextColor = mogakData[row].color ?? "475FFD"
+            mogakCell.mogakCellData = mogakData[row]
             mogakCell.cellDataSetting()
             return mogakCell
         } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
-            mogakCell.goalCategoryLabelText = mogakData[row - 1].bigCategory.name
-            mogakCell.goalContentLabelText = mogakData[row - 1].title
-//            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
-            mogakCell.goalCategoryLabelTextColor = mogakData[row - 1].color ?? "475FFD"
+            mogakCell.mogakCellData = mogakData[row - 1]
             mogakCell.cellDataSetting()
             return mogakCell
         } else {

@@ -103,7 +103,13 @@ class MyPageEditViewController: UIViewController {
         .store(in: &cancellables)
         
         RegisterUserInfo.shared.$profileImage.sink { image in
-            self.profileImage.image = image
+            print(#fileID, #function, #line, "- image: \(image)")
+            if image == nil {
+                self.profileImage.image = UIImage(named: "setProfile")
+            } else {
+                self.profileImage.image = image
+            }
+            
         }
         .store(in: &cancellables)
     }
@@ -144,6 +150,7 @@ class MyPageEditViewController: UIViewController {
                     
                     if logoutReponse.code == "success" {
                         UserDefaults.standard.set("", forKey: "refreshToken")
+                        UserDefaults.standard.synchronize()
                         RegisterUserInfo.shared.loginState = false
 //                        let loginViewController = LoginViewController()
 //                        loginViewController.modalPresentationStyle = .overFullScreen
@@ -153,11 +160,47 @@ class MyPageEditViewController: UIViewController {
                     print(#fileID, #function, #line, "- error: \(error)")
                 }
             }
-        
+    }
+    
+    func requestWithdraw() {
+        AF.request(LoginRouter.withDraw, interceptor: CommonLoginManage())
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                let statusCode = response.response?.statusCode
+                switch response.result {
+                case .success(let data):
+                    let decoder = JSONDecoder()
+                    if (200..<300).contains(statusCode ?? 0) {
+                        let decodeData = try? decoder.decode(WithDrawResponse.self, from: data)
+                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+                        guard let isUserDeleted = decodeData?.result.deleted else { return }
+                        if isUserDeleted {
+                            UserDefaults.standard.set("", forKey: "refreshToken")
+                            UserDefaults.standard.set(true, forKey: "isFirstTime")
+                            UserDefaults.standard.synchronize()
+                            RegisterUserInfo.shared.loginState = false
+                        }
+                    } else {
+                        let decodeData = try? decoder.decode(WithDrawErrorResponse.self, from: data)
+                        print(#fileID, #function, #line, "- withDraw fail: \(String(describing: decodeData?.message))")
+                    }
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error)")
+                }
+            }
     }
     
     @objc func userDelete() {
         print(#fileID, #function, #line, "- 회원탈퇴")
+        let cancelWithdrawAlertAction = UIAlertAction(title: "취소", style: .cancel)
+        let okayWithdrawAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.requestWithdraw()
+        }
+        
+        let askWithdrawAlert = UIAlertController(title: "정말 회원탈퇴를 하시겠습니까?", message: "회원탈퇴를 하시면 데이터를 복원할 수 없습니다!", preferredStyle: .alert)
+        askWithdrawAlert.addAction(cancelWithdrawAlertAction)
+        askWithdrawAlert.addAction(okayWithdrawAlertAction)
+        self.present(askWithdrawAlert, animated: true)
     }
     
     private func configureProfile() {

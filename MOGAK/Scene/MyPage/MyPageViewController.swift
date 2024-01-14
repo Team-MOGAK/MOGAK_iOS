@@ -159,14 +159,18 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     }
     
     //MARK: - 위치 서비스 이용동의
+    private lazy var gpsView: UIStackView = UIStackView()
+    
     private let gpsLabel = UILabel().then {
         $0.text = "위치 서비스 이용동의"
         $0.font = UIFont.pretendard(.medium, size: 16)
         $0.textColor = UIColor(hex: "24252E")
     }
     
-    private let gpsButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+    private let gpsLeftArrow = UIImageView().then {
+        $0.image = UIImage(systemName: "chevron.right")
+        $0.contentMode = .scaleAspectFill
+        $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
     
@@ -178,7 +182,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     }
     
     private let versionNumberLabel = UILabel().then {
-        $0.text = "v1.1.1"
+//        $0.text = "v1.1.1"
         $0.font = UIFont.pretendard(.medium, size: 16)
         $0.textColor = UIColor(hex: "BFC3D4")
     }
@@ -192,6 +196,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         self.configureSetting()
         self.viewConnectGestureSetting()
         
+        versionNumberLabel.text = currentAppVersion()
+        userProfileTextSetting()
+    }
+    
+    //MARK: - 유저 프로필 세팅
+    func userProfileTextSetting() {
+        //유저의 프로필 정보 받아오기
         UserNetwork.shared.getUserData { result in
             switch result {
             case .success(let success):
@@ -201,21 +212,36 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
             }
         }
         
+        //닉네임 변경될때마다 해당 값 바로 넣어주기
         RegisterUserInfo.shared.$nickName.sink { nickname in
             self.name.text = nickname
         }
         .store(in: &cancellables)
         
+        //유저의 직업 변경시 값 바로 변경
         RegisterUserInfo.shared.$userJob.sink(receiveValue: { job in
             self.job.text = job
         })
         .store(in: &cancellables)
         
+        // 유저의 프로필 사진 변경시 바로 변경
         RegisterUserInfo.shared.$profileImage.sink { image in
-            self.profileImage.image = image
+            if image == nil {
+                self.profileImage.image = UIImage(named: "setProfile")
+            } else {
+                self.profileImage.image = image
+            }
         }
         .store(in: &cancellables)
-        
+    }
+    
+    func currentAppVersion() -> String {
+      if let info: [String: Any] = Bundle.main.infoDictionary,
+          let currentVersion: String
+            = info["CFBundleShortVersionString"] as? String {
+            return currentVersion
+      }
+      return "nil"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -257,11 +283,16 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         self.permView.addArrangedSubview(permLeftArrow)
         self.privacyView.addArrangedSubview(privacyLabel)
         self.privacyView.addArrangedSubview(privacyLeftArrow)
+        self.gpsView.addArrangedSubview(gpsLabel)
+        self.gpsView.addArrangedSubview(gpsLeftArrow)
     }
     
     //MARK: - 각 view에 제스처 넣어주기
     func viewConnectGestureSetting() {
         print(#fileID, #function, #line, "- 제스처 연결?")
+        let pushNotiGesture = UITapGestureRecognizer(target: self, action: #selector(self.pushNotificationTappedAction(_:)))
+        self.pushView.addGestureRecognizer(pushNotiGesture)
+        
         let notiGesture = UITapGestureRecognizer(target: self, action: #selector(self.notiTappedAction(_:)))
         self.notiView.addGestureRecognizer(notiGesture)
         
@@ -273,12 +304,22 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         
         let privacyGesture = UITapGestureRecognizer(target: self, action: #selector(self.privacyTappedAction(_:)))
         self.privacyView.addGestureRecognizer(privacyGesture)
+        
+        let gpsServiceGesture = UITapGestureRecognizer(target: self, action: #selector(self.gpsServiceTappedAction(_:)))
+        self.gpsView.addGestureRecognizer(gpsServiceGesture)
     }
     
     //MARK: - 프로필 수정 뷰로 이동
     @objc private func goToEditPage() {
         let mypageVC = MyPageEditViewController()
         self.navigationController?.pushViewController(mypageVC, animated: true)
+    }
+    
+    @objc private func pushNotificationTappedAction(_ sender: UITapGestureRecognizer) {
+        let readyAlertAction = UIAlertAction(title: "확인", style: .default)
+        let readyAlert = UIAlertController(title: "준비중", message: "푸시 알림 서비스는 준비중이에요", preferredStyle: .alert)
+        readyAlert.addAction(readyAlertAction)
+        self.present(readyAlert, animated: true)
     }
     
     //MARK: - 공지사항 알림 동의
@@ -291,13 +332,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     //MARK: - 문의사항 알림 동의
     @objc func askTappedAction(_ sender: UITapGestureRecognizer) {
-        print(#fileID, #function, #line, "- 이용약관 뷰 클릭")
+        print(#fileID, #function, #line, "- 문의사항 뷰 클릭")
         let webViewVC = MypageWebViewController()
         webViewVC.url = .ask
         self.navigationController?.pushViewController(webViewVC, animated: true)
     }
     
-    //MARK: - 이용약관 알림 동의
+    //MARK: - 이용약관 동의
     @objc func permTappedAction(_ sender: UITapGestureRecognizer) {
         print(#fileID, #function, #line, "- 이용약관 뷰 클릭")
         let webViewVC = MypageWebViewController()
@@ -311,6 +352,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         let webViewVC = MypageWebViewController()
         webViewVC.url = .privacy
         self.navigationController?.pushViewController(webViewVC, animated: true)
+    }
+    
+    @objc func gpsServiceTappedAction(_ sender: UITapGestureRecognizer) {
+        let readyAlertAction = UIAlertAction(title: "확인", style: .default)
+        let readyAlert = UIAlertController(title: "준비중", message: "위치 서비스 이용동의 서비스는 준비중이에요", preferredStyle: .alert)
+        readyAlert.addAction(readyAlertAction)
+        self.present(readyAlert, animated: true)
     }
 }
 
@@ -354,8 +402,8 @@ extension MyPageViewController {
     
     //MARK: - 기타 레이아웃 설정(공지사항, 문의사항 등)
     private func configureSetting() {
-        self.view.addSubviews(pushView, notiView, askView, permView, privacyView)
-        self.view.addSubviews(gpsLabel, gpsButton, versionLabel, versionNumberLabel)
+        self.view.addSubviews(pushView, notiView, askView, permView, privacyView, gpsView)
+        self.view.addSubviews(versionLabel, versionNumberLabel)
         
         ///푸시알림
         pushView.snp.makeConstraints { make in
@@ -398,15 +446,11 @@ extension MyPageViewController {
         }
         
         ///위치정보 동의설정
-        gpsLabel.snp.makeConstraints({
-            $0.top.equalTo(self.privacyLabel.snp.bottom).offset(32)
-            $0.leading.equalToSuperview().offset(30)
-        })
-        
-        gpsButton.snp.makeConstraints({
-            $0.centerY.equalTo(self.gpsLabel.snp.centerY)
-            $0.trailing.equalToSuperview().offset(-30)
-            $0.width.height.equalTo(16)
+        gpsView.snp.makeConstraints({ make in
+            make.leading.equalToSuperview().offset(30)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.privacyLabel.snp.bottom).offset(32)
+            make.height.equalTo(22)
         })
         
         ///버전정보
