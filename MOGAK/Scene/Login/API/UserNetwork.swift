@@ -90,7 +90,7 @@ class UserNetwork {
                     if response.response?.statusCode == 409 {
                         completionHandler(.failure(APIError.invalidNickname))
                     } else if response.response?.statusCode == 404{
-                        completionHandler(.failure(APIError.NotExistUser("존재하지 않는 유저입니다. 모각으로 문의주세요!")))
+                        completionHandler(.failure(APIError.NotExistUser))
                     } else {
                         completionHandler(.failure(error))
                     }
@@ -112,7 +112,7 @@ class UserNetwork {
                     completionHandler(.success(true))
                 case .failure(let error):
                     if response.response?.statusCode == 404 {
-                        completionHandler(.failure(APIError.NotExistJob("존재하지 않는 직업입니다")))
+                        completionHandler(.failure(APIError.NotExistJob))
                     } else {
                         completionHandler(.failure(error))
                     }
@@ -123,7 +123,7 @@ class UserNetwork {
     
     //MARK: - 유저 프로필사진 변경
     func userImageChange(_ profileImg: UIImage, completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
-        var url = "https://mogak.shop:8080/api/users/profile/image"
+        let url = "https://mogak.shop:8080/api/users/profile/image"
         
         let header: HTTPHeaders = [
                     "Accept" : "application/json, application/javascript, text/javascript, text/json",
@@ -190,5 +190,57 @@ class UserNetwork {
             }
     }
     
+    //MARK: - 유저 로그아웃
+    func userLogout(_ completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
+        AF.request(LoginRouter.logout, interceptor: CommonLoginManage())
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: LogoutResponse.self) { (response: DataResponse<LogoutResponse, AFError>) in
+                switch response.result {
+                case .success(let logoutReponse):
+                    print(#fileID, #function, #line, "- logout: \(logoutReponse)")
+                    
+                    if logoutReponse.code == "success" {
+                        UserDefaults.standard.set("", forKey: "refreshToken")
+                        UserDefaults.standard.synchronize()
+                        completionHandler(.success(true))
+//                        RegisterUserInfo.shared.loginState = false
+                    }
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error)")
+                    completionHandler(.failure(error))
+                }
+            }
+    }
+    
+    //MARK: - 회원탈퇴
+    func withDraw(_ completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
+        AF.request(LoginRouter.withDraw, interceptor: CommonLoginManage())
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                let statusCode = response.response?.statusCode
+                switch response.result {
+                case .success(let data):
+                    let decoder = JSONDecoder()
+                    if (200..<300).contains(statusCode ?? 0) {
+                        let decodeData = try? decoder.decode(WithDrawResponse.self, from: data)
+                        guard let isUserDeleted = decodeData?.result.deleted else { return }
+                        if isUserDeleted {
+                            UserDefaults.standard.set("", forKey: "refreshToken")
+                            UserDefaults.standard.set(true, forKey: "isFirstTime")
+                            UserDefaults.standard.synchronize()
+                            completionHandler(.success(true))
+//                            RegisterUserInfo.shared.loginState = false
+                        }
+                    } else {
+                        let decodeData = try? decoder.decode(WithDrawErrorResponse.self, from: data)
+                        print(#fileID, #function, #line, "- withDraw fail: \(String(describing: decodeData?.message))")
+                        completionHandler(.success(false))
+                    }
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error: \(error)")
+                    completionHandler(.failure(error))
+                }
+            }
+    }
     
 }

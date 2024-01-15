@@ -127,6 +127,7 @@ class ModalartMainViewController: UIViewController {
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
     @objc private func tacoBtnTapped() {
+        print(#fileID, #function, #line, "- userId: \(UserDefaults.standard.integer(forKey: "userId"))")
         print(#fileID, #function, #line, "- 모다라트 추가 삭제버튼(타코버튼) 탭 ⭐️")
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
@@ -139,7 +140,11 @@ class ModalartMainViewController: UIViewController {
         let deleteModalArtAction = UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in
             //삭제하기 선택시 -> 정말 삭제하시겠습니까?라는 alert을 띄우기
             if self.modalartList.isEmpty {
-                return
+                let readyAlertAction = UIAlertAction(title: "확인", style: .default)
+                let readyAlert = UIAlertController(title: "모다라트 삭제 오류", message: "현재 생성된 모다라트가 없어서 \n삭제할 수 없습니다.", preferredStyle: .alert)
+                readyAlert.addAction(readyAlertAction)
+                self.present(readyAlert, animated: true)
+                
             } else {
                 let bottomSheetVC = AskDeleteModal()
                 if let sheet = bottomSheetVC.sheetPresentationController {
@@ -205,9 +210,12 @@ extension ModalartMainViewController {
                 self.modalartList = modalartList
                 print(#fileID, #function, #line, "- modalartList checking:\(self.modalartList)")
                 
-                if modalartList.isEmpty {
+                if self.modalartList.isEmpty {
                     self.modalartName = "내 모다라트"
+                    self.modalArtNameLabel.text = self.modalartName
+//                    self.modalartList =
                     self.modalArtMainCellBgColor = "BFC3D4"
+                    self.modalArtCollectionView.reloadData()
                 }
                 else {
                     guard let firstData = modalartList.first else { return }

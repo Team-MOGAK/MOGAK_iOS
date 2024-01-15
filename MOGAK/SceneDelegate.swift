@@ -16,45 +16,47 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         guard let _ = scene as? UIWindowScene else { return }
-//        setRootViewController(scene)
-        
         RegisterUserInfo.shared.$loginState.sink { loginState in
             let refreshToken = UserDefaults.standard.string(forKey: "refreshToken")
 
             print(#fileID, #function, #line, "- sceneDelegate refreshToken: \(refreshToken)")
             if let loginState = loginState {
+                //로그인이 되어있다면
                 if loginState {
                     if RegisterUserInfo.shared.userIsRegistered {
+                        //이미 등록한 유저
                         self.setRootViewContrller(scene, type: .main)
                     } else {
+                        //아직 등록하지 않은 유저
                         self.setRootViewContrller(scene, type: .termAgree)
                     }
                 }else {
-//                    if Storage.isFirstTime() {
-//                        self.setRootViewContrller(scene, type: .onBoarding)
-//                    }
-//                    else if refreshToken != "" {
-//                        self.setRootViewContrller(scene, type: .main)
-//                    }
-//                    else {
-//                        self.setRootViewContrller(scene, type: .login)
-//                    }
-                    self.setRootViewContrller(scene, type: .main)
-//                    self.setRootViewContrller(scene, type: .login)
-//                    print(#fileID, #function, #line, "- 로그인 완료
+                    //처음 등록한 유저라면
+                    if Storage.isFirstTime() {
+                        self.setRootViewContrller(scene, type: .onBoarding)
+                    }
+                    // 처음 등록한 유저가 아니고 refreshToken이 있다면
+                    else if refreshToken != "" {
+                        self.setRootViewContrller(scene, type: .main)
+                    }
+                    // refreshToken이 없다면
+                    else {
+                        self.setRootViewContrller(scene, type: .login)
+                    }
+//                    self.setRootViewContrller(scene, type: .main)
                 }
             } else {
-//                if Storage.isFirstTime() {
-//                    self.setRootViewContrller(scene, type: .onBoarding)
-//                }
-//                else if refreshToken != "" {
-//                    self.setRootViewContrller(scene, type: .main)
-//                }
-//                else {
-//                    self.setRootViewContrller(scene, type: .login)
-//                }
-                self.setRootViewContrller(scene, type: .main)
-//                self.setRootViewContrller(scene, type: .login)
+                if Storage.isFirstTime() {
+                    self.setRootViewContrller(scene, type: .onBoarding)
+                }
+                else if refreshToken != "" {
+                    self.setRootViewContrller(scene, type: .main)
+                }
+                else {
+                    self.setRootViewContrller(scene, type: .login)
+                }
+                
+//                self.setRootViewContrller(scene, type: .main)
             }
         }
         .store(in: &cancellables)
@@ -92,17 +94,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 enum StartViewControllerType {
-    case login
-    case termAgree
-    case main
-    case onBoarding
+    case login //로그인
+    case termAgree //이용동의
+    case main //메인
+    case onBoarding //온보딩화면
     
     var vc: UIViewController {
         switch self {
         case .login: return LoginViewController()
         case .termAgree: return TermsAgreeViewController()
         case .main: return TabBarViewController()
-//        case .login: return TabBarViewController()
         case .onBoarding: return AppGuideViewController()
         }
     }

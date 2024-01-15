@@ -104,3 +104,10 @@ struct MainCategory: Codable {
     let id: Int
     let name: String
 }
+
+struct MogakError: Codable {
+    let time: String
+    let status: Int
+    let code: String
+    let message: String
+}

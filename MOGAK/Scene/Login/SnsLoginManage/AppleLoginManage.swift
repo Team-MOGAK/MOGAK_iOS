@@ -92,14 +92,8 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                 print(#fileID, #function, #line, "- codeString🔥: \(codeString)")
                 let loginRequestTokenData = LoginRequest(idToken: idTokenString)
                 
+                //MARK: - 로그인 요청
                 AF.request(LoginRouter.login(data: loginRequestTokenData))
-//                    .responseData(completionHandler: { response in
-//
-//                        if response.response?.statusCode == 200 {
-//                            let decoder = JSONDecoder()
-//                            let decodeDate = decoder.decode(LoginResponse.self, from: response)
-//                        }
-//                    })
                     .responseDecodable(of: LoginResponse.self) { (response: DataResponse<LoginResponse, AFError> ) in
                         
                         switch response.result {

@@ -16,6 +16,7 @@ class NicknameViewController: UIViewController {
     let apiManger = ApiManager.shared
     var nicknameAndImageChange: Bool = false
     var profileImageChange: Bool = false
+    var changeProfileImage: UIImage? = nil
     var cancellables = Set<AnyCancellable>()
     
     private let setNicknameLabel : UILabel = {
@@ -204,12 +205,15 @@ class NicknameViewController: UIViewController {
     
     @objc private func deleteProfileImage() {
         self.setProfile.setImage(UIImage(named: "setProfile"), for: .normal)
-        registerUserInfo.profileImage = nil
+//        registerUserInfo.profileImage = nil
+        changeProfileImage = UIImage(named: "setProfile")
+        nextButton.isUserInteractionEnabled = true
+        nextButton.backgroundColor = UIColor(hex: "475FFD")
+        deleteImageButton.isHidden = true
         profileImageChange = true
     }
     
     @objc private func nextButtonIsClicked() {
-        // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
         print(#fileID, #function, #line, "- nicknameTextField.text⭐️: \(nicknameTextField.text)")
         let nicknameText = nicknameTextField.text ?? ""
         if nicknameText != "" {
@@ -281,8 +285,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
         if let image = info[.originalImage] as? UIImage {
             // 가져온 이미지를 버튼 이미지로 설정합니다.
             setProfile.setImage(image, for: .normal)
-            profileImageChange = true
-            registerUserInfo.profileImage = image
+            
             // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
             let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
             if let imageURL = info[.imageURL] as? URL {
@@ -294,6 +297,12 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
                         // 버튼 모양을 원 모양으로 변경합니다.
                         self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
                         self.setProfile.clipsToBounds = true
+                        self.profileImageChange = true
+            //            registerUserInfo.profileImage = image
+                        self.changeProfileImage = image
+                        self.nextButton.isUserInteractionEnabled = true
+                        self.nextButton.backgroundColor = UIColor(hex: "475FFD")
+                        self.deleteImageButton.isHidden = false
                         break
                     case .failure(let error):
                         // 이미지 표시 중에 에러가 발생한 경우 실행되는 코드
@@ -352,7 +361,13 @@ extension NicknameViewController {
                     let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요", preferredStyle: .alert)
                     nicknameErrorAlert.addAction(nicknameErrorAlertAction)
                     self.present(nicknameErrorAlert, animated: true)
-                } else {
+                } else if failure as? APIError == APIError.NotExistUser {
+                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요", preferredStyle: .alert)
+                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                    self.present(nicknameErrorAlert, animated: true)
+                }
+                else {
                     print(#fileID, #function, #line, "- failure: \(failure)")
                     let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
                     let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "\(failure)", preferredStyle: .alert)
@@ -390,11 +405,12 @@ extension NicknameViewController {
     //MARK: - 프로필 사진 변경 요청
     func profileImageChangeRequest() {
         let userNetwork = UserNetwork.shared
-        guard let profileImage = registerUserInfo.profileImage else { return }
+        guard let profileImage = changeProfileImage else { return }
         userNetwork.userImageChange(profileImage) { result in
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
+                self.registerUserInfo.profileImage = self.changeProfileImage
                 self.navigationController?.popViewController(animated: true)
             case .failure(let failure):
                 print(#fileID, #function, #line, "- failure: \(failure)")

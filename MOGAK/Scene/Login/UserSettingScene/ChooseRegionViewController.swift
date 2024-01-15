@@ -128,8 +128,8 @@ class ChooseRegionViewController: UIViewController {
         nextButton.backgroundColor = UIColor(hex: "BFC3D4")
     }
     
+    //MARK: - 유저 등록
     @objc private func nextButtonIsClicked() {
-        
         let userData = UserInfoData(nickname: RegisterUserInfo.shared.nickName ?? "", job: RegisterUserInfo.shared.userJob ?? "" , address: RegisterUserInfo.shared.userRegion ?? "", email: RegisterUserInfo.shared.userEmail ?? "", multipartFile: "")
         print(#fileID, #function, #line, "- userData: \(userData)")
         print(#fileID, #function, #line, "- profileImage: \(RegisterUserInfo.shared.profileImage)")
@@ -141,13 +141,13 @@ class ChooseRegionViewController: UIViewController {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
                 var defaults = UserDefaults.standard //isFirstTime아닌지 체크하기
+                //유저 세팅이 끝났으므로 isFirstTime false로 체크
                 defaults.set(false, forKey: "isFirstTime")
+                
                 let tabBarController = TabBarViewController()
                 self.view.window?.rootViewController = tabBarController
             }
         }
-//        registerUser()
-        //        let mainVC = UINavigationController(rootViewController: TabBarViewController())
     }
     
 }
@@ -208,54 +208,8 @@ extension ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.view.bounds.height / 20
     }
-    
-    
+
 }
 
-//네트워크 코드
-extension ChooseRegionViewController {
-    func registerUser() {
-        
-        let userEmail = UserDefaults.standard.string(forKey: "userEmail")
-        
-        let url = ApiConstants.join
-        
-//        let parameters: Parameters = [
-//            "nickname": "\(RegisterUserInfo.shared.nickName!)",
-//            "job": "\(RegisterUserInfo.shared.userJob!)",
-//            "address": "\(RegisterUserInfo.shared.userRegion!)",
-//            "email": "\(userEmail!)"
-//        ]
-        
-//        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
-//            .responseJSON { response in
-//                switch response.result {
-//                case .success(let data):
-//                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
-//                        do {
-//                            let decoder = JSONDecoder()
-//                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
-//                            print("Decoded data: \(decodedData)")
-//                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
-//                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
-//
-//                            let mainVC = TabBarViewController()
-//                            mainVC.modalPresentationStyle = .fullScreen
-//                            self.present(mainVC, animated: true)
-//                        } catch {
-//                            print("Decoding error: \(error)")
-//                        }
-//                    } else {
-//                        print("Invalid response data format")
-//                    }
-//                case .failure(let error):
-//                    print("Error: \(error)")
-//                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
-//                }
-//            }
-    }
-    
-    
-}
 
 

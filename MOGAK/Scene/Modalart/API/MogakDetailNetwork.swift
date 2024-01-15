@@ -26,13 +26,14 @@ class MogakDetailNetwork: NSObject {
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
     //MARK: - 모각 삭제 요청 API
     func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        AF.request(ModalartRouter.delteModalart(modaratId: mogakId), interceptor: CommonLoginManage())
-//        AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId))
+//        AF.request(ModalartRouter.delteModalart(modaratId: mogakId), interceptor: CommonLoginManage())
+        AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId), interceptor: CommonLoginManage())
         .validate()
           .responseData(emptyResponseCodes: [200, 204, 205]) { response in
               switch response.result{
               case .failure(let error):
                   print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+    
                   completionHandler(.failure(error))
               case .success(_):
                   print(#fileID, #function, #line, "- data")

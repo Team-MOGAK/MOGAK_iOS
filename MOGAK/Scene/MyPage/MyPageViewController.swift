@@ -12,10 +12,10 @@ import WebKit
 import Combine
 
 enum WebUrl: String {
-    case noti = "https://www.google.com" //공지사항
-    case ask = "https://www.naver.com" //문의사항
-    case perm = "https://mogak.oopy.io/fbb05a84-baec-4a8a-87dc-ec42d2a7955d"
-    case privacy = "https://mogak.oopy.io/4ac04bef-8493-4108-b9f9-6c6250155948" //개인정보 처리방침
+    case noti = "https://business-dong.tistory.com/category/MOGAK%20%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD" //공지사항
+    case ask = "https://open.kakao.com/o/sXxrT02f" //문의사항
+    case perm = "https://business-dong.tistory.com/6"
+    case privacy = "https://business-dong.tistory.com/8" //개인정보 처리방침
 }
 
 class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerDelegate {
@@ -57,13 +57,14 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         $0.addTarget(self, action: #selector(goToEditPage), for: .touchUpInside)
     }
     
-    private let shareButton = UIButton().then {
+    private lazy var shareButton = UIButton().then {
         $0.setTitle("프로필 공유", for: .normal)
         $0.setTitleColor(UIColor.white, for: .normal)
         $0.backgroundColor = UIColor(hex: "6C7FFD")
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 16)
         $0.titleLabel?.textAlignment = .center
         $0.layer.cornerRadius = 10
+        $0.addTarget(self, action: #selector(profileShareButtonTapped), for: .touchUpInside)
     }
     
     private let buttonStackView = UIStackView().then {
@@ -196,8 +197,8 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         self.configureSetting()
         self.viewConnectGestureSetting()
         
-        versionNumberLabel.text = currentAppVersion()
-        userProfileTextSetting()
+        self.versionNumberLabel.text = currentAppVersion()
+        self.userProfileTextSetting()
     }
     
     //MARK: - 유저 프로필 세팅
@@ -315,6 +316,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         self.navigationController?.pushViewController(mypageVC, animated: true)
     }
     
+    @objc private func profileShareButtonTapped() {
+        let readyAlertAction = UIAlertAction(title: "확인", style: .default)
+        let readyAlert = UIAlertController(title: "준비중", message: "프로필 공유 서비스는 준비중이에요", preferredStyle: .alert)
+        readyAlert.addAction(readyAlertAction)
+        self.present(readyAlert, animated: true)
+    }
+    
     @objc private func pushNotificationTappedAction(_ sender: UITapGestureRecognizer) {
         let readyAlertAction = UIAlertAction(title: "확인", style: .default)
         let readyAlert = UIAlertController(title: "준비중", message: "푸시 알림 서비스는 준비중이에요", preferredStyle: .alert)
@@ -360,6 +368,8 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         readyAlert.addAction(readyAlertAction)
         self.present(readyAlert, animated: true)
     }
+    
+    
 }
 
 

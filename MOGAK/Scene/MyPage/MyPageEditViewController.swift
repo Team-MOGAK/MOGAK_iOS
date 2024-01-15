@@ -92,16 +92,23 @@ class MyPageEditViewController: UIViewController {
         logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
         userDeleteButton.addTarget(self, action: #selector(userDelete), for: .touchUpInside)
         
+        userProfileSetting()
+    }
+    
+    func userProfileSetting() {
+        //닉네임 변경 반영
         RegisterUserInfo.shared.$nickName.sink { nickname in
             self.userName.text = nickname
         }
         .store(in: &cancellables)
         
+        //직무 변경 반영
         RegisterUserInfo.shared.$userJob.sink(receiveValue: { job in
             self.job.text = job
         })
         .store(in: &cancellables)
         
+        //프로필 사진 변경 반영
         RegisterUserInfo.shared.$profileImage.sink { image in
             print(#fileID, #function, #line, "- image: \(image)")
             if image == nil {
@@ -126,6 +133,7 @@ class MyPageEditViewController: UIViewController {
         self.title = "프로필 수정"
     }
 
+    //MARK: - 유저 닉네임 & 이미지 변경 텝 선택
     @objc func userNicknameProfileChangeTapped() {
         print(#fileID, #function, #line, "- 닉네임 변경")
         let nicknameVC = NicknameViewController()
@@ -133,61 +141,45 @@ class MyPageEditViewController: UIViewController {
         self.navigationController?.pushViewController(nicknameVC, animated: true)
     }
     
+    //MARK: - 직업 변경 탭 선택
     @objc func userJobChangeTapped() {
         let jobVC = ChooseJobViewController()
         jobVC.changeJob = true
         self.navigationController?.pushViewController(jobVC, animated: true)
     }
     
+    //MARK: - 로그아웃 요청
     @objc func logout() {
         print(#fileID, #function, #line, "- 로그아웃")
-        AF.request(LoginRouter.logout, interceptor: CommonLoginManage())
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: LogoutResponse.self) { (response: DataResponse<LogoutResponse, AFError>) in
-                switch response.result {
-                case .success(let logoutReponse):
-                    print(#fileID, #function, #line, "- logout: \(logoutReponse)")
-                    
-                    if logoutReponse.code == "success" {
-                        UserDefaults.standard.set("", forKey: "refreshToken")
-                        UserDefaults.standard.synchronize()
-                        RegisterUserInfo.shared.loginState = false
-//                        let loginViewController = LoginViewController()
-//                        loginViewController.modalPresentationStyle = .overFullScreen
-//                        self.present(loginViewController, animated: true)
-                    }
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
+        UserNetwork.shared.userLogout { result in
+            switch result {
+            case .success:
+                let logoutAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                    RegisterUserInfo.shared.loginState = false
                 }
+                let logoutAlert = UIAlertController(title: "로그아웃", message: "로그아웃되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
+                logoutAlert.addAction(logoutAlertAction)
+                self.present(logoutAlert, animated: true)
+                
+            case .failure(let error):
+                print(#fileID, #function, #line, "- fail: \(error)")
             }
+        }
     }
     
+    //MARK: - 회원탈퇴
     func requestWithdraw() {
-        AF.request(LoginRouter.withDraw, interceptor: CommonLoginManage())
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                let statusCode = response.response?.statusCode
-                switch response.result {
-                case .success(let data):
-                    let decoder = JSONDecoder()
-                    if (200..<300).contains(statusCode ?? 0) {
-                        let decodeData = try? decoder.decode(WithDrawResponse.self, from: data)
-                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-                        guard let isUserDeleted = decodeData?.result.deleted else { return }
-                        if isUserDeleted {
-                            UserDefaults.standard.set("", forKey: "refreshToken")
-                            UserDefaults.standard.set(true, forKey: "isFirstTime")
-                            UserDefaults.standard.synchronize()
-                            RegisterUserInfo.shared.loginState = false
-                        }
-                    } else {
-                        let decodeData = try? decoder.decode(WithDrawErrorResponse.self, from: data)
-                        print(#fileID, #function, #line, "- withDraw fail: \(String(describing: decodeData?.message))")
-                    }
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
-                }
+        UserNetwork.shared.withDraw { result in
+            switch result {
+            case .success(let success):
+                let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)
+                let withdrawAlert = UIAlertController(title: "회원탈퇴", message: "회원탈퇴되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
+                withdrawAlert.addAction(withdrawAlertAction)
+                self.present(withdrawAlert, animated: true)
+            case .failure(let error):
+                print(#fileID, #function, #line, "- fail: \(error)")
             }
+        }
     }
     
     @objc func userDelete() {
