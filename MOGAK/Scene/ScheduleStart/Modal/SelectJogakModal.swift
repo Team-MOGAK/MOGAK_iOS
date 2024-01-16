@@ -19,6 +19,8 @@ class SelectJogakModal : UIViewController{
     
     //모다라트
     var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+    var modalartTitles: [String] = []
+    
     var nowShowModalArtNum: Int = 0
     var nowShowModalArtIndex: Int = 0
     
@@ -115,7 +117,7 @@ class SelectJogakModal : UIViewController{
         }
         
         addButton.snp.makeConstraints{
-            $0.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(48)
             
@@ -151,11 +153,10 @@ class SelectJogakModal : UIViewController{
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
         setupMenu()
-        print("taplabel")
     }
     
     //MARK: - 모다라트 리스트 조회
-    private func getModalart(){
+    func getModalart(){
         Apinetwork.getModalartList{ result in
             switch result {
             case .failure(let error):
@@ -163,8 +164,9 @@ class SelectJogakModal : UIViewController{
             case .success(let list):
                 guard let modalartList = list else { return }
                 self.modalartList = modalartList
-                print("\(self.modalartList)")
                 
+                self.modalartTitles = modalartList.map { $0.title }
+                print(self.modalartTitles)
                 if modalartList.isEmpty {
                     self.mainLabel.setTitle("내 모다라트", for: .normal)
                 } else {
@@ -182,6 +184,7 @@ class SelectJogakModal : UIViewController{
     //MARK: - 모다라트 리스트 보는 UImenu
     func setupMenu(){
         var menuActions: [UIAction] = []
+        
         for modalartInfo in modalartList {
             let action = UIAction(
                 title: modalartInfo.title,
@@ -191,7 +194,6 @@ class SelectJogakModal : UIViewController{
                     //선택시 모다라트 변경
                     self.mainLabel.setTitle(modalartInfo.title, for: .normal)
                     self.getModalartDetailInfo(id: modalartInfo.id)
-                    
                     //테이블 뷰 리로딩
                     self.MogakTableView.reloadData()
                 }
@@ -200,8 +202,6 @@ class SelectJogakModal : UIViewController{
         }
         
         let modalartListMenu = UIMenu(children: menuActions)
-        
-        //mainLabel.addInteraction(UIContextMenuInteraction(delegate: self))
         
         mainLabel.menu = modalartListMenu
         mainLabel.showsMenuAsPrimaryAction = true
@@ -217,7 +217,7 @@ class SelectJogakModal : UIViewController{
             case .success(let modalInfo):
                 guard let modalInfo = modalInfo else { return }
                 self.getDetailMogakData(id: modalInfo.id)
-                print("\(modalInfo.id) 의 id인 모각")
+                print("\(modalInfo.id) 의 id인 모다라트")
             }
             
         }
@@ -231,7 +231,8 @@ class SelectJogakModal : UIViewController{
                 if let mogakDataArray = data?.result?.mogaks{
                     self.mogakData = mogakDataArray     //모각 데이터 받아옴
                     for mogakData in mogakDataArray {
-                        print(mogakData.title)
+                        print(mogakData.title ,"의 id는 ",mogakData.mogakId)
+                        
                     }
                     self.MogakTableView.reloadData()
                     
@@ -251,10 +252,10 @@ class SelectJogakModal : UIViewController{
                 if let jogakDetailArray = data {
                     self.jogakData = jogakDetailArray
                     
-//                    if let cell = self.MogakTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MogakTableViewCell {
-//                        
-//                        cell.configureJogak(with: jogakDetailArray)
-//                    }
+                    if let cell = self.MogakTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MogakTableViewCell {
+                        
+                        cell.configureJogak(with: jogakDetailArray)
+                    }
                     
                 } else {
                     print("JogakDetailArray나 result가 nil입니다.")
@@ -325,7 +326,7 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
 //            getDetailJogakData(id: mogakId)
             
             let selectedMogakData = mogakData[indexPath.row]
-            print("Selected Mogak Data: \(selectedMogakData)")
+            print("Selected Mogak Data: \(selectedMogakData.title)")
             
             let mogakId = selectedMogakData.mogakId
             getDetailJogakData(id: mogakId)
@@ -351,6 +352,10 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
         tableView.endUpdates()
     }
     
+//    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+//        tableView.beginUpdates()
+//        tableView.endUpdates()
+//    }
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in

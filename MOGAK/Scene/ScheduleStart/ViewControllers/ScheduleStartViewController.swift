@@ -13,7 +13,7 @@ import Alamofire
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
-    var dailyJogak: [String] = []
+    var dailyJogak: [String] = [] // 일일조각 리스트
     
     let Apinetwork =  ApiNetwork.shared
     
@@ -116,9 +116,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }()
     
     lazy var ScheduleTableView : UITableView = {
-        let ScheduleTableView = UITableView()
-        ScheduleTableView.layer.cornerRadius = 10
-        return ScheduleTableView
+        let tableView = UITableView()
+        tableView.layer.cornerRadius = 10
+        return tableView
     }()
     
     private lazy var startButton : UIButton = {
@@ -128,9 +128,17 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         startbutton.backgroundColor = DesignSystemColor.signature.value  //백그라운드색
         startbutton.titleLabel?.font = DesignSystemFont.semibold18L100.value
         startbutton.layer.cornerRadius = 10 //둥글기
+//        startbutton.isHidden = true
         startbutton.addTarget(self, action: #selector(goStart), for: .touchUpInside)
         return startbutton
     }()
+    
+    private var isToday: Bool {
+        let selectedDate = calendarView.selectedDate ?? Date()
+        let today = Date()
+
+        return Calendar.current.isDate(selectedDate, inSameDayAs: today)
+    }
     
     let selectJogakModal = SelectJogakModal()
     
@@ -146,12 +154,13 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.configureCalendar()
         self.tableSetting()
         tableViewUI() //table뷰 보여줌
+        startButton.isHidden = !isToday
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         let currentDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -159,9 +168,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         let dateString = dateFormatter.string(from: currentDate)
         
         self.CheckDailyJogaks(DailyDate: dateString)
+        
         self.ScheduleTableView.reloadData()
         
-        
+         
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -200,6 +210,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         print(dateString)
         self.CheckDailyJogaks(DailyDate: dateString)
+        startButton.isHidden = !isToday
         
     }
     //MARK: - 날짜에 이벤트 dots
@@ -208,12 +219,24 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return 1
     }
     
-    // Default Event Dot 색상 분기처리 - FSCalendarDelegateAppearance
+//    func calculateEventCountForDate(_ date: Date) -> Int {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd"
+//        let dateString = dateFormatter.string(from: date)
+//        
+//        // dailyJogak 배열에 해당 날짜의 이벤트 수를 반환합니다.
+//        let eventCount = dailyJogak.filter { $0 == dateString }.count
+//            print("Date: \(dateString), Event Count: \(eventCount)")
+//            return eventCount
+//    }
+    
+    //MARK: - Default Event Dot 색상 분기처리 - FSCalendarDelegateAppearance
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventDefaultColorsFor date: Date) -> [UIColor]?{
+        
         return nil
     }
     
-    // Selected Event Dot 색상 분기처리 - FSCalendarDelegateAppearance
+    //MARK: - Selected Event Dot 색상 분기처리 - FSCalendarDelegateAppearance
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventSelectionColorsFor date: Date) -> [UIColor]? {
         
         return nil
@@ -234,7 +257,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         
-        [upperView,calendarView,motiveLabel,toggleButton,headerStackView,underView,blankimage,blankLabel,makeModalArt,startButton].forEach{view.addSubviews($0)}
+        [upperView,calendarView,motiveLabel,toggleButton,headerStackView,underView,blankimage,blankLabel,makeModalArt].forEach{view.addSubviews($0)}
         
         
         
@@ -279,7 +302,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         blankLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
+            $0.centerY.equalToSuperview().offset(10)
         }
         
         makeModalArt.snp.makeConstraints{
@@ -289,12 +312,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             $0.centerX.equalToSuperview()
         }
         
-        startButton.snp.makeConstraints{
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-60) //16
-            $0.centerX.equalToSuperview()
-            $0.height.equalTo(48)
-        }
     }
     
     //MARK: - configureCalendar
@@ -366,10 +383,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             switch result {
             case .success(let jogakDailyChecks):
                 if let jogakDailyChecks = jogakDailyChecks {
-                    print("일일 조각 성공적으로 가져옴:")
-                    
+                    print("일일 조각 리스트 : ",self.dailyJogak)
                     self.dailyJogak = []
-                    
                     for jogakDailyCheck in jogakDailyChecks {
                         let result = jogakDailyCheck.result
                         
@@ -392,7 +407,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     //MARK: - @objc
-    
     @objc func tapToggleButton(){
         if self.calendarView.scope == .month {
             self.calendarView.setScope(.week, animated: true)
@@ -481,10 +495,19 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         underView.addSubview(motiveLabel)
         underView.addSubview(ScheduleTableView)
+        underView.addSubview(startButton)
+        
         ScheduleTableView.snp.makeConstraints{
             $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalTo(calendarView.collectionView)
             $0.bottom.equalTo(startButton.snp.top)
+        }
+        
+        startButton.snp.makeConstraints{
+            $0.leading.trailing.equalToSuperview().inset(20)
+            //$0.top.equalTo(ScheduleTableView.snp.bottom)
+            $0.bottom.equalTo(underView.snp.bottom).inset(110) //16
+            $0.height.equalTo(48)
         }
     }
     
@@ -510,7 +533,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
-            Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n회고록을 적으시겠어요?"
+            Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n오늘 조각을 완료하셨군요!"
             
             NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
             
@@ -586,17 +609,17 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
-            return 80.0 // recodelabel이 없을 때의 기본 높이를 사용합니다
-        }
-        
-        // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
-        let recodelabelHeight = cell.calculateRecodelabelHeight()
-        
-        // 동적 높이를 기본 셀 높이에 추가합니다
-        return 80.0 + recodelabelHeight
-    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
+//            return 80.0 // recodelabel이 없을 때의 기본 높이를 사용합니다
+//        }
+//        
+//        // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
+//        let recodelabelHeight = cell.calculateRecodelabelHeight()
+//        
+//        // 동적 높이를 기본 셀 높이에 추가합니다
+//        return 80.0 + recodelabelHeight
+//    }
 }
 
 

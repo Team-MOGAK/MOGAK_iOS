@@ -27,6 +27,7 @@ class TabBarViewController: UITabBarController{
         let reportTabBarItem = UITabBarItem(title: "조각분석", image: UIImage(named: "report"), selectedImage: UIImage(named: "selectedReport"))
         
         let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+        
         homeTabBarItem.imageInsets = insets
         modalArtBarItem.imageInsets = insets
         reportTabBarItem.imageInsets = insets

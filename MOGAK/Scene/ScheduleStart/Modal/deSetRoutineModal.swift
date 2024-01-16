@@ -30,7 +30,7 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
     
     private lazy var stopButton : UIButton = {
         let stopButton = UIButton()
-        stopButton.setTitle("완성하기",for : .normal) //타이틀
+        stopButton.setTitle("루틴 지정하기",for : .normal) //타이틀
         stopButton.setTitleColor(.white, for : .normal) //글자 색
         stopButton.backgroundColor = UIColor(hex: "475FFD") //백그라운드색
         stopButton.layer.cornerRadius = 10 //둥글기
@@ -63,7 +63,7 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
         [jogaktitleLabel,subtitleLabel,stopButton,keepGoButton].forEach{view.addSubview($0)}
         jogaktitleLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().inset(49)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(39)
         }
         
         subtitleLabel.snp.makeConstraints{
@@ -71,18 +71,18 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
             $0.top.equalTo(jogaktitleLabel.snp.bottom).offset(12)
         }
         
-        stopButton.snp.makeConstraints{
+        stopButton.snp.makeConstraints{ //루틴 지정하기
             $0.width.equalTo(170)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.leading.equalTo(keepGoButton.snp.trailing).offset(10)
         }
         
-        keepGoButton.snp.makeConstraints{
+        keepGoButton.snp.makeConstraints{ //삭제하기
             $0.width.equalTo(170)
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
-            $0.leading.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().multipliedBy(0.5).offset(-5)
             
         }
     }

@@ -13,10 +13,11 @@ import Alamofire
 class MogakTableViewCell: UITableViewCell {
     
     weak var parentViewController: SelectJogakModal?
+    
     var jogakClickClosure : ((String) -> ())?
     
     //MARK: - Mogak
-
+    
     private let MogakLabel : BasePaddingLabel = {
         let label = BasePaddingLabel(padding: UIEdgeInsets(top:12,left:20,bottom:12,right:20))
         label.font = UIFont(name: "Pretendard-Medium", size: 18)
@@ -63,11 +64,6 @@ class MogakTableViewCell: UITableViewCell {
         stackView.spacing = 10
         return stackView
     }()
-    //MARK: - jogak
-
-    var jogakLabels: [UILabel] = []
-    var jogakImageViews: [UIImageView] = []
-    var jogakLabelStackViews: [UIStackView] = []
     
     //MARK: - Life Cycle
     
@@ -139,106 +135,114 @@ class MogakTableViewCell: UITableViewCell {
             
         }
         
-    }
+    }    
+//MARK: - Jogak
     
+    var jogakLabels: [UILabel] = []
+    var jogakImageViews: [UIImageView] = []
+    var jogakLabelStackViews: [UIStackView] = []
+    
+//MARK: - Jogak
     func configureJogak(with jogakDataArray: [JogakDetail]) {
-        
         JogakStackView.arrangedSubviews.forEach { view in
             JogakStackView.removeArrangedSubview(view)
             view.removeFromSuperview()
         }
-        
+
+
         for jogakData in jogakDataArray {
             
-            let jogakLabel = UILabel() // 새로운 라벨을 생성합니다
+            jogakLabels = []
+            jogakImageViews = []
+            jogakLabelStackViews = []
+            
+            let jogakLabel = UILabel()
             jogakLabel.text = jogakData.title
             jogakLabel.textColor = .black
             jogakLabel.backgroundColor = .clear
             jogakLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
-            
+
             let jogakimageView = UIImageView()
             jogakimageView.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
-            
-            if jogakData.isRoutine == false{
+
+            if jogakData.isRoutine == false {
                 jogakimageView.image = UIImage(systemName: "square")
-            }else{
+            } else {
                 jogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
             }
-            
-            jogakimageView.snp.makeConstraints{
+
+            jogakimageView.snp.makeConstraints {
                 $0.height.width.equalTo(20)
-                
             }
-            
-            
+
             let jogakLabelStackView = UIStackView()
             jogakLabelStackView.axis = .horizontal
             jogakLabelStackView.spacing = 10
-            
-            let tapjogakStackView = UITapGestureRecognizer(target: self, action: #selector(JogakStackViewTap))
-            
-            if jogakData.isRoutine == false{
-                jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
-            }else{
+
+            // let tapjogakStackView = UITapGestureRecognizer(target: self, action: #selector(JogakStackViewTap))
+
+            if jogakData.isRoutine == false {
+                // jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
+            } else {
                 print("isRoutine이 true라서 터치안댐ㅇㅇ")
             }
-            
+
             jogakLabelStackView.addArrangedSubview(jogakimageView)
             jogakLabelStackView.addArrangedSubview(jogakLabel)
+
             JogakStackView.addArrangedSubview(jogakLabelStackView)
-            
-            
+
             jogakLabels.append(jogakLabel)
             jogakImageViews.append(jogakimageView)
             jogakLabelStackViews.append(jogakLabelStackView)
             
-            print(jogakData)
-            
+            print(jogakLabels)
+            print(jogakData.jogakID)
+            //print(jogakData.title)
         }
-        
     }
     
-    @objc func JogakStackViewTap(_ sender: UITapGestureRecognizer) {
-            if let index = jogakLabelStackViews.firstIndex(of: sender.view as! UIStackView) {
-                let jogakLabel = jogakLabels[index]
-                let jogakImageView = jogakImageViews[index]
-
-                print("스택뷰 터치댐ㅇㅇ")
-                guard let text = jogakLabel.text, !text.isEmpty else {
-                    print("JogakLabel 텍스트가 nil이거나 비어 있습니다.")
-                    return
-                }
-
-                if let currentImage = jogakImageView.image,
-                   let filledImage = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal) {
-
-                    if currentImage == UIImage(systemName: "square") {
-                        jogakImageView.image = filledImage
-                        print("이미지를 선택 상태로 변경했습니다.")
-                    } else {
-                        jogakImageView.image = UIImage(systemName: "square")
-                        jogakClickClosure = nil
-
-                        if let parentVC = parentViewController,
-                           let index = parentVC.SelectJogaklist.firstIndex(of: text) {
-                            parentVC.SelectJogaklist.remove(at: index)
-                        }
-
-                        print("이미지를 원래 상태로 변경했습니다.")
-                    }
-
-                    jogakClickClosure?(text)
-                    let schedulcell = ScheduleTableViewCell()
-                    if currentImage == UIImage(systemName: "square") {
-                        print("선택된 JogakLabel: \(text)")
-                        schedulcell.cellLabel.text = text
-                    } else {
-                        print("\(text) 선택이 해제되었습니다.")
-                    }
-                }
-            }
-        }
-    
+//    @objc func JogakStackViewTap(_ sender: UITapGestureRecognizer) {
+//        if let index = jogakLabelStackViews.firstIndex(of: sender.view as! UIStackView) {
+//            let jogakLabel = jogakLabels[index]
+//            let jogakImageView = jogakImageViews[index]
+//            
+//            print("스택뷰 터치댐ㅇㅇ")
+//            guard let text = jogakLabel.text, !text.isEmpty else {
+//                print("JogakLabel 텍스트가 nil이거나 비어 있습니다.")
+//                return
+//            }
+//            
+//            if let currentImage = jogakImageView.image,
+//               let filledImage = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal) {
+//                
+//                if currentImage == UIImage(systemName: "square") {
+//                    jogakImageView.image = filledImage
+//                    print("이미지를 선택 상태로 변경했습니다.")
+//                } else {
+//                    jogakImageView.image = UIImage(systemName: "square")
+//                    jogakClickClosure = nil
+//                    
+//                    if let parentVC = parentViewController,
+//                       let index = parentVC.SelectJogaklist.firstIndex(of: text) {
+//                        parentVC.SelectJogaklist.remove(at: index)
+//                    }
+//                    
+//                    print("이미지를 원래 상태로 변경했습니다.")
+//                }
+//                
+//                jogakClickClosure?(text)
+//                let schedulcell = ScheduleTableViewCell()
+//                if currentImage == UIImage(systemName: "square") {
+//                    print("선택된 JogakLabel: \(text)")
+//                    schedulcell.cellLabel.text = text
+//                } else {
+//                    print("\(text) 선택이 해제되었습니다.")
+//                }
+//            }
+//        }
+//    }
+//    
     
 }
 
