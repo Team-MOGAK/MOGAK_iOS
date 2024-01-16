@@ -320,6 +320,13 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     self.deleteJogak(jogakData.jogakID)
                 }
                 self.present(bottomSheetVC, animated: true)
+            } else {
+                print(#fileID, #function, #line, "- 조각 생성으로 이동")
+                let jogakInitVC = JogakInitViewController()
+                jogakInitVC.currentMogakId = selectedMogak.mogakId
+                jogakInitVC.mogakCategoryLabel.text = selectedMogak.bigCategory.name
+                print("모각 아이디 : \(jogakInitVC.currentMogakId)")
+                self.navigationController?.pushViewController(jogakInitVC, animated: true)
             }
             
         } else if collectionView == self.mogakListCollectionView {

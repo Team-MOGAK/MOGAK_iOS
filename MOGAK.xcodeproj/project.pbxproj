@@ -1005,7 +1005,6 @@
 				652C05DA2A73AB34004CE9C4 /* LocationFilterTableViewCell.swift in Sources */,
 				4D3077532AF3E990001FDD77 /* ShowModalArtListCell.swift in Sources */,
 				65E27E9C2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift in Sources */,
-				4D6C6E062B14DC5600206DD6 /* OnBoardingPageController.swift in Sources */,
 				652586BB2B24C4AE00ED9B92 /* HistoryNetwork.swift in Sources */,
 				655A21FF2B282F3C00321E77 /* CalendarCell.swift in Sources */,
 				654476702A950B480050AE9E /* FeedModel.swift in Sources */,
@@ -1190,9 +1189,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L597NTA7LF;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DSRQ5VPU2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -1212,6 +1213,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mogak develop";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1229,9 +1231,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L597NTA7LF;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = DSRQ5VPU2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MOGAK/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -1251,6 +1255,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mogak develop";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
