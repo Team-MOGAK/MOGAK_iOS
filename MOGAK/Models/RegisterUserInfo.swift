@@ -26,6 +26,7 @@ class RegisterUserInfo {
     
     @Published var userIsRegistered: Bool = false
 
+//    @Published var profileImage : UIImage? = UIImage(named: "setProfile")
     @Published var profileImage : UIImage? = nil
     @Published var nickName : String? = ""
     @Published var userName : String? = ""

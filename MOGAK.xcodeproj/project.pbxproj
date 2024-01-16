@@ -37,7 +37,7 @@
 		4D7861B52AD25C50006B8E88 /* KakaoLoginManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */; };
 		4D7861BE2AD40938006B8E88 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */; };
 		4D7861C12AD427EB006B8E88 /* CustomPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */; };
-		4D7E49752AFBCBFB00DEB70C /* APICall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E49742AFBCBFB00DEB70C /* APICall.swift */; };
+		4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E49742AFBCBFB00DEB70C /* APIError.swift */; };
 		4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */; };
 		4D9439302ACD54E000864336 /* EmptyMogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */; };
 		4DD74EE92AD58FC000147E9C /* MogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74EE82AD58FC000147E9C /* MogakCell.swift */; };
@@ -179,7 +179,7 @@
 		4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoLoginManage.swift; sourceTree = "<group>"; };
 		4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaddingLabel.swift; sourceTree = "<group>"; };
-		4D7E49742AFBCBFB00DEB70C /* APICall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICall.swift; sourceTree = "<group>"; };
+		4D7E49742AFBCBFB00DEB70C /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainViewController.swift; sourceTree = "<group>"; };
 		4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyMogakCell.swift; sourceTree = "<group>"; };
 		4DD74EE82AD58FC000147E9C /* MogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCell.swift; sourceTree = "<group>"; };
@@ -319,6 +319,7 @@
 		4D488E0B2B20C0F80000D4E6 /* Mogak */ = {
 			isa = PBXGroup;
 			children = (
+				4D488E242B2344010000D4E6 /* EmptyJogakCell.swift */,
 				4D488E0C2B20C1E80000D4E6 /* MogakMainViewController.swift */,
 				4D488E0E2B20CBE40000D4E6 /* MogakListCell.swift */,
 				4D72B3362B3317B0004BF3CE /* JogakSimpleModalViewController.swift */,
@@ -338,7 +339,6 @@
 				9CE426F72A5FD9CD001629DC /* ChooseRegionViewController.swift */,
 				9CE426F52A5EA04F001629DC /* NameCell.swift */,
 				9C2EF7FB2A7F296C00E8C8F4 /* RegionCell.swift */,
-				4DF83CF82B18D0CC00E1BD6D /* LoginModel.swift */,
 			);
 			path = UserSettingScene;
 			sourceTree = "<group>";
@@ -370,6 +370,7 @@
 			isa = PBXGroup;
 			children = (
 				4D7861AF2AD25C06006B8E88 /* AppleLoginManage.swift */,
+				4DF83CF82B18D0CC00E1BD6D /* LoginModel.swift */,
 				4D7861B22AD25C3F006B8E88 /* GoogleLoginManage.swift */,
 				4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */,
 				4D488E2C2B274E060000D4E6 /* LoginRouter.swift */,
@@ -412,7 +413,6 @@
 			isa = PBXGroup;
 			children = (
 				4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */,
-				4D488E242B2344010000D4E6 /* EmptyJogakCell.swift */,
 				4D488E0B2B20C0F80000D4E6 /* Mogak */,
 				4D6C6DF12B10E87900206DD6 /* API */,
 				4D7D3E632AE52DB200335073 /* Modal */,
@@ -711,7 +711,7 @@
 			children = (
 				9CCB39D62A91186200968CDB /* ApiManager.swift */,
 				9CCB39D82A9118CC00968CDB /* ApiConstants.swift */,
-				4D7E49742AFBCBFB00DEB70C /* APICall.swift */,
+				4D7E49742AFBCBFB00DEB70C /* APIError.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -1048,6 +1048,7 @@
 				652586C32B24C54900ED9B92 /* MogakEditViewController.swift in Sources */,
 				4D7E49752AFBCBFB00DEB70C /* APICall.swift in Sources */,
 				655A21FD2B282EE900321E77 /* DateHelper.swift in Sources */,
+				4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* OnBoardingSecondViewController.swift in Sources */,
 				65306A592AD6B3B2004807F7 /* MyHistoryViewController.swift in Sources */,
 			);
@@ -1209,7 +1210,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1251,7 +1252,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

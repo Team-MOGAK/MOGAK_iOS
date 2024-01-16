@@ -92,18 +92,31 @@ class MyPageEditViewController: UIViewController {
         logoutButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
         userDeleteButton.addTarget(self, action: #selector(userDelete), for: .touchUpInside)
         
+        userProfileSetting()
+    }
+    
+    func userProfileSetting() {
+        //닉네임 변경 반영
         RegisterUserInfo.shared.$nickName.sink { nickname in
             self.userName.text = nickname
         }
         .store(in: &cancellables)
         
+        //직무 변경 반영
         RegisterUserInfo.shared.$userJob.sink(receiveValue: { job in
             self.job.text = job
         })
         .store(in: &cancellables)
         
+        //프로필 사진 변경 반영
         RegisterUserInfo.shared.$profileImage.sink { image in
-            self.profileImage.image = image
+            print(#fileID, #function, #line, "- image: \(image)")
+            if image == nil {
+                self.profileImage.image = UIImage(named: "setProfile")
+            } else {
+                self.profileImage.image = image
+            }
+            
         }
         .store(in: &cancellables)
     }
@@ -120,6 +133,7 @@ class MyPageEditViewController: UIViewController {
         self.title = "프로필 수정"
     }
 
+    //MARK: - 유저 닉네임 & 이미지 변경 텝 선택
     @objc func userNicknameProfileChangeTapped() {
         print(#fileID, #function, #line, "- 닉네임 변경")
         let nicknameVC = NicknameViewController()
@@ -127,37 +141,60 @@ class MyPageEditViewController: UIViewController {
         self.navigationController?.pushViewController(nicknameVC, animated: true)
     }
     
+    //MARK: - 직업 변경 탭 선택
     @objc func userJobChangeTapped() {
         let jobVC = ChooseJobViewController()
         jobVC.changeJob = true
         self.navigationController?.pushViewController(jobVC, animated: true)
     }
     
+    //MARK: - 로그아웃 요청
     @objc func logout() {
         print(#fileID, #function, #line, "- 로그아웃")
-        AF.request(LoginRouter.logout, interceptor: CommonLoginManage())
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: LogoutResponse.self) { (response: DataResponse<LogoutResponse, AFError>) in
-                switch response.result {
-                case .success(let logoutReponse):
-                    print(#fileID, #function, #line, "- logout: \(logoutReponse)")
-                    
-                    if logoutReponse.code == "success" {
-                        UserDefaults.standard.set("", forKey: "refreshToken")
-                        RegisterUserInfo.shared.loginState = false
-//                        let loginViewController = LoginViewController()
-//                        loginViewController.modalPresentationStyle = .overFullScreen
-//                        self.present(loginViewController, animated: true)
-                    }
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
+        UserNetwork.shared.userLogout { result in
+            switch result {
+            case .success:
+                let logoutAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                    RegisterUserInfo.shared.loginState = false
                 }
+                let logoutAlert = UIAlertController(title: "로그아웃", message: "로그아웃되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
+                logoutAlert.addAction(logoutAlertAction)
+                self.present(logoutAlert, animated: true)
+                
+            case .failure(let error):
+                print(#fileID, #function, #line, "- fail: \(error)")
             }
-        
+        }
+    }
+    
+    //MARK: - 회원탈퇴
+    func requestWithdraw() {
+        UserNetwork.shared.withDraw { result in
+            switch result {
+            case .success(let success):
+                let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)  { _ in
+                    RegisterUserInfo.shared.loginState = false
+                }
+                let withdrawAlert = UIAlertController(title: "회원탈퇴", message: "회원탈퇴되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
+                withdrawAlert.addAction(withdrawAlertAction)
+                self.present(withdrawAlert, animated: true)
+            case .failure(let error):
+                print(#fileID, #function, #line, "- fail: \(error)")
+            }
+        }
     }
     
     @objc func userDelete() {
         print(#fileID, #function, #line, "- 회원탈퇴")
+        let cancelWithdrawAlertAction = UIAlertAction(title: "취소", style: .cancel)
+        let okayWithdrawAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.requestWithdraw()
+        }
+        
+        let askWithdrawAlert = UIAlertController(title: "정말 회원탈퇴를 하시겠습니까?", message: "회원탈퇴를 하시면 데이터를 복원할 수 없습니다!", preferredStyle: .alert)
+        askWithdrawAlert.addAction(cancelWithdrawAlertAction)
+        askWithdrawAlert.addAction(okayWithdrawAlertAction)
+        self.present(askWithdrawAlert, animated: true)
     }
     
     private func configureProfile() {

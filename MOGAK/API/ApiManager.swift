@@ -7,7 +7,7 @@
 
 import Foundation
 import Alamofire
-let BASE_URL = "https://mogak.shop:8081/"
+let BASE_URL = "https://mogak.shop:8080/"
 
 class ApiManager {
     

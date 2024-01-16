@@ -11,7 +11,7 @@ import Alamofire
 class MogakDetailNetwork: NSObject {
     static let shared = MogakDetailNetwork()
     func getAllMogakDetailJogaks(mogakId: Int, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
-        AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId))
+        AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
                 switch response.result {
@@ -26,13 +26,14 @@ class MogakDetailNetwork: NSObject {
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
     //MARK: - 모각 삭제 요청 API
     func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-//        AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
-        AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId))
+//        AF.request(ModalartRouter.delteModalart(modaratId: mogakId), interceptor: CommonLoginManage())
+        AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId), interceptor: CommonLoginManage())
         .validate()
           .responseData(emptyResponseCodes: [200, 204, 205]) { response in
               switch response.result{
               case .failure(let error):
                   print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+    
                   completionHandler(.failure(error))
               case .success(_):
                   print(#fileID, #function, #line, "- data")
@@ -44,8 +45,8 @@ class MogakDetailNetwork: NSObject {
     
     //MARK: - 모다라트 삭제 요청 API
     func deleteJogak(jogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-//        AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
-        AF.request(MogakDetailRouter.deleteJogak(jogakId))
+        AF.request(ModalartRouter.delteModalart(modaratId: jogakId), interceptor: CommonLoginManage())
+//        AF.request(MogakDetailRouter.deleteJogak(jogakId))
         .validate()
           .responseData(emptyResponseCodes: [200, 204, 205]) { response in
               switch response.result{

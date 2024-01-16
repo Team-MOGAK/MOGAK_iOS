@@ -16,6 +16,7 @@ class NicknameViewController: UIViewController {
     let apiManger = ApiManager.shared
     var nicknameAndImageChange: Bool = false
     var profileImageChange: Bool = false
+    var changeProfileImage: UIImage? = nil
     var cancellables = Set<AnyCancellable>()
     
     private let setNicknameLabel : UILabel = {
@@ -39,6 +40,10 @@ class NicknameViewController: UIViewController {
         $0.addTarget(self, action: #selector(settingProfileImage), for: .touchUpInside)
     }
     
+    private lazy var editProfileIcon = UIImageView().then {
+        $0.image = UIImage(named: "editIcon")
+    }
+    
     private lazy var deleteImageButton = UIButton().then {
         $0.setImage(UIImage(named: "deleteIcon"), for: .normal)
         $0.addTarget(self, action: #selector(deleteProfileImage), for: .touchUpInside)
@@ -51,7 +56,7 @@ class NicknameViewController: UIViewController {
         textField.textAlignment = .left
         textField.delegate = self
         textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 20.0, height: 0.0))
-        textField.leftViewMode = .unlessEditing
+        textField.leftViewMode = .always
         textField.borderStyle = .none
         textField.backgroundColor = UIColor(hex: "EEF0F8")
         textField.layer.cornerRadius = 10
@@ -136,7 +141,7 @@ class NicknameViewController: UIViewController {
     }
     
     private func configureSetProfile() {
-        self.view.addSubview(setProfile)
+        self.view.addSubviews(setProfile, editProfileIcon)
         self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
         self.setProfile.clipsToBounds = true
         setProfile.snp.makeConstraints({
@@ -144,6 +149,11 @@ class NicknameViewController: UIViewController {
             $0.top.equalTo(self.subLabel.snp.bottom).offset(100)
             $0.centerX.equalToSuperview()
         })
+        
+        editProfileIcon.snp.makeConstraints { make in
+            make.trailing.equalTo(setProfile.snp.trailing)
+            make.bottom.equalTo(setProfile.snp.bottom)
+        }
     }
     
     private func configureTextField() {
@@ -195,12 +205,15 @@ class NicknameViewController: UIViewController {
     
     @objc private func deleteProfileImage() {
         self.setProfile.setImage(UIImage(named: "setProfile"), for: .normal)
-        registerUserInfo.profileImage = nil
+//        registerUserInfo.profileImage = nil
+        changeProfileImage = UIImage(named: "setProfile")
+        nextButton.isUserInteractionEnabled = true
+        nextButton.backgroundColor = UIColor(hex: "475FFD")
+        deleteImageButton.isHidden = true
         profileImageChange = true
     }
     
     @objc private func nextButtonIsClicked() {
-        // tf가 공백 또는 nil이라면 경고, 아니라면 다음 페이지
         print(#fileID, #function, #line, "- nicknameTextField.text⭐️: \(nicknameTextField.text)")
         let nicknameText = nicknameTextField.text ?? ""
         if nicknameText != "" {
@@ -272,8 +285,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
         if let image = info[.originalImage] as? UIImage {
             // 가져온 이미지를 버튼 이미지로 설정합니다.
             setProfile.setImage(image, for: .normal)
-            profileImageChange = true
-            registerUserInfo.profileImage = image
+            
             // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
             let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
             if let imageURL = info[.imageURL] as? URL {
@@ -285,6 +297,12 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
                         // 버튼 모양을 원 모양으로 변경합니다.
                         self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
                         self.setProfile.clipsToBounds = true
+                        self.profileImageChange = true
+            //            registerUserInfo.profileImage = image
+                        self.changeProfileImage = image
+                        self.nextButton.isUserInteractionEnabled = true
+                        self.nextButton.backgroundColor = UIColor(hex: "475FFD")
+                        self.deleteImageButton.isHidden = false
                         break
                     case .failure(let error):
                         // 이미지 표시 중에 에러가 발생한 경우 실행되는 코드
@@ -300,16 +318,14 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 }
 // 네트워크 코드
 extension NicknameViewController {
+    //MARK: - 닉네임 타당성 검증 요청
     func validateNickname(nickName: String) {
-        print(#fileID, #function, #line, "- nickname: \(nickName)")
         let nicknameRequest = NicknameChangeRequest(nickname: nickName)
-        
         AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
-            .responseDecodable(of: ValidateNicknameModel.self) { [self] response in
+            .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
                 switch response.result {
-                case .success(let response):
-                    print(#fileID, #function, #line, "- response: \(response)")
-                    if response.code == "success" {
+                case .success(let data):
+                    if data.code == "success" {
                         print("성공")
                         self.registerUserInfo.nickName = self.nicknameTextField.text
                         
@@ -318,50 +334,90 @@ extension NicknameViewController {
                         self.navigationController?.pushViewController(chooseJobVC, animated: true)
                     }
                 case .failure(let error):
-                    print("error \(error)")
-                }
-            }
-    }
-    
-    func nicknameChange(nickname: String) {
-        let nicknameRequest = NicknameChangeRequest(nickname: nickname)
-        
-        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest), interceptor: CommonLoginManage())
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    let decoder = JSONDecoder()
-                    if response.response?.statusCode == 200 {
-                        let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
-                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-                        self.registerUserInfo.nickName = nickname
-                        if !self.profileImageChange {
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    } else {
-                        let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: data)
-                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-                        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-                        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
-                        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-                        self.present(nicknameErrorAlert, animated: true)
-                    }
-                case .failure(let error):
                     print(#fileID, #function, #line, "- error: \(error)")
+                    let decoder = JSONDecoder()
+                    let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
+                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
+                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                    self.present(nicknameErrorAlert, animated: true)
                 }
             }
     }
     
+    //MARK: - 닉네임 변경
+    func nicknameChange(nickname: String) {
+        UserNetwork.shared.nicknameChange(nickname) { result in
+            switch result {
+            case .success(let success):
+                print(#fileID, #function, #line, "- success: \(success)")
+                self.registerUserInfo.nickName = nickname
+                if !self.profileImageChange {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            case .failure(let failure):
+                if failure as? APIError == APIError.invalidNickname {
+                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요", preferredStyle: .alert)
+                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                    self.present(nicknameErrorAlert, animated: true)
+                } else if failure as? APIError == APIError.NotExistUser {
+                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요", preferredStyle: .alert)
+                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                    self.present(nicknameErrorAlert, animated: true)
+                }
+                else {
+                    print(#fileID, #function, #line, "- failure: \(failure)")
+                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "\(failure)", preferredStyle: .alert)
+                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                    self.present(nicknameErrorAlert, animated: true)
+                }
+                
+            }
+        }
+//        let nicknameRequest = NicknameChangeRequest(nickname: nickname)
+//        let decoder = JSONDecoder()
+//        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest), interceptor: CommonLoginManage())
+//            .validate(statusCode: 200..<300)
+//            .responseDecodable(of: ChangeSuccessResponse.self) { (response: DataResponse<ChangeSuccessResponse, AFError>) in
+//                switch response.result {
+//                case .failure(let error):
+//                    print(#fileID, #function, #line, "- error: \(error)")
+//                    if response.response?.statusCode == 409 {
+//                        let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
+//                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+//                        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+//                        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
+//                        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+//                        self.present(nicknameErrorAlert, animated: true)
+//                    }
+//                case .success(let data):
+//                    self.registerUserInfo.nickName = nickname
+//                    if !self.profileImageChange {
+//                        self.navigationController?.popViewController(animated: true)
+//                    }
+//                }
+//            }
+    }
+    
+    //MARK: - 프로필 사진 변경 요청
     func profileImageChangeRequest() {
         let userNetwork = UserNetwork.shared
-        guard let profileImage = registerUserInfo.profileImage else { return }
+        guard let profileImage = changeProfileImage else { return }
         userNetwork.userImageChange(profileImage) { result in
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
+                self.registerUserInfo.profileImage = self.changeProfileImage
                 self.navigationController?.popViewController(animated: true)
             case .failure(let failure):
                 print(#fileID, #function, #line, "- failure: \(failure)")
+                let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+                let nicknameErrorAlert = UIAlertController(title: "이미지 변경실패", message: failure.localizedDescription, preferredStyle: .alert)
+                nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+                self.present(nicknameErrorAlert, animated: true)
             }
         }
     }

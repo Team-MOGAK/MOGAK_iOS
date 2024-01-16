@@ -23,6 +23,7 @@ class ChooseJobViewController: UIViewController {
     var selectedIndexPaths: Set<IndexPath> = []
     
     var changeJob: Bool = false
+    var selectedJob: String = ""
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -170,6 +171,7 @@ class ChooseJobViewController: UIViewController {
 //            self.dismiss(animated: true)
             self.changeJobRequest()
         } else {
+            RegisterUserInfo.shared.userJob = selectedJob
             let regionVC = ChooseRegionViewController()
             self.navigationController?.pushViewController(regionVC, animated: true)
         }
@@ -177,23 +179,18 @@ class ChooseJobViewController: UIViewController {
     }
     
     func changeJobRequest() {
-        let jobRequest = JobChangeRequest(job: RegisterUserInfo.shared.userJob ?? "")
-        
-//        AF.request(UserRouter.jobChange(job: jobRequest))
-        AF.request(UserRouter.jobChange(job: jobRequest), interceptor: CommonLoginManage())
-            .responseData(completionHandler: { response in
-                print(#fileID, #function, #line, "- response: \(response)")
-                switch response.result {
-                case .success(let data):
-                    let decoder = JSONDecoder()
-                    let decodeData = try? decoder.decode(ChangeSuccessResponse.self, from: data)
-                    print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-                    print(#fileID, #function, #line, "- RegisterData: \(RegisterUserInfo.shared.userJob)")
+        let jobRequest = JobChangeRequest(job: selectedJob ?? "")
+        UserNetwork.shared.jobChange(jobRequest) { result in
+            switch result {
+            case .success(let success):
+                if success {
+                    RegisterUserInfo.shared.userJob = self.selectedJob
                     self.navigationController?.popViewController(animated: true)
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
                 }
-            })
+            case .failure(let failure):
+                print(#fileID, #function, #line, "- failure: \(failure)")
+            }
+        }
             
     }
 }
@@ -307,7 +304,8 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
         // 선택된 셀의 정보 가져오기
            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
                if let nameLabel = cell.textLabel?.text {
-                   RegisterUserInfo.shared.userJob = nameLabel
+                   selectedJob = nameLabel
+//                   RegisterUserInfo.shared.userJob = nameLabel
                    print("Selected cell's nameLabel: \(nameLabel)")
                }
            }
