@@ -14,6 +14,7 @@ enum ModalartRouter: URLRequestConvertible {
     
     case getModalartList
     case detailModalart(modaratId: Int)
+    case getDetailMogakData(modaratId: Int)
     case delteModalart(modaratId: Int)
     case createModalrt(data: ModalartMainData)
     case editModalart(data: ModalartMainData)
@@ -22,6 +23,8 @@ enum ModalartRouter: URLRequestConvertible {
         switch self {
         case .getModalartList: return "api/modarats"
         case .detailModalart(let modaratId): return "api/modarats/\(modaratId)"
+        case .getDetailMogakData(let modaratId):
+            return "api/modarats/\(modaratId)/mogaks"
         case .delteModalart(let modaratId): return "api/modarats/\(modaratId)"
         case .createModalrt: return "api/modarats"
         case .editModalart(let data): return "api/modarats/\(data.id)"
@@ -32,13 +35,14 @@ enum ModalartRouter: URLRequestConvertible {
     var headers: HTTPHeaders {
         switch self {
         default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
+//        default: return HTTPHeaders(["accept":"application/json"])
         }
     }
     
     //어떤 방식(get, post, delete, update)
     var method: HTTPMethod {
         switch self {
-        case .getModalartList, .detailModalart: return .get
+        case .getModalartList, .detailModalart, .getDetailMogakData: return .get
         case .delteModalart: return .delete
         case .createModalrt: return .post
         case .editModalart: return .put
@@ -60,13 +64,15 @@ enum ModalartRouter: URLRequestConvertible {
         
         switch self {
         case .getModalartList:
-            request = try URLEncoding.queryString.encode(request, with: parameters)
+            request = try URLEncoding.queryString.encode(request, with: parameters) //body가 필요없을떄
         case .detailModalart:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
+        case .getDetailMogakData:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .delteModalart:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .createModalrt(let data):
-            request = try JSONParameterEncoder().encode(data, into: request)
+            request = try JSONParameterEncoder().encode(data, into: request) //body가 필요할때
         case .editModalart(let data):
             request = try JSONParameterEncoder().encode(data, into: request)
         }

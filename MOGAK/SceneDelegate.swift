@@ -6,38 +6,60 @@
 //
 
 import UIKit
+import Combine
 import AuthenticationServices
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
+    var cancellables = Set<AnyCancellable>()
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        guard let windowScene = scene as? UIWindowScene else { return }
-        
-        lazy var firstVC: UIViewController = TabBarViewController()
-//        lazy var firstVC: UIViewController = AppGuideViewController()
+        guard let _ = scene as? UIWindowScene else { return }
+        RegisterUserInfo.shared.$loginState.sink { loginState in
+            let refreshToken = UserDefaults.standard.string(forKey: "refreshToken")
 
-        //        let isFirst = UserDefaults.isFirstAppLauch()
-        
-        //        if isFirst {
-        //            firstVC = UINavigationController(rootViewController: AppGuideViewController())
-        //        } else if !UserDefaults.standard.isPermAgreed {
-        //            firstVC = PermAgreeViewController()
-        //        }
-        
-        //firstVC = UINavigationController(rootViewController: LoginViewController())
-//        firstVC = UINavigationController(rootViewController: AppGuideViewController())
-        
-        window = UIWindow(windowScene: windowScene)
-        
-        window?.rootViewController = firstVC
-        
-        window?.makeKeyAndVisible()
-        window?.windowScene = windowScene
-        
-        
+            print(#fileID, #function, #line, "- sceneDelegate refreshToken: \(refreshToken)")
+            if let loginState = loginState {
+                //로그인이 되어있다면
+                if loginState {
+                    if RegisterUserInfo.shared.userIsRegistered {
+                        //이미 등록한 유저
+                        self.setRootViewContrller(scene, type: .main)
+                    } else {
+                        //아직 등록하지 않은 유저
+                        self.setRootViewContrller(scene, type: .termAgree)
+                    }
+                }else {
+                    //처음 등록한 유저라면
+                    if Storage.isFirstTime() {
+                        self.setRootViewContrller(scene, type: .onBoarding)
+                    }
+                    // 처음 등록한 유저가 아니고 refreshToken이 있다면
+                    else if refreshToken != "" {
+                        self.setRootViewContrller(scene, type: .main)
+                    }
+                    // refreshToken이 없다면
+                    else {
+                        self.setRootViewContrller(scene, type: .login)
+                    }
+//                    self.setRootViewContrller(scene, type: .main)
+                }
+            } else {
+                if Storage.isFirstTime() {
+                    self.setRootViewContrller(scene, type: .onBoarding)
+                }
+                else if refreshToken != "" {
+                    self.setRootViewContrller(scene, type: .main)
+                }
+                else {
+                    self.setRootViewContrller(scene, type: .login)
+                }
+                
+//                self.setRootViewContrller(scene, type: .main)
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -48,26 +70,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        appleIDProvider.getCredentialState(forUserID: "/*user의 고유 ID값(xxxxx.xxxxxxxxxx.xxxx)*/") { (credentialState, error) in
-            switch credentialState {
-            case .authorized:
-                print("authorized")
-                // The Apple ID credential is valid.
-                DispatchQueue.main.async {
-                    //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
-                    self.window?.rootViewController = TabBarViewController()
-                }
-            case .revoked:
-                print("revoked")
-            case .notFound:
-                // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
-                print("notFound")
-                
-            default:
-                break
-            }
-        }
+        
+
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -87,5 +91,69 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     
+}
+
+enum StartViewControllerType {
+    case login //로그인
+    case termAgree //이용동의
+    case main //메인
+    case onBoarding //온보딩화면
+    
+    var vc: UIViewController {
+        switch self {
+        case .login: return LoginViewController()
+        case .termAgree: return TermsAgreeViewController()
+        case .main: return TabBarViewController()
+        case .onBoarding: return AppGuideViewController()
+        }
+    }
+}
+
+extension SceneDelegate {
+    private func setRootViewController(_ scene: UIScene) {
+        let refreshToken = UserDefaults.standard.string(forKey: "refreshToken")
+        print(#fileID, #function, #line, "- refreshToken: \(refreshToken)")
+        if Storage.isFirstTime() {
+            setRootViewContrller(scene, type: .onBoarding)
+        }
+        else if refreshToken != "" {
+            setRootViewContrller(scene, type: .main)
+        }
+        else {
+            setRootViewContrller(scene, type: .login)
+        }
+    }
+    
+    private func setRootViewContrller(_ scene: UIScene, type: StartViewControllerType) {
+        if let windowScene = scene as? UIWindowScene {
+            DispatchQueue.main.async {
+                let window = UIWindow(windowScene: windowScene)
+                print(#fileID, #function, #line, "- 어떤 type의 data인지 확인하기⭐️: \(type)")
+                if type == .termAgree {
+                    let navigationController = UINavigationController(rootViewController: type.vc)
+                    window.rootViewController = navigationController
+                } else {
+                    window.rootViewController = type.vc //그에 맞게 Rootview를 변경해준다
+                }
+                
+                self.window = window
+                window.makeKeyAndVisible()
+            }
+            
+        }
+    }
+}
+
+public class Storage {
+    static func isFirstTime() -> Bool {
+        let defaults = UserDefaults.standard //defaults DB를 가지고 온다
+        if defaults.object(forKey: "isFirstTime") == nil { //해당 DB에서 isFirstTime이라는 키가 있느지 체크한다
+            defaults.set(true, forKey: "isFirstTime")
+            return true
+        } else {
+            let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime") //isFirstTime인지 체크하기
+            return isFirstTime
+        }
+    }
 }
 

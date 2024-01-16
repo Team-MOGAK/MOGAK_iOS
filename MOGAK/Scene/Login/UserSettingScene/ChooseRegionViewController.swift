@@ -12,6 +12,7 @@ import Alamofire
 class ChooseRegionViewController: UIViewController {
     
     private let region = ["서울특별시", "경기도", "세종특별자치시","대전광역시","광주광역시","대구광역시","부산광역시","울산광역시","경상남도", "경상북도","전라남도","전라북도","충청남도","충청북도","강원도", "제주도", "독도/울릉도"]
+    let network = UserNetwork()
     // checkButton 선택 셀 index
     private var previousIndexPath: IndexPath?
     private var selectedIndexPath: IndexPath?
@@ -40,7 +41,7 @@ class ChooseRegionViewController: UIViewController {
     
     private lazy var nextButton : UIButton = {
         let button = UIButton()
-        button.setTitle("다음", for: .normal)
+        button.setTitle("완료", for: .normal)
         button.backgroundColor = UIColor(hex: "BFC3D4")
         button.titleLabel?.textColor = .white
         button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
@@ -50,8 +51,14 @@ class ChooseRegionViewController: UIViewController {
         return button
     }()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isHidden = false
         view.backgroundColor = .white
         
         self.configureNavBar()
@@ -61,8 +68,13 @@ class ChooseRegionViewController: UIViewController {
         
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
+//        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = Bar
         self.navigationController?.navigationBar.tintColor = .gray
     }
     
@@ -116,14 +128,26 @@ class ChooseRegionViewController: UIViewController {
         nextButton.backgroundColor = UIColor(hex: "BFC3D4")
     }
     
+    //MARK: - 유저 등록
     @objc private func nextButtonIsClicked() {
-        print("profileImage \(RegisterUserInfo.shared.profileImage)")
-        print("userEmail \(UserDefaults.standard.string(forKey: "userEmail"))")
-        print("userJob \(RegisterUserInfo.shared.userJob)")
-        print("userName \(RegisterUserInfo.shared.nickName)")
-        print("userRegion \(RegisterUserInfo.shared.userRegion)")
-        registerUser()
-        //        let mainVC = UINavigationController(rootViewController: TabBarViewController())
+        let userData = UserInfoData(nickname: RegisterUserInfo.shared.nickName ?? "", job: RegisterUserInfo.shared.userJob ?? "" , address: RegisterUserInfo.shared.userRegion ?? "", email: RegisterUserInfo.shared.userEmail ?? "", multipartFile: "")
+        print(#fileID, #function, #line, "- userData: \(userData)")
+        print(#fileID, #function, #line, "- profileImage: \(RegisterUserInfo.shared.profileImage)")
+        network.userJoin(userData, RegisterUserInfo.shared.profileImage) { result in
+            print(#fileID, #function, #line, "- result:")
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error)")
+            case .success(let success):
+                print(#fileID, #function, #line, "- success: \(success)")
+                var defaults = UserDefaults.standard //isFirstTime아닌지 체크하기
+                //유저 세팅이 끝났으므로 isFirstTime false로 체크
+                defaults.set(false, forKey: "isFirstTime")
+                
+                let tabBarController = TabBarViewController()
+                self.view.window?.rootViewController = tabBarController
+            }
+        }
     }
     
 }
@@ -184,54 +208,8 @@ extension ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.view.bounds.height / 20
     }
-    
-    
+
 }
 
-//네트워크 코드
-extension ChooseRegionViewController {
-    func registerUser() {
-        
-        let userEmail = UserDefaults.standard.string(forKey: "userEmail")
-        
-        let url = ApiConstants.join
-        
-        let parameters: Parameters = [
-            "nickname": "\(RegisterUserInfo.shared.nickName!)",
-            "job": "\(RegisterUserInfo.shared.userJob!)",
-            "address": "\(RegisterUserInfo.shared.userRegion!)",
-            "email": "\(userEmail!)"
-        ]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
-            .responseJSON { response in
-                switch response.result {
-                case .success(let data):
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
-                        do {
-                            let decoder = JSONDecoder()
-                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
-                            print("Decoded data: \(decodedData)")
-                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
-                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
-
-                            let mainVC = TabBarViewController()
-                            mainVC.modalPresentationStyle = .fullScreen
-                            self.present(mainVC, animated: true)
-                        } catch {
-                            print("Decoding error: \(error)")
-                        }
-                    } else {
-                        print("Invalid response data format")
-                    }
-                case .failure(let error):
-                    print("Error: \(error)")
-                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
-                }
-            }
-    }
-    
-    
-}
 
 

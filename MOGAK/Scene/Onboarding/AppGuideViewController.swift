@@ -11,6 +11,8 @@ import Then
 class AppGuideViewController: UIViewController {
     // 하단 버튼 클릭 시 페이지 이동을 위한 index
     private var buttonPageIndex = 0
+    private let pageCount = 4 //온보딩 총 개수
+    private var viewControllers: [UIViewController] = [] //보여질 viewController들
     
     private let scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)).with {
         $0.isPagingEnabled = true
@@ -25,7 +27,7 @@ class AppGuideViewController: UIViewController {
         return pageControl
     }()
     
-    private lazy var nextButton : UIButton = {
+    private lazy var startButton : UIButton = {
         let button = UIButton()
         button.setTitle("시작하기", for: .normal)
         button.backgroundColor = DesignSystemColor.gray3.value
@@ -35,12 +37,8 @@ class AppGuideViewController: UIViewController {
         return button
     }()
     
-    private let pageCount = 4
-    private var viewControllers: [UIViewController] = []
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        view.backgroundColor = UIColor.white
         self.view.backgroundColor = DesignSystemColor.gray2.value
         
         self.scrollView.delegate = self
@@ -54,24 +52,24 @@ class AppGuideViewController: UIViewController {
         super.viewWillAppear(animated)
     }
     
+    //MARK: - 뷰셋팅
     private func setupViews() {
-        
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        nextButton.translatesAutoresizingMaskIntoConstraints = false
+        startButton.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.addSubview(pageControl)
         self.view.addSubview(scrollView)
-        self.view.addSubview(nextButton)
+        self.view.addSubview(startButton)
         
         pageControl.currentPage = 0
-        pageControl.numberOfPages = 4
+        pageControl.numberOfPages = self.pageCount
         pageControl.pageIndicatorTintColor = DesignSystemColor.gray3.value
         pageControl.currentPageIndicatorTintColor = DesignSystemColor.signature.value
     }
     
+    //MARK: - pageControl, scrollView, startButton 위치잡기
     private func setupAutoLayout() {
-        
         NSLayoutConstraint.activate([
             
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -82,20 +80,20 @@ class AppGuideViewController: UIViewController {
             scrollView.widthAnchor.constraint(equalToConstant: self.view.frame.width * CGFloat(pageCount)),
             scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
-            scrollView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7),
+            scrollView.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7), //즉, superView의 height * 0.7만 차지
             
             
             
-            nextButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
-            nextButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
-            nextButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.061)
+            startButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+            startButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+            startButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
+            startButton.heightAnchor.constraint(equalToConstant: 52)
         ])
         
         var previousView: UIView?
         
         for viewController in viewControllers {
-            
+            //MARK: - 스크롤러 내부 뷰의 사이즈 설정(즉, contentView 사이즈 설정)
             viewController.view.translatesAutoresizingMaskIntoConstraints = false
             scrollView.addSubview(viewController.view)
             
@@ -115,6 +113,7 @@ class AppGuideViewController: UIViewController {
         }
     }
     
+    //MARK: - 뷰컨트롤러 배열에 넣어주기
     private func setupViewControllers() {
         for index in 0..<pageCount {
             let viewController = getContentViewController(index: index)
@@ -122,6 +121,7 @@ class AppGuideViewController: UIViewController {
         }
     }
     
+    //MARK: - page 스왑할때마다 어떤 해당 pageIndex에 맞춰서 화면 보여주기
     private func getContentViewController(index: Int) -> UIViewController {
         switch index {
         case 0:
@@ -139,7 +139,7 @@ class AppGuideViewController: UIViewController {
     
     @objc private func pageControlValueChanged(_ sender: UIPageControl) {
         let pageIndex = sender.currentPage
-        
+    
         scrollView.setContentOffset(CGPoint(x: scrollView.frame.width * CGFloat(pageIndex), y: 0), animated: true)
     }
     
@@ -160,18 +160,12 @@ extension AppGuideViewController: UIScrollViewDelegate {
         let pageIndex = Int(floor(scrollView.contentOffset.x / scrollView.frame.width))
         pageControl.currentPage = pageIndex
 
-//        if pageIndex != 0 {
-//            self.view.backgroundColor = DesignSystemColor.gray.value
-//        } else {
-//            self.view.backgroundColor = UIColor.white
-//        }
-        
         if pageIndex >= 2 {
-            nextButton.setTitle("시작하기", for: .normal)
-            nextButton.backgroundColor = DesignSystemColor.signature.value
+            startButton.setTitle("시작하기", for: .normal)
+            startButton.backgroundColor = DesignSystemColor.signature.value
         } else {
-            nextButton.setTitle("시작하기", for: .disabled)
-            nextButton.backgroundColor = DesignSystemColor.gray3.value
+            startButton.setTitle("시작하기", for: .disabled)
+            startButton.backgroundColor = DesignSystemColor.gray3.value
         }
 
     }

@@ -65,7 +65,7 @@ class NameCell: UITableViewCell {
         checkButton.snp.makeConstraints({
             $0.trailing.equalToSuperview().offset(-8)
             $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(20)
+            $0.width.height.equalTo(25)
         })
         
     }

@@ -12,16 +12,12 @@ import SnapKit
 /// 사용자가 목표를 설정했을때 생성되는 모각
 class MogakCell: UICollectionViewCell {
     static let identifier: String = "MogakCell"
-    var goalCategoryLabelText: String = ""
-    var goalCategoryLabelTextColor: String = "475FFD"
-//    var goalCategoryLabelBackgoundColor: String = "E8EBFE" //헥사코드로 진행할 예정
-    
-    var goalContentLabelText: String = ""
+    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
     
     private lazy var goalCategoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 6, bottom: 6, left: 12, right: 12)
         label.numberOfLines = 0
-        label.text = self.goalCategoryLabelText
+        label.text = self.mogakCellData.bigCategory.name
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
         label.font = UIFont.pretendard(.medium, size: 12)
@@ -32,7 +28,7 @@ class MogakCell: UICollectionViewCell {
     private lazy var goalContentLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.text = goalContentLabelText
+        label.text = mogakCellData.title
         label.textColor = DesignSystemColor.black.value
         label.font = UIFont.pretendard(.regular, size: 14)
         label.textAlignment = .center
@@ -58,16 +54,23 @@ class MogakCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - 셀 안의 내용을 셋팅하는 부분
     func cellDataSetting() {
-        print(#fileID, #function, #line, "- mogakCell⭐️ : \(goalContentLabelText)")
-        self.goalCategoryLabel.text = goalCategoryLabelText
-        self.goalCategoryLabel.backgroundColor = UIColor(hex: goalCategoryLabelTextColor).withAlphaComponent(0.1)
-        self.goalCategoryLabel.textColor = UIColor(hex: goalCategoryLabelTextColor)
-        self.goalContentLabel.text = goalContentLabelText
+        //카테고리
+        self.goalCategoryLabel.text = mogakCellData.bigCategory.name
+        //카테고리의 배경색
+        self.goalCategoryLabel.backgroundColor = UIColor(hex: mogakCellData.color ?? "475FFD").withAlphaComponent(0.1)
+        //카테고리의 글자색
+        self.goalCategoryLabel.textColor = UIColor(hex: mogakCellData.color ?? "475FFD")
+        
+        //실제 이루고자하는 내용
+        self.goalContentLabel.text = mogakCellData.title
     }
     
+    //MARK: - 모각세팅으로 이동하는 부분
     @objc func settingIconTapped() {
         print(#fileID, #function, #line, "- settingIconTapped⭐️")
+        print(#fileID, #function, #line, "- mogakDetailData: \(self.mogakCellData)")
     }
 }
 

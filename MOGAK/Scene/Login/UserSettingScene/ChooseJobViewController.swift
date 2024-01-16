@@ -6,7 +6,9 @@
 //
 
 import UIKit
+import Combine
 import SnapKit
+import Alamofire
 
 class ChooseJobViewController: UIViewController {
     
@@ -19,6 +21,9 @@ class ChooseJobViewController: UIViewController {
     private var selectedIndexPath: IndexPath?
     
     var selectedIndexPaths: Set<IndexPath> = []
+    
+    var changeJob: Bool = false
+    var selectedJob: String = ""
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -70,8 +75,14 @@ class ChooseJobViewController: UIViewController {
         return button
     }()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isHidden = false
         view.backgroundColor = .white
         
         self.configureNavBar()
@@ -156,8 +167,30 @@ class ChooseJobViewController: UIViewController {
     }
     
     @objc private func nextButtonIsClicked() {
-        let regionVC = ChooseRegionViewController()
-        self.navigationController?.pushViewController(regionVC, animated: true)
+        if changeJob {
+//            self.dismiss(animated: true)
+            self.changeJobRequest()
+        } else {
+            let regionVC = ChooseRegionViewController()
+            self.navigationController?.pushViewController(regionVC, animated: true)
+        }
+        
+    }
+    
+    func changeJobRequest() {
+        let jobRequest = JobChangeRequest(job: selectedJob ?? "")
+        UserNetwork.shared.jobChange(jobRequest) { result in
+            switch result {
+            case .success(let success):
+                if success {
+                    RegisterUserInfo.shared.userJob = self.selectedJob
+                    self.navigationController?.popViewController(animated: true)
+                }
+            case .failure(let failure):
+                print(#fileID, #function, #line, "- failure: \(failure)")
+            }
+        }
+            
     }
 }
 
@@ -270,8 +303,9 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
         // 선택된 셀의 정보 가져오기
            if let cell = tableView.cellForRow(at: indexPath) as? NameCell {
                if let nameLabel = cell.textLabel?.text {
+                   selectedJob = nameLabel
+//                   RegisterUserInfo.shared.userJob = nameLabel
                    print("Selected cell's nameLabel: \(nameLabel)")
-                   RegisterUserInfo.shared.userJob = nameLabel
                }
            }
     }

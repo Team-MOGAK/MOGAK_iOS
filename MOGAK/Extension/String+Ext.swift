@@ -9,7 +9,7 @@ import Foundation
 
 extension String {
     func validateNickname() -> Bool {
-        let regex = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=-])[^\\s]+$"
+        let regex = "^(?=.*[a-zA-Z가-힣])(?=.*[0-9])(?=.*[!@#$%^&*()_+=-])[^\\s]+$"
         
         let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
         return predicate.evaluate(with: self)

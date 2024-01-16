@@ -429,7 +429,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     @objc func goStart(_ sender : UIButton){
         
         let startVC = ScheduleTimerVC()
-        startVC.scheduleTimerDelegate = self
+//        startVC.scheduleTimerDelegate = self
         navigationController?.pushViewController(startVC, animated: true)
         startVC.circularProgressView.Timerstart()
         
@@ -556,22 +556,22 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
 }
 
-extension ScheduleStartViewController: ScheduleTimerDelegate {
-    
-    func certificateModal() {
-        print("프린트 서티피케이트")
-        let scheduleDone = CertificationModalVC()
-        scheduleDone.modalPresentationStyle = .formSheet
-        self.present(scheduleDone,animated: true)
-        
-        if let sheet = scheduleDone.sheetPresentationController{
-            sheet.detents = [.medium()]
-            sheet.delegate = self
-            sheet.prefersGrabberVisible = true
-            sheet.largestUndimmedDetentIdentifier = nil
-        }
-    }
-}
+//extension ScheduleStartViewController: ScheduleTimerDelegate {
+//
+//    func certificateModal() {
+//        print("프린트 서티피케이트")
+//        let scheduleDone = CertificationModalVC()
+//        scheduleDone.modalPresentationStyle = .formSheet
+//        self.present(scheduleDone,animated: true)
+//
+//        if let sheet = scheduleDone.sheetPresentationController{
+//            sheet.detents = [.medium()]
+//            sheet.delegate = self
+//            sheet.prefersGrabberVisible = true
+//            sheet.largestUndimmedDetentIdentifier = nil
+//        }
+//    }
+//}
 
 //extension ScheduleStartViewController {
 //    func Userdefualt(){
