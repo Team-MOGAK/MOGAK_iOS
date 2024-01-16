@@ -172,7 +172,9 @@ class MyPageEditViewController: UIViewController {
         UserNetwork.shared.withDraw { result in
             switch result {
             case .success(let success):
-                let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)
+                let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)  { _ in
+                    RegisterUserInfo.shared.loginState = false
+                }
                 let withdrawAlert = UIAlertController(title: "회원탈퇴", message: "회원탈퇴되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
                 withdrawAlert.addAction(withdrawAlertAction)
                 self.present(withdrawAlert, animated: true)
