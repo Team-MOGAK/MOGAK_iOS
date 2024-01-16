@@ -137,7 +137,7 @@ class ChooseRegionViewController: UIViewController {
             print(#fileID, #function, #line, "- result:")
             switch result {
             case .failure(let error):
-                print(#fileID, #function, #line, "- error: \(error)")
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
                 var defaults = UserDefaults.standard //isFirstTime아닌지 체크하기

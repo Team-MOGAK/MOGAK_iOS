@@ -39,44 +39,45 @@ class UserNetwork {
     
     //MARK: - 유저 계정 생성
     func userJoin(_ userData: UserInfoData, _ profileImg: UIImage?, completionHandler: @escaping(Result<Bool, Error>) -> Void) {
-        let url = "https://mogak.shop:8080/api/users/join"
-        let userId = UserDefaults.standard.integer(forKey: "userId")
-        let header: HTTPHeaders = [
-                    "Accept" : "application/json",
-                    "Content-Type" : "multipart/form-data"
-                ]
+           let url = "https://mogak.shop:8080/api/users/join"
+           let userId = UserDefaults.standard.integer(forKey: "userId")
+           let header: HTTPHeaders = [
+                       "Accept" : "application/json",
+                       "Content-Type" : "multipart/form-data"
+                   ]
 
-        let parameterArr: [String : Any] = ["nickname" : userData.nickname,
-                                          "job" : userData.job,
-                                          "address" : userData.address,
-                                           "email" : "rlafkdud1228@icloud.com",
-                                           "userId" : userId]
-        
-        AF.upload(multipartFormData: { multipartFormData in
-            let jsonString = JSON(parameterArr).rawString() ?? ""
-            let jsonData = jsonString.data(using: String.Encoding.utf8)!
-            
-            multipartFormData.append(jsonData, withName: "request", mimeType: "application/json")
-
-            if let profileImg = profileImg {
-                if let image = profileImg.jpegData(compressionQuality: 1) {
-                    multipartFormData.append(image, withName: "multipartFile", fileName: "\(userData.nickname)_\(Date().timeIntervalSince1970).jpeg", mimeType: "image/jpeg")
-                }
-            }
-            print(#fileID, #function, #line, "- multipartFormData: \(multipartFormData.contentLength)")
-        }, to: url, method: .post, headers: header)
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: UserInfoDataResponse.self, completionHandler:  { response in
-            switch response.result{
-            case .success(let data):
-                print("url : \(data.result.nickname)")
-                completionHandler(.success(true))
-                
-            case .failure(let error):
-                print(error)
-            }
-        })
-    }
+           let parameterArr: [String : Any] = ["nickname" : userData.nickname,
+                                             "job" : userData.job,
+                                             "address" : userData.address,
+                                              "email" : "rlafkdud1228@icloud.com",
+                                              "userId" : userId]
+           
+           AF.upload(multipartFormData: { multipartFormData in
+               let jsonString = JSON(parameterArr).rawString() ?? ""
+               let jsonData = jsonString.data(using: String.Encoding.utf8)!
+               print(#fileID, #function, #line, "- jsonString: \(jsonString)")
+               multipartFormData.append(jsonData, withName: "request", mimeType: "application/json")
+  
+               
+               if let profileImg = profileImg {
+                   if let image = profileImg.jpegData(compressionQuality: 1) {
+                       multipartFormData.append(image, withName: "multipartFile", fileName: "\(userData.nickname)_\(Date().timeIntervalSince1970).jpeg", mimeType: "image/jpeg")
+                   }
+               }
+               print(#fileID, #function, #line, "- multipartFormData: \(multipartFormData.contentLength)")
+           }, to: url, method: .post, headers: header)
+           .validate(statusCode: 200..<300)
+           .responseDecodable(of: UserInfoDataResponse.self, completionHandler:  { response in
+               switch response.result{
+               case .success(let data):
+                   print("url : \(data.result.nickname)")
+                   completionHandler(.success(true))
+                   
+               case .failure(let error):
+                   print(error)
+               }
+           })
+       }
     
     //MARK: - 유저 닉네임 변경
     func nicknameChange(_ nickname: String, completionHandler: @escaping((Result<Bool, Error>) -> Void)) {

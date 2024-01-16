@@ -171,6 +171,7 @@ class ChooseJobViewController: UIViewController {
 //            self.dismiss(animated: true)
             self.changeJobRequest()
         } else {
+            RegisterUserInfo.shared.userJob = selectedJob
             let regionVC = ChooseRegionViewController()
             self.navigationController?.pushViewController(regionVC, animated: true)
         }
