@@ -6,30 +6,34 @@
 //
 
 import UIKit
-// MARK: - 컬러
 
+// MARK: - 컬러
 enum DesignSystemColor {
+    case pink
+    case yellow
+    case orange
+    case purple
+    case skyblue
     case lightGreen
     case green
     case mint
     case brightmint
     case signature
+    case green //sub color
+    case signature //main color
+    case signatureBag //main background color
     case red
     case ruby
     case gray
     case icongray
     case white
-    case yellow
-    case orange
-    case pink
-    case lavender
-    case gray3
-    case black
 }
 
 extension DesignSystemColor {
     var value: UIColor {
         switch self {
+        case .pink:
+            return UIColor(hex: "FF4C77")
         case .lightGreen:
             return UIColor(hex: "11D796")
         case .green:
@@ -40,6 +44,8 @@ extension DesignSystemColor {
             return UIColor(hex: "02BE81")
         case .signature:
             return UIColor(hex: "475FFD")
+        case .signatureBag:
+            return UIColor(hex: "F1F3FA")
         case .red:
             return UIColor(hex: "FF2323")
         case .ruby:
@@ -50,21 +56,10 @@ extension DesignSystemColor {
             return UIColor(hex: "6E707B")
         case .white:
             return UIColor(hex: "FFFFFF")
-        case .yellow:
-            return UIColor(hex: "FFF5D3")
-        case.orange:
-            return UIColor(hex: "F98A08")
-        case .pink:
-            return UIColor(hex: "FFE8E8")
-        case .lavender:
-            return UIColor(hex: "E8EBFE")
-        case .gray3:
-            return UIColor(hex: "BFC3D4")
-        case .black:
-            return UIColor(hex: "000000")
         }
     }
 }
+
 // MARK: - 폰트
 enum DesignSystemFont {
     case bold22L100
@@ -72,8 +67,10 @@ enum DesignSystemFont {
     case semibold18L100
     case medium16L100
     case medium16L150
+    case medium18140
     case semibold14L150
     case regular14L150
+    case regular16L150
     case medium12L150
     
 }
@@ -91,10 +88,14 @@ extension DesignSystemFont {
             return UIFont.pretendard(.medium, size: 16)
         case .medium16L150:
             return UIFont.pretendard(.medium, size: 16)
+        case .medium18140:
+            return UIFont.pretendard(.medium, size: 18)
         case .semibold14L150:
             return UIFont.pretendard(.semiBold, size: 14)
         case .regular14L150:
             return UIFont.pretendard(.regular, size: 14)
+        case .regular16L150:
+            return UIFont.pretendard(.regular, size: 16)
         case .medium12L150:
             return UIFont.pretendard(.regular, size: 14)
         }
@@ -118,6 +119,10 @@ extension DesignSystemFont {
             return 1.26
         case .medium12L150:
             return 1.26
+        case .medium18140:
+            return 1.26
+        case .regular16L150:
+            return 1.26
         }
     }
     
@@ -134,7 +139,6 @@ enum DesignSystemIcon {
     case circleCheckmark
     case emptySquareCheckmark
     case squareCheckmark
-    
 }
 
 extension DesignSystemIcon {

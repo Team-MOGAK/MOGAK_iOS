@@ -281,8 +281,8 @@ class FeedDetailViewController: UIViewController {
     }()
     
     // 루틴 카테고리
-    private let routineCategoryLabel : BasePaddingLabel = {
-        let label = BasePaddingLabel()
+    private let routineCategoryLabel : UILabel = {
+        let label = UILabel()
         // label.clipToBounds = true -> 왜 안돼?
         label.layer.masksToBounds = true // 위랑 같은 기능이라는데
         label.alpha = 0.8
@@ -653,26 +653,26 @@ class FeedDetailViewController: UIViewController {
 }
 
 // MARK: - CUSTOM LABEL (for padding...)
-class BasePaddingLabel: UILabel {
-    private var padding = UIEdgeInsets(top: 4.0, left: 10.0, bottom: 4.0, right: 10.0)
-    
-    convenience init(padding: UIEdgeInsets) {
-        self.init()
-        self.padding = padding
-    }
-    
-    override func drawText(in rect: CGRect) {
-        super.drawText(in: rect.inset(by: padding))
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        var contentSize = super.intrinsicContentSize
-        contentSize.height += padding.top + padding.bottom
-        contentSize.width += padding.left + padding.right
-        
-        return contentSize
-    }
-}
+//class BasePaddingLabel: UILabel {
+//    private var padding = UIEdgeInsets(top: 4.0, left: 10.0, bottom: 4.0, right: 10.0)
+//    
+//    convenience init(padding: UIEdgeInsets) {
+//        self.init()
+//        self.padding = padding
+//    }
+//    
+//    override func drawText(in rect: CGRect) {
+//        super.drawText(in: rect.inset(by: padding))
+//    }
+//    
+//    override var intrinsicContentSize: CGSize {
+//        var contentSize = super.intrinsicContentSize
+//        contentSize.height += padding.top + padding.bottom
+//        contentSize.width += padding.left + padding.right
+//        
+//        return contentSize
+//    }
+//}
 
 // MARK: TableViewDelegate, TableViewDataSource
 extension FeedDetailViewController: UITableViewDelegate, UITableViewDataSource {
@@ -707,33 +707,40 @@ extension FeedDetailViewController: UITextViewDelegate {
 }
 
 
-// MARK: - PREVIEW
-// Preview code
-#if DEBUG
-import SwiftUI
-struct MainBoardViewControllerRepresentable: UIViewControllerRepresentable {
+//// MARK: - PREVIEW
+//// Preview code
+//#if DEBUG
+//import SwiftUI
+//struct MainBoardViewControllerRepresentable: UIViewControllerRepresentable {
+//
+//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+//        // leave this empty
+//    }
+//    @available(iOS 13.0.0, *)
+//    func makeUIViewController(context: Context) -> UIViewController{
+//        FeedDetailViewController() //<- 수정
+//    }
+//}
+//@available(iOS 13.0, *)
+//struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            if #available(iOS 14.0, *) {
+//                MainBoardViewControllerRepresentable()
+//                    //.ignoresSafeArea()
+//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+//                    .previewDevice(PreviewDevice(rawValue: "iPhone 11"))
+//            } else {
+//                // Fallback on earlier versions
+//            }
+//        }
+//
+//    }
+//} #endif
 
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        FeedDetailViewController() //<- 수정
-    }
-}
-@available(iOS 13.0, *)
-struct ViewControllerRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                MainBoardViewControllerRepresentable()
-                    //.ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 11"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
 
-    }
-} #endif
+// @available(iOS 17.0, *)
+// #Preview("FeedDetailVC") {
+//     FeedDetailViewController()
+// }
+ 
