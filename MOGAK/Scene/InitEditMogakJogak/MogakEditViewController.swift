@@ -26,7 +26,7 @@ class MogakEditViewController: UIViewController {
     var currentEndDate: String = ""
     var currentColor: String = ""
     
-    private let titleColorPalette: [String] = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
+    let titleColorPalette: [String] = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
     
     private var isColorSelected: Bool = false
     
@@ -72,7 +72,7 @@ class MogakEditViewController: UIViewController {
         return label
     }()
     
-    private let mogakTextField : UITextField = {
+    let mogakTextField : UITextField = {
         let textField = UITextField()
         textField.placeholder = "하고 싶은 루틴의 제목을 입력해주세요."
         textField.font = UIFont.pretendard(.medium, size: 16)
@@ -106,13 +106,13 @@ class MogakEditViewController: UIViewController {
         return label
     }()
     
-    private let categoryList: [String] = [
+    let categoryList: [String] = [
         "자격증", "대외활동", "운동", "인사이트",
         "공모전", "직무공부", "산업분석", "어학",
         "강연,강의", "프로젝트", "스터디", "기타"
     ]
     
-    private let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
+    let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 6
@@ -352,7 +352,7 @@ class MogakEditViewController: UIViewController {
     }
     
     // MARK: - Color select Collectionview
-    private var colorCollectionView: UICollectionView = {
+    var colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 40, height: 40)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
@@ -386,10 +386,22 @@ class MogakEditViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+//        categoryCollectionView.selectItem(at: [0, categoryList.firstIndex(of: currentBigCategory)!], animated: false, scrollPosition: .init())
+//        collectionView(categoryCollectionView.self, didSelectItemAt: IndexPath(item: categoryList.firstIndex(of: currentBigCategory)!, section: 0))
+//        
+//        colorCollectionView.selectItem(at: [0, titleColorPalette.firstIndex(of: currentColor)!], animated: false, scrollPosition: .init())
+//        collectionView(colorCollectionView.self, didSelectItemAt: IndexPath(item: titleColorPalette.firstIndex(of: currentColor)!, section: 0))
     }
     
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+        
+        categoryCollectionView.selectItem(at: [0, categoryList.firstIndex(of: currentBigCategory)!], animated: false, scrollPosition: .init())
+        collectionView(categoryCollectionView.self, didSelectItemAt: IndexPath(item: categoryList.firstIndex(of: currentBigCategory)!, section: 0))
+        
+        colorCollectionView.selectItem(at: [0, titleColorPalette.firstIndex(of: currentColor)!], animated: false, scrollPosition: .init())
+        collectionView(colorCollectionView.self, didSelectItemAt: IndexPath(item: titleColorPalette.firstIndex(of: currentColor)!, section: 0))
+
     }
     
     private func configureColorCollectionView() {
@@ -494,7 +506,7 @@ class MogakEditViewController: UIViewController {
         categoryCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.categoryExplanationLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(120)
+            $0.height.equalTo(160)
         })
         
         etcTextField.snp.makeConstraints({

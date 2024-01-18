@@ -345,12 +345,27 @@ class MogakInitViewController: UIViewController {
     }()
     
     private lazy var completeButton = UIButton().then {
-        $0.backgroundColor = UIColor(hex: "#475FFD")
+        //$0.backgroundColor = UIColor(hex: "#475FFD")
+        $0.backgroundColor = DesignSystemColor.gray3.value
         $0.setTitle("완료", for: .normal)
         $0.titleLabel?.textAlignment = .center
         $0.titleLabel?.textColor = .white
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         $0.layer.cornerRadius = 10
+        $0.isEnabled = false
+    }
+    
+    func updateButtonState() {
+        //let isTextFilled = !(mogakTextField.text?.isEmpty ?? true)
+        let isTextFilled = !(mogakTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let isCategoryCellSelected = categoryCollectionView.indexPathsForSelectedItems?.count ?? 0 > 0
+        
+        completeButton.isEnabled = isTextFilled && isCategoryCellSelected
+        if completeButton.isEnabled {
+            completeButton.backgroundColor = UIColor(hex: "#475FFD")
+        } else {
+            completeButton.backgroundColor = DesignSystemColor.gray3.value
+        }
     }
     
     // MARK: - Color select Collectionview
@@ -496,7 +511,7 @@ class MogakInitViewController: UIViewController {
         categoryCollectionView.snp.makeConstraints({
             $0.top.equalTo(self.categoryExplanationLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(120)
+            $0.height.equalTo(160)
         })
         
         etcTextField.snp.makeConstraints({
@@ -952,7 +967,8 @@ class MogakInitViewController: UIViewController {
         }
     } */
     @objc private func completeButtonTapped() {
-        createMogak()
+        //createMogak()
+        print(#fileID, #line, #function, "- completeButto Tapped")
     }
     
 }
@@ -1162,6 +1178,14 @@ extension MogakInitViewController: UITextFieldDelegate {
         return false
     }
     
+//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+//        updateButtonState()
+//        return true
+//    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        updateButtonState()
+    }
 }
 
 
@@ -1267,7 +1291,7 @@ extension MogakInitViewController: UICollectionViewDelegate {
                 
                 self.view.layoutIfNeeded()
             }
-            
+            updateButtonState()
         } else if collectionView.tag == 2 {
             let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
             

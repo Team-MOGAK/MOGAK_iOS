@@ -321,6 +321,20 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 }
                 self.present(bottomSheetVC, animated: true)
             }
+            else {
+                // 빈 조각 셀 선택 시
+                print(#fileID, #function, #line, "- 빈 조각 셀 선택됨")
+                print("selectedMogakDATA: \(selectedMogak)")
+                let jogakInitVC = JogakInitViewController()
+                jogakInitVC.mogakCategoryView.backgroundColor = UIColor(hex: "\(String(describing: selectedMogak.color!))")
+                jogakInitVC.mogakCategoryView.alpha = 0.1
+                jogakInitVC.mogakCategoryLabel.text = selectedMogak.bigCategory.name
+                jogakInitVC.mogakCategoryLabel.textColor = UIColor(hex: "\(String(describing: selectedMogak.color!))")
+                jogakInitVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
+                jogakInitVC.mogakCategoryLabel.alpha = 1.0
+                
+                self.navigationController?.pushViewController(jogakInitVC, animated: true)
+            }
             
         } else if collectionView == self.mogakListCollectionView {
             let row = indexPath.row

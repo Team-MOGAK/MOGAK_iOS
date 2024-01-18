@@ -321,7 +321,7 @@ class JogakInitViewController: UIViewController {
     }
     
     private func configureCategory() {
-        [mogakCategoryTitleLabel, mogakCategoryView].forEach(contentView.addSubview(_:))
+        [mogakCategoryTitleLabel, mogakCategoryView, mogakCategoryLabel].forEach(contentView.addSubview(_:))
         
         mogakCategoryTitleLabel.snp.makeConstraints({
             $0.top.equalTo(self.contentView.safeAreaLayoutGuide.snp.top).offset(12)
@@ -335,10 +335,9 @@ class JogakInitViewController: UIViewController {
             $0.width.equalTo(57)
         })
         
-        mogakCategoryView.addSubview(mogakCategoryLabel)
         
         mogakCategoryLabel.snp.makeConstraints({
-            $0.centerX.centerY.equalToSuperview()
+            $0.centerX.centerY.equalTo(mogakCategoryView)
         })
     }
     

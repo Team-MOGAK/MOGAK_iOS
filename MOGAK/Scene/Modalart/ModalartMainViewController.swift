@@ -9,6 +9,10 @@ import Foundation
 import UIKit
 import SnapKit
 
+protocol MogakSettingButtonTappedDelegate: AnyObject {
+    func cellButtonTapped(mogakData: DetailMogakData)
+}
+
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - property
@@ -19,6 +23,7 @@ class ModalartMainViewController: UIViewController {
     var mogakData: [DetailMogakData] = []
     let modalartNetwork = ModalartNetwork.shared ///API 통신
     let mogakNetwork = MogakDetailNetwork.shared
+    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
     
     var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
     
@@ -467,6 +472,8 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         
         guard let mogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: MogakCell.identifier, for: indexPath) as? MogakCell else { return UICollectionViewCell() }
         
+        mogakCell.delegate = self
+        
         let row = indexPath.row
         
         ///4번재 row는 중앙 셀이므로 중앙 셀을 표시
@@ -518,5 +525,37 @@ extension ModalartMainViewController: UICollectionViewDelegateFlowLayout {
         let cellWidth: CGFloat = self.modalArtCollectionView.frame.width / 3.0 - 10 //하나의 셀이 가지는 넓이의최소 크기
         let cellHeight: CGFloat = self.modalArtCollectionView.frame.height / 3.0 - 10//하나의 셀이 가지는 높이의 최소 크기
         return CGSizeMake(cellWidth, cellHeight)
+    }
+}
+
+extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
+    func cellButtonTapped(mogakData: DetailMogakData) {
+        print(#fileID, #function, #line, "- mogakDetailData 넘겨받기: \(mogakData)")
+        let mogakEditVC = MogakEditViewController()
+        // 타이틀 넘기기
+        mogakEditVC.mogakTextField.text = mogakData.title
+        
+        // 카테고리 넘기기
+        let category = mogakData.bigCategory.name
+        let categoryList = mogakEditVC.categoryList
+        let categoryIndex = categoryList.firstIndex(of: category)!
+        print("categoryIndex: \(categoryIndex)")
+        
+        mogakEditVC.currentBigCategory = mogakData.bigCategory.name
+        mogakEditVC.currentColor = String(mogakData.color!.suffix(6))
+        //mogakEditVC.categoryCollectionView.selectItem(at: [0, categoryIndex], animated: false, scrollPosition: .init())
+        
+        // 컬러 넘기기
+        let color = mogakData.color
+        print(color!)
+        let colorPalette = mogakEditVC.titleColorPalette
+//        let colorIndex = colorPalette.firstIndex(of: color!)!
+//        print(#fileID, #function, #line, "- mogakData Color: \(String(describing: mogakData.color))")
+//        mogakEditVC.colorCollectionView.selectItem(at: [0, colorIndex], animated: false, scrollPosition: .init())
+        if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
+            print("#########3")
+        }
+        
+        self.navigationController?.pushViewController(mogakEditVC, animated: true)
     }
 }

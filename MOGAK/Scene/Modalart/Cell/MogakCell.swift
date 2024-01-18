@@ -11,6 +11,8 @@ import SnapKit
 
 /// 사용자가 목표를 설정했을때 생성되는 모각
 class MogakCell: UICollectionViewCell {
+    weak var delegate: MogakSettingButtonTappedDelegate?
+    
     static let identifier: String = "MogakCell"
     var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
     
@@ -71,6 +73,8 @@ class MogakCell: UICollectionViewCell {
     @objc func settingIconTapped() {
         print(#fileID, #function, #line, "- settingIconTapped⭐️")
         print(#fileID, #function, #line, "- mogakDetailData: \(self.mogakCellData)")
+
+        delegate?.cellButtonTapped(mogakData: self.mogakCellData)
     }
 }
 
