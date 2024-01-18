@@ -9,8 +9,9 @@ import Foundation
 import SnapKit
 import Then
 import Alamofire
+import ExpyTableView
 
-class MogakTableViewCell: UITableViewCell {
+class MogakTableViewCell: UITableViewCell,ExpyTableViewHeaderCell{
     
     weak var parentViewController: SelectJogakModal?
     
@@ -122,7 +123,7 @@ class MogakTableViewCell: UITableViewCell {
     }
     
     func configureMogak(with mogakData: DetailMogakData) {
-        //색갈 조절 해야댐ㅇㅇ
+        
         MogakLabel.text = mogakData.title
         
         if mogakData.color == nil{
@@ -138,69 +139,86 @@ class MogakTableViewCell: UITableViewCell {
     }    
 //MARK: - Jogak
     
-    var jogakLabels: [UILabel] = []
+    var jogakLabels: [String] = []
     var jogakImageViews: [UIImageView] = []
     var jogakLabelStackViews: [UIStackView] = []
     
-//MARK: - Jogak
-    func configureJogak(with jogakDataArray: [JogakDetail]) {
-        JogakStackView.arrangedSubviews.forEach { view in
-            JogakStackView.removeArrangedSubview(view)
-            view.removeFromSuperview()
-        }
-
-
-        for jogakData in jogakDataArray {
+//MARK: - cell펼쳐질때의 Method
+    
+    func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
+        switch state {
+           case .willExpand:
+            MogakButtonView.image = UIImage(systemName: "chevron.up")
             
-            jogakLabels = []
-            jogakImageViews = []
-            jogakLabelStackViews = []
-            
-            let jogakLabel = UILabel()
-            jogakLabel.text = jogakData.title
-            jogakLabel.textColor = .black
-            jogakLabel.backgroundColor = .clear
-            jogakLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
+           case .willCollapse:
+            MogakButtonView.image = UIImage(systemName: "chevron.down")
 
-            let jogakimageView = UIImageView()
-            jogakimageView.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
+           case .didExpand:
+            print("cell DID EXPAND")
 
-            if jogakData.isRoutine == false {
-                jogakimageView.image = UIImage(systemName: "square")
-            } else {
-                jogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
-            }
-
-            jogakimageView.snp.makeConstraints {
-                $0.height.width.equalTo(20)
-            }
-
-            let jogakLabelStackView = UIStackView()
-            jogakLabelStackView.axis = .horizontal
-            jogakLabelStackView.spacing = 10
-
-            // let tapjogakStackView = UITapGestureRecognizer(target: self, action: #selector(JogakStackViewTap))
-
-            if jogakData.isRoutine == false {
-                // jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
-            } else {
-                print("isRoutine이 true라서 터치안댐ㅇㅇ")
-            }
-
-            jogakLabelStackView.addArrangedSubview(jogakimageView)
-            jogakLabelStackView.addArrangedSubview(jogakLabel)
-
-            JogakStackView.addArrangedSubview(jogakLabelStackView)
-
-            jogakLabels.append(jogakLabel)
-            jogakImageViews.append(jogakimageView)
-            jogakLabelStackViews.append(jogakLabelStackView)
-            
-            print(jogakLabels)
-            print(jogakData.jogakID)
-            //print(jogakData.title)
-        }
+           case .didCollapse:
+            print("cell DID COLLAPSE")
+           }
+         
     }
+//MARK: - Jogak
+//    func configureJogak(with jogakDataArray: [JogakDetail]) {
+//        JogakStackView.arrangedSubviews.forEach { view in
+//            JogakStackView.removeArrangedSubview(view)
+//            view.removeFromSuperview()
+//        }
+//
+//
+//        for jogakData in jogakDataArray {
+//            
+//            jogakLabels = []
+//            jogakImageViews = []
+//            jogakLabelStackViews = []
+//            
+//            let jogakLabel = UILabel()
+//            jogakLabel.text = jogakData.title
+//            jogakLabel.textColor = .black
+//            jogakLabel.backgroundColor = .clear
+//            jogakLabel.font = UIFont(name: "PretendardVariable-Medium", size: 16)
+//
+//            let jogakimageView = UIImageView()
+//            jogakimageView.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
+//
+//            if jogakData.isRoutine == false {
+//                jogakimageView.image = UIImage(systemName: "square")
+//            } else {
+//                jogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+//            }
+//
+//            jogakimageView.snp.makeConstraints {
+//                $0.height.width.equalTo(20)
+//            }
+//
+//            let jogakLabelStackView = UIStackView()
+//            jogakLabelStackView.axis = .horizontal
+//            jogakLabelStackView.spacing = 10
+//
+//            // let tapjogakStackView = UITapGestureRecognizer(target: self, action: #selector(JogakStackViewTap))
+//
+//            if jogakData.isRoutine == false {
+//                // jogakLabelStackView.addGestureRecognizer(tapjogakStackView)
+//            } else {
+//                print("isRoutine이 true라서 터치안댐ㅇㅇ")
+//            }
+//
+//            jogakLabelStackView.addArrangedSubview(jogakimageView)
+//            jogakLabelStackView.addArrangedSubview(jogakLabel)
+//
+//            JogakStackView.addArrangedSubview(jogakLabelStackView)
+//
+//            jogakLabels.append(jogakLabel.text ?? "")
+//            jogakImageViews.append(jogakimageView)
+//            jogakLabelStackViews.append(jogakLabelStackView)
+//            
+//            print(jogakLabels)
+//            print(jogakData.jogakID)
+//        }
+//    }
     
 //    @objc func JogakStackViewTap(_ sender: UITapGestureRecognizer) {
 //        if let index = jogakLabelStackViews.firstIndex(of: sender.view as! UIStackView) {

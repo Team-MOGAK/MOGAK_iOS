@@ -10,12 +10,13 @@ import UIKit
 import SnapKit
 import Then
 import Alamofire
+import ExpyTableView
 
 class SelectJogakModal : UIViewController{
     
     var TableViewReload : (()->())? //tableviewreload
     //셀
-    var SelectJogaklist : [String] = ["312","asd"] // 루틴으로 지정된 조각
+    var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
     //모다라트
     var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
@@ -29,7 +30,9 @@ class SelectJogakModal : UIViewController{
     
     var jogakData: [JogakDetail] = []
     var mogakData: [DetailMogakData] = []
-//    let scheduleVC = ScheduleStartViewController()
+    
+    var jogakTitle : [String] = []
+    
     let Apinetwork =  ApiNetwork.shared
     
     //MARK: - Basic Properties
@@ -79,10 +82,10 @@ class SelectJogakModal : UIViewController{
     
     //MARK: - modalart정보를 받는 곳
     
-    lazy var MogakTableView: UITableView = {
-        let table = UITableView()
-        table.backgroundColor = .white
-        return table
+    lazy var MogakTableView: ExpyTableView = {
+        let tableView = ExpyTableView()
+        tableView.backgroundColor = .gray
+        return tableView
     }()
     
     let mogaktableviewcell = MogakTableViewCell()
@@ -183,8 +186,8 @@ class SelectJogakModal : UIViewController{
     
     //MARK: - 모다라트 리스트 보는 UImenu
     func setupMenu(){
-        var menuActions: [UIAction] = []
         
+        var menuActions: [UIAction] = []
         for modalartInfo in modalartList {
             let action = UIAction(
                 title: modalartInfo.title,
@@ -251,12 +254,15 @@ class SelectJogakModal : UIViewController{
             case.success(let data):
                 if let jogakDetailArray = data {
                     self.jogakData = jogakDetailArray
-                    
-                    if let cell = self.MogakTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MogakTableViewCell {
-                        
-                        cell.configureJogak(with: jogakDetailArray)
+                    self.jogakTitle = [] // 타이틀 초기화
+                    for jogakDataItem in jogakDetailArray {
+                        self.jogakTitle.append(jogakDataItem.title)
                     }
+                    print("for문이 지난 후 : ", self.jogakTitle)
                     
+                    //                    DispatchQueue.main.async { [weak self] in
+                    //                        self?.MogakTableView.reloadData()
+                    //                    }
                 } else {
                     print("JogakDetailArray나 result가 nil입니다.")
                 }
@@ -270,32 +276,60 @@ class SelectJogakModal : UIViewController{
     
 }
 
-extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
+extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mogakData.count
-    }
-    
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MogakTableViewCell", for: indexPath)
+    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) { //섹션이 열리고 닫히기
         
-        if let mogakCell = cell as? MogakTableViewCell {
+        switch state {
+        case .willExpand:
+            print("WILL EXPAND")
             
-            let mogakDataItem = mogakData[indexPath.row]
-            mogakCell.configureMogak(with: mogakDataItem)
+        case .willCollapse:
+            print("WILL COLLAPSE")
             
-            mogakCell.jogakClickClosure = { [weak self] jogakLabel in
-                
-                print("JogakLabel: \(jogakLabel) 클릭됨!")
-                // self?.SelectJogaklist에 접근 가능
-                self?.handleJogakSelection(jogakLabel)
-            }
+        case .didExpand:
+            print("DID EXPAND")
             
+        case .didCollapse:
+            print("DID COLLAPSE")
         }
+    }
+    
+    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell { //섹션 내용
+        let cell = MogakTableViewCell()
+        // 모각 데이터 설정
+        let mogakDataItem = mogakData[section]
+        cell.configureMogak(with: mogakDataItem)
+        print(mogakDataItem.mogakId)
+        
+        return cell
+    }
+    
+    func numberOfSections(in: UITableView) -> Int {
+        
+        return mogakData.count //모각의 개수
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { //조각의 개수
+        if section < jogakTitle.count {
+            return jogakTitle[section].count // 각 섹션의 행의 개수는 jogakTitle 배열의 해당 섹션의 개수가 됩니다.
+               } else {
+                   return 0
+               }
+    }
+    //MARK: - cell에 해당하는 row
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.backgroundColor = .yellow
+        if indexPath.section < jogakTitle.count {
+                 let jogakTitleForRow = jogakTitle[indexPath.row]
+                 cell.textLabel?.text = jogakTitleForRow
+             }
+
         
         return cell
     }
@@ -316,46 +350,13 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     
     //MARK: - 셀 클릭시 반응
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if let cell = tableView.cellForRow(at: indexPath) as? MogakTableViewCell {
-            
-//            let selectedMogakData = mogakData[indexPath.row]
-//            print("Selected Mogak Data: \(selectedMogakData)")
-//            
-//            let mogakId = selectedMogakData.mogakId
-//            getDetailJogakData(id: mogakId)
-            
-            let selectedMogakData = mogakData[indexPath.row]
-            print("Selected Mogak Data: \(selectedMogakData.title)")
-            
-            let mogakId = selectedMogakData.mogakId
-            getDetailJogakData(id: mogakId)
-            
-            let jogakDataItem = jogakData //조각 호출
-            cell.configureJogak(with: jogakDataItem)
-            
-            
-            cell.JogakStackView.isHidden = !cell.JogakStackView.isHidden
-            
-            
-            if cell.JogakStackView.isHidden {
-                cell.MogakButtonView.image = UIImage(systemName: "chevron.up")
-                
-            } else {
-                cell.MogakButtonView.image = UIImage(systemName: "chevron.down")
-            
-            }
-            
+        if tableView.cellForRow(at: indexPath) is MogakTableViewCell {
+            let selectedMogakData = mogakData[indexPath.section]  // 해당 섹션의 MogakData를 가져옴
+            print("선택한 모각의 id : ",selectedMogakData.mogakId)
+            getDetailJogakData(id: selectedMogakData.mogakId)
         }
-        
-        tableView.beginUpdates()
-        tableView.endUpdates()
     }
     
-//    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-//        tableView.beginUpdates()
-//        tableView.endUpdates()
-//    }
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in
@@ -370,7 +371,6 @@ extension SelectJogakModal: UITableViewDataSource, UITableViewDelegate {
     }
     
 }
-
 
 extension Date {
     func isSameDay(as date: Date) -> Bool {

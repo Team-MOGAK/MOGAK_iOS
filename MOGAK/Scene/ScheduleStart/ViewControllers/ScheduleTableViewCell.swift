@@ -120,8 +120,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }
     
     
-    //MARK: - UI
-    
+//MARK: - UI
     private func CellUI(){
         contentView.addSubview(cellImage)
         contentView.addSubview(cellLabel)
@@ -157,6 +156,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         recodeimageView?.snp.makeConstraints{
             $0.centerX.centerY.equalToSuperview()
         }
+        
         layer.shadowColor = UIColor.darkGray.cgColor         //그림자 효과 추후 적용 예정
         layer.shadowOffset = CGSize(width: 10, height: 10)
         layer.shadowOpacity = 0.06
@@ -183,7 +183,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 
 }
 
-extension UITableViewCell { //VC에 접근
+extension UITableViewCell {
     var parentVC: UIViewController? {
         var responder: UIResponder? = self
         while let nextResponder = responder?.next {
