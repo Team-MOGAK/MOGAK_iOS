@@ -44,6 +44,11 @@ struct CreateAndEditModalartResponse: Codable {
     let result: ModalartMainData
 }
 
+struct ModalartTitleEditRequest: Codable {
+    let title: String
+    let color: String
+}
+
 struct ModalartMainData: Codable {
     let id: Int
     let title: String

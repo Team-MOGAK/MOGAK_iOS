@@ -158,11 +158,13 @@ class ModalartMainViewController: UIViewController {
                     sheet.prefersGrabberVisible = true
                 }
                 bottomSheetVC.startDelete = {
-                    if self.modalartList.count == 1 { //현재 삭제하려고 하는 모다라트가 마지막 하나일 경우 -> 다시 하나 생성
-                        self.createModalart()
-                    } else {
-                        self.deleteModalart()
-                    }
+                    self.deleteModalart()
+//                    if self.modalartList.count == 1 { //현재 삭제하려고 하는 모다라트가 마지막 하나일 경우 -> 다시 하나 생성
+//
+//                        self.createModalart()
+//                    } else {
+//                        self.deleteModalart()
+//                    }
                 }
                 self.present(bottomSheetVC, animated: true)
             }
@@ -211,11 +213,12 @@ extension ModalartMainViewController {
                 print(#fileID, #function, #line, "- modalartList checking:\(self.modalartList)")
                 
                 if self.modalartList.isEmpty {
-                    self.modalartName = "내 모다라트"
-                    self.modalArtNameLabel.text = self.modalartName
-//                    self.modalartList =
-                    self.modalArtMainCellBgColor = "BFC3D4"
-                    self.modalArtCollectionView.reloadData()
+                    self.createModalart()
+//                    self.modalartName = "내 모다라트"
+//                    self.modalArtNameLabel.text = self.modalartName
+////                    self.modalartList =
+//                    self.modalArtMainCellBgColor = "BFC3D4"
+//                    self.modalArtCollectionView.reloadData()
                 }
                 else {
                     guard let firstData = modalartList.first else { return }
@@ -268,7 +271,7 @@ extension ModalartMainViewController {
         self.view.isUserInteractionEnabled = false
         let color = "BFC3D4"
         let modalartLast = self.modalartList.last ?? ModalartList(id: 0, title: "")
-
+        
         let createdId = modalartLast.id + 1
         let createdTitle = "내 모다라트\(createdId)"
 
