@@ -89,11 +89,14 @@ class NicknameViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = false
+        self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
+        self.setProfile.clipsToBounds = true
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.shadowImage = UIImage()
         view.backgroundColor = .white
         self.configureNavBar()
         self.configureLabel()
@@ -108,7 +111,7 @@ class NicknameViewController: UIViewController {
                 self.nextButton.backgroundColor = UIColor(hex: "475FFD")
             }
             
-            if image != nil {
+            if image != nil && self.nicknameAndImageChange {
                 self.setProfile.setImage(self.registerUserInfo.profileImage, for: .normal)
             } else {
                 self.deleteImageButton.isHidden = true
@@ -117,9 +120,9 @@ class NicknameViewController: UIViewController {
         .store(in: &cancellables)
     }
     
-    override func viewDidLayoutSubviews() {
-        setProfile.layer.cornerRadius = setProfile.frame.height / 2
-    }
+//    override func viewDidLayoutSubviews() {
+//        setProfile.layer.cornerRadius = setProfile.frame.height / 2
+//    }
     
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""
@@ -284,7 +287,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
         // 선택된 이미지를 가져옵니다.
         if let image = info[.originalImage] as? UIImage {
             // 가져온 이미지를 버튼 이미지로 설정합니다.
-            setProfile.setImage(image, for: .normal)
+//            setProfile.setImage(image, for: .normal)
             
             // Kingfisher를 사용하여 이미지를 캐싱하고 표시합니다.
             let options: KingfisherOptionsInfo = [.transition(.fade(0.2))]
@@ -295,15 +298,20 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
                     switch result {
                     case .success(_):
                         // 버튼 모양을 원 모양으로 변경합니다.
+                        if self.nicknameAndImageChange {
+                            self.changeProfileImage = image
+                            self.nextButton.isUserInteractionEnabled = true
+                            self.nextButton.backgroundColor = UIColor(hex: "475FFD")
+                        }
+                        else {
+                            self.registerUserInfo.profileImage = image
+                        }
                         self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
                         self.setProfile.clipsToBounds = true
                         self.profileImageChange = true
             //            registerUserInfo.profileImage = image
-                        self.changeProfileImage = image
-                        self.nextButton.isUserInteractionEnabled = true
-                        self.nextButton.backgroundColor = UIColor(hex: "475FFD")
                         self.deleteImageButton.isHidden = false
-                        break
+                        
                     case .failure(let error):
                         // 이미지 표시 중에 에러가 발생한 경우 실행되는 코드
                         print("Error setting button image: \(error)")
