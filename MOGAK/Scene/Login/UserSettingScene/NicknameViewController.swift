@@ -120,9 +120,9 @@ class NicknameViewController: UIViewController {
         .store(in: &cancellables)
     }
     
-//    override func viewDidLayoutSubviews() {
-//        setProfile.layer.cornerRadius = setProfile.frame.height / 2
-//    }
+    override func viewDidLayoutSubviews() {
+        setProfile.layer.cornerRadius = setProfile.frame.height / 2
+    }
     
     private func configureNavBar() {
         self.navigationController?.navigationBar.topItem?.title = ""

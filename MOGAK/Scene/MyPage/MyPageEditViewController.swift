@@ -15,6 +15,8 @@ class MyPageEditViewController: UIViewController {
     
     private let profileImage = UIImageView().then {
         $0.image = UIImage(named: "default")
+        $0.layer.cornerRadius = 35
+        $0.clipsToBounds = true
         $0.clipsToBounds = true
     }
     
@@ -125,6 +127,7 @@ class MyPageEditViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         profileImage.layer.cornerRadius = profileImage.frame.height / 2
+        
     }
     
     private func configureNavBar() {
