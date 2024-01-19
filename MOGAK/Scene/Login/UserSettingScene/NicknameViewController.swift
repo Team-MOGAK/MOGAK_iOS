@@ -113,8 +113,10 @@ class NicknameViewController: UIViewController {
             
             if image != nil && self.nicknameAndImageChange {
                 self.setProfile.setImage(self.registerUserInfo.profileImage, for: .normal)
+                self.deleteImageButton.isHidden = false
             } else {
                 self.deleteImageButton.isHidden = true
+//                self.deleteImageButton.isHidden = false
             }
         }
         .store(in: &cancellables)
@@ -187,12 +189,12 @@ class NicknameViewController: UIViewController {
     
     private func configureDeleteButton() {
         self.view.addSubview(deleteImageButton)
-        if registerUserInfo.profileImage != nil {
+//        if registerUserInfo.profileImage != nil {
             deleteImageButton.snp.makeConstraints { make in
                 make.top.equalTo(self.setProfile.snp.top)
                 make.leading.equalTo(self.setProfile.snp.leading)
             }
-        }
+//        }
     }
     
     
@@ -210,10 +212,13 @@ class NicknameViewController: UIViewController {
         self.setProfile.setImage(UIImage(named: "setProfile"), for: .normal)
 //        registerUserInfo.profileImage = nil
         changeProfileImage = UIImage(named: "setProfile")
-        nextButton.isUserInteractionEnabled = true
-        nextButton.backgroundColor = UIColor(hex: "475FFD")
+        if nicknameAndImageChange {
+            nextButton.isUserInteractionEnabled = true
+            nextButton.backgroundColor = UIColor(hex: "475FFD")
+            profileImageChange = true
+        }
         deleteImageButton.isHidden = true
-        profileImageChange = true
+        
     }
     
     @objc private func nextButtonIsClicked() {
@@ -306,10 +311,7 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
                         else {
                             self.registerUserInfo.profileImage = image
                         }
-                        self.setProfile.layer.cornerRadius = self.setProfile.frame.height / 2
-                        self.setProfile.clipsToBounds = true
                         self.profileImageChange = true
-            //            registerUserInfo.profileImage = image
                         self.deleteImageButton.isHidden = false
                         
                     case .failure(let error):
