@@ -51,6 +51,7 @@ class CommonLoginManage: RequestInterceptor {
         }
         //401, 404, 409 이외에는 로그아웃 -> 로그인VC로 이동
         else {
+            print(#fileID, #function, #line, "- responseStaus: \(response.statusCode)")
             completion(.doNotRetryWithError(error))
             UserDefaults.standard.set("", forKey: "refreshToken")
             RegisterUserInfo.shared.loginState = false

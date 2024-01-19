@@ -268,7 +268,7 @@ extension ModalartMainViewController {
         self.view.isUserInteractionEnabled = false
         let color = "BFC3D4"
         let modalartLast = self.modalartList.last ?? ModalartList(id: 0, title: "")
-        
+
         let createdId = modalartLast.id + 1
         let createdTitle = "내 모다라트\(createdId)"
 
