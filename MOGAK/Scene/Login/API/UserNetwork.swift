@@ -226,6 +226,7 @@ class UserNetwork {
                         let decodeData = try? decoder.decode(WithDrawResponse.self, from: data)
                         guard let isUserDeleted = decodeData?.result.deleted else { return }
                         if isUserDeleted {
+                            RegisterUserInfo.shared.profileImage = nil
                             UserDefaults.standard.set("", forKey: "refreshToken")
                             UserDefaults.standard.set(true, forKey: "isFirstTime")
                             UserDefaults.standard.synchronize()

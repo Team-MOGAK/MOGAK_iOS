@@ -34,8 +34,8 @@ enum ModalartRouter: URLRequestConvertible {
     //헤더
     var headers: HTTPHeaders {
         switch self {
-        default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
-//        default: return HTTPHeaders(["accept":"application/json"])
+//        default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
+        default: return HTTPHeaders(["accept":"application/json"])
         }
     }
     
@@ -74,7 +74,9 @@ enum ModalartRouter: URLRequestConvertible {
         case .createModalrt(let data):
             request = try JSONParameterEncoder().encode(data, into: request) //body가 필요할때
         case .editModalart(let data):
-            request = try JSONParameterEncoder().encode(data, into: request)
+            let editData = ModalartTitleEditRequest(title: data.title, color: data.color)
+            print(#fileID, #function, #line, "- editData: \(editData)")
+            request = try JSONParameterEncoder().encode(editData, into: request)
         }
 
         return request

@@ -29,9 +29,10 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private let profileImage = UIImageView().then {
         $0.image = UIImage(named: "default")
-        $0.layer.borderWidth = 1
+//        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 35 
         $0.clipsToBounds = true
-        $0.layer.borderColor = UIColor.clear.cgColor
+//        $0.layer.borderColor = UIColor.clear.cgColor
         $0.contentMode = .scaleAspectFill
     }
     
@@ -266,7 +267,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        profileImage.layer.cornerRadius = profileImage.frame.height / 2
+//        profileImage.layer.cornerRadius = profileImage.frame.height / 2
     }
     
     

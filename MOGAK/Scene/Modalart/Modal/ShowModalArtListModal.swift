@@ -125,7 +125,7 @@ extension ShowModalArtListModal: UITableViewDataSource {
         if indexPath.row == modalArtNameList.count - 1 { //맨 마지막 데이터일 경우 선이 안보이도록 설정
             cell.separatorInset = UIEdgeInsets(top: 0, left: modalArtListTableView.bounds.size.width, bottom: 0, right: 0);
         }
-        cell.modalartName = modalArtNameList[indexPath.row].title
+        cell.modalartName = modalArtNameList[indexPath.row].title ?? ""
 //        print(#fileID, #function, #line, "- ⭐️: \(modalArtNameList[indexPath.row])")
         cell.configureLayout()
         cell.setUpLabel()

@@ -35,13 +35,18 @@ struct MogakCategory: Codable {
 
 // MARK: - BigCategory
 struct BigCategory: Codable {
-    let id: Int
-    let name: String
+    let id: Int?
+    let name: String?
 }
 
 struct CreateAndEditModalartResponse: Codable {
     let time, status, code, message: String?
     let result: ModalartMainData
+}
+
+struct ModalartTitleEditRequest: Codable {
+    let title: String
+    let color: String
 }
 
 struct ModalartMainData: Codable {
