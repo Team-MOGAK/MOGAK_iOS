@@ -18,9 +18,9 @@ struct MogakMainData: Codable {
     let modaratId: Int
     let title: String
     let bigCategory: String
-    //let smallCategory: String
-    let startAt: String
-    let endAt: String
+    let smallCategory: String?
+    //let startAt: String
+    //let endAt: String
     let color: String
 }
 
@@ -29,12 +29,12 @@ struct CreateMogakMainData: Codable {
 //    let title: String
     let id: Int
     let title: String
-    let state: String?
+    //let state: String?
     let bigCategory: BigCategory
     let smallCategory: String?
     let color: String?
-    let startAt: String
-    let endAt: String
+    //let startAt: String
+    //let endAt: String
 }
 
 // MARK: - 모각수정 Response

@@ -18,7 +18,7 @@ class MogakInitViewController: UIViewController {
     // MARK: - 데이터
     var currentModalartId: Int = 0
     var currentBigCategory: String = ""
-    var currentSmallCategory: String = ""
+    var currentSmallCategory: String? = nil
     var mogakData: [MogakMainData] = []
     
     var currentStartDate: String = ""
@@ -967,8 +967,10 @@ class MogakInitViewController: UIViewController {
         }
     } */
     @objc private func completeButtonTapped() {
-        //createMogak()
+        createMogak()
         print(#fileID, #line, #function, "- completeButto Tapped")
+        
+        self.navigationController?.popViewController(animated: true)
     }
     
 }
@@ -1422,14 +1424,14 @@ extension MogakInitViewController {
         let createdTitle = mogakTextField.text
         let bigCategory = currentBigCategory
         let smallCategory = currentSmallCategory
-        var startAt: String = currentStartDate
-        var endAt: String = currentEndDate
+        //var startAt: String = currentStartDate
+        //var endAt: String = currentEndDate
         var color: String = "#" + currentColor
         
         //
         //
-        //        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
-        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, startAt: startAt, endAt: endAt, color: color)
+        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, color: color)
+        //let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, color: color)
         print(data)
         
         

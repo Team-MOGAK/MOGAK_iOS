@@ -22,12 +22,12 @@ class MogakNetwork {
                     print(#fileID, #function, #line, "- data title: \(data.result.title)")
                     //print(#fileID, #function, #line, "- data mogakId: \(data.result.mogakId)")
                     print(#fileID, #function, #line, "- data mogakId: \(data.result.id)")
-                    print(#fileID, #function, #line, "- data state: \(data.result.state)")
+                    //print(#fileID, #function, #line, "- data state: \(data.result.state)")
                     print(#fileID, #function, #line, "- data bigCateogry id: \(String(describing: data.result.bigCategory.id))")
                     print(#fileID, #function, #line, "- data bigCategory name: \(String(describing: data.result.bigCategory.name))")
-                    print(#fileID, #function, #line, "- data color: \(data.result.color)")
-                    print(#fileID, #function, #line, "- data startAt: \(data.result.startAt)")
-                    print(#fileID, #function, #line, "- data endAt: \(data.result.endAt)")
+                    print(#fileID, #function, #line, "- data color: \(String(describing: data.result.color))")
+                    //print(#fileID, #function, #line, "- data startAt: \(data.result.startAt)")
+                    //print(#fileID, #function, #line, "- data endAt: \(data.result.endAt)")
                     completionHandler(.success(data.result))
                 }
             }
