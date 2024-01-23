@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA2MDE2NDgxLCJleHAiOjE3MDYwMjM2ODF9.kqU6QIFuUKKz_Zh-O0IymU7qtYXymORKFhCNTPfhG_o"
+let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA2MDMyODU2LCJleHAiOjE3MDYwNDAwNTZ9.NXDoZkTWwN-obv-MQG_lN13pQ0eiBgQaQXoGww0VAaY"
 
 let BaseURL = "https://mogak.shop:8080"
 

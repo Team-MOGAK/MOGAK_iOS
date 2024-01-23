@@ -137,6 +137,7 @@ class SelectJogakModal : UIViewController{
     struct MogakJogak{
         var mogaktitle = String()
         var jogaktitle = [String]()
+        var mogakcolor = String()
     }
     
     var tableViewData = [MogakJogak]()
@@ -148,20 +149,21 @@ class SelectJogakModal : UIViewController{
         }
         
         MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
+        MogakTableView.register(JogakTableViewCell.self, forCellReuseIdentifier: "JogakTableViewCell")
         
         MogakTableView.reloadData()
         MogakTableView.dataSource = self
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
         
-        tableViewData = [MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
-                         MogakJogak(mogaktitle: "", jogaktitle: [""])]
+        tableViewData = [MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak(),
+                         MogakJogak()]
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -255,7 +257,7 @@ class SelectJogakModal : UIViewController{
                     //데이터 초기화하는 코드 추가해야함
                     self.MogakTableView.reloadData()
                     self.tableViewData = mogakDataArray.map { mogakData in
-                        return MogakJogak(mogaktitle: mogakData.title, jogaktitle: ["1"])
+                        return MogakJogak(mogaktitle: mogakData.title, jogaktitle: ["1"],mogakcolor : mogakData.color ?? "")
                     }
                     for (index, mogakData) in mogakDataArray.enumerated() {
                         
@@ -268,10 +270,6 @@ class SelectJogakModal : UIViewController{
                         self.MogakTableView.reloadData()
                     }
                     
-                    //                    DispatchQueue.main.async {
-                    //                        self.MogakTableView.reloadData()
-                    //
-                    //                    }
                     
                 } else {
                     print("모다라트에 해당하는 모각 데이터가 없습니다.")
@@ -348,11 +346,11 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         }
         
         // 현재 섹션의 모각에 해당하는 mogaktitle 가져오기
-        let mogakTitle = tableViewData[section].mogaktitle
+        let mogakdata = tableViewData[section]
         
         // 셀에 mogakTitle 표시
-        // cell.configureMogak(with: mogakTitle)
-        cell.textLabel?.text = mogakTitle
+        cell.configureMogak(with: mogakdata)
+        //cell.textLabel?.text = mogakTitle
         
         return cell
     }
@@ -367,26 +365,22 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     //MARK: - Jogak
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { //조각의 개수
-        
         guard section < tableViewData.count else {
             MogakTableView.reloadData()
             return 0
         }
-        
-        
-        // section에 해당하는 배열 요소의 jogaktitle 개수 반환
         return tableViewData[section].jogaktitle.count
     }
     
     //MARK: - cell에 해당하는 row
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MogakTableViewCell") else {
-            return UITableViewCell()
-        }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JogakTableViewCell", for: indexPath) as? JogakTableViewCell else {
+            print("Failed to dequeue JogakTableViewCell")
+                return UITableViewCell()
+            }
+
         let jogakTitle = tableViewData[indexPath.section].jogaktitle[indexPath.row]
-        
-        
-        cell.textLabel?.text = jogakTitle
+        cell.configureJogak(with: jogakTitle)
         return cell
     }
     
@@ -477,7 +471,7 @@ class MogakTableViewCell : UITableViewCell{
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        layout()
+        layoutMogak()
         selectionStyle = .none
     }
     
@@ -489,7 +483,7 @@ class MogakTableViewCell : UITableViewCell{
         super.layoutSubviews()
     }
     
-    func layout(){
+    func layoutMogak(){
         contentView.addSubview(MogakStackView)
         MogakView.addSubview(MogakLabel)
         
@@ -514,23 +508,58 @@ class MogakTableViewCell : UITableViewCell{
         }
     }
     
-    func configureMogak(with mogakData: ScheduleDetailMogakData) {
+    func configureMogak(with mogakData: SelectJogakModal.MogakJogak) {
         
-        MogakLabel.text = mogakData.title
+        MogakLabel.text = mogakData.mogaktitle
         
-        if mogakData.color == nil{
+        if mogakData.mogakcolor.isEmpty{
             MogakLabel.textColor = DesignSystemColor.signature.value
             MogakLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
             print("if")
         }else{
-            MogakLabel.backgroundColor = UIColor(hex: mogakData.color ?? "").withAlphaComponent(0.1)
-            MogakLabel.textColor = UIColor(hex: mogakData.color ?? "")
+            MogakLabel.backgroundColor = UIColor(hex: mogakData.mogakcolor ).withAlphaComponent(0.1)
+            MogakLabel.textColor = UIColor(hex: mogakData.mogakcolor)
             
         }
         
     }
 }
+class JogakTableViewCell : UITableViewCell{
+    
+     lazy var JogakLabel : UILabel = {
+        let label = UILabel()
+        return label
+    }()
 
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        layoutJogak()
+        selectionStyle = .none
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+    func layoutJogak(){
+        contentView.addSubview(JogakLabel)
+        
+        JogakLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(3)
+            $0.leading.equalToSuperview().offset(3)
+        }
+    }
+    
+    func configureJogak(with jogakTitle: String) {
+        print("jogakTitle : ", jogakTitle)
+            JogakLabel.text = jogakTitle
+            
+        }
+}
 
 
 
