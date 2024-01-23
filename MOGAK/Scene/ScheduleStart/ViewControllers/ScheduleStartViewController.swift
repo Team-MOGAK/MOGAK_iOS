@@ -582,6 +582,18 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         return numberOfJogak
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+            guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
+                return 80.0 // Default height
+            }
+            
+            // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
+            let recodelabelHeight = cell.calculateRecodelabelHeight()
+            
+            // 동적 높이를 기본 셀 높이에 추가합니다
+            return 80.0 + recodelabelHeight
+        }
+    
     //MARK: - cellUI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { //cell 재활용
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
@@ -601,22 +613,22 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
 }
 
-extension ScheduleStartViewController: ScheduleTimerDelegate {
-    
-    func certificateModal() {
-        print("프린트 서티피케이트")
-        let scheduleDone = CertificationModalVC()
-        scheduleDone.modalPresentationStyle = .formSheet
-        self.present(scheduleDone,animated: true)
-        
-        if let sheet = scheduleDone.sheetPresentationController{
-            sheet.detents = [.medium()]
-            sheet.delegate = self
-            sheet.prefersGrabberVisible = true
-            sheet.largestUndimmedDetentIdentifier = nil
-        }
-    }
-}
+//extension ScheduleStartViewController: ScheduleTimerDelegate {
+//    
+//    func certificateModal() {
+//        print("프린트 서티피케이트")
+//        let scheduleDone = CertificationModalVC()
+//        scheduleDone.modalPresentationStyle = .formSheet
+//        self.present(scheduleDone,animated: true)
+//        
+//        if let sheet = scheduleDone.sheetPresentationController{
+//            sheet.detents = [.medium()]
+//            sheet.delegate = self
+//            sheet.prefersGrabberVisible = true
+//            sheet.largestUndimmedDetentIdentifier = nil
+//        }
+//    }
+//}
 
 
 

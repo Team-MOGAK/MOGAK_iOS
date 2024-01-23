@@ -209,50 +209,7 @@ extension ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource
         return self.view.bounds.height / 20
     }
 
-//네트워크 코드
-extension ChooseRegionViewController {
-    func registerUser() {
-        
-        let userEmail = UserDefaults.standard.string(forKey: "userEmail")
-        
-        let url = ApiConstants.join
-        
-        let parameters: Parameters = [
-            "nickname": "\(RegisterUserInfo.shared.nickName!)",
-            "job": "\(RegisterUserInfo.shared.userJob!)",
-            "address": "\(RegisterUserInfo.shared.userRegion!)",
-            "email": "\(userEmail!)"
-        ]
-        
-        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
-            .responseJSON { response in
-                switch response.result {
-                case .success(let data):
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: data) {
-                        do {
-                            let decoder = JSONDecoder()
-                            let decodedData = try decoder.decode(JoinModel.self, from: jsonData)
-                            print("Decoded data: \(decodedData)")
-                            UserDefaults.standard.set(decodedData.userId, forKey: "userId")
-                            UserDefaults.standard.set(decodedData.nickname, forKey: "nickname")
-
-                            let mainVC = TabBarViewController()
-                            mainVC.modalPresentationStyle = .fullScreen
-                            self.present(mainVC, animated: true)
-                        } catch {
-                            print("Decoding error: \(error)")
-                        }
-                    } else {
-                        print("Invalid response data format")
-                    }
-                case .failure(let error):
-                    print("Error: \(error)")
-                    // 요청 실패 시 처리할 작업을 추가할 수 있습니다.
-                }
-            }
-    }
-    
-    
 }
+
 
 

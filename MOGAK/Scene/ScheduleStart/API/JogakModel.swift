@@ -1,8 +1,8 @@
 //
-//  ApiConstants.swift
+//  JogakModel.swift
 //  MOGAK
 //
-//  Created by 김강현 on 2023/08/20.
+//  Created by 안세훈 on 1/20/24.
 //
 
 import Foundation
@@ -28,12 +28,12 @@ struct DailyJogak: Codable {
 }
 //MARK: - 조각 조회
 
-struct JogakDetailResponse: Codable {
+struct ScheduleJogakDetailResponse: Codable {
     let time, status, code, message: String?
     let result: [JogakDetail]?
 }
 
-struct JogakDetail: Codable {
+struct ScheduleJogakDetail: Codable {
     let jogakID: Int
     let mogakTitle, category, title: String
     let isRoutine: Bool

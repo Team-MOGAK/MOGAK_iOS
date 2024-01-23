@@ -15,10 +15,8 @@ enum DesignSystemColor {
     case purple
     case skyblue
     case lightGreen
-    case green
     case mint
     case brightmint
-    case signature
     case green //sub color
     case signature //main color
     case signatureBag //main background color
@@ -27,6 +25,12 @@ enum DesignSystemColor {
     case gray
     case icongray
     case white
+    case gray2 //2
+    case gray3 //3 -> disable
+    case gray4 //4
+    case gray5 //5
+    case gray6 //6 Text
+    case black //7
 }
 
 extension DesignSystemColor {
@@ -52,10 +56,30 @@ extension DesignSystemColor {
             return UIColor(hex: "FF2F2F")
         case .gray:
             return UIColor(hex: "D9D9D9")
+        case .gray2:
+            return UIColor(hex: "EEF0F8")
+        case .gray3:
+            return UIColor(hex: "BFC3D4")
+        case .gray4:
+            return UIColor(hex: "808497")
+        case .gray5:
+            return UIColor(hex: "6E707B")
+        case .gray6:
+            return UIColor(hex: "24252E")
+        case .black:
+            return UIColor(hex: "000000")
         case .icongray:
             return UIColor(hex: "6E707B")
         case .white:
             return UIColor(hex: "FFFFFF")
+        case .yellow:
+            return UIColor(hex: "F98A08")
+        case .orange:
+            return UIColor(hex: "FF6827")
+        case .purple:
+            return UIColor(hex: "9C31FF")
+        case .skyblue:
+            return UIColor(hex: "21CAFF")
         }
     }
 }

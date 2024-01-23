@@ -19,19 +19,17 @@ class SelectJogakModal : UIViewController{
     var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
     //모다라트
-    var modalartList: [ModalartList] = [] ///모든 모다라트 리스트
+    var modalartList: [ScheduleModalartList] = [] ///모든 모다라트 리스트
     var modalartTitles: [String] = []
     
     var nowShowModalArtNum: Int = 0
     var nowShowModalArtIndex: Int = 0
     
     
-    var mogakDataCategory: [MogakCategory] = []
+    var mogakDataCategory: [ScheduleMogakCategory] = []
     
     var jogakData: [JogakDetail] = []
-    var mogakData: [DetailMogakData] = []
-    
-    var jogakTitle : [String] = []
+    var mogakData: [ScheduleDetailMogakData] = []
     
     let Apinetwork =  ApiNetwork.shared
     
@@ -84,11 +82,9 @@ class SelectJogakModal : UIViewController{
     
     lazy var MogakTableView: ExpyTableView = {
         let tableView = ExpyTableView()
-        tableView.backgroundColor = .gray
         return tableView
     }()
     
-    let mogaktableviewcell = MogakTableViewCell()
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -127,11 +123,8 @@ class SelectJogakModal : UIViewController{
         }
         MogakTableView.snp.makeConstraints{
             $0.top.leading.trailing.equalTo(contentView)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(48)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(58)
         }
-        
-        MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
-        
         
         labelImage.snp.makeConstraints{
             $0.width.height.equalTo(16)
@@ -140,8 +133,16 @@ class SelectJogakModal : UIViewController{
         }
         
     }
+    //MARK: - tableView properties
+    struct MogakJogak{
+        var mogaktitle = String()
+        var jogaktitle = [String]()
+    }
     
-    func tableSetUI(){
+    var tableViewData = [MogakJogak]()
+    //MARK: - tableView UI
+    
+    func tableSetUI() {
         MogakTableView.snp.makeConstraints{
             $0.edges.equalTo(contentView)
         }
@@ -152,6 +153,15 @@ class SelectJogakModal : UIViewController{
         MogakTableView.dataSource = self
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
+        
+        tableViewData = [MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""]),
+                         MogakJogak(mogaktitle: "", jogaktitle: [""])]
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -159,34 +169,35 @@ class SelectJogakModal : UIViewController{
     }
     
     //MARK: - 모다라트 리스트 조회
-    func getModalart(){
-        Apinetwork.getModalartList{ result in
+    func getModalart() {
+        Apinetwork.getModalartList { result in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
             case .success(let list):
                 guard let modalartList = list else { return }
-                self.modalartList = modalartList
                 
-                self.modalartTitles = modalartList.map { $0.title }
-                print(self.modalartTitles)
-                if modalartList.isEmpty {
+                self.modalartList = modalartList.map { modalart in
+                    return ScheduleModalartList(id: modalart.id, title: modalart.title)
+                }
+                
+                self.modalartTitles = self.modalartList.map { $0.title }
+                
+                
+                if self.modalartList.isEmpty {
                     self.mainLabel.setTitle("내 모다라트", for: .normal)
                 } else {
-                    guard let firstData = modalartList.first else { return }
+                    guard let firstData = self.modalartList.first else { return }
                     self.nowShowModalArtNum = firstData.id
                     self.nowShowModalArtIndex = 0
                     self.setupMenu()
                 }
             }
         }
-        
-        
     }
     
     //MARK: - 모다라트 리스트 보는 UImenu
     func setupMenu(){
-        
         var menuActions: [UIAction] = []
         for modalartInfo in modalartList {
             let action = UIAction(
@@ -197,20 +208,27 @@ class SelectJogakModal : UIViewController{
                     //선택시 모다라트 변경
                     self.mainLabel.setTitle(modalartInfo.title, for: .normal)
                     self.getModalartDetailInfo(id: modalartInfo.id)
+                    //열린 섹션 닫기
+                    for section in 0..<self.MogakTableView.numberOfSections {
+                        self.MogakTableView.collapse(section)
+                    }
+                    
+                    
                     //테이블 뷰 리로딩
                     self.MogakTableView.reloadData()
+                    
                 }
             )
             menuActions.append(action)
+            
         }
-        
         let modalartListMenu = UIMenu(children: menuActions)
         
         mainLabel.menu = modalartListMenu
         mainLabel.showsMenuAsPrimaryAction = true
     }
     
-    //MARK: - 한 모다라트에 대응하는 모각 보기
+    //MARK: - 모다라트 정보
     func getModalartDetailInfo(id: Int) {
         Apinetwork.getDetailModalartInfo(modalartId: id) { result in
             switch result {
@@ -221,23 +239,39 @@ class SelectJogakModal : UIViewController{
                 guard let modalInfo = modalInfo else { return }
                 self.getDetailMogakData(id: modalInfo.id)
                 print("\(modalInfo.id) 의 id인 모다라트")
+                
             }
             
         }
         
     }
-    
+    //MARK: - 모각 정보
     func getDetailMogakData(id: Int) {
         Apinetwork.getDetailMogakData(modalartId: id) { result in
             switch result {
             case .success(let data):
                 if let mogakDataArray = data?.result?.mogaks{
                     self.mogakData = mogakDataArray     //모각 데이터 받아옴
-                    for mogakData in mogakDataArray {
-                        print(mogakData.title ,"의 id는 ",mogakData.mogakId)
-                        
-                    }
+                    //데이터 초기화하는 코드 추가해야함
                     self.MogakTableView.reloadData()
+                    self.tableViewData = mogakDataArray.map { mogakData in
+                        return MogakJogak(mogaktitle: mogakData.title, jogaktitle: ["1"])
+                    }
+                    for (index, mogakData) in mogakDataArray.enumerated() {
+                        
+                        if index < self.tableViewData.count {
+                            self.tableViewData[index].mogaktitle = mogakData.title
+                            print("배열안의 mogaktitle : ", self.tableViewData[index].mogaktitle)
+                            self.getDetailJogakData(id: mogakData.mogakId)
+                        }
+                        
+                        self.MogakTableView.reloadData()
+                    }
+                    
+                    //                    DispatchQueue.main.async {
+                    //                        self.MogakTableView.reloadData()
+                    //
+                    //                    }
                     
                 } else {
                     print("모다라트에 해당하는 모각 데이터가 없습니다.")
@@ -252,19 +286,21 @@ class SelectJogakModal : UIViewController{
         Apinetwork.getAllMogakDetailJogaks(mogakId: id){result in
             switch result{
             case.success(let data):
+                
                 if let jogakDetailArray = data {
-                    self.jogakData = jogakDetailArray
-                    self.jogakTitle = [] // 타이틀 초기화
-                    for jogakDataItem in jogakDetailArray {
-                        self.jogakTitle.append(jogakDataItem.title)
-                    }
-                    print("for문이 지난 후 : ", self.jogakTitle)
                     
-                    //                    DispatchQueue.main.async { [weak self] in
-                    //                        self?.MogakTableView.reloadData()
-                    //                    }
-                } else {
-                    print("JogakDetailArray나 result가 nil입니다.")
+                    for jogakDataItem in jogakDetailArray {
+                        if let mogakDataIndex = self.tableViewData.firstIndex(where: { $0.mogaktitle == jogakDataItem.mogakTitle }) {
+                            
+                            self.tableViewData[mogakDataIndex].jogaktitle.append(jogakDataItem.title)
+                            
+                            print("배열안의 jogaktitle : ", self.tableViewData[mogakDataIndex])
+                        }
+                        
+                        
+                    }
+                    self.MogakTableView.reloadData()
+                    
                 }
                 
             case.failure(let error):
@@ -294,67 +330,96 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
             print("DID COLLAPSE")
         }
     }
+    //MARK: - tableView Setting
     
     func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
         return true
     }
+    //MARK: - Mogak
     
-    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell { //섹션 내용
-        let cell = MogakTableViewCell()
-        // 모각 데이터 설정
-        let mogakDataItem = mogakData[section]
-        cell.configureMogak(with: mogakDataItem)
-        print(mogakDataItem.mogakId)
+    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
+        guard section < tableViewData.count else {
+            // 섹션 번호가 배열의 인덱스 범위를 벗어나면 빈 셀을 반환하거나 에러 처리를 할 수 있습니다.
+            return UITableViewCell()
+        }
+        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MogakTableViewCell") as? MogakTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        // 현재 섹션의 모각에 해당하는 mogaktitle 가져오기
+        let mogakTitle = tableViewData[section].mogaktitle
+        
+        // 셀에 mogakTitle 표시
+        // cell.configureMogak(with: mogakTitle)
+        cell.textLabel?.text = mogakTitle
         
         return cell
     }
     
     func numberOfSections(in: UITableView) -> Int {
-        
-        return mogakData.count //모각의 개수
+        if let firstMogakJogak = tableViewData.first, firstMogakJogak.mogaktitle.count == 0 {
+            return 0
+        } else {
+            return tableViewData.count
+        }
     }
+    //MARK: - Jogak
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { //조각의 개수
-        if section < jogakTitle.count {
-            return jogakTitle[section].count // 각 섹션의 행의 개수는 jogakTitle 배열의 해당 섹션의 개수가 됩니다.
-               } else {
-                   return 0
-               }
+        
+        guard section < tableViewData.count else {
+            MogakTableView.reloadData()
+            return 0
+        }
+        
+        
+        // section에 해당하는 배열 요소의 jogaktitle 개수 반환
+        return tableViewData[section].jogaktitle.count
     }
+    
     //MARK: - cell에 해당하는 row
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.backgroundColor = .yellow
-        if indexPath.section < jogakTitle.count {
-                 let jogakTitleForRow = jogakTitle[indexPath.row]
-                 cell.textLabel?.text = jogakTitleForRow
-             }
-
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MogakTableViewCell") else {
+            return UITableViewCell()
+        }
+        let jogakTitle = tableViewData[indexPath.section].jogaktitle[indexPath.row]
         
+        
+        cell.textLabel?.text = jogakTitle
         return cell
     }
     
-    func handleJogakSelection(_ jogakLabel: String) {
-        
-        print("JogakLabel: \(jogakLabel) 추가됨!")
-        
-        self.SelectJogaklist.append(jogakLabel)
-        
-        print("SelectJogaklist에 추가: \(self.SelectJogaklist)")
-    }
+    
+    //    func handleJogakSelection(_ jogakLabel: String) {
+    //
+    //        print("JogakLabel: \(jogakLabel) 추가됨!")
+    //
+    //        self.SelectJogaklist.append(jogakLabel)
+    //
+    //        print("SelectJogaklist에 추가: \(self.SelectJogaklist)")
+    //    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return UITableView.automaticDimension
+        if indexPath.row == 0 {
+            return 60
+        }else {
+            return 40
+        }
+        
     }
     
-    //MARK: - 셀 클릭시 반응
+    //    //MARK: - 셀 클릭시 반응
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: indexPath) is MogakTableViewCell {
-            let selectedMogakData = mogakData[indexPath.section]  // 해당 섹션의 MogakData를 가져옴
-            print("선택한 모각의 id : ",selectedMogakData.mogakId)
-            getDetailJogakData(id: selectedMogakData.mogakId)
+        guard indexPath.section < mogakData.count else {
+            self.MogakTableView.reloadData()
+            return
         }
+        
+        // 선택된 indexPath의 모각의 mogakId 출력
+        print(mogakData[indexPath.section].mogakId)
+        
     }
     
     //MARK: - 추가하기 버튼 클릭시
@@ -377,23 +442,94 @@ extension Date {
         return Calendar.current.isDate(self, inSameDayAs: date)
     }
 }
+//MARK: - tableViewCell
 
-//extension SelectJogakModal : UIContextMenuInteractionDelegate{
-//
-//    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-//        return UIContextMenuConfiguration(
-//                    identifier: nil,
-//                    previewProvider: nil,
-//                    actionProvider: { _ in
-//                        return self.modalartListMenu
-//                    }
-//                )
-//
-//    }
-//
-//
-//}
-
+class MogakTableViewCell : UITableViewCell{
+    
+    private lazy var MogakLabel : CustomPaddingLabel = {
+        let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
+        label.font = DesignSystemFont.medium16L150.value
+        label.layer.cornerRadius = 8
+        label.clipsToBounds = true
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var MogakView : UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    private lazy var MogakStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [MogakView,MogakButtonView])
+        stackView.axis = .horizontal
+        stackView.alignment = .leading
+        stackView.backgroundColor = .white
+        return stackView
+    }()
+    
+    private lazy var MogakButtonView : UIImageView = {
+        let MogakButton = UIImageView()
+        MogakButton.image = UIImage(systemName: "chevron.up")
+        MogakButton.tintColor = DesignSystemColor.icongray.value
+        return MogakButton
+    }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        layout()
+        selectionStyle = .none
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
+    
+    func layout(){
+        contentView.addSubview(MogakStackView)
+        MogakView.addSubview(MogakLabel)
+        
+        MogakStackView.snp.makeConstraints{
+            $0.edges.equalToSuperview()
+        }
+        
+        MogakView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.top.bottom.equalToSuperview().inset(12)
+        }
+        
+        MogakLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+            $0.centerY.equalToSuperview()
+        }
+        
+        MogakButtonView.snp.makeConstraints {
+            $0.width.height.equalTo(16)
+            $0.centerY.equalTo(MogakLabel)
+            $0.trailing.equalToSuperview()
+        }
+    }
+    
+    func configureMogak(with mogakData: ScheduleDetailMogakData) {
+        
+        MogakLabel.text = mogakData.title
+        
+        if mogakData.color == nil{
+            MogakLabel.textColor = DesignSystemColor.signature.value
+            MogakLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
+            print("if")
+        }else{
+            MogakLabel.backgroundColor = UIColor(hex: mogakData.color ?? "").withAlphaComponent(0.1)
+            MogakLabel.textColor = UIColor(hex: mogakData.color ?? "")
+            
+        }
+        
+    }
+}
 
 
 

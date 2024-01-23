@@ -13,11 +13,11 @@ class ApiNetwork{
     static let shared = ApiNetwork()
     
 //MARK: - 모다라트 리스트 조회
-    func getModalartList( completionHandler: @escaping (Result<[ModalartList]?, Error>) -> Void) {
+    func getModalartList( completionHandler: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
     //        AF.request(JogakRouter.getModalartList, interceptor: CommonLoginManage())
             AF.request(ApiRouter.getModalartList)
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: ModalartListResponse.self) { (response: DataResponse<ModalartListResponse, AFError>) in
+                .responseDecodable(of: ScheduleModalartListResponse.self) { (response: DataResponse<ScheduleModalartListResponse, AFError>) in
                     switch response.result {
                     case .failure(let error):
                         //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
@@ -28,11 +28,11 @@ class ApiNetwork{
                 }
         }
 //MARK: - 모다라트 상세 내용 API
-        func getDetailModalartInfo(modalartId: Int, completionHandler: @escaping (Result<ModalartInfo?, Error>) -> Void) {
+        func getDetailModalartInfo(modalartId: Int, completionHandler: @escaping (Result<ScheduleModalartInfo?, Error>) -> Void) {
     //        AF.request(ModalartRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())
             AF.request(ApiRouter.detailModalart(modaratId: modalartId))
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: ModalartDetailInfo.self) { (response: DataResponse<ModalartDetailInfo, AFError>) in
+                .responseDecodable(of: ScheduleModalartDetailInfo.self) { (response: DataResponse<ScheduleModalartDetailInfo, AFError>) in
                     switch response.result {
                     case .failure(let error):
                         //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
@@ -43,16 +43,18 @@ class ApiNetwork{
                     }
                 }
         }
-        
-        func getDetailMogakData(modalartId: Int, completionHandler: @escaping((Result<DetailMogakResponse?, Error>) -> Void)) {
+    //MARK: - 모각 조회
+        func getDetailMogakData(modalartId: Int, completionHandler: @escaping((Result<ScheduleDetailMogakResponse?, Error>) -> Void)) {
             AF.request(ApiRouter.getDetailMogakData(modaratId: modalartId))
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: DetailMogakResponse.self) { (response: DataResponse<DetailMogakResponse, AFError>) in
+                .responseDecodable(of: ScheduleDetailMogakResponse.self) { (response: DataResponse<ScheduleDetailMogakResponse, AFError>) in
                     switch response.result {
                     case .success(let data):
                         completionHandler(.success(data))
                     case .failure(let error):
                         completionHandler(.failure(error))
+                        debugPrint(response)
+                        print("에러")
                     }
                 }
         }

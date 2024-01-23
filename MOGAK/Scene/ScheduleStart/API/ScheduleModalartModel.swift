@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct ModalartDetailInfo: Codable {
+struct ScheduleModalartDetailInfo: Codable {
     let time, status, code, message: String?
-    let result: ModalartInfo?
+    let result: ScheduleModalartInfo?
 }
 
 // MARK: - Result
-struct ModalartInfo: Codable {
+struct ScheduleModalartInfo: Codable {
     let id: Int
     let title, color: String
-    let mogakCategory: [MogakCategory]?
+    let mogakCategory: [ScheduleMogakCategory]?
     
     enum CodingKeys : String, CodingKey {
         case id
@@ -27,27 +27,27 @@ struct ModalartInfo: Codable {
 }
 
 // MARK: - MogakDtoList
-struct MogakCategory: Codable {
+struct ScheduleMogakCategory: Codable {
     let title: String
-    let bigCategory: BigCategory
+    let bigCategory: ScheduleBigCategory
     let smallCategory, color: String?
 }
 
 // MARK: - BigCategory
-struct BigCategory: Codable {
+struct ScheduleBigCategory: Codable {
     let id: Int
     let name: String
 }
 
-struct ModalartMainData: Codable {
+struct ScheduleModalartMainData: Codable {
     let id: Int
     let title: String
     let color: String
 }
 
-struct ModalartListResponse: Codable {
+struct ScheduleModalartListResponse: Codable {
     let time, status, code, message: String?
-    let modalartList: [ModalartList]?
+    let modalartList: [ScheduleModalartList]?
     
     enum CodingKeys: String, CodingKey {
         case time, status, code, message
@@ -55,28 +55,29 @@ struct ModalartListResponse: Codable {
     }
 }
 
-struct ModalartList: Codable {
+struct ScheduleModalartList: Codable {
     let id: Int
     var title: String
 }
 
 
 // MARK: - Result
-struct DetailMogak: Codable {
-    let mogaks: [DetailMogakData]?
+struct ScheduleDetailMogak: Codable {
+    let mogaks: [ScheduleDetailMogakData]?
     let size: Int?
 }
 
-struct DetailMogakResponse: Codable {
+struct ScheduleDetailMogakResponse: Codable {
     let time, status, code, message: String?
-    let result: DetailMogak?
+    let result: ScheduleDetailMogak?
 }
 
 // MARK: - Mogak
-struct DetailMogakData: Codable {
+struct ScheduleDetailMogakData: Codable {
     let mogakId: Int
-    let title, state: String
-    let bigCategory: MainCategory
+    let title: String
+    let state: String?
+    let bigCategory: ScheduleMainCategory
     let smallCategory: String?
     let color: String?
     let startAt, endAt: String?
@@ -88,7 +89,7 @@ struct DetailMogakData: Codable {
 }
 
 // MARK: - BigCategory
-struct MainCategory: Codable {
+struct ScheduleMainCategory: Codable {
     let id: Int
     let name: String
 }

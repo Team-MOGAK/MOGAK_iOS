@@ -68,10 +68,8 @@
 		6C51FDA02A7CC249005B1738 /* AlarmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */; };
 		6C7F95D72A928B6B00255ED1 /* SetRoutineModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */; };
 		6CC638BB2A922B21009BC333 /* RecordingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CC638BA2A922B21009BC333 /* RecordingViewController.swift */; };
-		6CD4A8852A93BF3C00E7DEFD /* CertificationModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */; };
-		6CD4A8842A93BF2900E7DEFD /* ScheduleTimerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7F95D82A928B9100255ED1 /* ScheduleTimerVC.swift */; };
-		6CD4A8862A93BF4500E7DEFD /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C89F6BD2A82A61300E5B1FE /* CircularProgressView.swift */; };
-		6CD4A8882A94F8EF00E7DEFD /* ScheduleStartStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD4A8872A94F8EF00E7DEFD /* ScheduleStartStruct.swift */; };
+		6CD4A8862A93BF4500E7DEFD /* (null) in Sources */ = {isa = PBXBuildFile; };
+		6CD4A8882A94F8EF00E7DEFD /* (null) in Sources */ = {isa = PBXBuildFile; };
 		6CFAA54C2A6999A7002666F7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D062A458109003E80A7 /* SceneDelegate.swift */; };
 		6CFAA54D2A6999AB002666F7 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */; };
 		9C2EF7E52A63CE0600E8C8F4 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */; };
@@ -100,7 +98,6 @@
 		9CCB39D32A8FDA3C00968CDB /* RegisterUserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D22A8FDA3C00968CDB /* RegisterUserInfo.swift */; };
 		9CCB39D52A9062E600968CDB /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D42A9062E600968CDB /* String+Ext.swift */; };
 		9CCB39D72A91186200968CDB /* ApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D62A91186200968CDB /* ApiManager.swift */; };
-		9CCB39D92A9118CC00968CDB /* JogakModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39D82A9118CC00968CDB /* JogakModel.swift */; };
 		9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */; };
 		9CCB39DD2A92677100968CDB /* JoinModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCB39DC2A92677100968CDB /* JoinModel.swift */; };
 		9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426A92A594049001629DC /* Pretendard-Bold.otf */; };
@@ -136,12 +133,14 @@
 		D1187A702B132D2400589718 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1187A6F2B132D2400589718 /* PaddingLabel.swift */; };
 		D16D54282B37DF0100CAC0E1 /* ApiRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */; };
 		D16D542A2B37E41C00CAC0E1 /* ApiNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */; };
-		D16D542C2B380FD800CAC0E1 /* ModalartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D542B2B380FD600CAC0E1 /* ModalartModel.swift */; };
 		D1826F822AEFF4B300A755D4 /* SelectJogakModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */; };
 		D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */; };
 		D1A8EC152AD56F0F00FE1648 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */; };
-		D1D10D7C2AF9173A0039A00C /* MogakTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */; };
 		D1E43CEF2B24C8D000058C8C /* deSetRoutineModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */; };
+		D1EB8CE82B5B93CC0022D4A5 /* ScheduleModalartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */; };
+		D1EB8CEB2B5B95E10022D4A5 /* JogakModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */; };
+		D1EB8CEC2B5B97DF0022D4A5 /* CertificationModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */; };
+		D1EB8CEE2B5B9A760022D4A5 /* ApiConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,7 +236,6 @@
 		9CCB39D22A8FDA3C00968CDB /* RegisterUserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterUserInfo.swift; sourceTree = "<group>"; };
 		9CCB39D42A9062E600968CDB /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		9CCB39D62A91186200968CDB /* ApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiManager.swift; sourceTree = "<group>"; };
-		9CCB39D82A9118CC00968CDB /* JogakModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakModel.swift; sourceTree = "<group>"; };
 		9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateNicknameModel.swift; sourceTree = "<group>"; };
 		9CCB39DC2A92677100968CDB /* JoinModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinModel.swift; sourceTree = "<group>"; };
 		9CE426A92A594049001629DC /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
@@ -277,11 +275,13 @@
 		D1187A6F2B132D2400589718 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiRouter.swift; sourceTree = "<group>"; };
 		D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiNetwork.swift; sourceTree = "<group>"; };
-		D16D542B2B380FD600CAC0E1 /* ModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartModel.swift; sourceTree = "<group>"; };
+		D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModalartModel.swift; sourceTree = "<group>"; };
 		D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectJogakModal.swift; sourceTree = "<group>"; };
 		D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
 		D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakTableViewCell.swift; sourceTree = "<group>"; };
 		D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deSetRoutineModal.swift; sourceTree = "<group>"; };
+		D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakModel.swift; sourceTree = "<group>"; };
+		D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -660,8 +660,8 @@
 			isa = PBXGroup;
 			children = (
 				9CCB39D62A91186200968CDB /* ApiManager.swift */,
-				9CCB39D82A9118CC00968CDB /* ApiConstants.swift */,
 				4D7E49742AFBCBFB00DEB70C /* APIError.swift */,
+				D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -753,10 +753,10 @@
 		D16D54262B37D43600CAC0E1 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				D16D542B2B380FD600CAC0E1 /* ModalartModel.swift */,
-				9CCB39D82A9118CC00968CDB /* JogakModel.swift */,
+				D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */,
 				D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */,
 				D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */,
+				D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -890,7 +890,6 @@
 				9CE426E52A5A3976001629DC /* OnBoardingFirstViewController.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
 				4D725C0E2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift in Sources */,
-				6CB3DEA92A7B7F850056C596 /* CancelModalVC.swift in Sources */,
 				4D72B33E2B331FFA004BF3CE /* UserModel.swift in Sources */,
 				4D488E2D2B274E060000D4E6 /* LoginRouter.swift in Sources */,
 				4D7861B32AD25C3F006B8E88 /* GoogleLoginManage.swift in Sources */,
@@ -905,8 +904,8 @@
 				6C7F95D72A928B6B00255ED1 /* SetRoutineModal.swift in Sources */,
 				D1187A702B132D2400589718 /* PaddingLabel.swift in Sources */,
 				4D72B33C2B331E0C004BF3CE /* UserNetwork.swift in Sources */,
-				6CD4A8882A94F8EF00E7DEFD /* ScheduleStartStruct.swift in Sources */,
-				6C7F95D72A928B6B00255ED1 /* PauseModalVC.swift in Sources */,
+				6CD4A8882A94F8EF00E7DEFD /* (null) in Sources */,
+				6C7F95D72A928B6B00255ED1 /* SetRoutineModal.swift in Sources */,
 				9C2EF7F82A76901B00E8C8F4 /* TestViewController.swift in Sources */,
 				9CFA7D092A458109003E80A7 /* ScheduleStartViewController.swift in Sources */,
 				4D7847FC2B03AAA00004DB45 /* AskDeleteModal.swift in Sources */,
@@ -920,7 +919,6 @@
 				4DF83CF92B18D0CC00E1BD6D /* LoginModel.swift in Sources */,
 				4D488E0D2B20C1E80000D4E6 /* MogakMainViewController.swift in Sources */,
 				9C2EF80A2A86624400E8C8F4 /* FriendDetailPageViewController.swift in Sources */,
-				9CCB39D92A9118CC00968CDB /* JogakModel.swift in Sources */,
 				9C2EF7FE2A7FA55B00E8C8F4 /* JogakDetailViewController.swift in Sources */,
 				9CE426C52A59573F001629DC /* UserDefaults+Ext.swift in Sources */,
 				652C05DC2A7404B4004CE9C4 /* Data.swift in Sources */,
@@ -935,6 +933,7 @@
 				D16D54282B37DF0100CAC0E1 /* ApiRouter.swift in Sources */,
 				4D63E7D22B35C2D0006A8501 /* MogakDetailModel.swift in Sources */,
 				4D7861B52AD25C50006B8E88 /* KakaoLoginManage.swift in Sources */,
+				D1EB8CE82B5B93CC0022D4A5 /* ScheduleModalartModel.swift in Sources */,
 				4D7861BE2AD40938006B8E88 /* UIView+Ext.swift in Sources */,
 				9C2EF8042A8285C100E8C8F4 /* FriendsListViewController.swift in Sources */,
 				6C4EE4E62A7AA15100DE0D5C /* SettingViewController.swift in Sources */,
@@ -953,8 +952,8 @@
 				65852B322AFB830B008200E3 /* SegmentCollectionViewCell.swift in Sources */,
 				4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */,
 				9CCB39D02A8B39BE00968CDB /* Utils.swift in Sources */,
+				D1EB8CEC2B5B97DF0022D4A5 /* CertificationModalVC.swift in Sources */,
 				9CCB39D52A9062E600968CDB /* String+Ext.swift in Sources */,
-				D1D10D7C2AF9173A0039A00C /* MogakTableViewCell.swift in Sources */,
 				9C2EF8062A8289D100E8C8F4 /* FollowingCell.swift in Sources */,
 				65B139332A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift in Sources */,
 				4D7861C12AD427EB006B8E88 /* CustomPaddingLabel.swift in Sources */,
@@ -972,12 +971,11 @@
 				D1E43CEF2B24C8D000058C8C /* deSetRoutineModal.swift in Sources */,
 				4D72B3372B3317B0004BF3CE /* JogakSimpleModalViewController.swift in Sources */,
 				9CCB39D32A8FDA3C00968CDB /* RegisterUserInfo.swift in Sources */,
-				D16D542C2B380FD800CAC0E1 /* ModalartModel.swift in Sources */,
 				9CE426DA2A59C559001629DC /* AppGuideViewController.swift in Sources */,
 				6CFAA54D2A6999AB002666F7 /* TabBarViewController.swift in Sources */,
 				9C2EF7F22A6D1B1F00E8C8F4 /* RepeatViewCell.swift in Sources */,
 				9C82D44A2A95159800CBC1C3 /* MogakModels.swift in Sources */,
-				6CD4A8862A93BF4500E7DEFD /* CircularProgressView.swift in Sources */,
+				6CD4A8862A93BF4500E7DEFD /* (null) in Sources */,
 				4D6673F72B0A2AE9001B18A1 /* SetModalartTitleModal.swift in Sources */,
 				9C2EF7FA2A7E050B00E8C8F4 /* UILabel+Ext.swift in Sources */,
 				656A53E02A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift in Sources */,
@@ -986,6 +984,7 @@
 				4D63E7D42B35C341006A8501 /* MogakDetailNetwork.swift in Sources */,
 				65AEDB822B0264FA00B7A3F1 /* MemoirDetailViewController.swift in Sources */,
 				9CE426E92A5A3A58001629DC /* OnBoardingThirdViewController.swift in Sources */,
+				D1EB8CEB2B5B95E10022D4A5 /* JogakModel.swift in Sources */,
 				9CCB39DD2A92677100968CDB /* JoinModel.swift in Sources */,
 				9C2EF8002A7FAC9B00E8C8F4 /* JogakDetailCell.swift in Sources */,
 				4D488E252B2344010000D4E6 /* EmptyJogakCell.swift in Sources */,
@@ -1000,6 +999,7 @@
 				4D742A052AEE8AFE0002DBCF /* ColorCell.swift in Sources */,
 				4D6C6DF52B10E8DE00206DD6 /* ModalartRouter.swift in Sources */,
 				4DF83CF52B18BDDF00E1BD6D /* MypageWebViewController.swift in Sources */,
+				D1EB8CEE2B5B9A760022D4A5 /* ApiConstants.swift in Sources */,
 				9CCB39D72A91186200968CDB /* ApiManager.swift in Sources */,
 				9C2EF7F42A74899600E8C8F4 /* DismissKeyboardView.swift in Sources */,
 				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
@@ -1188,7 +1188,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1213,7 +1212,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogak;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mogak release";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "mogak develop";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
