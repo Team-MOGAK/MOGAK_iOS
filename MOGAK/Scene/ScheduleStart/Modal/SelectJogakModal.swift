@@ -134,10 +134,11 @@ class SelectJogakModal : UIViewController{
         
     }
     //MARK: - tableView properties
-    struct MogakJogak{
-        var mogaktitle = String()
-        var jogaktitle = [String]()
-        var mogakcolor = String()
+    
+    struct MogakJogak {
+        var mogaktitle: String
+        var mogakcolor: String
+        var jogakList: [(title: String, isRoutine: Bool, jogakID : Int)]
     }
     
     var tableViewData = [MogakJogak]()
@@ -148,6 +149,8 @@ class SelectJogakModal : UIViewController{
             $0.edges.equalTo(contentView)
         }
         
+        //아니, 테이블 뷰 하나에 셀 두개가 된다고????????????????????
+        //시발 진작 알려주지 이거때매 3주는 고생했고만 ;;;
         MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
         MogakTableView.register(JogakTableViewCell.self, forCellReuseIdentifier: "JogakTableViewCell")
         
@@ -156,14 +159,14 @@ class SelectJogakModal : UIViewController{
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
         
-        tableViewData = [MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak(),
-                         MogakJogak()]
+        tableViewData = [MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isRoutine: false ,jogakID: 0)])]
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -253,17 +256,16 @@ class SelectJogakModal : UIViewController{
             switch result {
             case .success(let data):
                 if let mogakDataArray = data?.result?.mogaks{
-                    self.mogakData = mogakDataArray     //모각 데이터 받아옴
-                    //데이터 초기화하는 코드 추가해야함
+                    self.mogakData = mogakDataArray
                     self.MogakTableView.reloadData()
                     self.tableViewData = mogakDataArray.map { mogakData in
-                        return MogakJogak(mogaktitle: mogakData.title, jogaktitle: ["1"],mogakcolor : mogakData.color ?? "")
+                        
+                        return MogakJogak(mogaktitle: mogakData.title, mogakcolor: mogakData.color ?? "", jogakList: [(title: "1", isRoutine: false, jogakID : 0)])
                     }
                     for (index, mogakData) in mogakDataArray.enumerated() {
                         
                         if index < self.tableViewData.count {
                             self.tableViewData[index].mogaktitle = mogakData.title
-                            print("배열안의 mogaktitle : ", self.tableViewData[index].mogaktitle)
                             self.getDetailJogakData(id: mogakData.mogakId)
                         }
                         
@@ -290,9 +292,9 @@ class SelectJogakModal : UIViewController{
                     for jogakDataItem in jogakDetailArray {
                         if let mogakDataIndex = self.tableViewData.firstIndex(where: { $0.mogaktitle == jogakDataItem.mogakTitle }) {
                             
-                            self.tableViewData[mogakDataIndex].jogaktitle.append(jogakDataItem.title)
-                            
-                            print("배열안의 jogaktitle : ", self.tableViewData[mogakDataIndex])
+                            let isRoutineValue = jogakDataItem.isRoutine
+                            let JogakIdValue = jogakDataItem.jogakID
+                            self.tableViewData[mogakDataIndex].jogakList.append((title: jogakDataItem.title, isRoutine: isRoutineValue,jogakID : JogakIdValue))
                         }
                         
                         
@@ -316,16 +318,16 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         
         switch state {
         case .willExpand:
-            print("WILL EXPAND")
+            return
             
         case .willCollapse:
-            print("WILL COLLAPSE")
+            return
             
         case .didExpand:
-            print("DID EXPAND")
+            return
             
         case .didCollapse:
-            print("DID COLLAPSE")
+            return
         }
     }
     //MARK: - tableView Setting
@@ -350,7 +352,7 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         
         // 셀에 mogakTitle 표시
         cell.configureMogak(with: mogakdata)
-        //cell.textLabel?.text = mogakTitle
+        
         
         return cell
     }
@@ -369,30 +371,20 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
             MogakTableView.reloadData()
             return 0
         }
-        return tableViewData[section].jogaktitle.count
+        return tableViewData[section].jogakList.count
     }
     
     //MARK: - cell에 해당하는 row
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "JogakTableViewCell", for: indexPath) as? JogakTableViewCell else {
-            print("Failed to dequeue JogakTableViewCell")
-                return UITableViewCell()
-            }
-
-        let jogakTitle = tableViewData[indexPath.section].jogaktitle[indexPath.row]
-        cell.configureJogak(with: jogakTitle)
+            
+            return UITableViewCell()
+        }
+        
+        let jogakData = tableViewData[indexPath.section].jogakList[indexPath.row]
+        cell.configureJogak(with: jogakData)
         return cell
     }
-    
-    
-    //    func handleJogakSelection(_ jogakLabel: String) {
-    //
-    //        print("JogakLabel: \(jogakLabel) 추가됨!")
-    //
-    //        self.SelectJogaklist.append(jogakLabel)
-    //
-    //        print("SelectJogaklist에 추가: \(self.SelectJogaklist)")
-    //    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
@@ -401,18 +393,6 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         }else {
             return 40
         }
-        
-    }
-    
-    //    //MARK: - 셀 클릭시 반응
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard indexPath.section < mogakData.count else {
-            self.MogakTableView.reloadData()
-            return
-        }
-        
-        // 선택된 indexPath의 모각의 mogakId 출력
-        print(mogakData[indexPath.section].mogakId)
         
     }
     
@@ -438,7 +418,25 @@ extension Date {
 }
 //MARK: - tableViewCell
 
-class MogakTableViewCell : UITableViewCell{
+class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
+    
+    func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
+        switch state {
+        case .willExpand:
+            MogakButtonView.image = UIImage(systemName: "chevron.up")
+            
+        case .willCollapse:
+            MogakButtonView.image = UIImage(systemName: "chevron.down")
+            
+        case .didExpand:
+            return
+            
+        case .didCollapse:
+            return
+        }
+        
+    }
+    
     
     private lazy var MogakLabel : CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
@@ -455,7 +453,7 @@ class MogakTableViewCell : UITableViewCell{
     }()
     
     private lazy var MogakStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [MogakView,MogakButtonView])
+        let stackView = UIStackView(arrangedSubviews: [MogakView])
         stackView.axis = .horizontal
         stackView.alignment = .leading
         stackView.backgroundColor = .white
@@ -484,26 +482,28 @@ class MogakTableViewCell : UITableViewCell{
     }
     
     func layoutMogak(){
-        contentView.addSubview(MogakStackView)
+        contentView.addSubviews(MogakStackView,MogakButtonView)
         MogakView.addSubview(MogakLabel)
         
         MogakStackView.snp.makeConstraints{
             $0.edges.equalToSuperview()
+            
         }
         
         MogakView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.top.bottom.equalToSuperview().inset(12)
+            $0.centerY.equalToSuperview()
         }
         
         MogakLabel.snp.makeConstraints {
             $0.leading.equalToSuperview()
-            $0.centerY.equalToSuperview()
+            $0.centerY.equalTo(MogakStackView)
         }
         
         MogakButtonView.snp.makeConstraints {
             $0.width.height.equalTo(16)
-            $0.centerY.equalTo(MogakLabel)
+            $0.centerY.equalTo(MogakStackView)
             $0.trailing.equalToSuperview()
         }
     }
@@ -526,14 +526,28 @@ class MogakTableViewCell : UITableViewCell{
 }
 class JogakTableViewCell : UITableViewCell{
     
-     lazy var JogakLabel : UILabel = {
+    private lazy var JogakLabel : UILabel = {
         let label = UILabel()
+        label.font = UIFont(name: "PretendardVariable-Medium", size: 16)
+        let labeltap = UITapGestureRecognizer(target: self, action: #selector(jogakLabelTap))
+        label.isUserInteractionEnabled = true
+        label.addGestureRecognizer(labeltap)
         return label
     }()
-
+    
+    private lazy var JogakimageView : UIImageView = {
+        let image = UIImageView()
+        image.tintColor = UIColor(red: 0.749, green: 0.766, blue: 0.833, alpha: 1)
+        let labeltap = UITapGestureRecognizer(target: self, action: #selector(jogakLabelTap))
+        image.isUserInteractionEnabled = true
+        image.addGestureRecognizer(labeltap)
+        return image
+    }()
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         layoutJogak()
         selectionStyle = .none
     }
@@ -546,19 +560,59 @@ class JogakTableViewCell : UITableViewCell{
         super.layoutSubviews()
     }
     func layoutJogak(){
-        contentView.addSubview(JogakLabel)
+        contentView.addSubviews(JogakLabel,JogakimageView)
         
         JogakLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(3)
-            $0.leading.equalToSuperview().offset(3)
+            $0.leading.equalTo(JogakimageView).inset(25)
+            $0.top.bottom.trailing.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            
+        }
+        JogakimageView.snp.makeConstraints{
+            $0.width.height.equalTo(20)
+            $0.leading.equalToSuperview().inset(40)
+            $0.centerY.equalTo(JogakLabel)
         }
     }
     
-    func configureJogak(with jogakTitle: String) {
-        print("jogakTitle : ", jogakTitle)
-            JogakLabel.text = jogakTitle
+    var clickedJogakID = Int()
+    var jogakStartList : [Int] = []
+    
+    //MARK: - 조각 라벨 설정
+    func configureJogak(with jogakData: (title: String, isRoutine: Bool, jogakID : Int)) {
+        JogakLabel.text = jogakData.title
+        
+        print(jogakData.title, jogakData.isRoutine, jogakData.jogakID)
+        clickedJogakID = jogakData.jogakID
+        
+        if jogakData.isRoutine {
+            // isRoutine이 true일 때의 처리
+            JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+        } else {
+            JogakimageView.image = UIImage(systemName: "square")
             
         }
+        
+        JogakimageView.isUserInteractionEnabled = !jogakData.isRoutine
+        JogakLabel.isUserInteractionEnabled = !jogakData.isRoutine
+    }
+    
+    //MARK: - jogakLabel 클릭시 이벤트
+    
+    @objc func jogakLabelTap(_ sender: UITapGestureRecognizer){
+        print(JogakLabel.text as Any)
+        print(clickedJogakID)
+        if JogakimageView.image == UIImage(systemName: "square"){
+            JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+            
+            jogakStartList.append(clickedJogakID)
+            print("추가된 조각", jogakStartList)
+            
+        }else{
+            JogakimageView.image = UIImage(systemName: "square")
+            jogakStartList.removeAll()
+        }
+    }
 }
 
 
