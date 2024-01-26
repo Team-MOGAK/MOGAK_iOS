@@ -14,7 +14,8 @@ class MogakCell: UICollectionViewCell {
     weak var delegate: MogakSettingButtonTappedDelegate?
     
     static let identifier: String = "MogakCell"
-    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    //var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     
     private lazy var goalCategoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 6, bottom: 6, left: 12, right: 12)

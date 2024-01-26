@@ -230,7 +230,7 @@ class MyHistoryViewController: UIViewController {
                 //self.modalArtCollectionView.reloadData()
                 self.smallModalartList = []
                 for i in self.mogakData {
-                    self.smallModalartList.append((i.bigCategory.name)) // bigCategory로 grouping 하는거 추가하기
+                    self.smallModalartList.append((i.bigCategory.name ?? "")) // bigCategory로 grouping 하는거 추가하기
                 }
                 self.smallModalartList = self.smallModalartList.uniqued()
                 self.segmentFirstLoaded = false

@@ -23,7 +23,8 @@ class ModalartMainViewController: UIViewController {
     var mogakData: [DetailMogakData] = []
     let modalartNetwork = ModalartNetwork.shared ///API 통신
     let mogakNetwork = MogakDetailNetwork.shared
-    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    //var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     
     var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
     

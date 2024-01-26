@@ -13,7 +13,8 @@ class MogakMainViewController: UIViewController {
     //MARK: - properties
     var mogakList: [DetailMogakData] = []
     
-    var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    //var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     var jogakList: [JogakDetail] = []
     let mogakNetwork = MogakDetailNetwork.shared
     let modalartNetwork = ModalartNetwork.shared
