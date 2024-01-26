@@ -11,7 +11,7 @@ import Alamofire
 class MogakNetwork {
     // MARK: - 모각(작은목표)생성 API
     func createMogak(data: MogakMainData, completionHandler: @escaping (Result<CreateMogakMainData, Error>) -> Void) {
-        AF.request(MogakRouter.createMogak(data: data))
+        AF.request(MogakRouter.createMogak(data: data), interceptor: CommonLoginManage())
             .responseDecodable(of: CreateMogakResponse.self) {
                 (response: DataResponse<CreateMogakResponse, AFError>) in
                 switch response.result {

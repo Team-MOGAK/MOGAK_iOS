@@ -27,8 +27,8 @@ enum MogakRouter: URLRequestConvertible {
     
     var headers: HTTPHeaders {
         switch self {
-        default: return HTTPHeaders(["accept": "application/json", "Authorization": accesstoken])
-        //default: return HTTPHeaders(["accept": "application/json"])
+        //default: return HTTPHeaders(["accept": "application/json", "Authorization": accesstoken])
+        default: return HTTPHeaders(["accept": "application/json"])
         }
     }
     

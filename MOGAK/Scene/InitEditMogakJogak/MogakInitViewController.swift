@@ -13,6 +13,7 @@ import FSCalendar
 import Alamofire
 
 class MogakInitViewController: UIViewController {
+    weak var delegate: MogakCreatedReloadDelegate?
     let mogakNetwork = MogakNetwork()
     
     // MARK: - 데이터
@@ -407,6 +408,10 @@ class MogakInitViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        //delegate?.reloadModalart()
     }
     
     private func configureColorCollectionView() {
@@ -968,9 +973,9 @@ class MogakInitViewController: UIViewController {
     } */
     @objc private func completeButtonTapped() {
         createMogak()
-        print(#fileID, #line, #function, "- completeButto Tapped")
+        //print(#fileID, #line, #function, "- completeButto Tapped")
         
-        self.navigationController?.popViewController(animated: true)
+        //self.navigationController?.popViewController(animated: true)
     }
     
 }
@@ -1440,6 +1445,11 @@ extension MogakInitViewController {
             switch result {
             case .success(let mogakMainData):
                 print(#fileID, #function, #line, "- mogakMainData: \(mogakMainData)")
+                self.delegate?.reloadModalart()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.navigationController?.popViewController(animated: true)
+                }
+                
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }

@@ -13,6 +13,10 @@ protocol MogakSettingButtonTappedDelegate: AnyObject {
     func cellButtonTapped(mogakData: DetailMogakData)
 }
 
+protocol MogakCreatedReloadDelegate: AnyObject {
+    func reloadModalart()
+}
+
 //MARK: - 모다라트 화면
 class ModalartMainViewController: UIViewController {
     //MARK: - property
@@ -53,7 +57,7 @@ class ModalartMainViewController: UIViewController {
     }()
     
     ///모다라트 콜렉션 뷰
-    private lazy var modalArtCollectionView: UICollectionView = {
+    lazy var modalArtCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout.init())
         collectionView.backgroundColor = DesignSystemColor.signatureBag.value
         return collectionView
@@ -423,6 +427,8 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 let mogakInitVC = MogakInitViewController()
                 mogakInitVC.currentModalartId = nowShowModalArtNum
                 print("모다라트 아이디 : \(mogakInitVC.currentModalartId)")
+                
+                mogakInitVC.delegate = self
                 self.navigationController?.pushViewController(mogakInitVC, animated: true)
             }
         }
@@ -561,5 +567,13 @@ extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
         }
         
         self.navigationController?.pushViewController(mogakEditVC, animated: true)
+    }
+}
+
+extension ModalartMainViewController: MogakCreatedReloadDelegate {
+    func reloadModalart() {
+        print("DELEGATE 과연???")
+        self.getModalartDetailInfo(id: nowShowModalArtNum)
+        modalArtCollectionView.reloadData()
     }
 }
