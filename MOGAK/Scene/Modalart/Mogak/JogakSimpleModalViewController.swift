@@ -192,8 +192,9 @@ class JogakSimpleModalViewController: UIViewController {
     
     @objc func editBtnTapped() {
         print(#fileID, #function, #line, "- 네 버튼 클릭")
-    
-        self.dismiss(animated: true)
+        let jogakEditVC = JogakEditViewController()
+        self.navigationController?.pushViewController(jogakEditVC, animated: true)
+        //self.dismiss(animated: true)
     }
     
 }

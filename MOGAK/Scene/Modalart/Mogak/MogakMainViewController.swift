@@ -9,6 +9,10 @@ import Foundation
 import UIKit
 import SnapKit
 
+protocol JogakCreatedReloadDelegate: AnyObject {
+    func reloadMogak()
+}
+
 class MogakMainViewController: UIViewController {
     //MARK: - properties
     var mogakList: [DetailMogakData] = []
@@ -334,6 +338,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 jogakInitVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
                 jogakInitVC.mogakCategoryLabel.alpha = 1.0
                 
+                jogakInitVC.delegate = self
                 self.navigationController?.pushViewController(jogakInitVC, animated: true)
             }
             
@@ -443,3 +448,9 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
 }
 
 
+extension MogakMainViewController: JogakCreatedReloadDelegate {
+    func reloadMogak() {
+        print("Delegate 과연???")
+        self.getMogakDetail(self.selectedMogak)
+    }
+}

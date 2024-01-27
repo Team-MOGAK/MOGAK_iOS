@@ -551,6 +551,7 @@ extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
         let categoryIndex = categoryList.firstIndex(of: category)!
         print("categoryIndex: \(categoryIndex)")
         
+        mogakEditVC.currentMogakId = mogakData.mogakId
         mogakEditVC.currentBigCategory = mogakData.bigCategory.name
         mogakEditVC.currentColor = String(mogakData.color!.suffix(6))
         //mogakEditVC.categoryCollectionView.selectItem(at: [0, categoryIndex], animated: false, scrollPosition: .init())
@@ -565,7 +566,7 @@ extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
         if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
             print("#########3")
         }
-        
+        mogakEditVC.delegate = self
         self.navigationController?.pushViewController(mogakEditVC, animated: true)
     }
 }

@@ -13,13 +13,14 @@ import FSCalendar
 import Alamofire
 
 class MogakEditViewController: UIViewController {
+    weak var delegate: MogakCreatedReloadDelegate?
     let mogakNetwork = MogakNetwork()
     
     // MARK: - 데이터
     private var currentModalartId: Int = 0
-    private var currentMogakId: Int = 25
+    var currentMogakId: Int = 0
     var currentBigCategory: String = ""
-    var currentSmallCategory: String = ""
+    var currentSmallCategory: String? = nil
     var mogakData: [MogakMainData] = []
     
     var currentStartDate: String = ""
@@ -1399,23 +1400,28 @@ extension MogakEditViewController {
         let id = currentMogakId
         let editedTitle = mogakTextField.text
         let bigCategory = currentBigCategory
-        let smallCategory = currentSmallCategory
-        var startAt: String = currentStartDate
-        var endAt: String = currentEndDate
+        var smallCategory = currentSmallCategory
+        //smallCategory = etcTextField.text! ?? nil
+        //var startAt: String = currentStartDate
+        //var endAt: String = currentEndDate
         var color: String = "#" + currentColor
         
         //
         //
         //        let data = MogakMainData(modaratId: id, title: createdTitle!, bigCategory: bigCategory, smallCategory: smallCategory, startAt: startAt, endAt: endAt, color: color)
         
-        let editedData = EditMogakRequestMainData(mogakId: id, title: editedTitle!, bigCategory: currentBigCategory, startAt: currentStartDate, endAt: currentEndDate, color: color)
-        print("")
+        let editedData = EditMogakRequestMainData(mogakId: id, title: editedTitle!, bigCategory: currentBigCategory, smallCategory: smallCategory, color: color)
+        print("\(editedData)")
         
         mogakNetwork.editMogak(data: editedData) {
             result in
             switch result {
             case .success(let mogakEditedData):
                 print(#fileID, #function, #line, "- editedMogakData: \(mogakEditedData)")
+                self.delegate?.reloadModalart()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.navigationController?.popViewController(animated: true)
+                }
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }

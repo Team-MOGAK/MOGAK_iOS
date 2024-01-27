@@ -14,6 +14,7 @@ import FSCalendar
 import Alamofire
 
 class JogakInitViewController: UIViewController {
+    weak var delegate: JogakCreatedReloadDelegate?
     var currentMogakId: Int = 0
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
@@ -211,9 +212,9 @@ class JogakInitViewController: UIViewController {
         calendar.isHidden = true
         return calendar
     }()
-    
+        
     private let endHeaderTitle = UILabel().then {
-        $0.text = "2023년 8월"
+        $0.text = "2024년 1월"
         $0.textColor = UIColor(hex: "24252E")
         $0.font = UIFont.pretendard(.semiBold, size: 18)
         $0.isHidden = true
@@ -238,12 +239,38 @@ class JogakInitViewController: UIViewController {
     }()
     
     private lazy var completeButton = UIButton().then {
+        //$0.backgroundColor = DesignSystemColor.gray3.value
         $0.backgroundColor = UIColor(hex: "#475FFD")
         $0.setTitle("완료", for: .normal)
         $0.titleLabel?.textAlignment = .center
         $0.titleLabel?.textColor = .white
         $0.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         $0.layer.cornerRadius = 10
+        $0.isEnabled = true
+    }
+    
+    func updateButtonState() {
+        let isTitleFilled = !(jogakDetailTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty )
+        //let isTitleFilled = !(jogakDetailTextField.text?.isEmpty)!
+        let isDaysCellSelected: Bool = routineRepeatCollectionView.indexPathsForSelectedItems?.count ?? 0 > 0
+        let isToggleOn: Bool = self.toggleButton.isOn
+        let calendarSelected: Bool = self.datesRange?.count ?? 0 > 0
+        
+        var completeButtonEnable: Bool = false
+        if isToggleOn == false {
+            if isTitleFilled { completeButtonEnable = true }
+        } else {
+            if isTitleFilled && isDaysCellSelected && calendarSelected { completeButtonEnable = true }
+        }
+        
+        if completeButtonEnable {
+            completeButton.isEnabled = true
+            completeButton.backgroundColor = UIColor(hex: "#475FFD")
+        } else {
+            completeButton.isEnabled = false
+            completeButton.backgroundColor = DesignSystemColor.gray3.value
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -464,6 +491,7 @@ class JogakInitViewController: UIViewController {
         endExplanationLabel.isHidden = !sender.isOn
         endTextField.isHidden = !sender.isOn
         endLabel.isHidden = !sender.isOn
+        updateButtonState()
         
         if !sender.isOn {
             [endNextButton, endHeaderTitle, endPreviousButton, calendar].forEach({$0.isHidden = true})
@@ -540,7 +568,7 @@ class JogakInitViewController: UIViewController {
     
     @objc private func completeButtonTapped() {
         createJogak()
-        print("")
+        //print("")
     }
     
 }
@@ -555,6 +583,7 @@ extension JogakInitViewController: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
         if textField == jogakDetailTextField {
+            updateButtonState()
             return true
         }
         else if textField == endTextField { // 종료날짜
@@ -579,6 +608,10 @@ extension JogakInitViewController: UITextFieldDelegate {
             self.view.layoutIfNeeded()
         }
         return false
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        updateButtonState()
     }
 }
 
@@ -617,6 +650,7 @@ extension JogakInitViewController: UICollectionViewDelegate {
             }
         }
         print("클릭 시 repeatSelectedList === \(repeatSelectedList)")
+        updateButtonState()
     }
 }
 
@@ -694,6 +728,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             datesRange = [firstDate!]
             
             print("datesRange contains: \(datesRange!)")
+            updateButtonState()
             return
         }
         
@@ -706,6 +741,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
                 datesRange = [firstDate!]
                 
                 print("datesRange contains: \(datesRange!)")
+                updateButtonState()
                 return
             }
             
@@ -734,6 +770,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             let dateFormatter2 = DateFormatter()
             dateFormatter2.dateFormat = "yyyy-MM-dd"
             endDate = dateFormatter2.string(from: lastDate!)
+            updateButtonState()
             
             return
         }
@@ -750,6 +787,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
             datesRange = []
             
             print("datesRange contains: \(datesRange!)")
+            updateButtonState()
         }
         
     }
@@ -942,6 +980,10 @@ extension JogakInitViewController {
             switch result {
             case .success(let jogakMainData):
                 print(#fileID, #function, #line, "- jogakMainData: \(jogakMainData)")
+                self.delegate?.reloadMogak()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.navigationController?.popViewController(animated: true)
+                }
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }

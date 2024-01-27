@@ -35,7 +35,7 @@ class MogakNetwork {
     
     // MARK: - 모각수정 API
     func editMogak(data: EditMogakRequestMainData, completionHandler: @escaping (Result<EditMogakMainData, Error>) -> Void) {
-        AF.request(MogakRouter.editMogak(data: data))
+        AF.request(MogakRouter.editMogak(data: data), interceptor: CommonLoginManage())
             .responseDecodable(of: EditMogakResponse.self) {
                 (response: DataResponse<EditMogakResponse, AFError>) in
                 switch response.result {
@@ -43,8 +43,8 @@ class MogakNetwork {
                     print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                     completionHandler(.failure(error))
                 case .success(let data):
-                    print(#fileID, #function, #line, "- data titla: \(data.result.mogakId)")
-                    print(#fileID, #function, #line, "- data updatedAt: \(data.result.updatedAt)")//수정 필요
+                    print(#fileID, #function, #line, "- data result: \(data.result)")
+                    //print(#fileID, #function, #line, "- data updatedAt: \(data.result.updatedAt)")//수정 필요
                     completionHandler(.success(data.result))
                 }
             }
@@ -68,7 +68,7 @@ class MogakNetwork {
     
     // MARK: - 조각생성 API
     func createJogak(data: CreateJogakRequestMainData, completionHandler: @escaping (Result<CreateJogakMainData, Error>) -> Void) {
-        AF.request(MogakRouter.createJogak(data: data))
+        AF.request(MogakRouter.createJogak(data: data), interceptor: CommonLoginManage())
             .responseDecodable(of: CreateJogakResponse.self) {
                 (response: DataResponse<CreateJogakResponse, AFError>) in
                 switch response.result {
@@ -90,7 +90,7 @@ class MogakNetwork {
     
     // MARK: - 조각수정 API
     func editJogak(data: EditJogakRequestMainData, jogakId: Int, completionHandler: @escaping (Result<EditJogakResponse, Error>) -> Void) {
-        AF.request(MogakRouter.editJogak(data: data, jogakId: jogakId))
+        AF.request(MogakRouter.editJogak(data: data, jogakId: jogakId), interceptor: CommonLoginManage())
             .responseDecodable(of: EditJogakResponse.self) {
                 (response: DataResponse<EditJogakResponse, AFError>) in
                 switch response.result {
@@ -100,6 +100,22 @@ class MogakNetwork {
                 case .success(let data):
                     print(#fileID, #function, #line, "- data: \(data.message)")
                     completionHandler(.success(data))
+                }
+            }
+    }
+    
+    // MARK: - 조각삭제 API
+    func deleteJogak(jogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        print(#fileID, #function, #line, "- jogakId: \(jogakId)")
+        AF.request(MogakRouter.deleteJogak(jogakId: jogakId), interceptor: CommonLoginManage()).validate()
+            .responseData(emptyResponseCodes: [200, 204, 205]) { response in
+                switch response.result {
+                case .failure(let error):
+                    print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+                    completionHandler(.failure(error))
+                case .success(_):
+                    print(#fileID, #function, #line, "- data")
+                    completionHandler(.success(true))
                 }
             }
     }

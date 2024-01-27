@@ -44,8 +44,11 @@ struct EditMogakResponse: Codable {
 }
 
 struct EditMogakMainData: Codable {
-    let mogakId: Int
-    let updatedAt: String
+    let id: Int
+    let title: String
+    let bigCategory: BigCategory
+    let smallCategory: String?
+    let color: String
 }
 
 // MARK: - 모각수정 Request body
@@ -53,9 +56,9 @@ struct EditMogakRequestMainData: Codable {
     let mogakId: Int
     let title: String
     let bigCategory: String
-    //let smallCategory: String
-    let startAt: String
-    let endAt: String
+    let smallCategory: String?
+    //let startAt: String
+    //let endAt: String
     let color: String
 }
 

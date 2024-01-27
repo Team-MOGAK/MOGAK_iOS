@@ -1446,7 +1446,7 @@ extension MogakInitViewController {
             case .success(let mogakMainData):
                 print(#fileID, #function, #line, "- mogakMainData: \(mogakMainData)")
                 self.delegate?.reloadModalart()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.navigationController?.popViewController(animated: true)
                 }
                 
