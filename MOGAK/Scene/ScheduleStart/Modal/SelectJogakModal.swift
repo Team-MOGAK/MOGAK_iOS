@@ -134,7 +134,6 @@ class SelectJogakModal : UIViewController{
         
     }
     //MARK: - tableView properties
-    
     struct MogakJogak {
         var mogaktitle: String
         var mogakcolor: String
@@ -399,12 +398,12 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in
-            
             print("테이블 뷰 리로드 클로저 ㅇㅇ")
             self?.TableViewReload?()
             print("추가 후의 SelectJogaklist: \(self?.SelectJogaklist ?? [])")
             print(self?.SelectJogaklist.count as Any)
             self?.MogakTableView.reloadData()
+            
         }
         
     }
@@ -416,8 +415,7 @@ extension Date {
         return Calendar.current.isDate(self, inSameDayAs: date)
     }
 }
-//MARK: - tableViewCell
-
+//MARK: - MogakTableViewCell
 class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
     
     func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
@@ -524,6 +522,8 @@ class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
         
     }
 }
+//MARK: - JogakTableViewCell
+
 class JogakTableViewCell : UITableViewCell{
     
     private lazy var JogakLabel : UILabel = {
@@ -586,7 +586,6 @@ class JogakTableViewCell : UITableViewCell{
         clickedJogakID = jogakData.jogakID
         
         if jogakData.isRoutine {
-            // isRoutine이 true일 때의 처리
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
         } else {
             JogakimageView.image = UIImage(systemName: "square")
@@ -598,15 +597,15 @@ class JogakTableViewCell : UITableViewCell{
     }
     
     //MARK: - jogakLabel 클릭시 이벤트
-    
     @objc func jogakLabelTap(_ sender: UITapGestureRecognizer){
+        
         print(JogakLabel.text as Any)
         print(clickedJogakID)
+
         if JogakimageView.image == UIImage(systemName: "square"){
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
             
             jogakStartList.append(clickedJogakID)
-            print("추가된 조각", jogakStartList)
             
         }else{
             JogakimageView.image = UIImage(systemName: "square")

@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA2MTk2ODQ3LCJleHAiOjE3MDYyMDQwNDd9.FcyS31tClJv06bAxNY5XQmTSrRYsrRwhJ6N7OpLUZYA"
+let Accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA2MzY4MDY5LCJleHAiOjE3MDYzNzUyNjl9.9QJLKlV34JT7rP3Oq0AmV07SGIZAZnZPXt8_WgpbpBc"
 
 let BaseURL = "https://mogak.shop:8080"
 
@@ -18,9 +18,10 @@ enum ApiRouter : URLRequestConvertible{
     case detailModalart(modaratId: Int)            //모다라트 디테일
     case getDetailMogakData(modaratId: Int)       //모각 데이터 조회
     case getJogakList(mogakId : Int)              // 조각  조회
-    case JogakSuccess(jogakId : Int)                //조각 성공
+    case JogakSuccess(dailyJogakId : Int)                //조각 성공
+    case JogakFail(dailyJogakId : Int)              //조각 실패
     case getJogakDailyCheck(DailyDate : String)    //일별 조각 조회
-//    case addJogakDaily
+    case getAddJogakToday(jogakId : Int)          //일일 조각 시작
 //    case getPost                                  // 회고록 조회
 //    case makePost(mogakId : Int)                   //회고록 생성
     
@@ -36,14 +37,18 @@ enum ApiRouter : URLRequestConvertible{
             return "/api/modarats/\(modaratId)/mogaks"
         case .getJogakList(let mogakId):
             return "/api/modarats/mogaks/\(mogakId)/jogaks"
-        case .JogakSuccess(let jogakId):
-            return "/api/modarats/mogaks/jogaks/\(jogakId)/success"
+        case .JogakSuccess(let dailyJogakId):
+            return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/success"
         case .getJogakDailyCheck(let DailyDate):
             return "/api/modarats/mogaks/jogaks/day?day=" + DailyDate
 //        case .makePost(let mogakId):
 //            return "/api/mogaks/\(mogakId)/posts"
 //        case .addJogakDaily:
 //            return ""
+        case .getAddJogakToday(let jogakId):
+            return "/api/modarats/mogaks/jogaks/\(jogakId)/start"
+        case .JogakFail(dailyJogakId: let dailyJogakId):
+            return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/fail"
         }
     }
     
@@ -60,9 +65,9 @@ enum ApiRouter : URLRequestConvertible{
         switch self {
         case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck : return .get
 //        case .makePost: return .post
+        case .getAddJogakToday : return .post
         case .JogakSuccess: return .put
-//        case .addJogakDaily:
-//            <#code#>
+        case .JogakFail: return .put
         }
     }
     
@@ -93,8 +98,10 @@ enum ApiRouter : URLRequestConvertible{
             request = try URLEncoding.queryString.encode(request, with: parameters)
 //        case .makePost(let data):
 //            request = try JSONParameterEncoder().encode(data, into: request)
-//        case .addJogakDaily:
-//            <#code#>
+        case .getAddJogakToday:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
+        case .JogakFail:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
         }
         
         return request

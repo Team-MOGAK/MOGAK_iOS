@@ -13,8 +13,6 @@ import Alamofire
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
-    var dailyJogak: [String] = [] // 일일조각 리스트
-    
     let Apinetwork =  ApiNetwork.shared
     
     
@@ -256,7 +254,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         calendarView.snp.makeConstraints{
-            $0.top.equalTo(headerStackView.snp.bottom).offset(5) //달력 대가리
+            $0.top.equalTo(headerStackView.snp.bottom).offset(5)
             $0.trailing.leading.equalToSuperview().inset(20)
             $0.height.equalTo(200) // 캘린더뷰의(월)일때의 총 높이
         }
@@ -366,22 +364,23 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             toastLabel.removeFromSuperview()
         })
     }
-    //MARK: - 일일 조각 API 호출 맨~
+    
+    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, isAchivement : Bool)] = []
+    
+//MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
         Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
             switch result {
             case .success(let jogakDailyChecks):
                 if let jogakDailyChecks = jogakDailyChecks {
-                    print("일일 조각 리스트 : ",self.dailyJogak)
-                    self.dailyJogak = []
+                    self.dailyInfo = []
                     for jogakDailyCheck in jogakDailyChecks {
                         let result = jogakDailyCheck.result
-                        
                         for dailyJogak in result.dailyJogaks {
-                            self.dailyJogak.append(dailyJogak.title)
+                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, isAchivement : dailyJogak.isAchievement))
                         }
+                        print("일일 조각 리스트 : ",self.dailyInfo)
                     }
-                    print(self.dailyJogak)
                     self.ScheduleTableView.reloadData()
                 } else {
                     print("일일 조각을 위한 nil 배열 수신.")
@@ -393,7 +392,28 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         
     }
-    
+//MARK: - 조각 실패 API
+    func CheckJogakFail(dailyJogakId : Int){
+        Apinetwork.getJogakFail(dailyJogakId: dailyJogakId){ result in
+            switch result{
+            case.success(let jogakfail):
+                print(jogakfail as Any)
+            case.failure(let error):
+                print("jogakFail error",error)
+            }
+        }
+    }
+//MARK: - 조각 성공 API
+    func CheckJogakSuccess(dailyJogakId : Int){
+        Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
+            switch result{
+            case.success(let jogakSuccess):
+                print(jogakSuccess as Any)
+            case.failure(let error):
+                print("jogakFail error",error)
+            }
+        }
+    }
     
     //MARK: - @objc
     @objc func tapToggleButton(){
@@ -514,17 +534,21 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             return
         }
         
-        cell.contentView.backgroundColor = UIColor.white
-        
         let Certificate = CertificationModalVC()
         
         Certificate.modalPresentationStyle = .pageSheet
+        
+        
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
             Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n오늘 조각을 완료하셨군요!"
             
-            NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
+            print(dailyInfo[indexPath.row].jogaktitle ,dailyInfo[indexPath.row].dailyjogakId,"조각 성공")
+            
+            CheckJogakSuccess(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
+            
+            //            NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
             
             present(Certificate, animated: true)
             
@@ -538,22 +562,23 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             
         } else{
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
+            CheckJogakFail(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
             
         }
     }
     
-    @objc func dataReceived(_ notification : Notification){
-        if let text = notification.object as? String{
-            
-            print("Received text: \(text)")
-            
-            if let indexPath = ScheduleTableView.indexPathForSelectedRow {
-                let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell
-                cell?.recodelabel?.text = text
-                
-            }
-        }
-    }
+//    @objc func dataReceived(_ notification : Notification){
+//        if let text = notification.object as? String{
+//            
+//            print("Received text: \(text)")
+//            
+//            if let indexPath = ScheduleTableView.indexPathForSelectedRow {
+//                let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell
+//                cell?.recodelabel?.text = text
+//                
+//            }
+//        }
+//    }
     
     //MARK: - Cell Selction
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -563,7 +588,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        let numberOfJogak = dailyJogak.count
+        let numberOfJogak = dailyInfo.count
         
         if numberOfJogak == 0 {
             blankimage.isHidden = false
@@ -583,22 +608,37 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
-                return 80.0 // Default height
-            }
-            
-            // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
-            let recodelabelHeight = cell.calculateRecodelabelHeight()
-            
-            // 동적 높이를 기본 셀 높이에 추가합니다
-            return 80.0 + recodelabelHeight
+        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
+            return 80.0 // Default height
         }
+        
+        // 셀 내의 recodelabel의 동적 높이를 계산하는 메서드를 사용합니다
+        let recodelabelHeight = cell.calculateRecodelabelHeight()
+        
+        // 동적 높이를 기본 셀 높이에 추가합니다
+        return 80.0 + recodelabelHeight
+    }
     
     //MARK: - cellUI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { //cell 재활용
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
-        cell.cellLabel.text = dailyJogak[indexPath.row]
+        let jogakTitle = dailyInfo[indexPath.row].jogaktitle
+        let jogakdailyJogakId = dailyInfo[indexPath.row].dailyjogakId
+        cell.cellLabel.text = jogakTitle
+        
+        //isAchivement 처리
+        if dailyInfo[indexPath.row].isAchivement == true{ //true로 변경
+            cell.cellImage.image = UIImage(named: "squareCheckmark")
+            CheckJogakSuccess(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
+            print(jogakTitle,jogakdailyJogakId,"조각 성공")
+            
+        }else{
+            cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
+            CheckJogakFail(dailyJogakId: jogakdailyJogakId)
+            print(jogakTitle,jogakdailyJogakId,"조각 실패")
+        }
+        
         
         cell.contentView.backgroundColor = .white
         cell.selectionStyle = .none //클릭시 화면 안바뀜
@@ -613,22 +653,35 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
 }
 
-//extension ScheduleStartViewController: ScheduleTimerDelegate {
-//    
-//    func certificateModal() {
-//        print("프린트 서티피케이트")
-//        let scheduleDone = CertificationModalVC()
-//        scheduleDone.modalPresentationStyle = .formSheet
-//        self.present(scheduleDone,animated: true)
-//        
-//        if let sheet = scheduleDone.sheetPresentationController{
-//            sheet.detents = [.medium()]
-//            sheet.delegate = self
-//            sheet.prefersGrabberVisible = true
-//            sheet.largestUndimmedDetentIdentifier = nil
-//        }
-//    }
-//}
 
 
 
+//Preview code
+#if DEBUG
+import SwiftUI
+struct cabBarViewControllerRepresentable: UIViewControllerRepresentable {
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        ScheduleStartViewController()
+    }
+}
+@available(iOS 13.0, *)
+struct cabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                cabBarViewControllerRepresentable()
+                    .ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+        
+    }
+} #endif

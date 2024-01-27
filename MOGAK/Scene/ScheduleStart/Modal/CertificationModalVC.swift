@@ -111,7 +111,7 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
         }
     }
     
-    //MARK: - @objc func
+    //MARK: - func
     
     @objc func scheduleRecord(){
 //        self.dismiss(animated: true) {
@@ -134,9 +134,12 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
             guard self != nil else { return }
             
             let scheduleVC = ScheduleStartViewController()
+
+                scheduleVC.showToast(message: "오늘 한 일이 추가되었습니다.", font: DesignSystemFont.regular14L150.value)
             
-            scheduleVC.showToast(message: "오늘 한 일이 추가되었습니다.", font: DesignSystemFont.regular14L150.value)
+             print("Toast message should be displayed.")
+            }
             
         }
     }
-}
+

@@ -87,7 +87,45 @@ class ApiNetwork{
                    }
                }
     }
-    //MARK: -
-
+//MARK: - 일일 조각 시작
+    func getAddJogakToday(jogakId : Int, completionHandler : @escaping(Result<[JogakAddRoutine]?, Error>)-> Void) {
+        AF.request(ApiRouter.getAddJogakToday(jogakId: jogakId))
+               .validate(statusCode: 200..<300)
+               .responseDecodable(of: JogakAddRoutine.self) { response in
+                   switch response.result {
+                   case .success(let jogakAddResponse):
+                       completionHandler(.success([jogakAddResponse]))
+                   case .failure(let error):
+                       completionHandler(.failure(error))
+                   }
+               }
+    }
+//MARK: - 조각 실패
+    func getJogakFail(dailyJogakId : Int, completionHandler : @escaping(Result<[JogakFail]?, Error>)-> Void) {
+        AF.request(ApiRouter.JogakFail(dailyJogakId: dailyJogakId))
+            .validate(statusCode: 200..<500)
+               .responseDecodable(of: JogakFail.self) { response in
+                   switch response.result {
+                   case .success(let jogakfailResponse):
+                       completionHandler(.success([jogakfailResponse]))
+                   case .failure(let error):
+                       completionHandler(.failure(error))
+                   }
+               }
+    }
+    
+//MARK: - 조각 성공
+    func getJogakSuccess(dailyJogakId : Int, completionHandler : @escaping(Result<[JogakSuccess]?, Error>)-> Void) {
+        AF.request(ApiRouter.JogakSuccess(dailyJogakId: dailyJogakId))
+            .validate(statusCode: 200..<500)
+               .responseDecodable(of: JogakSuccess.self) { response in
+                   switch response.result {
+                   case .success(let JogakSuccessResponse):
+                       completionHandler(.success([JogakSuccessResponse]))
+                   case .failure(let error):
+                       completionHandler(.failure(error))
+                   }
+               }
+    }
 }
 
