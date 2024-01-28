@@ -184,6 +184,7 @@ class JogakInitViewController: UIViewController {
     private let calendar : FSCalendar = {
         let calendar = FSCalendar(frame: .zero)
         
+        calendar.allowsMultipleSelection = false
         
         calendar.weekdayHeight = 15
         calendar.headerHeight = 0
@@ -305,7 +306,7 @@ class JogakInitViewController: UIViewController {
         self.configureCompleteButton()
         
         calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
-        calendar.allowsMultipleSelection = true
+        //calendar.allowsMultipleSelection = true
         calendar.scrollDirection = .horizontal
         calendar.today = nil
         calendar.swipeToChooseGesture.isEnabled = false
@@ -699,13 +700,20 @@ extension JogakInitViewController {
 }
 
 extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
-//    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
-//        let selectedDateStr = dateFormatter.string(from: date)
-//        print("종료 Selected Date: \(selectedDateStr)")
-//        endTextField.text = selectedDateStr
-//    }
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
+        let selectedDateStr = dateFormatter.string(from: date)
+        print("종료 Selected Date: \(selectedDateStr)")
+        endTextField.text = selectedDateStr
+        datesRange = [date]
+        
+        let dateFormatter2 = DateFormatter()
+        dateFormatter2.dateFormat = "yyyy-MM-dd"
+        endDate = dateFormatter2.string(from: date)
+        
+        updateButtonState()
+    }
     
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
         let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position)
@@ -721,6 +729,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
 //        return appearance.selectionColor
 //    }
     
+    /*
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         // nothing selected:
         if firstDate == nil {
@@ -791,7 +800,7 @@ extension JogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
         }
         
     }
-    
+     */
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         let date = calendar.currentPage
         let formatter = DateFormatter()

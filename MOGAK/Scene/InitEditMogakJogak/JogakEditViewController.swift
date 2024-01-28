@@ -15,7 +15,9 @@ import FSCalendar
 import Alamofire
 
 class JogakEditViewController: UIViewController {
+    weak var delegate: JogakCreatedReloadDelegate?
     var currentJogakId: Int = 0
+    var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "")
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)
@@ -98,7 +100,7 @@ class JogakEditViewController: UIViewController {
         return label
     }()
     
-    private let jogakDetailTextField : UITextField = {
+    var jogakDetailTextField : UITextField = {
         let textField = UITextField()
         textField.placeholder = "세부 제목을 적어주세요"
         textField.font = UIFont.pretendard(.medium, size: 16)
@@ -253,6 +255,54 @@ class JogakEditViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+        
+        toggleButton.isOn = currentJogak.isRoutine
+        
+        routineRepeatCollectionView.isHidden = !toggleButton.isOn
+        endExplanationLabel.isHidden = !toggleButton.isOn
+        endTextField.isHidden = !toggleButton.isOn
+        endLabel.isHidden = !toggleButton.isOn
+        
+        let dateFormatter = DateFormatter()
+        let dateFormatter2 = DateFormatter()
+        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
+        dateFormatter2.dateFormat = "yyyy-MM-dd"
+        let currentDateDate = dateFormatter2.date(from: currentJogak.endDate!)
+        let currentDateStr = dateFormatter.string(from: currentDateDate!)
+        endTextField.text = currentDateStr
+        
+        if !toggleButton.isOn {
+            [endNextButton, endHeaderTitle, endPreviousButton, calendar].forEach({$0.isHidden = true})
+            
+            endPreviousButton.snp.remakeConstraints({
+                $0.top.equalTo(self.endLabel.snp.bottom).offset(43)
+                $0.centerX.equalToSuperview().offset(-60)
+                $0.width.height.equalTo(16)
+            })
+            
+            endHeaderTitle.snp.remakeConstraints({
+                $0.centerY.equalTo(self.endPreviousButton.snp.centerY)
+                $0.leading.equalTo(self.endPreviousButton.snp.trailing).offset(4)
+            })
+            
+            endNextButton.snp.remakeConstraints({
+                $0.centerY.equalTo(self.endPreviousButton.snp.centerY)
+                $0.leading.equalTo(self.endHeaderTitle.snp.trailing).offset(4)
+                $0.width.height.equalTo(16)
+            })
+            
+            calendar.snp.remakeConstraints({
+                $0.top.equalTo(self.endHeaderTitle.snp.bottom).offset(22)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(212)
+            })
+            
+            self.view.layoutIfNeeded()
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.collectionViewHeightConstraint.constant = self.toggleButton.isOn ? 110 : 0
+        }
     }
     
     // MARK: - ViewDidLoad
@@ -279,7 +329,7 @@ class JogakEditViewController: UIViewController {
         self.configureCompleteButton()
         
         calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
-        calendar.allowsMultipleSelection = true
+        calendar.allowsMultipleSelection = false
         calendar.scrollDirection = .horizontal
         calendar.today = nil
         calendar.swipeToChooseGesture.isEnabled = false
@@ -667,13 +717,18 @@ extension JogakEditViewController {
 }
 
 extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
-//    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
-//        let selectedDateStr = dateFormatter.string(from: date)
-//        print("종료 Selected Date: \(selectedDateStr)")
-//        endTextField.text = selectedDateStr
-//    }
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy/M/d(EEE)"
+        let selectedDateStr = dateFormatter.string(from: date)
+        print("종료 Selected Date: \(selectedDateStr)")
+        endTextField.text = selectedDateStr
+        datesRange = [date]
+        
+        let dateFormatter2 = DateFormatter()
+        dateFormatter2.dateFormat = "yyyy-MM-dd"
+        endDate = dateFormatter2.string(from: date)
+    }
     
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
         let cell = calendar.dequeueReusableCell(withIdentifier: "cell", for: date, at: position)
@@ -688,7 +743,7 @@ extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
 //    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillSelectionColorFor date: Date) -> UIColor? {
 //        return appearance.selectionColor
 //    }
-    
+    /*
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         // nothing selected:
         if firstDate == nil {
@@ -755,6 +810,7 @@ extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
         }
         
     }
+     */
     
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         let date = calendar.currentPage
@@ -941,6 +997,10 @@ extension JogakEditViewController {
             switch result {
             case .success(let message):
                 print(#fileID, #function, #line, "- jogakMainData: \(message)")
+                self.delegate?.reloadMogak()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.navigationController?.popViewController(animated: true)
+                }
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }

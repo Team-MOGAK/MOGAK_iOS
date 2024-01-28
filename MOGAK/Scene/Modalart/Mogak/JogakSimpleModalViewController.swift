@@ -108,7 +108,7 @@ class JogakSimpleModalViewController: UIViewController {
         btn.layer.cornerRadius = 10
         btn.setTitleColor(DesignSystemColor.white.value, for: .normal)
         btn.titleLabel?.font = DesignSystemFont.medium16L100.value
-        btn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
+        //btn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
         return btn
     }()
     
@@ -193,7 +193,7 @@ class JogakSimpleModalViewController: UIViewController {
     @objc func editBtnTapped() {
         print(#fileID, #function, #line, "- 네 버튼 클릭")
         let jogakEditVC = JogakEditViewController()
-        self.navigationController?.pushViewController(jogakEditVC, animated: true)
+        //self.navigationController?.pushViewController(jogakEditVC, animated: true)
         //self.dismiss(animated: true)
     }
     

@@ -18,6 +18,7 @@ class MogakMainViewController: UIViewController {
     var mogakList: [DetailMogakData] = []
     
     //var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    var selectedJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "")
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     var jogakList: [JogakDetail] = []
     let mogakNetwork = MogakDetailNetwork.shared
@@ -299,6 +300,17 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         return UICollectionViewCell()
     }
     
+    @objc func editBtnTapped() {
+        print(#fileID, #function, #line, "- 네 버튼 클릭")
+        self.dismiss(animated: true) {
+            let jogakEditVC = JogakEditViewController()
+            jogakEditVC.delegate = self
+            jogakEditVC.currentJogak = self.selectedJogak
+            jogakEditVC.jogakDetailTextField.text = self.selectedJogak.title
+            self.navigationController?.pushViewController(jogakEditVC, animated: true)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.mogakMandalartCollectionView {
@@ -306,9 +318,11 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
             if cellType != EmptyJogakCell.identifier {
                 let row = indexPath.row
                 let bottomSheetVC = JogakSimpleModalViewController()
+                bottomSheetVC.editBtn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
                 bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
                 let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
                 bottomSheetVC.jogakData = jogakData
+                selectedJogak = jogakData
                 
                 if let sheet = bottomSheetVC.sheetPresentationController {
                     if #available(iOS 16, *) {
