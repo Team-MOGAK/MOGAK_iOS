@@ -75,7 +75,7 @@ class MogakNetwork {
                 case .failure(let error):
                     print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                     completionHandler(.failure(error))
-                case .success(let data):
+                case .success(let data):      
                     print(#fileID, #function, #line, "- data jogakId: \(data.result.jogakId)")
                     print(#fileID, #function, #line, "- data mogakTitle: \(data.result.mogakTitle)")
                     print(#fileID, #function, #line, "- data category: \(data.result.category)")

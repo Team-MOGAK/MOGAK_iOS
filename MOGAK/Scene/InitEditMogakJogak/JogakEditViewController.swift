@@ -17,7 +17,7 @@ import Alamofire
 class JogakEditViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
     var currentJogakId: Int = 0
-    var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "")
+    var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], achievements: 0, startDate: "", endDate: "")
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)
@@ -72,14 +72,14 @@ class JogakEditViewController: UIViewController {
     }()
     
     //
-    let mogakCategoryView : UIView = {
+    var mogakCategoryView : UIView = {
         let view = UIView()
         view.layer.cornerRadius = 8
         view.backgroundColor = UIColor(hex: "DDF7FF")
         return view
     }()
     
-    let mogakCategoryLabel : UILabel = {
+    var mogakCategoryLabel : UILabel = {
         let label = UILabel()
         label.text = "건강"
         label.font = UIFont.pretendard(.semiBold, size: 14)
@@ -298,6 +298,40 @@ class JogakEditViewController: UIViewController {
             })
             
             self.view.layoutIfNeeded()
+        } else {
+            print(self.currentJogak.days)
+            
+            if !(self.currentJogak.days == nil) {
+                let days: [String] = self.currentJogak.days!
+                for day in days {
+                    switch day {
+                    case "MONDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
+                    case "TUESDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
+                    case "WEDNESDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 2], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 2, section: 0))
+                    case "THURSDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 3], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 3, section: 0))
+                    case "FRIDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 4], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 4, section: 0))
+                    case "SATURDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 5], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 5, section: 0))
+                    case "SUNDAY":
+                        routineRepeatCollectionView.selectItem(at: [0, 6], animated: false, scrollPosition: .init())
+                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 6, section: 0))
+                    default:
+                        break
+                    }
+                }
+            }
+            
         }
         
         UIView.animate(withDuration: 0.3) {
@@ -372,7 +406,7 @@ class JogakEditViewController: UIViewController {
     }
     
     private func configureCategory() {
-        [mogakCategoryTitleLabel, mogakCategoryView].forEach(contentView.addSubview(_:))
+        [mogakCategoryTitleLabel, mogakCategoryView, mogakCategoryLabel].forEach(contentView.addSubview(_:))
         
         mogakCategoryTitleLabel.snp.makeConstraints({
             $0.top.equalTo(self.contentView.safeAreaLayoutGuide.snp.top).offset(12)
@@ -386,10 +420,10 @@ class JogakEditViewController: UIViewController {
             $0.width.equalTo(57)
         })
         
-        mogakCategoryView.addSubview(mogakCategoryLabel)
+        //mogakCategoryView.addSubview(mogakCategoryLabel)
         
         mogakCategoryLabel.snp.makeConstraints({
-            $0.centerX.centerY.equalToSuperview()
+            $0.centerX.centerY.equalTo(mogakCategoryView)
         })
     }
     
@@ -966,8 +1000,8 @@ extension JogakEditViewController {
 extension JogakEditViewController {
     // 조각 수정
     func editJogak() {
-        //let jogakId = currentJogakId
-        let jogakId = 18
+        let jogakId = currentJogakId
+        //let jogakId = 18
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
         let isRoutine = toggleButton.isOn
         let days: [String]?

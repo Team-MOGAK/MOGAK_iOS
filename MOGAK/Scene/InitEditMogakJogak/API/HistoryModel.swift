@@ -89,6 +89,8 @@ struct CreateJogakMainData: Codable {
     let category: String
     let title: String
     let isRoutine: Bool
+    let days: [String]?
+    let achievements: Int
     let startDate: String?
     let endDate: String?
 }

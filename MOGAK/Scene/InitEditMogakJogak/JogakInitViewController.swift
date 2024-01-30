@@ -955,8 +955,8 @@ extension JogakInitViewController {
 extension JogakInitViewController {
     // 조각 생성
     func createJogak() {
-        //let mogakId = currentMogakId
-        let mogakId = 14
+        let mogakId = currentMogakId
+        //let mogakId = 14
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
         let isRoutine = toggleButton.isOn
         let days: [String]?

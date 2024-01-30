@@ -18,7 +18,7 @@ class MogakMainViewController: UIViewController {
     var mogakList: [DetailMogakData] = []
     
     //var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
-    var selectedJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "")
+    var selectedJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], achievements: 0, startDate: "", endDate: "")
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     var jogakList: [JogakDetail] = []
     let mogakNetwork = MogakDetailNetwork.shared
@@ -306,7 +306,16 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
             let jogakEditVC = JogakEditViewController()
             jogakEditVC.delegate = self
             jogakEditVC.currentJogak = self.selectedJogak
+            jogakEditVC.currentJogakId = self.selectedJogak.jogakID
             jogakEditVC.jogakDetailTextField.text = self.selectedJogak.title
+            
+            jogakEditVC.mogakCategoryView.backgroundColor = UIColor(hex: "\(String(describing: self.selectedMogak.color!))")
+            jogakEditVC.mogakCategoryView.alpha = 0.1
+            jogakEditVC.mogakCategoryLabel.text = self.selectedMogak.bigCategory.name
+            jogakEditVC.mogakCategoryLabel.textColor = UIColor(hex: "\(String(describing: self.selectedMogak.color!))").withAlphaComponent(1.0)
+            //jogakEditVC.mogakCategoryLabel.textColor = .black
+            jogakEditVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
+            //jogakEditVC.mogakCategoryLabel.alpha = 5.0
             self.navigationController?.pushViewController(jogakEditVC, animated: true)
         }
     }
@@ -351,7 +360,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 jogakInitVC.mogakCategoryLabel.textColor = UIColor(hex: "\(String(describing: selectedMogak.color!))")
                 jogakInitVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
                 jogakInitVC.mogakCategoryLabel.alpha = 1.0
-                
+                jogakInitVC.currentMogakId = selectedMogak.mogakId
                 jogakInitVC.delegate = self
                 self.navigationController?.pushViewController(jogakInitVC, animated: true)
             }
