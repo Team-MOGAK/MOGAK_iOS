@@ -51,6 +51,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }()
     
     let selectJogakModal = SelectJogakModal()
+    var isRoutine = Bool()
     
 //MARK: - @objc
     @objc func ButtonClicked(){
@@ -64,7 +65,8 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         setroutine.modalPresentationStyle = .formSheet
         desetroutine.modalPresentationStyle = .formSheet
         
-        if cellImage.image == UIImage(named: "emptySquareCheckmark"){
+        //if cellImage.image == UIImage(named: "emptySquareCheckmark"){
+        if isRoutine == false{
             parentViewController.present(desetroutine,animated: true)
         
             desetroutine.jogaktitleLabel.text = cellLabel.text

@@ -167,6 +167,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         
+        printFirstAndLastDateOfMonth()
+        
         self.ScheduleTableView.reloadData()
         
         
@@ -211,6 +213,37 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         startButton.isHidden = !isToday
         
     }
+    //MARK: - 해당 월의 첫날, 마지막날 계산
+    
+    func firstDateOfMonth() -> Date? {
+        let components = Calendar.current.dateComponents([.year, .month], from: calendarView.currentPage)
+        return Calendar.current.date(from: components)
+    }
+    
+    // 현재 선택된 월의 마지막 날을 가져오는 함수
+    func lastDateOfMonth() -> Date? {
+        guard let firstDate = firstDateOfMonth() else { return nil }
+        return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: firstDate)
+    }
+    
+    // 예시에서 사용하는 함수
+    func printFirstAndLastDateOfMonth() {
+        if let firstDate = firstDateOfMonth(), let lastDate = lastDateOfMonth() {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            let firstDay = dateFormatter.string(from: firstDate)
+            let lastDay = dateFormatter.string(from: lastDate)
+            
+            print("첫 번째 날: \(firstDay)")
+            print("마지막 날: \(lastDay)")
+            
+            getJogakMonth(startDay: firstDay, endDay: lastDay)
+        } else {
+            print("날짜를 가져올 수 없습니다.")
+        }
+    }
+    
     //MARK: - 날짜에 이벤트 dots
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         
@@ -268,7 +301,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         upperView.snp.makeConstraints{
             $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(calendarView.snp.bottom)
+            $0.bottom.equalTo(calendarView.snp.bottom).offset(8)
         }
         
         underView.snp.makeConstraints{
@@ -289,7 +322,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         blankLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(10)
+            $0.centerY.equalToSuperview().offset(30)
         }
         
         makeModalArt.snp.makeConstraints{
@@ -365,9 +398,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         })
     }
     
-    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, isAchivement : Bool)] = []
+    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, isAchivement : Bool, isRoutine : Bool)] = []
     
-//MARK: - 일일 조각 API
+    //MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
         Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
             switch result {
@@ -377,9 +410,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                     for jogakDailyCheck in jogakDailyChecks {
                         let result = jogakDailyCheck.result
                         for dailyJogak in result.dailyJogaks {
-                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, isAchivement : dailyJogak.isAchievement))
+                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
                         }
-                        print("일일 조각 리스트 : ",self.dailyInfo)
+                        //print("일일 조각 리스트 : ",self.dailyInfo)
                     }
                     self.ScheduleTableView.reloadData()
                 } else {
@@ -392,30 +425,43 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         
     }
-//MARK: - 조각 실패 API
+    //MARK: - 조각 실패 API
     func CheckJogakFail(dailyJogakId : Int){
         Apinetwork.getJogakFail(dailyJogakId: dailyJogakId){ result in
             switch result{
-            case.success(let jogakfail):
-                print(jogakfail as Any)
+            case.success(_):
+                return //print(jogakfail as Any)
             case.failure(let error):
                 print("jogakFail error",error)
             }
         }
     }
-//MARK: - 조각 성공 API
+    //MARK: - 조각 성공 API
     func CheckJogakSuccess(dailyJogakId : Int){
         Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
             switch result{
-            case.success(let jogakSuccess):
-                print(jogakSuccess as Any)
+            case.success(_):
+                 return //print(jogakSuccess as Any)
             case.failure(let error):
                 print("jogakFail error",error)
             }
         }
     }
+    //MARK: - 월간 조각 조회
+    func getJogakMonth(startDay : String, endDay : String){
+        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
+            switch result{
+            case.success(let jogakMonth):
+                //let jogakResult = jogakMonth.result
+                print(jogakMonth)
+            case.failure(let error):
+                print("jogakMonthFail",error)
+            }
+            
+        }
+    }
     
-    //MARK: - @objc
+    //MARK: - @objc func
     @objc func tapToggleButton(){
         if self.calendarView.scope == .month {
             self.calendarView.setScope(.week, animated: true)
@@ -465,6 +511,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         print("timer setRoutie")
     }
+    //MARK: - 날짜 이동 함수
     
     @objc func tapNextWeek(_ sender : UIButton){
         if calendarView.scope == .week {
@@ -474,6 +521,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             let nextDate = Calendar.current.date(byAdding: .month, value: 1, to: calendarView.currentPage)
             calendarView.setCurrentPage(nextDate!, animated: true)
             headerLabel.text = headerDataFormatter.string(from: nextDate!)
+            
+            printFirstAndLastDateOfMonth()
             print("TapNextMonth")
         }
     }
@@ -487,6 +536,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             let previousDate = Calendar.current.date(byAdding: .month, value: -1, to: calendarView.currentPage)
             calendarView.setCurrentPage(previousDate!, animated: true)
             headerLabel.text = headerDataFormatter.string(from: previousDate!)
+            
+            printFirstAndLastDateOfMonth()
             print("TapBeforeMonth")
         }
     }
@@ -544,7 +595,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
             cell.cellImage.image = UIImage(named: "squareCheckmark")
             Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n오늘 조각을 완료하셨군요!"
             
-            print(dailyInfo[indexPath.row].jogaktitle ,dailyInfo[indexPath.row].dailyjogakId,"조각 성공")
+            //print(dailyInfo[indexPath.row].jogaktitle ,dailyInfo[indexPath.row].dailyjogakId,"조각 성공")
             
             CheckJogakSuccess(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
             
@@ -567,18 +618,18 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         }
     }
     
-//    @objc func dataReceived(_ notification : Notification){
-//        if let text = notification.object as? String{
-//            
-//            print("Received text: \(text)")
-//            
-//            if let indexPath = ScheduleTableView.indexPathForSelectedRow {
-//                let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell
-//                cell?.recodelabel?.text = text
-//                
-//            }
-//        }
-//    }
+    //    @objc func dataReceived(_ notification : Notification){
+    //        if let text = notification.object as? String{
+    //
+    //            print("Received text: \(text)")
+    //
+    //            if let indexPath = ScheduleTableView.indexPathForSelectedRow {
+    //                let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell
+    //                cell?.recodelabel?.text = text
+    //
+    //            }
+    //        }
+    //    }
     
     //MARK: - Cell Selction
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -624,24 +675,22 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         guard let cell = ScheduleTableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else {return UITableViewCell()} //셀 재사용
         
         let jogakTitle = dailyInfo[indexPath.row].jogaktitle
-        let jogakdailyJogakId = dailyInfo[indexPath.row].dailyjogakId
         cell.cellLabel.text = jogakTitle
+        let isRoutine = dailyInfo[indexPath.row].isRoutine
+        
+        cell.isRoutine = isRoutine
         
         //isAchivement 처리
         if dailyInfo[indexPath.row].isAchivement == true{ //true로 변경
             cell.cellImage.image = UIImage(named: "squareCheckmark")
-            CheckJogakSuccess(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
-            print(jogakTitle,jogakdailyJogakId,"조각 성공")
             
         }else{
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
-            CheckJogakFail(dailyJogakId: jogakdailyJogakId)
-            print(jogakTitle,jogakdailyJogakId,"조각 실패")
         }
         
         
         cell.contentView.backgroundColor = .white
-        cell.selectionStyle = .none //클릭시 화면 안바뀜
+        cell.selectionStyle = .none
         cell.backgroundColor = .clear
         cell.contentView.layer.cornerRadius = 10
         cell.contentView.layer.masksToBounds = true
