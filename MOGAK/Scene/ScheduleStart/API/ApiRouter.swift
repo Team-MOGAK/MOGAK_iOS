@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MTkwNjYxLCJleHAiOjE3MDcxOTc4NjF9.wMFf1dp6wsaW1XMDuqkBjJUot0aNwDcv0oV4Mj8i1-s"
+let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MjE0NzYzLCJleHAiOjE3MDcyMjE5NjN9.vG0GDgQSJv9znIH9zE7ElwhpSiyeWnk6oEVy3AlBduw"
 
 let BaseURL = "https://mogak.shop:8080"
 
@@ -58,7 +58,8 @@ enum ApiRouter : URLRequestConvertible{
     //헤더
     var headers: HTTPHeaders {
         switch self {
-        default: return HTTPHeaders(["accept":"application/json", "Authorization" : Accesstoken])
+        //default: return HTTPHeaders(["accept":"application/json", "Authorization" : Accesstoken])
+        default: return HTTPHeaders(["accept":"application/json"])
         }
     }
     
@@ -82,6 +83,7 @@ enum ApiRouter : URLRequestConvertible{
         var url = BaseURL.appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
+        
         var request = URLRequest(url: urlString)
         request.method = method
         request.headers = headers
@@ -108,7 +110,11 @@ enum ApiRouter : URLRequestConvertible{
         case .getJogakMonth:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         }
+        //request = try URLEncoding.queryString.encode(request, with: parameters)
+        //이 인코딩 방식은 GET 요청 또는 URL 쿼리 매개변수를 전송할 때 사용
         
+        //request = try JSONParameterEncoder().encode(data, into: request)
+        //이 인코딩 방식은 주로 POST 요청에서 사용되며, HTTP 요청 바디에 JSON 데이터를 넣어 전송할 때 사용
         return request
     }
 }

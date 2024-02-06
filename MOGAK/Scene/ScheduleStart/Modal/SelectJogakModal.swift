@@ -137,7 +137,7 @@ class SelectJogakModal : UIViewController{
     struct MogakJogak {
         var mogaktitle: String
         var mogakcolor: String
-        var jogakList: [(title: String, isAlreadyAdded: Bool, jogakID : Int)]
+        var jogakList: [(title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)]
     }
     
     var tableViewData = [MogakJogak]()
@@ -158,14 +158,14 @@ class SelectJogakModal : UIViewController{
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
         
-        tableViewData = [MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false ,jogakID: 0)])]
+        tableViewData = [MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false, jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false,isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
+                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)])]
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -265,7 +265,7 @@ class SelectJogakModal : UIViewController{
                     self.MogakTableView.reloadData()
                     self.tableViewData = mogakDataArray.map { mogakData in
                         
-                        return MogakJogak(mogaktitle: mogakData.title, mogakcolor: mogakData.color ?? "", jogakList: [(title: "1", isAlreadyAdded: false, jogakID : 0)])
+                        return MogakJogak(mogaktitle: mogakData.title, mogakcolor: mogakData.color ?? "", jogakList: [(title: "1", isAlreadyAdded: false,isRoutine: false, jogakID : 0)])
                     }
                     for (index, mogakData) in mogakDataArray.enumerated() {
                         
@@ -298,7 +298,8 @@ class SelectJogakModal : UIViewController{
                             
                             let isAlreadyAddedValue = jogakDataItem.isAlreadyAdded
                             let JogakIdValue = jogakDataItem.jogakID
-                            self.tableViewData[mogakDataIndex].jogakList.append((title: jogakDataItem.title, isAlreadyAdded: isAlreadyAddedValue,jogakID : JogakIdValue))
+                            let isRoutineValue = jogakDataItem.isRoutine
+                            self.tableViewData[mogakDataIndex].jogakList.append((title: jogakDataItem.title, isAlreadyAdded: isAlreadyAddedValue, isRoutine: isRoutineValue, jogakID : JogakIdValue))
                         }
                         
                     }
@@ -352,7 +353,7 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
         guard section < tableViewData.count else {
-            MogakTableView.reloadData() //이거 안하면 테이블뷰 오류나요ㅠㅠㅠㅠㅠ ㅅ,ㅣ발
+            MogakTableView.reloadData() //이거 안하면 테이블뷰 오류나요ㅠㅠㅠㅠㅠ ㅅㅣ발
             return UITableViewCell()
         }
         
@@ -419,7 +420,6 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
                 
                 for jogakID in jogakCell.clickedJogakIdList {
                     self?.getAddJogakDaily(id: jogakID)
-                    print("Clicked Jogak ID in addJogak closure: \(jogakID)")
                     
                 }
             }
@@ -603,14 +603,14 @@ class JogakTableViewCell : UITableViewCell{
     var clickedJogakIdList = [Int]()
     
     //MARK: - 조각 라벨 설정
-    func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, jogakID : Int)) {
+    func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool,isRoutine: Bool, jogakID : Int)) {
         JogakLabel.text = jogakData.title
         clickedJogakId = jogakData.jogakID
         
-        print(jogakData.title, jogakData.isAlreadyAdded, jogakData.jogakID)
+        print(jogakData.title, jogakData.isAlreadyAdded,jogakData.isRoutine, jogakData.jogakID)
         
-        //이미 일일 조각에 추가가 되어있을 경우
-        if jogakData.isAlreadyAdded == true {
+        //이미 일일 조각에 추가가 되어있을 경우 || == or
+        if (jogakData.isAlreadyAdded || jogakData.isRoutine) == true{
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
         } else {
             JogakimageView.image = UIImage(systemName: "square")
@@ -622,11 +622,9 @@ class JogakTableViewCell : UITableViewCell{
             }
         }
         
-        //클릭한 배열 안에 있을때
-        
-        
-        JogakimageView.isUserInteractionEnabled = !jogakData.isAlreadyAdded
-        JogakLabel.isUserInteractionEnabled = !jogakData.isAlreadyAdded
+
+        JogakimageView.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
+            JogakLabel.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
     }
     
     //MARK: - jogakLabel 클릭시 이벤트
