@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA2NTk4NjkyLCJleHAiOjE3MDY2MDU4OTJ9.j_xiPxRFhIjnvwcebBxSbLfF6BLq-lWEdbj15ANEjos"
+let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MTkwNjYxLCJleHAiOjE3MDcxOTc4NjF9.wMFf1dp6wsaW1XMDuqkBjJUot0aNwDcv0oV4Mj8i1-s"
 
 let BaseURL = "https://mogak.shop:8080"
 
@@ -17,7 +17,7 @@ enum ApiRouter : URLRequestConvertible{
     case getModalartList                                    //모다라트 리스트 조회
     case detailModalart(modaratId: Int)                      //모다라트 디테일
     case getDetailMogakData(modaratId: Int)                 //모각 데이터 조회
-    case getJogakList(mogakId : Int)                        // 조각  조회
+    case getJogakList(mogakId : Int, DailyDate : String)       // 조각  조회
     case JogakSuccess(dailyJogakId : Int)                          //조각 성공
     case JogakFail(dailyJogakId : Int)                       //조각 실패
     case getJogakDailyCheck(DailyDate : String)             //일별 조각 조회
@@ -36,12 +36,12 @@ enum ApiRouter : URLRequestConvertible{
             return "/api/modarats/\(modaratId)"
         case .getDetailMogakData(let modaratId):
             return "/api/modarats/\(modaratId)/mogaks"
-        case .getJogakList(let mogakId):
-            return "/api/modarats/mogaks/\(mogakId)/jogaks"
+        case .getJogakList(let mogakId, let DailyDate):
+            return "/api/modarats/mogaks/\(mogakId)/jogaks?date=" + DailyDate
         case .JogakSuccess(let dailyJogakId):
             return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/success"
         case .getJogakDailyCheck(let DailyDate):
-            return "/api/modarats/mogaks/jogaks/day?day=" + DailyDate
+            return "/api/modarats/mogaks/jogaks/day?date=" + DailyDate
 //        case .makePost(let mogakId):
 //            return "/api/mogaks/\(mogakId)/posts"
 //        case .addJogakDaily:

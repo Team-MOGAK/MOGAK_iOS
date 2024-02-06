@@ -60,10 +60,10 @@ class ApiNetwork{
     }
     
     //MARK: - 모각에 대응하는 조각 조회
-    func getAllMogakDetailJogaks(mogakId: Int, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
-        AF.request(ApiRouter.getJogakList(mogakId: mogakId))
+    func getAllMogakDetailJogaks(mogakId: Int, DailyDate: String, completionHandler: @escaping(Result<[ScheduleJogakDetail]?, Error>) -> Void) {
+        AF.request(ApiRouter.getJogakList(mogakId: mogakId, DailyDate: DailyDate))
             .validate(statusCode: 200..<300)
-            .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
+            .responseDecodable(of: ScheduleJogakDetailResponse.self) { (response: DataResponse<ScheduleJogakDetailResponse, AFError>) in
                 switch response.result {
                 case .success(let jogakDetailResponse):
                     completionHandler(.success(jogakDetailResponse.result))
@@ -88,10 +88,10 @@ class ApiNetwork{
             }
     }
     //MARK: - 일일 조각 시작
-    func getAddJogakToday(jogakId : Int, completionHandler : @escaping(Result<[JogakAddRoutine]?, Error>)-> Void) {
+    func getAddJogakDaily(jogakId : Int, completionHandler : @escaping(Result<[JogakDailyAdd]?, Error>)-> Void) {
         AF.request(ApiRouter.getAddJogakToday(jogakId: jogakId))
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: JogakAddRoutine.self) { response in
+            .validate(statusCode: 200..<500)
+            .responseDecodable(of: JogakDailyAdd.self) { response in
                 switch response.result {
                 case .success(let jogakAddResponse):
                     completionHandler(.success([jogakAddResponse]))
