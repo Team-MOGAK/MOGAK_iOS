@@ -58,7 +58,7 @@ enum ApiRouter : URLRequestConvertible{
     //헤더
     var headers: HTTPHeaders {
         switch self {
-        //default: return HTTPHeaders(["accept":"application/json", "Authorization" : Accesstoken])
+//        default: return HTTPHeaders(["accept":"application/json", "Authorization" : Accesstoken])
         default: return HTTPHeaders(["accept":"application/json"])
         }
     }
