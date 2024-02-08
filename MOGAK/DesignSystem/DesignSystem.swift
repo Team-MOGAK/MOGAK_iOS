@@ -15,11 +15,15 @@ enum DesignSystemColor {
     case purple
     case skyblue
     case lightGreen
+    case mint
+    case brightmint
     case green //sub color
     case signature //main color
     case signatureBag //main background color
     case red
+    case ruby
     case gray
+    case icongray
     case white
     case gray2 //2
     case gray3 //3 -> disable
@@ -38,24 +42,20 @@ extension DesignSystemColor {
             return UIColor(hex: "11D796")
         case .green:
             return UIColor(hex: "009967")
+        case .brightmint:
+            return UIColor(hex: "E7F9F3")
+        case .mint:
+            return UIColor(hex: "02BE81")
         case .signature:
             return UIColor(hex: "475FFD")
         case .signatureBag:
             return UIColor(hex: "F1F3FA")
         case .red:
             return UIColor(hex: "FF2323")
+        case .ruby:
+            return UIColor(hex: "FF2F2F")
         case .gray:
             return UIColor(hex: "D9D9D9")
-        case .white:
-            return UIColor(hex: "FFFFFF")
-        case .yellow:
-            return UIColor(hex: "F98A08")
-        case .orange:
-            return UIColor(hex: "FF6827")
-        case .purple:
-            return UIColor(hex: "9C31FF")
-        case .skyblue:
-            return UIColor(hex: "21CAFF")
         case .gray2:
             return UIColor(hex: "EEF0F8")
         case .gray3:
@@ -68,6 +68,18 @@ extension DesignSystemColor {
             return UIColor(hex: "24252E")
         case .black:
             return UIColor(hex: "000000")
+        case .icongray:
+            return UIColor(hex: "6E707B")
+        case .white:
+            return UIColor(hex: "FFFFFF")
+        case .yellow:
+            return UIColor(hex: "F98A08")
+        case .orange:
+            return UIColor(hex: "FF6827")
+        case .purple:
+            return UIColor(hex: "9C31FF")
+        case .skyblue:
+            return UIColor(hex: "21CAFF")
         }
     }
 }
@@ -93,7 +105,7 @@ extension DesignSystemFont {
         case .bold22L100:
             return UIFont.pretendard(.bold, size: 22)
         case .semibold20L140:
-            return UIFont.pretendard(.semiBold, size: 20)
+            return UIFont.pretendard(.semiBold, size: 22)
         case .semibold18L100:
             return UIFont.pretendard(.semiBold, size: 18)
         case .medium16L100:

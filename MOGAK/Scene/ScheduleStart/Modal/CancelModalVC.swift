@@ -48,9 +48,6 @@ class ScheduleCancelModalVC : UIViewController{
         keepGoButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
         return keepGoButton
     }()
-    
-     var circularProgressView = CircularProgressView()
-    
      var clicked : (()->())?
     
     //MARK: - viewDidLoad
@@ -58,12 +55,11 @@ class ScheduleCancelModalVC : UIViewController{
         super.viewDidLoad()
         view.backgroundColor = .white
         setUI()
-        circularProgressView.isHidden = true
     }
     
     //MARK: - setUI
     func setUI(){
-        [canceltitleLabel,cancelsubtitleLabel,stopButton,keepGoButton,circularProgressView].forEach{view.addSubview($0)}
+        [canceltitleLabel,cancelsubtitleLabel,stopButton,keepGoButton].forEach{view.addSubview($0)}
         canceltitleLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
             $0.top.equalToSuperview().inset(49)
@@ -95,7 +91,7 @@ class ScheduleCancelModalVC : UIViewController{
     
     @objc func dismissModal(){
         self.dismiss(animated: true){ [self] in
-            circularProgressView.resumeTimer()
+            //circularProgressView.resumeTimer()
         }
     }
     

@@ -12,8 +12,9 @@ pod 'Alamofire'
 pod 'ReusableKit'
 pod 'FSCalendar'
 pod 'Kingfisher', '~> 5.0'
+pod "BSImagePicker", "~> 3.3.1"
 pod 'SwiftyJSON', '~> 4.0'
-
+pod 'ExpyTableView'
 
 post_install do |installer|
     installer.pods_project.targets.each do |target|
