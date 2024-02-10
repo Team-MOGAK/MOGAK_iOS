@@ -972,7 +972,7 @@ extension JogakInitViewController {
             createJogakToday = dateFormatter.string(from: today)//"2023-12-29"
             createJogakEndDate = endDate
         } else {
-            days = nil
+            days = []
             createJogakToday = nil
             createJogakEndDate = nil
         }

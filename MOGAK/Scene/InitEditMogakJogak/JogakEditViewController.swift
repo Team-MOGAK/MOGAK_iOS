@@ -300,6 +300,15 @@ class JogakEditViewController: UIViewController {
             self.view.layoutIfNeeded()
         } else {
             print(self.currentJogak.days)
+            /**테스트**/
+            //selectedRepeatIndexPaths.insert([0,0])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
+                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
+                
+                self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
+                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
+            }
             
             if !(self.currentJogak.days == nil) {
                 let days: [String] = self.currentJogak.days!
@@ -674,6 +683,7 @@ extension JogakEditViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print("INDEXPATH: \(indexPath)")
         let cell = collectionView.dequeue(Reusable.repeatCell, for: indexPath)
         cell.textLabel.text = routineRepeatList[indexPath.item]
         return cell
@@ -682,7 +692,10 @@ extension JogakEditViewController: UICollectionViewDataSource {
 
 extension JogakEditViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
+        print("TESTTESTTESTTESTESTEST")
+        //let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
+        guard let selectedCell = collectionView.cellForItem(at: indexPath) as? RepeatCell else {print("INDEXPATH: \(indexPath)")
+        return}
         
         // 이미 선택된 셀인지 확인
         if selectedRepeatIndexPaths.contains(indexPath) {
