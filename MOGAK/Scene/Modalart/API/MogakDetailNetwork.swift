@@ -10,8 +10,8 @@ import Alamofire
 
 class MogakDetailNetwork: NSObject {
     static let shared = MogakDetailNetwork()
-    func getAllMogakDetailJogaks(mogakId: Int, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
-        AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId), interceptor: CommonLoginManage())
+    func getAllMogakDetailJogaks(mogakId: Int, date: String, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
+        AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId, date), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
                 switch response.result {

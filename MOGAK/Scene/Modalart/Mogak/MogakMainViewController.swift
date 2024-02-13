@@ -166,7 +166,7 @@ extension MogakMainViewController {
     func getMogakDetail(_ mogakData: DetailMogakData) {
         ///유저 액션 막기
         self.view.isUserInteractionEnabled = false
-        mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId) { result in
+        mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: "") { result in
             self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):

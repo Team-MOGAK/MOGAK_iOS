@@ -313,7 +313,7 @@ extension ModalartMainViewController {
     //MARK: - 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
         self.view.isUserInteractionEnabled = false
-        mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId) { result in
+        mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: "") { result in
             self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):

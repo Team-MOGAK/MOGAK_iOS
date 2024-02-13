@@ -9,13 +9,13 @@ import Foundation
 import Alamofire
 
 enum MogakDetailRouter: URLRequestConvertible {
-    case getAllMogakDetailJogaks(_ mogakId: Int)
+    case getAllMogakDetailJogaks(_ mogakId: Int, _ date: String)
     case deleteMogak(_mogakId: Int)
     case deleteJogak(_ jogakId: Int)
     
     var endPoint: String {
         switch self {
-        case .getAllMogakDetailJogaks(let mogakId):
+        case .getAllMogakDetailJogaks(let mogakId, let date):
             return "api/modarats/mogaks/\(mogakId)/jogaks"
         case .deleteMogak(let mogakId):
             return "api/modarats/mogaks/\(mogakId)"
@@ -28,8 +28,8 @@ enum MogakDetailRouter: URLRequestConvertible {
     var headers: HTTPHeaders {
         
         switch self {
-        default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
-//        default: return HTTPHeaders(["accept":"application/json"])
+//        default: return HTTPHeaders(["accept":"application/json", "Authorization" : accesstoken])
+        default: return HTTPHeaders(["accept":"application/json"])
         }
     }
     
