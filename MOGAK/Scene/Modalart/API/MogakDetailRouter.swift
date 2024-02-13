@@ -16,7 +16,7 @@ enum MogakDetailRouter: URLRequestConvertible {
     var endPoint: String {
         switch self {
         case .getAllMogakDetailJogaks(let mogakId, let date):
-            return "api/modarats/mogaks/\(mogakId)/jogaks"
+            return "api/modarats/mogaks/\(mogakId)/jogaks?date=\(date)"
         case .deleteMogak(let mogakId):
             return "api/modarats/mogaks/\(mogakId)"
         case .deleteJogak(let jogakId):
