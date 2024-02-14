@@ -13,7 +13,7 @@ class MogakMainViewController: UIViewController {
     //MARK: - properties
     var mogakList: [DetailMogakData] = []
     
-    var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
+    var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     var jogakList: [JogakDetail] = []
     let mogakNetwork = MogakDetailNetwork.shared
     let modalartNetwork = ModalartNetwork.shared
@@ -333,8 +333,11 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
     func checkEmptyCell(_ row: Int, _ jogakCell: JogakCell, _ emptyJogakCell: EmptyJogakCell, _ isRoutineJogakCell: IsRoutineJogakCell) -> UICollectionViewCell {
         print(#fileID, #function, #line, "- mogakData.count⭐️: \(jogakList.count)")
         if (jogakList.count > row && row < 4) { //0, 1, 2, 3 row
+            print(#fileID, #function, #line, "- jogakList[row]: \(jogakList[row])")
             if jogakList[row].isRoutine {
-                if let days = jogakList[row].days {
+                guard let days = jogakList[row].days else { return UICollectionViewCell() }
+                
+                if !days.isEmpty {
                     isRoutineJogakCell.goalRepeatDayLabelText = days.joined(separator: ",")
                 } else {
                     isRoutineJogakCell.goalRepeatDayLabelText = "0회"
@@ -350,7 +353,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 } else {
                     jogakCell.goalRepeatDayLabelText = "0회"
                 }
-
+                
                 jogakCell.goalContentLabelText = jogakList[row].title
                 jogakCell.goalCategoryLabelTextColor = selectedMogak.color ?? "475FFD"
                 jogakCell.cellDataSetting()

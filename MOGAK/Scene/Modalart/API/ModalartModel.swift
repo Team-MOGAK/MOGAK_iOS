@@ -92,15 +92,14 @@ struct DetailMogak: Codable {
 // MARK: - Mogak
 struct DetailMogakData: Codable {
     let mogakId: Int
-    let title, state: String
+    let title: String
     let bigCategory: MainCategory
     let smallCategory: String?
     let color: String?
-    let startAt, endAt: String?
     
     enum CodingKeys : String, CodingKey {
         case mogakId = "id"
-        case title, state, bigCategory, smallCategory, color, startAt, endAt
+        case title, bigCategory, smallCategory, color
     }
 }
 
