@@ -972,8 +972,14 @@ extension JogakInitViewController {
             createJogakToday = dateFormatter.string(from: today)//"2023-12-29"
             createJogakEndDate = endDate
         } else {
-            days = []
-            createJogakToday = nil
+            //days = []
+            days = nil
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            createJogakToday = dateFormatter.string(from: today)
+            //createJogakToday = nil
             createJogakEndDate = nil
         }
 

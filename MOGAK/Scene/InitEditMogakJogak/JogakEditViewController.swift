@@ -267,9 +267,11 @@ class JogakEditViewController: UIViewController {
         let dateFormatter2 = DateFormatter()
         dateFormatter.dateFormat = "yyyy/M/d(EEE)"
         dateFormatter2.dateFormat = "yyyy-MM-dd"
-        let currentDateDate = dateFormatter2.date(from: currentJogak.endDate!)
-        let currentDateStr = dateFormatter.string(from: currentDateDate!)
-        endTextField.text = currentDateStr
+        
+        if let endDate = currentJogak.endDate, let currentDateDate = dateFormatter2.date(from: endDate) {
+            let currentDateStr = dateFormatter.string(from: currentDateDate)
+            endTextField.text = currentDateStr
+        }
         
         if !toggleButton.isOn {
             [endNextButton, endHeaderTitle, endPreviousButton, calendar].forEach({$0.isHidden = true})
@@ -302,44 +304,48 @@ class JogakEditViewController: UIViewController {
             print(self.currentJogak.days)
             /**테스트**/
             //selectedRepeatIndexPaths.insert([0,0])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
-                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
-                
-                self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
-                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//                self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
+//                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
+//                
+//                self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
+//                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
+//            }
             
-            if !(self.currentJogak.days == nil) {
-                let days: [String] = self.currentJogak.days!
-                for day in days {
-                    switch day {
-                    case "MONDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
-                    case "TUESDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
-                    case "WEDNESDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 2], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 2, section: 0))
-                    case "THURSDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 3], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 3, section: 0))
-                    case "FRIDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 4], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 4, section: 0))
-                    case "SATURDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 5], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 5, section: 0))
-                    case "SUNDAY":
-                        routineRepeatCollectionView.selectItem(at: [0, 6], animated: false, scrollPosition: .init())
-                        collectionView(routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 6, section: 0))
-                    default:
-                        break
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                if !(self.currentJogak.days == nil) {
+                    let days: [String] = self.currentJogak.days!
+                    for day in days {
+                        switch day {
+                        case "MONDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
+                        case "TUESDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
+                        case "WEDNESDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 2], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 2, section: 0))
+                        case "THURSDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 3], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 3, section: 0))
+                        case "FRIDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 4], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 4, section: 0))
+                        case "SATURDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 5], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 5, section: 0))
+                        case "SUNDAY":
+                            self.routineRepeatCollectionView.selectItem(at: [0, 6], animated: false, scrollPosition: .init())
+                            self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 6, section: 0))
+                        default:
+                            break
+                        }
                     }
                 }
             }
+            
+            
             
         }
         
@@ -1017,6 +1023,7 @@ extension JogakEditViewController {
         //let jogakId = 18
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
         let isRoutine = toggleButton.isOn
+        print("ISBUTTONISBUTTON: \(toggleButton.isOn)")
         let days: [String]?
         let createJogakEndDate: String?
         
