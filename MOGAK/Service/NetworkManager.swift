@@ -10,12 +10,12 @@ import Alamofire
 
 class NetworkManager {
     static let shared = NetworkManager()
-    private let baseURL = "http://43.200.36.231:8080"
+    private let baseURL = "https://mogak.shop:8081"
     
     private init() { }
     
     // MARK: - get
-    func get<T: Decodable>(path: String, parameters: [String: Any]? = nil, completion: @escaping (Result<T, AFError>) -> Void) {
+    func get<T: Decodable>(path: String, parameters: [String: Any]? = nil, completion: @escaping (Swift.Result<T, AFError>) -> Void) {
         let url = baseURL + path
         
         AF.request(url, method: .get, parameters: parameters)
@@ -35,5 +35,4 @@ class NetworkManager {
                 completion(response)
             }
     }
-    
 }

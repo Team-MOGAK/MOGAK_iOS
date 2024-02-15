@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class TabBarViewController: UITabBarController{
     override func viewDidLoad(){
@@ -29,6 +30,7 @@ class TabBarViewController: UITabBarController{
         let mypageTabBarItem = UITabBarItem(title: "마이페이지", image: UIImage(named: "mypage"), selectedImage: UIImage(named: "selectedMypage"))
         
         let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
+        
         homeTabBarItem.imageInsets = insets
         modalArtBarItem.imageInsets = insets
         reportTabBarItem.imageInsets = insets
@@ -119,31 +121,31 @@ class TabBarViewController: UITabBarController{
 
 
 //Preview code
-//#if DEBUG
-//import SwiftUI
-//struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
-//
-//    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-//        // leave this empty
-//    }
-//    @available(iOS 13.0.0, *)
-//    func makeUIViewController(context: Context) -> UIViewController{
-//        TabBarViewController()
-//    }
-//}
-//@available(iOS 13.0, *)
-//struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            if #available(iOS 14.0, *) {
-//                TabBarViewControllerRepresentable()
-//                    .ignoresSafeArea()
-//                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-//                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-//            } else {
-//                // Fallback on earlier versions
-//            }
-//        }
-//
-//    }
-//} #endif
+#if DEBUG
+import SwiftUI
+struct TabBarViewControllerRepresentable: UIViewControllerRepresentable {
+
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+    @available(iOS 13.0.0, *)
+    func makeUIViewController(context: Context) -> UIViewController{
+        TabBarViewController()
+    }
+}
+@available(iOS 13.0, *)
+struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            if #available(iOS 14.0, *) {
+                TabBarViewControllerRepresentable()
+                    .ignoresSafeArea()
+                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
+                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+
+    }
+} #endif
