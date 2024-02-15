@@ -17,7 +17,7 @@ import Alamofire
 class JogakEditViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
     var currentJogakId: Int = 0
-    var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], achievements: 0, startDate: "", endDate: "")
+    var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)
