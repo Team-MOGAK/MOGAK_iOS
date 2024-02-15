@@ -40,6 +40,7 @@
 		4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E49742AFBCBFB00DEB70C /* APIError.swift */; };
 		4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */; };
 		4D9439302ACD54E000864336 /* EmptyMogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */; };
+		4DBEEE7E2B7BDA7800E0B2B1 /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DBEEE7D2B7BDA7800E0B2B1 /* Date+Ext.swift */; };
 		4DD74EE92AD58FC000147E9C /* MogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74EE82AD58FC000147E9C /* MogakCell.swift */; };
 		4DD74EEB2AD5A5D900147E9C /* ModalartMainCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74EEA2AD5A5D900147E9C /* ModalartMainCell.swift */; };
 		4DF224FF2AEBEEB3002FC286 /* ButtonWithMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF224FE2AEBEEB3002FC286 /* ButtonWithMenu.swift */; };
@@ -178,6 +179,7 @@
 		4D7E49742AFBCBFB00DEB70C /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainViewController.swift; sourceTree = "<group>"; };
 		4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyMogakCell.swift; sourceTree = "<group>"; };
+		4DBEEE7D2B7BDA7800E0B2B1 /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
 		4DD74EE82AD58FC000147E9C /* MogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCell.swift; sourceTree = "<group>"; };
 		4DD74EEA2AD5A5D900147E9C /* ModalartMainCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainCell.swift; sourceTree = "<group>"; };
 		4DF224FE2AEBEEB3002FC286 /* ButtonWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithMenu.swift; sourceTree = "<group>"; };
@@ -719,6 +721,7 @@
 				9CCB39D42A9062E600968CDB /* String+Ext.swift */,
 				65F880E72A86B0C7005543C9 /* UIImage+Ext.swift */,
 				4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */,
+				4DBEEE7D2B7BDA7800E0B2B1 /* Date+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -888,6 +891,7 @@
 				9CFA7D1A2A458C91003E80A7 /* Font+Ext.swift in Sources */,
 				9C2EF8082A83D9E700E8C8F4 /* MyPageEditViewController.swift in Sources */,
 				9CE426E52A5A3976001629DC /* OnBoardingFirstViewController.swift in Sources */,
+				4DBEEE7E2B7BDA7800E0B2B1 /* Date+Ext.swift in Sources */,
 				9C638AB02A46DC75002AB791 /* KeyChainService.swift in Sources */,
 				4D725C0E2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift in Sources */,
 				4D72B33E2B331FFA004BF3CE /* UserModel.swift in Sources */,
