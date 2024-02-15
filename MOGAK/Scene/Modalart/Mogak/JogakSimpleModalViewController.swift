@@ -12,7 +12,7 @@ import SnapKit
 class JogakSimpleModalViewController: UIViewController {
     var mogakCategory: String = ""
     let mogakCategoryColor: String = "475FFD"
-    var jogakData: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], achievements: 0, startDate: "", endDate: "")
+    var jogakData: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     
     var startDeleteJogak: (() -> ())? = nil
     private lazy var categoryLabel: CustomPaddingLabel = {

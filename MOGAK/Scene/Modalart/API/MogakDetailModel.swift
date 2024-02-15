@@ -20,10 +20,13 @@ struct JogakDetail: Codable {
     let days: [String]?
     let achievements: Int
     let startDate, endDate: String?
+    let isAlreadyAdded: Bool
+    let achievements: Int
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
-        case mogakTitle, category, title, isRoutine, startDate, endDate, days, achievements
+        case mogakTitle, category, title, isRoutine, startDate, endDate, days
+        case isAlreadyAdded, achievements
     }
 }
 
