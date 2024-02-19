@@ -216,6 +216,7 @@ class JogakEditViewController: UIViewController {
     }()
     
     private let endHeaderTitle = UILabel().then {
+        //$0.text = "\()년 \()월"
         $0.text = "2023년 8월"
         $0.textColor = UIColor(hex: "24252E")
         $0.font = UIFont.pretendard(.semiBold, size: 18)
@@ -527,6 +528,11 @@ class JogakEditViewController: UIViewController {
             $0.centerX.equalToSuperview().offset(-60)
             $0.width.height.equalTo(16)
         })
+        
+        let currentCalendar = Calendar.current
+        let currentYear = currentCalendar.component(.year, from: today)
+        let currentMonth = currentCalendar.component(.month, from: today)
+        endHeaderTitle.text = "\(currentYear)년 \(currentMonth)월"
         
         endHeaderTitle.snp.makeConstraints({
             $0.centerY.equalTo(self.endPreviousButton.snp.centerY)

@@ -460,6 +460,11 @@ class JogakInitViewController: UIViewController {
             $0.leading.equalTo(self.endPreviousButton.snp.trailing).offset(4)
         })
         
+        let currentCalendar = Calendar.current
+        let currentYear = currentCalendar.component(.year, from: today)
+        let currentMonth = currentCalendar.component(.month, from: today)
+        endHeaderTitle.text = "\(currentYear)년 \(currentMonth)월"
+        
         endNextButton.snp.makeConstraints({
             $0.centerY.equalTo(self.endPreviousButton.snp.centerY)
             $0.leading.equalTo(self.endHeaderTitle.snp.trailing).offset(4)
