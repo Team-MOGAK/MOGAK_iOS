@@ -303,7 +303,11 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 let row = indexPath.row
                 let bottomSheetVC = JogakSimpleModalViewController()
                 bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
+                if row == 4 {
+                    return
+                }
                 let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
+                
                 bottomSheetVC.jogakData = jogakData
                 
                 if let sheet = bottomSheetVC.sheetPresentationController {
