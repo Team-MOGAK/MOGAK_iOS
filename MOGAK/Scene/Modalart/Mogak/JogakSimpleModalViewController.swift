@@ -171,23 +171,9 @@ class JogakSimpleModalViewController: UIViewController {
     
     
     @objc func deleteBtnTapped() {
-        let bottomSheetVC = AskDeleteModal()
-        if let sheet = bottomSheetVC.sheetPresentationController {
-            if #available(iOS 16.0, *) {
-                sheet.detents = [.custom() { context in
-                    return 239
-                }]
-            } else {
-                sheet.detents = [.medium()]
-            }
-            sheet.prefersGrabberVisible = true
-        }
-        bottomSheetVC.startDelete = {
-            guard let startDeleteJogak = self.startDeleteJogak else { return }
-            startDeleteJogak()
-        }
         self.dismiss(animated: true)
-        self.present(bottomSheetVC, animated: true)
+        guard let startDeleteJogak = self.startDeleteJogak else { return }
+        startDeleteJogak()
     }
     
     @objc func editBtnTapped() {
