@@ -19,6 +19,7 @@ class MogakMainViewController: UIViewController {
     
     var selectedJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
+    
     var jogakList: [JogakDetail] = []
     let mogakNetwork = MogakDetailNetwork.shared
     let modalartNetwork = ModalartNetwork.shared
@@ -111,21 +112,7 @@ class MogakMainViewController: UIViewController {
             if self.mogakList.isEmpty {
                 return
             } else {
-                let bottomSheetVC = AskDeleteModal()
-                if let sheet = bottomSheetVC.sheetPresentationController {
-                    if #available(iOS 16.0, *) {
-                        sheet.detents = [.custom() { context in
-                            return 239
-                        }]
-                    } else {
-                        sheet.detents = [.medium()]
-                    }
-                    sheet.prefersGrabberVisible = true
-                }
-                bottomSheetVC.startDelete = {
-                    self.deleteMogak()
-                }
-                self.present(bottomSheetVC, animated: true)
+                self.showAskDeleteModal(false)
             }
         }
         
@@ -141,7 +128,29 @@ class MogakMainViewController: UIViewController {
     }
     
    
-    
+    func showAskDeleteModal(_ isJogakDelete: Bool, _ jogakId: Int? = nil) {
+        let bottomSheetVC = AskDeleteModal()
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            if #available(iOS 16.0, *) {
+                sheet.detents = [.custom() { context in
+                    return 239
+                }]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            sheet.prefersGrabberVisible = true
+        }
+        if isJogakDelete {
+            guard let jogakId = jogakId else { return }
+            self.deleteJogak(jogakId)
+        } else {
+            bottomSheetVC.startDelete = {
+                self.deleteMogak()
+            }
+        }
+        
+        self.present(bottomSheetVC, animated: true)
+    }
 }
 
 extension MogakMainViewController {
@@ -326,28 +335,48 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
             guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
             if cellType != EmptyJogakCell.identifier {
                 let row = indexPath.row
-                let bottomSheetVC = JogakSimpleModalViewController()
-                bottomSheetVC.editBtn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
-                bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
-                let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
-                bottomSheetVC.jogakData = jogakData
-                selectedJogak = jogakData
                 
-                if let sheet = bottomSheetVC.sheetPresentationController {
-                    if #available(iOS 16, *) {
-                        sheet.detents = [.custom() { context in
-                            let bottomHeight = jogakData.isRoutine ? 238 : 200
-                            return CGFloat(bottomHeight)
-                        }]
-                    } else {
-                        sheet.detents = [.medium()]
+                //중앙 모각
+                if row == 4 {
+                    let bottomSheetVC = MogakMainBottomModalViewController()
+                    bottomSheetVC.selectedMogak = self.selectedMogak
+                    if let sheet = bottomSheetVC.sheetPresentationController {
+                        if #available(iOS 16, *) {
+                            sheet.detents = [.custom() { context in
+                                return 200
+                            }]
+                        } else {
+                            sheet.detents = [.medium()]
+                        }
+                        sheet.prefersGrabberVisible = true
                     }
-                    sheet.prefersGrabberVisible = true
+                    bottomSheetVC.startDeleteJogak = {
+                        self.showAskDeleteModal(false)
+                    }
+                    self.present(bottomSheetVC, animated: true)
+                    
+                } else {
+                    let bottomSheetVC = JogakSimpleModalViewController()
+                    bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
+                    let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
+                    bottomSheetVC.jogakData = jogakData
+                    
+                    if let sheet = bottomSheetVC.sheetPresentationController {
+                        if #available(iOS 16, *) {
+                            sheet.detents = [.custom() { context in
+                                let bottomHeight = jogakData.isRoutine ? 238 : 200
+                                return CGFloat(bottomHeight)
+                            }]
+                        } else {
+                            sheet.detents = [.medium()]
+                        }
+                        sheet.prefersGrabberVisible = true
+                    }
+                    bottomSheetVC.startDeleteJogak = {
+                        self.showAskDeleteModal(true, jogakData.jogakID)
+                    }
+                    self.present(bottomSheetVC, animated: true)
                 }
-                bottomSheetVC.startDeleteJogak = {
-                    self.deleteJogak(jogakData.jogakID)
-                }
-                self.present(bottomSheetVC, animated: true)
             }
             else {
                 // 빈 조각 셀 선택 시
