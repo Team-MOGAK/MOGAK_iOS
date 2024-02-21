@@ -1042,7 +1042,8 @@ extension JogakEditViewController {
             createJogakEndDate = endDate
         } else {
             days = nil
-            createJogakEndDate = nil
+            //createJogakEndDate = nil
+            createJogakEndDate = "9999-09-09"
         }
 
         
