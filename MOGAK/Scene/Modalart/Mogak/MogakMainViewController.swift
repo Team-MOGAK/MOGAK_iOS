@@ -357,9 +357,11 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     
                 } else {
                     let bottomSheetVC = JogakSimpleModalViewController()
+                    bottomSheetVC.editBtn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
                     bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
                     let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
                     bottomSheetVC.jogakData = jogakData
+                    selectedJogak = jogakData
                     
                     if let sheet = bottomSheetVC.sheetPresentationController {
                         if #available(iOS 16, *) {
