@@ -56,7 +56,7 @@ class JogakCell: UICollectionViewCell {
         self.goalRepeatDayLabel.textColor = UIColor(hex: goalCategoryLabelTextColor)
         self.goalContentLabel.text = goalContentLabelText
 
-        self.configureLayoutDayLabel()
+//        self.configureLayoutDayLabel()
     }
     
 }
@@ -70,12 +70,11 @@ extension JogakCell {
             $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
         }
-    }
-    
-    func configureLayoutDayLabel() {
         goalRepeatDayLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(40)
             $0.centerX.equalToSuperview()
+//            $0.trailing.equalToSuperview().offset(-10)
         }
     }
+
 }

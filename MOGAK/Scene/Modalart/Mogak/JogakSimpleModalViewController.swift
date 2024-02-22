@@ -15,6 +15,7 @@ class JogakSimpleModalViewController: UIViewController {
     var jogakData: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     
     var startDeleteJogak: (() -> ())? = nil
+    
     private lazy var categoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 4, bottom: 4, left: 10, right: 10)
         label.numberOfLines = 1
@@ -144,7 +145,7 @@ class JogakSimpleModalViewController: UIViewController {
         if !jogakData.isRoutine {
             routineStack.isHidden = true
         } else {
-            if let days = jogakData.days {
+            if let days = jogakData.daysSetting {
                 if days.isEmpty {
                     routineDayLabel.text = "미지정"
                 } else {
@@ -157,13 +158,14 @@ class JogakSimpleModalViewController: UIViewController {
         
     }
     
+    //MARK: - 루틴의 경우 시작 일, 종료일 표시
     func termLabelSetting() {
         if let endDate = jogakData.endDate,
            let startDate = jogakData.startDate {
             let endDateArr = endDate.components(separatedBy: "-")
             let startDateArr = startDate.components(separatedBy: "-")
             
-            termTimeLabel.text = endDateArr[0]+"년" + endDateArr[1] + "월" + endDateArr[2] + "일 ~" + startDateArr[0]+"년" + startDateArr[1] + "월" + startDateArr[2] + "일"
+            termTimeLabel.text = startDateArr[0]+"년" + startDateArr[1] + "월" + startDateArr[2] + "일 ~" + endDateArr[0]+"년" + endDateArr[1] + "월" + endDateArr[2] + "일"
         } else {
             termTimeLabel.text = "미지정"
         }
@@ -174,6 +176,7 @@ class JogakSimpleModalViewController: UIViewController {
         self.dismiss(animated: true)
         guard let startDeleteJogak = self.startDeleteJogak else { return }
         startDeleteJogak()
+        
     }
     
     @objc func editBtnTapped() {
