@@ -13,6 +13,7 @@ class MemoirDetailViewController: UIViewController {
     // scrollview 선언
     var scrollView: UIScrollView = UIScrollView().then {
         $0.backgroundColor = .white
+        $0.tag = 1
     }
     
     // UIScrollView 안에 들어갈 객체들을 담은 View 선언
@@ -129,17 +130,17 @@ class MemoirDetailViewController: UIViewController {
 //            let editAction = UIAlertAction(title: "수정하기", style: .default) { _ in
 //                // Edit action
 //                let navigationController = UINavigationController(rootViewController: ConfirmEdittingSheetViewController())
-//                
+//
 //                navigationController.isNavigationBarHidden = true
-//                
+//
 //                self.present(navigationController, animated: true, completion: nil)
 //            }
 //            let deleteAction = UIAlertAction(title: "삭제하기", style: .destructive) { _ in
 //                // Delete action
 //                let navigationController = UINavigationController(rootViewController: ConfirmDeletingFeedSheetViewController())
-//                
+//
 //                navigationController.isNavigationBarHidden = true
-//                
+//
 //                self.present(navigationController, animated: true, completion: nil)
 //            }
 //            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -217,7 +218,8 @@ class MemoirDetailViewController: UIViewController {
             $0.height.equalTo(68)
         })
         
-        topContainerView.addSubviews(profileContainerView, editButton)
+        //topContainerView.addSubviews(profileContainerView, editButton)
+        topContainerView.addSubview(profileContainerView)
         
         profileContainerView.snp.makeConstraints({
             $0.centerY.equalToSuperview()
@@ -226,11 +228,11 @@ class MemoirDetailViewController: UIViewController {
             $0.height.equalTo(36)
         })
         
-        editButton.snp.makeConstraints({
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
-        })
+//        editButton.snp.makeConstraints({
+//            $0.trailing.equalToSuperview().offset(-20)
+//            $0.centerY.equalToSuperview()
+//            $0.width.height.equalTo(24)
+//        })
     }
     
     // MARK: - 프로필 컨테이너 <- addsubviews
@@ -258,7 +260,7 @@ class MemoirDetailViewController: UIViewController {
     }
     
     // MARK: - BODY (FEED IMAGE)
-    let feedImage: UIImageView = {
+    let feedImage: UIImageView = { // 나중에 지울것
         let imageView = UIImageView()
         
         imageView.image = UIImage(named: "cuteBokdol")
@@ -268,6 +270,56 @@ class MemoirDetailViewController: UIViewController {
         
         return imageView
     }()
+    
+    let imageScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.tag = 2
+        return scrollView
+    }()
+    
+    let imagePageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        return pageControl
+    }()
+    
+    let imageNames = ["cuteBokdol", "cuteBokdol", "cuteBokdol"]
+    
+    func setupImageScrollView() {
+        imageScrollView.delegate = self
+        contentView.addSubview(imageScrollView)
+        contentView.addSubview(imagePageControl)
+        
+        imageScrollView.snp.makeConstraints({
+            $0.width.equalToSuperview()
+            $0.top.equalTo(topContainerView.snp.bottom)
+            $0.height.equalTo(contentView.snp.width)
+        })
+        
+        imagePageControl.snp.makeConstraints({
+            $0.bottom.equalTo(imageScrollView.snp.bottom).offset(-16)
+            $0.centerX.equalTo(imageScrollView.snp.centerX)
+            $0.height.equalTo(20)
+        })
+        
+        for (index, imageName) in imageNames.enumerated() {
+            if let image = UIImage(named: imageName) {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFit
+                let xPos = CGFloat(index) * contentView.bounds.width
+                imageView.frame = CGRect(x: xPos, y: 0, width: contentView.bounds.width, height: imageScrollView.bounds.height)
+                imageScrollView.addSubview(imageView)
+            }
+        }
+        
+        imageScrollView.contentSize = CGSize(width: contentView.bounds.width * CGFloat(imageNames.count), height: imageScrollView.bounds.height)
+        
+        imagePageControl.numberOfPages = imageNames.count
+        imagePageControl.currentPage = 0
+    }
     
     // MARK: - ADD FEED IMAGE
     private func configureFeedImage() {
@@ -304,9 +356,9 @@ class MemoirDetailViewController: UIViewController {
         return label
     }()
 
-    // 루틴 걸린시간
+    // 루틴 걸린시간 -> 회차로 수정
     private let routineOverallTimeLabel: UILabel = UILabel().then {
-        $0.text = "1시간 20분"
+        $0.text = "1회차"
         $0.textColor = UIColor(hex: "475FFD")
         $0.font = UIFont.pretendard(.regular, size: 14)
     }
@@ -330,7 +382,8 @@ class MemoirDetailViewController: UIViewController {
     private func configureRoutineInfo() {
         contentView.addSubview(routineInfoView)
         routineInfoView.snp.makeConstraints({
-            $0.top.equalTo(feedImage.snp.bottom).offset(16)
+            //$0.top.equalTo(feedImage.snp.bottom).offset(16)
+            $0.top.equalTo(imageScrollView.snp.bottom).offset(16)
             $0.left.right.equalToSuperview().inset(20)
             $0.height.equalTo(108)
         })
@@ -622,11 +675,16 @@ class MemoirDetailViewController: UIViewController {
         
         self.navigationController?.navigationBar.isHidden = false
         
+        let rightButtonImage = UIImage(systemName: "ellipsis")
+        let rightButtonItem = UIBarButtonItem(image: rightButtonImage, style: .plain, target: self, action: #selector(ellipsisButtonTapped))
+        navigationItem.rightBarButtonItem = rightButtonItem
+        
         configureNavBar()
         configureScrollView()
         configureTopContainer()
         configureProfileElements()
-        configureFeedImage()
+        //configureFeedImage()
+        setupImageScrollView()
         configureRoutineInfo()
         configureFeedText()
         //configureTailView()
@@ -735,3 +793,11 @@ class MemoirDetailViewController: UIViewController {
 //     MemoirDetailViewController()
 // }
  
+extension MemoirDetailViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.tag == 2 {
+            let pageIndex = round(scrollView.contentOffset.x / contentView.frame.width)
+            imagePageControl.currentPage = Int(pageIndex)
+        }
+    }
+}

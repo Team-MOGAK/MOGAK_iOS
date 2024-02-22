@@ -9,10 +9,15 @@ import Foundation
 import UIKit
 import SnapKit
 
+protocol JogakCreatedReloadDelegate: AnyObject {
+    func reloadMogak()
+}
+
 class MogakMainViewController: UIViewController {
     //MARK: - properties
     var mogakList: [DetailMogakData] = []
     
+    var selectedJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     
     var jogakList: [JogakDetail] = []
@@ -304,6 +309,26 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         return UICollectionViewCell()
     }
     
+    @objc func editBtnTapped() {
+        print(#fileID, #function, #line, "- 네 버튼 클릭")
+        self.dismiss(animated: true) {
+            let jogakEditVC = JogakEditViewController()
+            jogakEditVC.delegate = self
+            jogakEditVC.currentJogak = self.selectedJogak
+            jogakEditVC.currentJogakId = self.selectedJogak.jogakID
+            jogakEditVC.jogakDetailTextField.text = self.selectedJogak.title
+            
+            jogakEditVC.mogakCategoryView.backgroundColor = UIColor(hex: "\(String(describing: self.selectedMogak.color!))")
+            jogakEditVC.mogakCategoryView.alpha = 0.1
+            jogakEditVC.mogakCategoryLabel.text = self.selectedMogak.bigCategory.name
+            jogakEditVC.mogakCategoryLabel.textColor = UIColor(hex: "\(String(describing: self.selectedMogak.color!))").withAlphaComponent(1.0)
+            //jogakEditVC.mogakCategoryLabel.textColor = .black
+            jogakEditVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
+            //jogakEditVC.mogakCategoryLabel.alpha = 5.0
+            self.navigationController?.pushViewController(jogakEditVC, animated: true)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.mogakMandalartCollectionView {
@@ -332,9 +357,11 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     
                 } else {
                     let bottomSheetVC = JogakSimpleModalViewController()
+                    bottomSheetVC.editBtn.addTarget(self, action: #selector(editBtnTapped), for: .touchUpInside)
                     bottomSheetVC.mogakCategory = self.selectedMogak.bigCategory.name
                     let jogakData = row <= 4 ? jogakList[row] : jogakList[row - 1]
                     bottomSheetVC.jogakData = jogakData
+                    selectedJogak = jogakData
                     
                     if let sheet = bottomSheetVC.sheetPresentationController {
                         if #available(iOS 16, *) {
@@ -352,6 +379,21 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     }
                     self.present(bottomSheetVC, animated: true)
                 }
+            }
+            else {
+                // 빈 조각 셀 선택 시
+                print(#fileID, #function, #line, "- 빈 조각 셀 선택됨")
+                print("selectedMogakDATA: \(selectedMogak)")
+                let jogakInitVC = JogakInitViewController()
+                jogakInitVC.mogakCategoryView.backgroundColor = UIColor(hex: "\(String(describing: selectedMogak.color!))")
+                jogakInitVC.mogakCategoryView.alpha = 0.1
+                jogakInitVC.mogakCategoryLabel.text = selectedMogak.bigCategory.name
+                jogakInitVC.mogakCategoryLabel.textColor = UIColor(hex: "\(String(describing: selectedMogak.color!))")
+                jogakInitVC.mogakCategoryLabel.font = UIFont.pretendard(.semiBold, size: 14)
+                jogakInitVC.mogakCategoryLabel.alpha = 1.0
+                jogakInitVC.currentMogakId = selectedMogak.mogakId
+                jogakInitVC.delegate = self
+                self.navigationController?.pushViewController(jogakInitVC, animated: true)
             }
             
         } else if collectionView == self.mogakListCollectionView {
@@ -463,3 +505,9 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
 }
 
 
+extension MogakMainViewController: JogakCreatedReloadDelegate {
+    func reloadMogak() {
+        print("Delegate 과연???")
+        self.getMogakDetail(self.selectedMogak)
+    }
+}

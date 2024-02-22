@@ -18,6 +18,7 @@ struct JogakDetail: Codable {
     let mogakTitle, category, title: String
     let isRoutine: Bool
     let days: [String]?
+    //let achievements: Int
     let startDate, endDate: String?
     let isAlreadyAdded: Bool
     let achievements: Int
