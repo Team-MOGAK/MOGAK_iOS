@@ -45,7 +45,7 @@ class MogakDetailNetwork: NSObject {
     
     //MARK: - 모다라트 삭제 요청 API
     func deleteJogak(jogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        AF.request(ModalartRouter.delteModalart(modaratId: jogakId), interceptor: CommonLoginManage())
+        AF.request(MogakDetailRouter.deleteJogak(jogakId), interceptor: CommonLoginManage())
 //        AF.request(MogakDetailRouter.deleteJogak(jogakId))
         .validate()
           .responseData(emptyResponseCodes: [200, 204, 205]) { response in

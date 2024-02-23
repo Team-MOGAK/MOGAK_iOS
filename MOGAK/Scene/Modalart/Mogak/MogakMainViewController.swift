@@ -141,8 +141,11 @@ class MogakMainViewController: UIViewController {
             sheet.prefersGrabberVisible = true
         }
         if isJogakDelete {
-            guard let jogakId = jogakId else { return }
-            self.deleteJogak(jogakId)
+            bottomSheetVC.startDelete = {
+                guard let jogakId = jogakId else { return }
+                self.deleteJogak(jogakId)
+            }
+            
         } else {
             bottomSheetVC.startDelete = {
                 self.deleteMogak()
@@ -375,6 +378,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                         sheet.prefersGrabberVisible = true
                     }
                     bottomSheetVC.startDeleteJogak = {
+                        print(#fileID, #function, #line, "- durl")
                         self.showAskDeleteModal(true, jogakData.jogakID)
                     }
                     self.present(bottomSheetVC, animated: true)
@@ -408,7 +412,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         if (jogakList.count > row && row < 4) { //0, 1, 2, 3 row
             print(#fileID, #function, #line, "- jogakList[row]: \(jogakList[row])")
             if jogakList[row].isRoutine {
-                guard let days = jogakList[row].days else { return UICollectionViewCell() }
+                guard let days = jogakList[row].daysSetting else { return UICollectionViewCell() }
                 
                 if !days.isEmpty {
                     isRoutineJogakCell.goalRepeatDayLabelText = days.joined(separator: ",")
@@ -421,7 +425,8 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 isRoutineJogakCell.cellDataSetting()
                 return isRoutineJogakCell
             } else {
-                if let days = jogakList[row].days {
+                guard let days = jogakList[row].daysSetting else { return UICollectionViewCell() }
+                if !days.isEmpty {
                     jogakCell.goalRepeatDayLabelText = days.joined(separator: ",")
                 } else {
                     jogakCell.goalRepeatDayLabelText = "0회"
@@ -456,7 +461,6 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 jogakCell.goalContentLabelText = jogakList[row - 1].title
                 jogakCell.goalCategoryLabelTextColor = selectedMogak.color ?? "475FFD"
                 jogakCell.cellDataSetting()
-    //            jogakCell.configureLayoutDayLabel()
                 return jogakCell
             }
             
