@@ -414,15 +414,16 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in
             print("테이블 뷰 리로드 클로저 ㅇㅇ")
+            
             self?.TableViewReload?()
-            //self?.getAddJogakDaily(id: 100)
-           
-//                
-//            for jogakID in clickedJogakIdList {
-//                    self?.getAddJogakDaily(id: jogakID)
-//                    print("추가하기 클릭시 forloop")
-//                }
-//            
+            
+            let clickedJogakIdList = UserDefaultsManager.shared.clickedJogakIdList
+
+            for jogakID in clickedJogakIdList {
+                print(jogakID)
+                    self?.getAddJogakDaily(id: jogakID)
+                    print("추가하기 클릭시 forloop")
+                }
             
             self?.MogakTableView.reloadData()
             
@@ -599,7 +600,6 @@ class JogakTableViewCell : UITableViewCell{
     }
     
     var clickedJogakId : Int = 0
-    var clickedJogakIdList : [Int] = []
     
     //MARK: - 조각 라벨 설정
     func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)) {
@@ -615,11 +615,11 @@ class JogakTableViewCell : UITableViewCell{
         } else {
             JogakimageView.image = UIImage(systemName: "square")
             
-//            if clickedJogakIdList.contains(clickedJogakId){
-//                JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
-//            }else{
-//                JogakimageView.image = UIImage(systemName: "square")
-//            }
+            if UserDefaultsManager.shared.clickedJogakIdList.contains(clickedJogakId) {
+                JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+            }else{
+                JogakimageView.image = UIImage(systemName: "square")
+            }
         }
         
 
@@ -634,22 +634,27 @@ class JogakTableViewCell : UITableViewCell{
         
         if JogakimageView.image == UIImage(systemName: "square"){
             
-            clickedJogakIdList.append(clickedJogakId)
+            UserDefaultsManager.shared.clickedJogakIdList.append(clickedJogakId)
             
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
-            
-            print("list : ", clickedJogakIdList)
-            
         }else{
             JogakimageView.image = UIImage(systemName: "square")
-//            if let index = clickedJogakIdList.firstIndex(of: clickedJogakId) {
-//                        clickedJogakIdList.remove(at: index)
-//                    }
-            print(clickedJogakIdList)
+            if let index = UserDefaultsManager.shared.clickedJogakIdList.firstIndex(of: clickedJogakId) {
+                UserDefaultsManager.shared.clickedJogakIdList.remove(at: index)
+            }
         }
-        
+        print("찐배열 \(UserDefaultsManager.shared.clickedJogakIdList)")
         jogakSelectionHandler?()
     }
+}
+
+//싱글톤 패턴 적용
+class UserDefaultsManager {
+    static let shared = UserDefaultsManager()
+    
+    private init () {}
+    
+    var clickedJogakIdList: [Int] = []
 }
 
 

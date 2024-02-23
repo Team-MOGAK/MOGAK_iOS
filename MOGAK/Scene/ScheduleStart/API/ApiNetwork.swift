@@ -99,6 +99,7 @@ class ApiNetwork{
                 switch response.result {
                 case .success(let jogakAddResponse):
                     completionHandler(.success([jogakAddResponse]))
+                    print("getAddJogakDaily success")
                 case .failure(let error):
                     completionHandler(.failure(error))
                 }

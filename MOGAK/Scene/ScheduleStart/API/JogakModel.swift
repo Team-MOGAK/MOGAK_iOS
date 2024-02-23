@@ -49,7 +49,7 @@ struct ScheduleJogakDetail: Codable {
 }
 //MARK: - 일일 조각 시작
 struct JogakDailyAdd: Codable {
-    let time,status, code, message: String
+    let time, status, code, message: String
     let result: [JogakDailyStart]?
 }
 
