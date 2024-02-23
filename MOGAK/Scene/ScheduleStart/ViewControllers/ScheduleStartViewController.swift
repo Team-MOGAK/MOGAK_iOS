@@ -478,7 +478,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     @objc func goSchedule(_ sender : UIButton){
-        print("여기 모다라트 만드는거 연결")
+        
+        if let tabBarController = navigationController?.tabBarController as? TabBarViewController {
+                tabBarController.selectedIndex = 1
+            }
+        
         ScheduleTableView.reloadData()
     }
     
