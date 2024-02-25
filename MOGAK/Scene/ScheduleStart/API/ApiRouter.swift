@@ -103,8 +103,8 @@ enum ApiRouter : URLRequestConvertible{
             request = try URLEncoding.queryString.encode(request, with: parameters)
 //        case .makePost(let data):
 //            request = try JSONParameterEncoder().encode(data, into: request)
-        case .getAddJogakToday(let data):
-            request = try JSONParameterEncoder().encode(data, into: request)
+        case .getAddJogakToday:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
         case .JogakFail:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .getJogakMonth:

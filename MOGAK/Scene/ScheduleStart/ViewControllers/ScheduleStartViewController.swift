@@ -497,8 +497,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         let selectJogak = SelectJogakModal()
         selectJogak.modalPresentationStyle = .pageSheet
         
-        selectJogak.TableViewReload = { [weak self] in
-            self?.ScheduleTableView.reloadData()
+        selectJogak.TableViewReload = {
+            self.ScheduleTableView.reloadData()
             
             print("reload data")
             

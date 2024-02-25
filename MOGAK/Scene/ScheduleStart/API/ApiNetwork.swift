@@ -91,15 +91,13 @@ class ApiNetwork{
             }
     }
     //MARK: - 일일 조각 시작
-    func getAddJogakDaily(jogakId : Int, completionHandler : @escaping(Result<[JogakDailyAdd]?, Error>)-> Void) {
-                AF.request(ApiRouter.getAddJogakToday(jogakId: jogakId), interceptor: CommonLoginManage())
-//        AF.request(ApiRouter.getAddJogakToday(jogakId: jogakId))
+    func getAddJogakDaily(jogakId: Int, completionHandler: @escaping(Result<[JogakDailyStartResponse]?, Error>) -> Void) {
+        AF.request(ApiRouter.getAddJogakToday(jogakId: jogakId), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<500)
-            .responseDecodable(of: JogakDailyAdd.self) { response in
+            .responseDecodable(of: JogakDailyStart.self) { response in
                 switch response.result {
                 case .success(let jogakAddResponse):
-                    completionHandler(.success([jogakAddResponse]))
-                    print("getAddJogakDaily success")
+                    print(jogakAddResponse)
                 case .failure(let error):
                     completionHandler(.failure(error))
                 }

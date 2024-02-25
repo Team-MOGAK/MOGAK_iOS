@@ -312,8 +312,8 @@ class SelectJogakModal : UIViewController{
         }
     }
     //MARK: - 일일 조각 시작
-    func getAddJogakDaily(id : Int){
-        Apinetwork.getAddJogakDaily(jogakId: id){ result in
+    func getAddJogakDaily(jogakId : Int){
+        Apinetwork.getAddJogakDaily(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
                 print(data as Any)
@@ -413,20 +413,18 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [weak self] in
-            print("테이블 뷰 리로드 클로저 ㅇㅇ")
+            var clickedJogakIdList = UserDefaultsManager.shared.clickedJogakIdList
             
-            self?.TableViewReload?()
-            
-            let clickedJogakIdList = UserDefaultsManager.shared.clickedJogakIdList
-
-            for jogakID in clickedJogakIdList {
-                print(jogakID)
-                    self?.getAddJogakDaily(id: jogakID)
+            for jogakId in clickedJogakIdList {
+                print(jogakId)
+                    self?.getAddJogakDaily(jogakId: jogakId)
                     print("추가하기 클릭시 forloop")
                 }
             
+            clickedJogakIdList.removeAll()
             self?.MogakTableView.reloadData()
             
+            self?.TableViewReload?()
         }
         
     }
