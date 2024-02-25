@@ -478,7 +478,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     @objc func goSchedule(_ sender : UIButton){
-        
         if let tabBarController = navigationController?.tabBarController as? TabBarViewController {
                 tabBarController.selectedIndex = 1
             }
@@ -497,12 +496,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         let selectJogak = SelectJogakModal()
         selectJogak.modalPresentationStyle = .pageSheet
         
-        selectJogak.TableViewReload = {
-            self.ScheduleTableView.reloadData()
-            
-            print("reload data")
-            
-        }
+        
         
         present(selectJogak, animated: true, completion: nil)
         
@@ -512,9 +506,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             sheet.prefersGrabberVisible = true
             sheet.largestUndimmedDetentIdentifier = nil
         }
-        
-        print("timer setRoutie")
     }
+    
     //MARK: - 날짜 이동 함수
     
     @objc func tapNextWeek(_ sender : UIButton){
@@ -580,6 +573,28 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
         
+        let modal = SelectJogakModal()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.modalNotification(_:)), name: modal.DidDissmissModal, object: nil)
+    }
+
+    @objc func modalNotification(_ notification: Notification){
+        
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        self.CheckDailyJogaks(DailyDate: dateString)
+        
+        print("modalNotification :", dateString)
+        
+        OperationQueue.main.addOperation {
+            
+            self.ScheduleTableView.reloadData()
+        }
+        
     }
     
     //MARK: -  Cell설정 (셀로부터 이동되는 정보들)
@@ -592,8 +607,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         let Certificate = CertificationModalVC()
         
         Certificate.modalPresentationStyle = .pageSheet
-        
-        
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")

@@ -14,7 +14,6 @@ import ExpyTableView
 
 class SelectJogakModal : UIViewController{
     
-    var TableViewReload : (()->())? //tableviewreload
     //셀
     var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
@@ -32,6 +31,12 @@ class SelectJogakModal : UIViewController{
     var mogakData: [ScheduleDetailMogakData] = []
     
     let Apinetwork =  ApiNetwork.shared
+    
+    
+    //MARK: - Dismiss NotificationCenter
+    
+    let DidDissmissModal : Notification.Name = Notification.Name("DidDissmissModal")
+    
     //MARK: - Basic Properties
     
     private lazy var contentView : UIView = {
@@ -412,19 +417,20 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     }
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
-        dismiss(animated: true){ [weak self] in
+        dismiss(animated: true){ [self] in
             var clickedJogakIdList = UserDefaultsManager.shared.clickedJogakIdList
             
             for jogakId in clickedJogakIdList {
                 print(jogakId)
-                    self?.getAddJogakDaily(jogakId: jogakId)
-                    print("추가하기 클릭시 forloop")
+                self.getAddJogakDaily(jogakId: jogakId)
                 }
             
-            clickedJogakIdList.removeAll()
-            self?.MogakTableView.reloadData()
+            NotificationCenter.default.post(name:DidDissmissModal,object: nil,userInfo: nil)
             
-            self?.TableViewReload?()
+            clickedJogakIdList.removeAll()
+            self.MogakTableView.reloadData()
+            
+            
         }
         
     }
@@ -605,11 +611,12 @@ class JogakTableViewCell : UITableViewCell{
         
         clickedJogakId = jogakData.jogakID
         
-        print(jogakData.title, jogakData.isAlreadyAdded, jogakData.isRoutine, jogakData.jogakID)
+        print("조각 타이틀 : \(jogakData.title) 일일 조각 추가 여부 : \(jogakData.isAlreadyAdded) 루틴의 여부 :\(jogakData.isRoutine) 조각 아이디: \(jogakData.jogakID)")
         
         //이미 일일 조각에 추가가 되어있을 경우 || == or
         if (jogakData.isAlreadyAdded || jogakData.isRoutine) == true{
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+            
         } else {
             JogakimageView.image = UIImage(systemName: "square")
             
