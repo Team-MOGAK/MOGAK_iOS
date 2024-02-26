@@ -332,6 +332,36 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         }
     }
     
+    @objc func mogakEditBtnTapped() {
+        print(#fileID, #function, #line, "- 중앙 모각 셀 수정 버튼 누름")
+        self.dismiss(animated: true) {
+            let mogakEditVC = MogakEditViewController()
+            // 타이틀 넘기기
+            mogakEditVC.mogakTextField.text = self.selectedMogak.title
+            
+            // 카테고리 넘기기
+            let category = self.selectedMogak.bigCategory.name
+            let categoryList = mogakEditVC.categoryList
+            let categoryIndex = categoryList.firstIndex(of:category)!
+            print("categoryIndex: \(categoryIndex)")
+            
+            mogakEditVC.currentMogakId = self.selectedMogak.mogakId
+            mogakEditVC.currentBigCategory = self.selectedMogak.bigCategory.name
+            mogakEditVC.currentColor = String(self.selectedMogak.color!.suffix(6))
+            
+            // 컬러 넘기기
+            let color = self.selectedMogak.color
+            print(color!)
+            let colorPalette = mogakEditVC.titleColorPalette
+            
+            if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
+                print("##############")
+            }
+            mogakEditVC.delegate2 = self
+            self.navigationController?.pushViewController(mogakEditVC, animated: true)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.mogakMandalartCollectionView {
@@ -343,6 +373,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 if row == 4 {
                     let bottomSheetVC = MogakMainBottomModalViewController()
                     bottomSheetVC.selectedMogak = self.selectedMogak
+                    bottomSheetVC.editBtn.addTarget(self, action: #selector(mogakEditBtnTapped), for: .touchUpInside)
                     if let sheet = bottomSheetVC.sheetPresentationController {
                         if #available(iOS 16, *) {
                             sheet.detents = [.custom() { context in
@@ -511,7 +542,8 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
 
 extension MogakMainViewController: JogakCreatedReloadDelegate {
     func reloadMogak() {
-        print("Delegate 과연???")
+        print("reload Mogak: Delegate 과연???")
+        self.getDetailMogakData()
         self.getMogakDetail(self.selectedMogak)
     }
 }
