@@ -76,10 +76,6 @@ class MogakCell: UICollectionViewCell {
 
         delegate?.cellButtonTapped(mogakData: self.mogakCellData)
     }
-    
-    @objc func settingIconTapped() {
-        print(#fileID, #function, #line, "- settingIconTapped⭐️")
-    }
 }
 
 //MARK: - 오토레이아웃 잡기
