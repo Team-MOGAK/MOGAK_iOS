@@ -74,7 +74,7 @@ class MogakInitViewController: UIViewController {
     
     private let mogakTextField : UITextField = {
         let textField = UITextField()
-        textField.placeholder = "하고 싶은 루틴의 제목을 입력해주세요."
+        textField.placeholder = "작은 목표의 제목을 입력해주세요."
         textField.font = UIFont.pretendard(.medium, size: 16)
         textField.borderStyle = .none
         //        textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
@@ -100,7 +100,7 @@ class MogakInitViewController: UIViewController {
     
     private let categoryExplanationLabel: UILabel = {
         let label = UILabel()
-        label.text = "루틴이 속하는 분류를 선택해주세요."
+        label.text = "작은 목표가 속하는 분류를 선택해주세요."
         label.font = UIFont.pretendard(.regular, size: 14)
         label.textColor = UIColor(hex: "6E707B")
         return label
@@ -1446,7 +1446,7 @@ extension MogakInitViewController {
             case .success(let mogakMainData):
                 print(#fileID, #function, #line, "- mogakMainData: \(mogakMainData)")
                 self.delegate?.reloadModalart()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
                 

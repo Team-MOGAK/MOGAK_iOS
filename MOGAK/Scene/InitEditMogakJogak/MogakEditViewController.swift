@@ -1421,7 +1421,7 @@ extension MogakEditViewController {
                 print(#fileID, #function, #line, "- editedMogakData: \(mogakEditedData)")
                 self.delegate2?.reloadMogak()
                 self.delegate?.reloadModalart()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):
