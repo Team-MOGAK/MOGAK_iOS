@@ -142,7 +142,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     //MARK: - viewDidLoad
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
@@ -151,9 +150,28 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.configureUI()
         self.configureCalendar()
         self.tableSetting()
-        tableViewUI() //table뷰 보여줌
+        tableViewUI()
         startButton.isHidden = !isToday
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.DissmissModal(_:)), name: selectJogakModal.DidDismissModal, object: nil)
+        
+        self.ScheduleTableView.reloadData()
+        
+    }
+    
+#warning("dismiss")  //dismiss 후 reloadData()
+    @objc func DissmissModal(_ noti: Notification) {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        self.CheckDailyJogaks(DailyDate: dateString)
+        
+        OperationQueue.main.addOperation { // DispatchQueue도 가능.
+            self.ScheduleTableView.reloadData()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -177,6 +195,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
+        returnToday()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -201,14 +220,13 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //MARK: - 날짜 선택 콜백 메소드
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        
         ScheduleTableView.reloadData()
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd" // 원하는 날짜 형식으로 변경
-        
         let dateString = dateFormatter.string(from: date)
         
-        print(dateString)
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday
         
@@ -224,6 +242,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     func lastDateOfMonth() -> Date? {
         guard let firstDate = firstDateOfMonth() else { return nil }
         return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: firstDate)
+    }
+    
+    func returnToday(){
+        calendarView.select(Date())
+        startButton.isHidden = false
     }
     
     // 예시에서 사용하는 함수
@@ -243,6 +266,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("날짜를 가져올 수 없습니다.")
         }
     }
+    
+    
     
     //MARK: - 날짜에 이벤트 dots
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
@@ -340,7 +365,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         calendarView.delegate = self
         calendarView.dataSource = self
         
-        calendarView.select(Date())
+        calendarView.select(Date()) //오늘로 선택
         
         calendarView.locale = Locale(identifier: "ko_KR")
         calendarView.scope = .week
@@ -441,7 +466,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                 return //print(jogakSuccess as Any)
+                return //print(jogakSuccess as Any)
             case.failure(let error):
                 print("jogakFail error",error)
             }
@@ -479,23 +504,22 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     @objc func goSchedule(_ sender : UIButton){
         if let tabBarController = navigationController?.tabBarController as? TabBarViewController {
-                tabBarController.selectedIndex = 1
-            }
+            tabBarController.selectedIndex = 1
+        }
         
         ScheduleTableView.reloadData()
     }
     
-    @objc func goAlarm(_ sender : UIButton){
-        let alarmVC = AlarmViewController()
-        navigationController?.pushViewController(alarmVC, animated: true)
-        print("go alarm")
-    }
+//    @objc func goAlarm(_ sender : UIButton){
+//        let alarmVC = AlarmViewController()
+//        navigationController?.pushViewController(alarmVC, animated: true)
+//        print("go alarm")
+//    }
     
     @objc func goStart(_ sender : UIButton){
         
         let selectJogak = SelectJogakModal()
         selectJogak.modalPresentationStyle = .pageSheet
-        
         
         
         present(selectJogak, animated: true, completion: nil)
@@ -509,7 +533,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }
     
     //MARK: - 날짜 이동 함수
-    
     @objc func tapNextWeek(_ sender : UIButton){
         if calendarView.scope == .week {
             self.calendarView.setCurrentPage(getNextWeek(date: calendarView.currentPage), animated: true)
@@ -530,6 +553,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeWeek")
             
         } else {
+            
             let previousDate = Calendar.current.date(byAdding: .month, value: -1, to: calendarView.currentPage)
             calendarView.setCurrentPage(previousDate!, animated: true)
             headerLabel.text = headerDataFormatter.string(from: previousDate!)
@@ -573,29 +597,10 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
         
-        let modal = SelectJogakModal()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.modalNotification(_:)), name: modal.DidDissmissModal, object: nil)
-    }
-
-    @objc func modalNotification(_ notification: Notification){
-        
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let dateString = dateFormatter.string(from: currentDate)
-        
-        self.CheckDailyJogaks(DailyDate: dateString)
-        
-        print("modalNotification :", dateString)
-        
-        OperationQueue.main.addOperation {
-            
-            self.ScheduleTableView.reloadData()
-        }
         
     }
+    
+    
     
     //MARK: -  Cell설정 (셀로부터 이동되는 정보들)
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){ //셀 클릭

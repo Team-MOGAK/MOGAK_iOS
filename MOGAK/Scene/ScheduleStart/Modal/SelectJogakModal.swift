@@ -32,10 +32,7 @@ class SelectJogakModal : UIViewController{
     
     let Apinetwork =  ApiNetwork.shared
     
-    
-    //MARK: - Dismiss NotificationCenter
-    
-    let DidDissmissModal : Notification.Name = Notification.Name("DidDissmissModal")
+    let DidDismissModal: Notification.Name = Notification.Name("DidDismissModal")
     
     //MARK: - Basic Properties
     
@@ -80,10 +77,7 @@ class SelectJogakModal : UIViewController{
         return button
     }()
     
-    //클로저는 보내는 VC에서 설정 : String에서 보내고 받는쪽은 Void
-    
     //MARK: - modalart정보를 받는 곳
-    
     lazy var MogakTableView: ExpyTableView = {
         let tableView = ExpyTableView()
         return tableView
@@ -99,9 +93,10 @@ class SelectJogakModal : UIViewController{
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getModalart()
-        
     }
+    
     
     //MARK: - UIsetting
     
@@ -317,6 +312,7 @@ class SelectJogakModal : UIViewController{
         }
     }
     //MARK: - 일일 조각 시작
+
     func getAddJogakDaily(jogakId : Int){
         Apinetwork.getAddJogakDaily(jogakId: jogakId){ result in
             switch result{
@@ -418,18 +414,18 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
         dismiss(animated: true){ [self] in
-            var clickedJogakIdList = UserDefaultsManager.shared.clickedJogakIdList
+            var Forcount : Int = 0
             
-            for jogakId in clickedJogakIdList {
+            for jogakId in UserDefaultsManager.shared.clickedJogakIdList {
                 print(jogakId)
                 self.getAddJogakDaily(jogakId: jogakId)
+                Forcount = Forcount + 1
+                print("forcount : ",Forcount)
                 }
             
-            NotificationCenter.default.post(name:DidDissmissModal,object: nil,userInfo: nil)
+            NotificationCenter.default.post(name: DidDismissModal, object: nil, userInfo: nil)
             
-            clickedJogakIdList.removeAll()
-            self.MogakTableView.reloadData()
-            
+            UserDefaultsManager.shared.clickedJogakIdList.removeAll()
             
         }
         
@@ -528,7 +524,7 @@ class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
         MogakButtonView.snp.makeConstraints {
             $0.width.height.equalTo(16)
             $0.centerY.equalTo(MogakStackView)
-            $0.trailing.equalToSuperview()
+            $0.trailing.equalToSuperview().offset(-20)
         }
     }
     
@@ -606,6 +602,7 @@ class JogakTableViewCell : UITableViewCell{
     var clickedJogakId : Int = 0
     
     //MARK: - 조각 라벨 설정
+
     func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)) {
         JogakLabel.text = jogakData.title
         

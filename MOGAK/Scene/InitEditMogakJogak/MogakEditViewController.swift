@@ -13,6 +13,7 @@ import FSCalendar
 import Alamofire
 
 class MogakEditViewController: UIViewController {
+    
     weak var delegate: MogakCreatedReloadDelegate?
     let mogakNetwork = MogakNetwork()
     
