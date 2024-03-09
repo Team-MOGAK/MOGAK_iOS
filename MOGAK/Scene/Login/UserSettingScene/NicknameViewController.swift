@@ -66,7 +66,7 @@ class NicknameViewController: UIViewController {
     
     private let tfSubLabel : UILabel = {
         let label = UILabel()
-        label.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+        label.text = "최대 10자까지 입력할 수 있습니다."
         label.font = UIFont.pretendard(.medium, size: 14)
         label.textColor = UIColor(hex: "808497")
         return label
@@ -251,14 +251,15 @@ extension NicknameViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        tfSubLabel.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+        tfSubLabel.text = "최대 10글자까지 입력가능합니다."
         tfSubLabel.textColor = UIColor(hex: "808497")
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text else { return }
 
-        if text.validateNickname() {
+//        if text.validateNickname() {
+        if text.count <= 10 {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor(hex: "475FFD")
         } else {
