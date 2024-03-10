@@ -159,7 +159,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
     }
     
-#warning("dismiss")  //dismiss 후 reloadData()
     @objc func DissmissModal(_ noti: Notification) {
         let currentDate = Date()
         let dateFormatter = DateFormatter()
@@ -314,7 +313,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         calendarView.snp.makeConstraints{
             $0.top.equalTo(headerStackView.snp.bottom).offset(5)
             $0.trailing.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(200) // 캘린더뷰의(월)일때의 총 높이
+            $0.height.equalTo(300) // 캘린더뷰의(월)일때의 총 높이
+            #warning("캘린더 높이 비율로 조정")
         }
         
         toggleButton.snp.makeConstraints{

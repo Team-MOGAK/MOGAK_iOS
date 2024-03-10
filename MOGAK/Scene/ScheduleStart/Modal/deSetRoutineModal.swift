@@ -85,7 +85,6 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
             $0.trailing.equalToSuperview().multipliedBy(0.5).offset(-5)
-            
         }
     }
     //MARK: - @objc func
