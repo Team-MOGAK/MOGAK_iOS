@@ -405,7 +405,6 @@ extension ModalartMainViewController {
 extension ModalartMainViewController: UICollectionViewDelegate {
     //이걸 통해서 어떤 모각이 선택되었는지를 알 수 있음
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-<<<<<<< HEAD
         print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
         
         guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
@@ -463,11 +462,6 @@ extension ModalartMainViewController: UICollectionViewDelegate {
             let selectedMogak = row <= 4 ? self.mogakData[row] : self.mogakData[row - 1]
             self.getMogakDetail(selectedMogak)
         }
-=======
-        collectionView.cellForItem(at: indexPath)
-        print(#fileID, #function, #line, "- 선택된 cell의 타입:\(collectionView.cellForItem(at: indexPath)?.reuseIdentifier)")
-        print(#fileID, #function, #line, "- 선택된 아이템: \(indexPath.row)")
->>>>>>> a1dc1af (모각셀 설정버튼 추가)
     }
 }
 
@@ -508,19 +502,9 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     
     //MARK: - 중앙 셀을 기준으로 중앙 셀 앞에 있는 셀인지 뒤에 있는 셀인지 체크
     func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-<<<<<<< HEAD
         print(#fileID, #function, #line, "- mogakData.count⭐️: \(mogakData.count)")
         if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
             mogakCell.mogakCellData = mogakData[row]
-=======
-        let mogakCategory: [(String, String)] = [("운동", "10키로 감량"), ("자기계발", "인생은 아름다워 읽기"),("운동", "10키로 감량")]
-//        let mogakCategory: [(String, String)] = []
-        if (mogakCategory.count > row && row < 4) {
-            mogakCell.goalCategoryLabelText = mogakCategory[row].0
-            mogakCell.goalContentLabelText = mogakCategory[row].1
-            mogakCell.goalCategoryLabelBackgoundColor = "E8EBFE"
-            mogakCell.goalCategoryLabelTextColor = "475FFD"
->>>>>>> a1dc1af (모각셀 설정버튼 추가)
             mogakCell.cellDataSetting()
             return mogakCell
         } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
@@ -590,7 +574,7 @@ extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
 
 extension ModalartMainViewController: MogakCreatedReloadDelegate {
     func reloadModalart() {
-        print("DELEGATE 과연???")
+        print("reload Modalart: DELEGATE 과연???")
         self.getModalartDetailInfo(id: nowShowModalArtNum)
         modalArtCollectionView.reloadData()
     }
