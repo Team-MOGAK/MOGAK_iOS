@@ -15,7 +15,9 @@ import FSCalendar
 import Alamofire
 
 class JogakEditViewController: UIViewController {
+    
     weak var delegate: JogakCreatedReloadDelegate?
+    
     var currentJogakId: Int = 0
     var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     

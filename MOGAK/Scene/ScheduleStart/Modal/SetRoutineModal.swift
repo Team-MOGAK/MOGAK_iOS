@@ -87,17 +87,24 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
         }
     }
     //MARK: - @objc func
-    
-    @objc func ScheduleStop(){
+    @objc func ScheduleStop(){ #warning("dismiss 후 push 수정")
         print("ScheduleStop")
-        self.dismiss(animated: true, completion: {
+//        self.dismiss(animated: true, completion : { [weak self] in
+//            
+//            self?.pushToJogakEdit()
+//            
+//        })
+        
+        let MogakMainVC = MogakMainViewController()
+        MogakMainVC.editBtnTapped()
+    }
+    
+    @objc func dismissModal(){
+        self.dismiss(animated: true, completion : { [weak self] in
+           
         })
     }
-    @objc func dismissModal(){
-        self.dismiss(animated: true){ [weak self] in
-            
-        }
-    }
+    
     
 }
 
