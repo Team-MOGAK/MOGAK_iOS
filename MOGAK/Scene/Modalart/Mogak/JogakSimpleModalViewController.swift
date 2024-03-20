@@ -9,13 +9,16 @@ import Foundation
 import UIKit
 import SnapKit
 
+/// 조각에 대한 간단한 정보를 나타내주는 조각 바텀 모달(조각 눌렀을 떄 나오는 바텀 모달)
 class JogakSimpleModalViewController: UIViewController {
     var mogakCategory: String = ""
     let mogakCategoryColor: String = "475FFD"
     var jogakData: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     
+    /// 조각 삭제 시작 클로저
     var startDeleteJogak: (() -> ())? = nil
     
+    /// 어떤 카테고리에 속하는지
     private lazy var categoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 4, bottom: 4, left: 10, right: 10)
         label.numberOfLines = 1
@@ -25,6 +28,7 @@ class JogakSimpleModalViewController: UIViewController {
         return label
     }()
     
+    /// 조각 제목
     private lazy var jogakTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
@@ -33,6 +37,7 @@ class JogakSimpleModalViewController: UIViewController {
         return label
     }()
     
+    /// 루틴지정 라벨 + 반복 요일(stack)
     private lazy var routineStack: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
@@ -44,6 +49,7 @@ class JogakSimpleModalViewController: UIViewController {
         return stk
     }()
     
+    /// 반복 요일 + 반복 설정 토클(현재 사용 x)
     private lazy var routineDayStack: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
@@ -55,6 +61,7 @@ class JogakSimpleModalViewController: UIViewController {
         return stk
     }()
     
+    /// 루틴 지정 label
     private lazy var routineLabel: UILabel = {
         let label = UILabel()
         label.text = "루틴지정"
@@ -62,6 +69,7 @@ class JogakSimpleModalViewController: UIViewController {
         return label
     }()
     
+    /// 루틴으로 지정된 요일 label
     private lazy var routineDayLabel: UILabel = {
         let label = UILabel()
         label.textColor = DesignSystemColor.gray5.value
@@ -74,6 +82,7 @@ class JogakSimpleModalViewController: UIViewController {
         return uiSwitch
     }()
     
+    /// 기간 label
     lazy var termLabel: UILabel = {
         let label = UILabel()
         label.text = "기간"
@@ -83,6 +92,7 @@ class JogakSimpleModalViewController: UIViewController {
         return label
     }()
     
+    /// 정확한 기간 label(ex. 2024년 03월 08일 ~ 2024년 04월 09일)
     lazy var termTimeLabel: UILabel = {
         let label = UILabel()
         label.textColor = DesignSystemColor.gray5.value
@@ -91,6 +101,7 @@ class JogakSimpleModalViewController: UIViewController {
         return label
     }()
     
+    /// 삭제 버튼
     lazy var deleteBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("삭제", for: .normal)
@@ -102,6 +113,7 @@ class JogakSimpleModalViewController: UIViewController {
         return btn
     }()
     
+    /// 편집 버튼
     lazy var editBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("수정", for: .normal)
@@ -113,6 +125,7 @@ class JogakSimpleModalViewController: UIViewController {
         return btn
     }()
     
+    /// 삭제버튼과 편집버튼이 들어있는 stack
     lazy var btnstk: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
@@ -124,6 +137,7 @@ class JogakSimpleModalViewController: UIViewController {
         return stk
     }()
 
+    //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         labelSetting()
@@ -133,6 +147,7 @@ class JogakSimpleModalViewController: UIViewController {
         self.view.backgroundColor = .white
     }
     
+    /// 각종 라벨들에 데이터 넣어주기(ex. 카테고리 라벨 내용, 카테고리 라벨 글자색, 카테고리 라벨 배경 색 등)
     func labelSetting() {
         categoryLabel.text = mogakCategory
         categoryLabel.textColor = UIColor(hex: mogakCategoryColor)
@@ -141,6 +156,7 @@ class JogakSimpleModalViewController: UIViewController {
         jogakTitleLabel.text = jogakData.title
     }
     
+    /// 루틴 라벨 설정(ex. 루틴이 아닐 경우 -> routineStack 안보임)
     func routineLabelSetting() {
         if !jogakData.isRoutine {
             routineStack.isHidden = true
@@ -159,6 +175,7 @@ class JogakSimpleModalViewController: UIViewController {
     }
     
     //MARK: - 루틴의 경우 시작 일, 종료일 표시
+    /// 루틴의 경우 시작 일, 종료일 표시
     func termLabelSetting() {
         if let endDate = jogakData.endDate,
            let startDate = jogakData.startDate {
@@ -171,7 +188,8 @@ class JogakSimpleModalViewController: UIViewController {
         }
     }
     
-    
+    //MARK: - 조각 삭제 버튼 클릭
+    /// 조각 삭제 버튼 클릭
     @objc func deleteBtnTapped() {
         self.dismiss(animated: true)
         guard let startDeleteJogak = self.startDeleteJogak else { return }
@@ -189,6 +207,8 @@ class JogakSimpleModalViewController: UIViewController {
 }
 
 extension JogakSimpleModalViewController {
+    //MARK: - view들 레이아웃 잡아주기
+    /// view들 레이아웃 잡아주기
     func configureLayout() {
         self.view.addSubviews(categoryLabel, jogakTitleLabel, routineStack, termLabel, termTimeLabel, btnstk)
         

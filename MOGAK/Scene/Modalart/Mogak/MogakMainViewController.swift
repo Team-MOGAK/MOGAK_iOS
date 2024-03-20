@@ -13,6 +13,7 @@ protocol JogakCreatedReloadDelegate: AnyObject {
     func reloadMogak()
 }
 
+/// 모각 뷰(세부목표)
 class MogakMainViewController: UIViewController {
     //MARK: - properties
     var mogakList: [DetailMogakData] = []
