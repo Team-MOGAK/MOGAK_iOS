@@ -6,6 +6,7 @@ PODS:
   - Kingfisher (5.15.8):
     - Kingfisher/Core (= 5.15.8)
   - Kingfisher/Core (5.15.8)
+  - lottie-ios (4.4.0)
   - ReusableKit (4.0.0):
     - ReusableKit/Core (= 4.0.0)
   - ReusableKit/Core (4.0.0)
@@ -19,6 +20,7 @@ DEPENDENCIES:
   - ExpyTableView
   - FSCalendar
   - Kingfisher (~> 5.0)
+  - lottie-ios
   - ReusableKit
   - SnapKit (~> 5.6.0)
   - SwiftyJSON (~> 4.0)
@@ -31,6 +33,7 @@ SPEC REPOS:
     - ExpyTableView
     - FSCalendar
     - Kingfisher
+    - lottie-ios
     - ReusableKit
     - SnapKit
     - SwiftyJSON
@@ -42,11 +45,12 @@ SPEC CHECKSUMS:
   ExpyTableView: 19cf224c2ff04b1ec215ec52bc4ba6f81fa809ed
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   Kingfisher: a3c03d702433fa6cfedabb2bddbe076fb8f2e902
+  lottie-ios: ef1be1f90d54255f08e09d767950e43714661178
   ReusableKit: 8caaff6dc6e2d4c12beb395010086930454b12c3
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 5626b319d176a271e9756de9a77801581a327480
+PODFILE CHECKSUM: f8640cd5a22e3f112a1a85b787aaba1adfdd7b9d
 
 COCOAPODS: 1.13.0

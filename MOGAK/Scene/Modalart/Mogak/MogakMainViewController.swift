@@ -188,7 +188,6 @@ extension MogakMainViewController {
             self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):
-                print(#fileID, #function, #line, "- jogakList: \(jogakList)")
                 guard let jogakList = jogakList else { return }
                 self.jogakList = jogakList
                 self.mogakMandalartCollectionView.reloadData()

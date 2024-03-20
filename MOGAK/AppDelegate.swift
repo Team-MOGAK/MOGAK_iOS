@@ -11,31 +11,13 @@ import AuthenticationServices
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    var window: UIWindow?
+    var window: UIWindow? 
+    static var window: UIWindow { (UIApplication.shared.delegate?.window!)! }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+            self.window?.makeKeyAndVisible()
         
-//        let appleIDProvider = ASAuthorizationAppleIDProvider()
-//        appleIDProvider.getCredentialState(forUserID: "/*user의 고유 ID값(xxxxx.xxxxxxxxxx.xxxx)*/") { (credentialState, error) in
-//            switch credentialState {
-//            case .authorized:
-//                print("authorized")
-//                // The Apple ID credential is valid.
-//                DispatchQueue.main.async {
-//                    //authorized된 상태이므로 바로 로그인 완료 화면으로 이동
-//                    self.window?.rootViewController = TabBarViewController()
-//                }
-//            case .revoked:
-//                print("revoked")
-//            case .notFound:
-//                // The Apple ID credential is either revoked or was not found, so show the sign-in UI.
-//                print("notFound")
-//                
-//            default:
-//                break
-//            }
-//        }
-//        sleep(3)
         return true
     }
     

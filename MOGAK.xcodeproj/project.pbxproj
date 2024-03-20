@@ -38,6 +38,8 @@
 		4D7861B52AD25C50006B8E88 /* KakaoLoginManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */; };
 		4D7861BE2AD40938006B8E88 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */; };
 		4D7861C12AD427EB006B8E88 /* CustomPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */; };
+		4D7D14642BAB1F6800AB56CE /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7D14632BAB1F6800AB56CE /* LoadingView.swift */; };
+		4D7D14672BAB212700AB56CE /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D7D14662BAB212700AB56CE /* loading.json */; };
 		4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E49742AFBCBFB00DEB70C /* APIError.swift */; };
 		4D94392B2ACD347F00864336 /* ModalartMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */; };
 		4D9439302ACD54E000864336 /* EmptyMogakCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */; };
@@ -190,6 +192,8 @@
 		4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoLoginManage.swift; sourceTree = "<group>"; };
 		4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaddingLabel.swift; sourceTree = "<group>"; };
+		4D7D14632BAB1F6800AB56CE /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		4D7D14662BAB212700AB56CE /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
 		4D7E49742AFBCBFB00DEB70C /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainViewController.swift; sourceTree = "<group>"; };
 		4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyMogakCell.swift; sourceTree = "<group>"; };
@@ -402,6 +406,7 @@
 			children = (
 				4D7861C02AD427EB006B8E88 /* CustomPaddingLabel.swift */,
 				4DF224FE2AEBEEB3002FC286 /* ButtonWithMenu.swift */,
+				4D7D14632BAB1F6800AB56CE /* LoadingView.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -414,6 +419,14 @@
 				9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */,
 			);
 			path = MyPage;
+			sourceTree = "<group>";
+		};
+		4D7D14652BAB20F900AB56CE /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				4D7D14662BAB212700AB56CE /* loading.json */,
+			);
+			path = Lottie;
 			sourceTree = "<group>";
 		};
 		4D7D3E632AE52DB200335073 /* Modal */ = {
@@ -650,6 +663,7 @@
 		9C638ABD2A46E7C2002AB791 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4D7D14652BAB20F900AB56CE /* Lottie */,
 				9C638ABE2A46E7C8002AB791 /* Fonts */,
 			);
 			path = Resources;
@@ -888,6 +902,7 @@
 				9CFA7D0E2A45810B003E80A7 /* Assets.xcassets in Resources */,
 				9CE426B92A594062001629DC /* Pretendard-Regular.otf in Resources */,
 				9CE426B32A59404A001629DC /* Pretendard-Black.otf in Resources */,
+				4D7D14672BAB212700AB56CE /* loading.json in Resources */,
 				9CE426BA2A594062001629DC /* Pretendard-Thin.otf in Resources */,
 				9CE426B22A59404A001629DC /* Pretendard-Medium.otf in Resources */,
 			);
@@ -1005,6 +1020,7 @@
 				9C2EF7EE2A6CFB6000E8C8F4 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				4D488E0F2B20CBE40000D4E6 /* MogakListCell.swift in Sources */,
 				9CFA7D242A45915B003E80A7 /* NetworkingViewController.swift in Sources */,
+				4D7D14642BAB1F6800AB56CE /* LoadingView.swift in Sources */,
 				6544766E2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift in Sources */,
 				9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
@@ -1075,7 +1091,7 @@
 				9CE426F02A5AD705001629DC /* TermsAgreeViewController.swift in Sources */,
 				9CE426F22A5D24A5001629DC /* NicknameViewController.swift in Sources */,
 				652586C32B24C54900ED9B92 /* MogakEditViewController.swift in Sources */,
-				4D7E49752AFBCBFB00DEB70C /* APICall.swift in Sources */,
+				4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */,
 				655A21FD2B282EE900321E77 /* DateHelper.swift in Sources */,
 				4D7E49752AFBCBFB00DEB70C /* APIError.swift in Sources */,
 				9CE426E72A5A3A4F001629DC /* OnBoardingSecondViewController.swift in Sources */,
