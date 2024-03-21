@@ -57,7 +57,7 @@ struct ScheduleModalartListResponse: Codable {
 
 struct ScheduleModalartList: Codable {
     let id: Int
-    var title: String
+    let title: String
 }
 
 

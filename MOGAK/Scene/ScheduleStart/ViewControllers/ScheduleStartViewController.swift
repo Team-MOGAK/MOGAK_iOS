@@ -91,6 +91,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         blankLabel.font = UIFont(name: "Pretendard", size: 16)
         blankLabel.textColor = UIColor(hex: "#808497")
         blankLabel.numberOfLines = 2
+        blankLabel.setLineSpacing(lineSpacing: 4)
         blankLabel.textAlignment = .center
         return blankLabel
     }()
@@ -155,22 +156,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.DissmissModal(_:)), name: selectJogakModal.DidDismissModal, object: nil)
         
-        self.ScheduleTableView.reloadData()
+        //self.ScheduleTableView.reloadData()
         
-    }
-    
-    @objc func DissmissModal(_ noti: Notification) {
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let dateString = dateFormatter.string(from: currentDate)
-        
-        self.CheckDailyJogaks(DailyDate: dateString)
-        
-        OperationQueue.main.addOperation { // DispatchQueue도 가능.
-            self.ScheduleTableView.reloadData()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -185,9 +172,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.CheckDailyJogaks(DailyDate: dateString)
         
         printFirstAndLastDateOfMonth()
-        
-        self.ScheduleTableView.reloadData()
-        
         
     }
     
@@ -204,8 +188,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }
     
     //MARK: - Calendar func
-    
-    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
+    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool){
         calendarView.snp.updateConstraints{make in
             make.height.equalTo(bounds.height)
         }
@@ -313,8 +296,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         calendarView.snp.makeConstraints{
             $0.top.equalTo(headerStackView.snp.bottom).offset(5)
             $0.trailing.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(300) // 캘린더뷰의(월)일때의 총 높이
-            #warning("캘린더 높이 비율로 조정")
+            $0.height.equalTo(250) // 캘린더뷰의(월)일때의 총 높이
+            
+#warning("캘린더 높이 비율로 조정")
         }
         
         toggleButton.snp.makeConstraints{
@@ -335,12 +319,12 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         motiveLabel.snp.makeConstraints{
-            $0.top.equalTo(calendarView.snp.bottom).offset(16)
+            $0.top.equalTo(upperView.snp.bottom).offset(20)
             $0.leading.equalTo(calendarView.collectionView)
         }
         
         blankimage.snp.makeConstraints{
-            $0.bottom.equalTo(blankLabel.snp.top).offset(-10)
+            $0.bottom.equalTo(blankLabel.snp.top).offset(-20)
             $0.width.height.equalTo(88.0)
             $0.centerX.equalToSuperview()
         }
@@ -351,7 +335,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         makeModalArt.snp.makeConstraints{
-            $0.top.equalTo(blankLabel.snp.bottom).offset(10)
+            $0.top.equalTo(blankLabel.snp.bottom).offset(20)
             $0.width.equalTo(153)
             $0.height.equalTo(30)
             $0.centerX.equalToSuperview()
@@ -437,9 +421,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                         for dailyJogak in result.dailyJogaks {
                             self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
                         }
-                        //print("일일 조각 리스트 : ",self.dailyInfo)
+                        self.ScheduleTableView.reloadData()
                     }
-                    self.ScheduleTableView.reloadData()
                 } else {
                     print("일일 조각을 위한 nil 배열 수신.")
                 }
@@ -510,21 +493,20 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         ScheduleTableView.reloadData()
     }
     
-//    @objc func goAlarm(_ sender : UIButton){
-//        let alarmVC = AlarmViewController()
-//        navigationController?.pushViewController(alarmVC, animated: true)
-//        print("go alarm")
-//    }
+    //    @objc func goAlarm(_ sender : UIButton){
+    //        let alarmVC = AlarmViewController()
+    //        navigationController?.pushViewController(alarmVC, animated: true)
+    //        print("go alarm")
+    //    }
     
     @objc func goStart(_ sender : UIButton){
+        #warning("여기 바꿔야댐")
+        let SelectModalart = SelectJogakModal()
+        SelectModalart.modalPresentationStyle = .pageSheet
         
-        let selectJogak = SelectJogakModal()
-        selectJogak.modalPresentationStyle = .pageSheet
+        present(SelectModalart, animated: true, completion: nil)
         
-        
-        present(selectJogak, animated: true, completion: nil)
-        
-        if let sheet = selectJogak.sheetPresentationController {
+        if let sheet = SelectModalart.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.delegate = self
             sheet.prefersGrabberVisible = true
@@ -562,6 +544,18 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeMonth")
         }
     }
+    #warning("dismissModal")
+    @objc func DissmissModal(_ noti: Notification) {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.CheckDailyJogaks(DailyDate: dateString)
+        }
+    }
 }
 
 //MARK: - tableview
@@ -579,7 +573,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         underView.addSubview(startButton)
         
         ScheduleTableView.snp.makeConstraints{
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
+            $0.top.equalTo(motiveLabel.snp.bottom).offset(13)
             $0.leading.trailing.equalTo(calendarView.collectionView)
             $0.bottom.equalTo(startButton.snp.top)
         }
@@ -724,6 +718,20 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
 }
 
+extension UILabel {
+    public func setLineSpacing(lineSpacing: CGFloat) {
+        if let text = self.text {
+            let attributedStr = NSMutableAttributedString(string: text)
+            let style = NSMutableParagraphStyle()
+            style.lineSpacing = lineSpacing
+            attributedStr.addAttribute(
+                NSAttributedString.Key.paragraphStyle,
+                value: style,
+                range: NSRange(location: 0, length: attributedStr.length))
+            self.attributedText = attributedStr
+        }
+    }
+}
 
 
 

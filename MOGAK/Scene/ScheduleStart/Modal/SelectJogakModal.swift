@@ -18,7 +18,7 @@ class SelectJogakModal : UIViewController{
     var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
     //모다라트
-    var modalartList: [ScheduleModalartList] = [] ///모든 모다라트 리스트
+    var modalartList: [ScheduleModalartList] = []
     var modalartTitles: [String] = []
     
     var nowShowModalArtNum: Int = 0
@@ -97,6 +97,11 @@ class SelectJogakModal : UIViewController{
         getModalart()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.post(name: self.DidDismissModal, object: nil, userInfo: nil)
+    }
+    
     
     //MARK: - UIsetting
     
@@ -143,9 +148,6 @@ class SelectJogakModal : UIViewController{
     //MARK: - tableView UI
     
     func tableSetUI() {
-        MogakTableView.snp.makeConstraints{
-            $0.edges.equalTo(contentView)
-        }
         
         //아니, 테이블 뷰 하나에 셀 두개가 된다고????????????????????
         //시발 진작 알려주지 이거때매 3주는 고생했고만 ;;;
@@ -319,6 +321,7 @@ class SelectJogakModal : UIViewController{
             case.success(let data):
                 print(data as Any)
                 print("일일조각시작")
+                
             case.failure(let error):
                 print(error)
                 print("일일조각시작에러")
@@ -380,6 +383,7 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
             return tableViewData.count
         }
     }
+    
     //MARK: - Jogak
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { //조각의 개수
@@ -412,24 +416,22 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         
     }
     //MARK: - 추가하기 버튼 클릭시
-    @objc func addJogak(){
-        dismiss(animated: true){ [self] in
-            var Forcount : Int = 0
+    @objc func addJogak() {
+        dismiss(animated: true, completion: { [self] in
+            let serialQueue = DispatchQueue(label: "com.example.serialQueue")
             
             for jogakId in UserDefaultsManager.shared.clickedJogakIdList {
-                print(jogakId)
-                self.getAddJogakDaily(jogakId: jogakId)
-                Forcount = Forcount + 1
-                print("forcount : ",Forcount)
+                serialQueue.async {
+                    self.getAddJogakDaily(jogakId: jogakId)
+                    print(jogakId , "호출 완료")
                 }
-            
-            NotificationCenter.default.post(name: DidDismissModal, object: nil, userInfo: nil)
-            
-            UserDefaultsManager.shared.clickedJogakIdList.removeAll()
-            
-        }
-        
+            }
+            serialQueue.async {
+                UserDefaultsManager.shared.clickedJogakIdList.removeAll()
+            }
+        })
     }
+
     
 }
 
@@ -602,7 +604,6 @@ class JogakTableViewCell : UITableViewCell{
     var clickedJogakId : Int = 0
     
     //MARK: - 조각 라벨 설정
-
     func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)) {
         JogakLabel.text = jogakData.title
         
@@ -623,8 +624,6 @@ class JogakTableViewCell : UITableViewCell{
                 JogakimageView.image = UIImage(systemName: "square")
             }
         }
-        
-
         JogakimageView.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
             JogakLabel.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
     }
