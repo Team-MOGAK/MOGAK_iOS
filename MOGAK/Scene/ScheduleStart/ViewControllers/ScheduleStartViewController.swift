@@ -501,7 +501,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     @objc func goStart(_ sender : UIButton){
         #warning("여기 바꿔야댐")
-        let SelectModalart = SelectJogakModal()
+        //let SelectModalart = SelectJogakModal()
+        let SelectModalart = SelectModalartTableView()
         SelectModalart.modalPresentationStyle = .pageSheet
         
         present(SelectModalart, animated: true, completion: nil)
@@ -544,7 +545,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeMonth")
         }
     }
-    #warning("dismissModal")
+    #warning("loading화면 삽입 요망")
     @objc func DissmissModal(_ noti: Notification) {
         let currentDate = Date()
         let dateFormatter = DateFormatter()

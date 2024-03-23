@@ -1,29 +1,29 @@
-//
-//  SelectModalartTableView.swift
-//  MOGAK
-//
-//  Created by 안세훈 on 3/16/24.
-//
-
 import Foundation
 import UIKit
 import SnapKit
 import Then
 import Alamofire
 
-class SelectModalartTableView : UIViewController{
+class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    //MARK: - 모다라트 정보
     
-//MARK: - 모다라트 정보
-
     var modalartList: [ScheduleModalartList] = []
-    
     let Apinetwork =  ApiNetwork.shared
     
-//MARK: - 기본 프로퍼티
-
+    //MARK: - 모다라트 구조체
     
-    private lazy var mainLabel : UIButton = {
+    struct ModalartInfo {
+        var ModalartTitle: String
+        var ModalartId: Int
+        //var ModalartColor : String
+    }
+
+    var ModalClosure : (() -> (Void))?
+    
+    //MARK: - 기본 프로퍼티
+    
+    private lazy var mainLabel: UIButton = {
         let btn = UIButton()
         btn.setTitle("내 모다라트", for: .normal)
         btn.titleLabel?.font = DesignSystemFont.semibold20L140.value
@@ -38,28 +38,25 @@ class SelectModalartTableView : UIViewController{
         return tableView
     }()
     
-    private lazy var contentView : UIView = {
+    private lazy var contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         return view
     }()
     
-//MARK: - Life Cycle
-
+    //MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         SetUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        tableUI()
         getModalart()
     }
     
-//MARK: - func
-
-    func SetUI(){
+    //MARK: - SetUI
+    
+    func SetUI() {
         view.addSubviews(mainLabel,contentView)
         contentView.addSubviews(ModalartTableView)
         
@@ -73,47 +70,84 @@ class SelectModalartTableView : UIViewController{
             $0.leading.trailing.bottom.equalToSuperview()
             
         }
+        ModalartTableView.snp.makeConstraints{
+            $0.edges.equalTo(contentView)
+            
+        }
     }
+    
+    var ModalartData = [ModalartInfo]()
+    
+    func tableUI() {
+        ModalartTableView.register(SelectModalartTableViewCell.self, forCellReuseIdentifier: "SelectModalartTableViewCell")
+        ModalartTableView.dataSource = self
+        ModalartTableView.delegate = self
+        ModalartTableView.separatorStyle = .none
+    }
+    
+    //MARK: - 모다라트 리스트 조회
     
     func getModalart() {
         Apinetwork.getModalartList { result in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
-            case .success(let list):
-                print(list as Any)
-                
+            case .success(let data):
+                print(data as Any)
+                if let ModalartArray = data {
+                    self.modalartList = ModalartArray
+                    self.ModalartData = ModalartArray.map { Modalart in
+                        return ModalartInfo(ModalartTitle: Modalart.title, ModalartId: Modalart.id)
+                    }
+                    self.ModalartTableView.reloadData()
+                }
             }
         }
     }
     
-    
-}
-
-
-extension SelectModalartTableView : UITableViewDelegate,UITableViewDataSource{
-    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return ModalartData.count
+ 
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "SelectModalartTableViewCell", for: indexPath) as? SelectModalartTableViewCell else {
-            
             return UITableViewCell()
         }
+        
+        let modalart = ModalartData[indexPath.section]
+        cell.configureModalart(with: modalart)
         
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(ModalartData[indexPath.section])
+        
+        
+        
+        }
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if indexPath.row == 0 {
+            return 60
+        }else {
+            return 40
+        }
+        
+    }
 }
 
-class SelectModalartTableViewCell : UITableViewCell{
+//MARK: - Cell
+class SelectModalartTableViewCell: UITableViewCell {
     
-    
-    private lazy var ModalartLabel : CustomPaddingLabel = {
+    private lazy var ModalartLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
         label.font = DesignSystemFont.medium16L150.value
         label.layer.cornerRadius = 8
@@ -122,7 +156,7 @@ class SelectModalartTableViewCell : UITableViewCell{
         return label
     }()
     
-    private lazy var ModalartView : UIView = {
+    private lazy var ModalartView: UIView = {
         let view = UIView()
         return view
     }()
@@ -139,7 +173,6 @@ class SelectModalartTableViewCell : UITableViewCell{
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         layoutModalart()
-        selectionStyle = .none
     }
     
     required init?(coder: NSCoder) {
@@ -150,38 +183,30 @@ class SelectModalartTableViewCell : UITableViewCell{
         super.layoutSubviews()
     }
     
-    func layoutModalart(){
-//        contentView.addSubviews(MogakStackView,MogakButtonView)
-//        MogakView.addSubview(MogakLabel)
-    }
-}
-
-//Preview code
-#if DEBUG
-import SwiftUI
-struct SelectModalartVCRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        SelectModalartTableView()
-    }
-}
-@available(iOS 13.0, *)
-struct SelectModalartVCRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                SelectModalartVCRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-            } else {
-                // Fallback on earlier versions
-            }
+    func layoutModalart() {
+        contentView.addSubviews(ModalartStackView)
+        ModalartView.addSubview(ModalartLabel)
+        
+        ModalartStackView.snp.makeConstraints{
+            $0.edges.equalToSuperview()
         }
         
+        ModalartView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.top.bottom.equalToSuperview().inset(12)
+            $0.centerY.equalToSuperview()
+        }
+        
+        ModalartLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview()
+            $0.centerY.equalTo(ModalartStackView)
+        }
     }
-} #endif
+    
+    func configureModalart(with ModalartData: SelectModalartTableView.ModalartInfo) {
+        
+        ModalartLabel.text = ModalartData.ModalartTitle
+        ModalartLabel.textColor = DesignSystemColor.signature.value
+        ModalartLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
+    }
+}
