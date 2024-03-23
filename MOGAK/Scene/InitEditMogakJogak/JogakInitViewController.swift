@@ -670,7 +670,7 @@ extension JogakInitViewController: UICollectionViewDelegateFlowLayout {
         }
         let size = label.frame.size
         
-        return CGSize(width: size.width + 37, height: size.height + 32)
+        return CGSize(width: size.width + 37, height: size.height + 30)
     }
 }
 
