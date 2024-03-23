@@ -1398,6 +1398,7 @@ extension MogakEditViewController {
     // 모각 생성
     // MARK: - 재혁 코드
     func editMogak() {
+        self.view.isUserInteractionEnabled = false
         //let id = currentModalartId
         let id = currentMogakId
         let editedTitle = mogakTextField.text

@@ -960,6 +960,7 @@ extension JogakInitViewController {
 extension JogakInitViewController {
     // 조각 생성
     func createJogak() {
+        self.view.isUserInteractionEnabled = false
         let mogakId = currentMogakId
         //let mogakId = 14
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"

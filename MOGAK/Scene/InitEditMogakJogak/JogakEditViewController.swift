@@ -1027,6 +1027,7 @@ extension JogakEditViewController {
 extension JogakEditViewController {
     // 조각 수정
     func editJogak() {
+        self.view.isUserInteractionEnabled = false
         let jogakId = currentJogakId
         //let jogakId = 18
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
