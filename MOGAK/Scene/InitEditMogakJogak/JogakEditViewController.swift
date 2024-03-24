@@ -652,6 +652,8 @@ class JogakEditViewController: UIViewController {
         print("")
     }
     
+
+    
 }
 
 extension JogakEditViewController: UITextFieldDelegate {

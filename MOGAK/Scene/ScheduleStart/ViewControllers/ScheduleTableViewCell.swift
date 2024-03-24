@@ -98,8 +98,12 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 
             }
         }
+        #warning("조각수정 및 삭제 push")
+        desetroutine.pushClosure = {
+            let vc = JogakEditViewController()
+                    parentViewController.navigationController?.pushViewController(vc, animated: true)
+        }
         
-        print("cell button clicked")
     }
     
     //MARK: - init

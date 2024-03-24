@@ -11,7 +11,7 @@ import Then
 
 class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
-    var pushClosure : (() -> ())?
+    var pushClosure: (() -> Void)?
     
      lazy var jogaktitleLabel : UILabel = {
         let label = UILabel()
@@ -89,33 +89,20 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
     }
     //MARK: - @objc func
     @objc func ScheduleStop(){
-        self.dismiss(animated: true){ [weak self] in
-            guard let self = self else { return }
-            let jogakEditViewController = JogakEditViewController()
-            if let navigationController = self.navigationController {
-                navigationController.pushViewController(jogakEditViewController, animated: true)
-            } else {
-                // 만약 navigationController가 없는 경우에 대한 처리
-                // 예를 들어, self가 UINavigationController의 자식 뷰컨트롤러인 경우
-                // 또는 self가 navigationController에 포함되어 있지 않은 경우
-                // 그냥 present로 표시하거나 다른 처리를 해야 함
-                if let window = UIApplication.shared.windows.first {
-                                window.rootViewController?.present(jogakEditViewController, animated: true, completion: nil)
-                            }
-                print("else")
-            }
-        }
-        
+        self.dismiss(animated: true)
+        Closurefunc()
     }
     
     @objc func dismissModal(){
-        self.dismiss(animated: true){
-            
-            
-        }
-        
+        self.dismiss(animated: true)
+        Closurefunc()
     }
     
+    func Closurefunc(){
+        guard let pushClosure = self.pushClosure else { return }
+        //이걸 modal을 부르는 곳에서 데이터를 pushClosure을 부른다
+        pushClosure()
+    }
     
 }
 
