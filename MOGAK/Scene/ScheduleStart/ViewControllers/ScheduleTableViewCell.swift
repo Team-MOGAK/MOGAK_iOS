@@ -107,6 +107,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             setroutine.pushClosure = {
                 let vc = JogakEditViewController()
                         parentViewController.navigationController?.pushViewController(vc, animated: true)
+                print(setroutine.jogaktitleLabel,setroutine.subtitleLabel)
             }
         }
     }
@@ -155,6 +156,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             $0.trailing.equalTo(contentView).offset(-16)
             $0.centerY.equalTo(contentView)
         }
+        
         recodelabel?.snp.makeConstraints {
             $0.leading.equalTo(cellLabel.snp.trailing).offset(10)
                $0.top.equalTo(contentView).offset(10) // Adjust top constraint as needed

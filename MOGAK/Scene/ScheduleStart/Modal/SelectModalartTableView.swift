@@ -128,9 +128,9 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(ModalartData[indexPath.section])
         
+        ModalClosure?()
         
-        
-        }
+    }
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

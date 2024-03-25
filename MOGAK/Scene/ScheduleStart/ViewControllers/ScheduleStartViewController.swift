@@ -127,7 +127,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         startbutton.backgroundColor = DesignSystemColor.signature.value  //백그라운드색
         startbutton.titleLabel?.font = DesignSystemFont.semibold18L100.value
         startbutton.layer.cornerRadius = 10 //둥글기
-        //        startbutton.isHidden = true
         startbutton.addTarget(self, action: #selector(goStart), for: .touchUpInside)
         return startbutton
     }()
@@ -177,7 +176,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        returnToday()
+        returnToday() //뷰가 나타날때, 현시점 날짜로 돌아옴
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -210,6 +209,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday
+        
         
     }
     //MARK: - 해당 월의 첫날, 마지막날 계산
@@ -500,8 +500,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     @objc func goStart(_ sender : UIButton){
         #warning("여기 바꿔야댐")
-        //let SelectModalart = SelectJogakModal()
-        let SelectModalart = SelectModalartTableView()
+        let SelectModalart = SelectJogakModal()
+        //let SelectModalart = SelectModalartTableView()
         SelectModalart.modalPresentationStyle = .pageSheet
         
         present(SelectModalart, animated: true, completion: nil)
@@ -512,6 +512,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             sheet.prefersGrabberVisible = true
             sheet.largestUndimmedDetentIdentifier = nil
         }
+        
+//        SelectModalart.ModalClosure = { [self] in
+//            let vc = SelectJogakModal()
+//            self.navigationController?.pushViewController(selectJogakModal, animated: true)
+//        }
     }
     
     //MARK: - 날짜 이동 함수
@@ -572,17 +577,25 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         underView.addSubview(ScheduleTableView)
         underView.addSubview(startButton)
         
-        ScheduleTableView.snp.makeConstraints{
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(13)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalTo(startButton.snp.top)
+        if startButton.isHidden == true{
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(13)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-15)
+            }
+        }
+        else{
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(13)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(startButton.snp.top)
+            }
         }
         
-        startButton.snp.makeConstraints{
+        startButton.snp.makeConstraints(){
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-15)
             $0.leading.trailing.equalToSuperview().inset(20)
-            //$0.top.equalTo(ScheduleTableView.snp.bottom)
-            $0.bottom.equalTo(underView.snp.bottom).inset(110) //16
-            $0.height.equalTo(48)
+            $0.height.equalTo(50)
         }
     }
     
@@ -593,8 +606,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         
     }
-    
-    
     
     //MARK: -  Cell설정 (셀로부터 이동되는 정보들)
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){ //셀 클릭

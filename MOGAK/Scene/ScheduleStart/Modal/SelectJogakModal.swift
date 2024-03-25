@@ -322,7 +322,6 @@ class SelectJogakModal : UIViewController{
             }
         }
     }
-    
 }
 
 extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
