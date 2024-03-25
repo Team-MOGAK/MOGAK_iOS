@@ -11,6 +11,8 @@ import Then
 
 class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
+     var pushClosure: (() -> Void)?
+    
      lazy var jogaktitleLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
@@ -87,22 +89,20 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
         }
     }
     //MARK: - @objc func
-    @objc func ScheduleStop(){ #warning("dismiss 후 push 수정")
-        print("ScheduleStop")
-//        self.dismiss(animated: true, completion : { [weak self] in
-//            
-//            self?.pushToJogakEdit()
-//            
-//        })
-        
-        let MogakMainVC = MogakMainViewController()
-        MogakMainVC.editBtnTapped()
+    @objc func ScheduleStop(){
+        self.dismiss(animated: true)
+        Closurefunc()
     }
     
     @objc func dismissModal(){
-        self.dismiss(animated: true, completion : { [weak self] in
-           
-        })
+        self.dismiss(animated: true)
+        Closurefunc()
+    }
+    
+    func Closurefunc(){
+        guard let pushClosure = self.pushClosure else { return }
+        //이걸 modal을 부르는 곳에서 데이터를 pushClosure을 부른다
+        pushClosure()
     }
     
     

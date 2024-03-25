@@ -82,6 +82,12 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 }
                 
             }
+//MARK: - 루틴으로 지정되지 않은 조각
+
+            desetroutine.pushClosure = {
+                let vc = JogakEditViewController()
+                        parentViewController.navigationController?.pushViewController(vc, animated: true)
+            }
         }else{
             parentViewController.present(setroutine,animated: true)
             
@@ -97,13 +103,12 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 }
                 
             }
+//MARK: - 루틴으로 지정된 조각
+            setroutine.pushClosure = {
+                let vc = JogakEditViewController()
+                        parentViewController.navigationController?.pushViewController(vc, animated: true)
+            }
         }
-        #warning("조각수정 및 삭제 push")
-        desetroutine.pushClosure = {
-            let vc = JogakEditViewController()
-                    parentViewController.navigationController?.pushViewController(vc, animated: true)
-        }
-        
     }
     
     //MARK: - init

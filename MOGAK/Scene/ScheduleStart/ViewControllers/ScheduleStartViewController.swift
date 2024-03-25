@@ -156,12 +156,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.DissmissModal(_:)), name: selectJogakModal.DidDismissModal, object: nil)
         
-        //self.ScheduleTableView.reloadData()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
         
         let currentDate = Date()
         let dateFormatter = DateFormatter()
