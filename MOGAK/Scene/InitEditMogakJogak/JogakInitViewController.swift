@@ -1002,7 +1002,7 @@ extension JogakInitViewController {
             case .success(let jogakMainData):
                 print(#fileID, #function, #line, "- jogakMainData: \(jogakMainData)")
                 self.delegate?.reloadMogak()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):

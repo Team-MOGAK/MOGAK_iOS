@@ -15,7 +15,9 @@ import FSCalendar
 import Alamofire
 
 class JogakEditViewController: UIViewController {
+    
     weak var delegate: JogakCreatedReloadDelegate?
+    
     var currentJogakId: Int = 0
     var currentJogak: JogakDetail = JogakDetail(jogakID: 0, mogakTitle: "", category: "", title: "", isRoutine: false, days: [], startDate: "", endDate: "", isAlreadyAdded: false, achievements: 0)
     
@@ -1059,7 +1061,7 @@ extension JogakEditViewController {
             case .success(let message):
                 print(#fileID, #function, #line, "- jogakMainData: \(message)")
                 self.delegate?.reloadMogak()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):

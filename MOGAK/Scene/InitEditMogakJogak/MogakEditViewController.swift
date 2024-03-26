@@ -13,7 +13,9 @@ import FSCalendar
 import Alamofire
 
 class MogakEditViewController: UIViewController {
+    
     weak var delegate: MogakCreatedReloadDelegate?
+    weak var delegate2: JogakCreatedReloadDelegate?
     let mogakNetwork = MogakNetwork()
     
     // MARK: - 데이터
@@ -955,7 +957,7 @@ class MogakEditViewController: UIViewController {
     @objc private func completeButtonTapped() {
         //createMogak()
         editMogak()
-        self.navigationController?.popViewController(animated: true)
+        //self.navigationController?.popViewController(animated: true)
     }
     
 }
@@ -1418,8 +1420,9 @@ extension MogakEditViewController {
             switch result {
             case .success(let mogakEditedData):
                 print(#fileID, #function, #line, "- editedMogakData: \(mogakEditedData)")
+                self.delegate2?.reloadMogak()
                 self.delegate?.reloadModalart()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):

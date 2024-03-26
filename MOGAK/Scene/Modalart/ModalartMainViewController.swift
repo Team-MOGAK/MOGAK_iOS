@@ -616,7 +616,7 @@ extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
 
 extension ModalartMainViewController: MogakCreatedReloadDelegate {
     func reloadModalart() {
-        print("DELEGATE 과연???")
+        print("reload Modalart: DELEGATE 과연???")
         self.getModalartDetailInfo(id: nowShowModalArtNum)
         modalArtCollectionView.reloadData()
     }

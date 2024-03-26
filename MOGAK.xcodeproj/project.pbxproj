@@ -151,7 +151,6 @@
 		D16D54282B37DF0100CAC0E1 /* ApiRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */; };
 		D16D542A2B37E41C00CAC0E1 /* ApiNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */; };
 		D1826F822AEFF4B300A755D4 /* SelectJogakModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */; };
-		D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */; };
 		D1A8EC152AD56F0F00FE1648 /* GalleryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */; };
 		D1E43CEF2B24C8D000058C8C /* deSetRoutineModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */; };
 		D1EB8CE82B5B93CC0022D4A5 /* ScheduleModalartModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */; };
@@ -1028,7 +1027,6 @@
 				6544766E2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift in Sources */,
 				9CCB39DB2A911F8B00968CDB /* ValidateNicknameModel.swift in Sources */,
 				9CE426F82A5FD9CD001629DC /* ChooseRegionViewController.swift in Sources */,
-				D1A2CFDD2B0349EB00427333 /* CancelModalVC.swift in Sources */,
 				4D3077512AF3D841001FDD77 /* ShowModalArtListModal.swift in Sources */,
 				9C2EF7F62A76351D00E8C8F4 /* ScorllView+Ext.swift in Sources */,
 				9CFA7D052A458109003E80A7 /* AppDelegate.swift in Sources */,

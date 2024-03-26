@@ -11,6 +11,8 @@ import Then
 
 class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     
+    var pushClosure : (() -> ())?
+    
      lazy var jogaktitleLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
@@ -83,21 +85,37 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
             $0.height.equalTo(52)
             $0.bottom.equalToSuperview().inset(24)
             $0.trailing.equalToSuperview().multipliedBy(0.5).offset(-5)
-            
         }
     }
     //MARK: - @objc func
-    
     @objc func ScheduleStop(){
-        print("ScheduleStop")
-        self.dismiss(animated: true, completion: {
-        })
-    }
-    @objc func dismissModal(){
         self.dismiss(animated: true){ [weak self] in
+            guard let self = self else { return }
+            let jogakEditViewController = JogakEditViewController()
+            if let navigationController = self.navigationController {
+                navigationController.pushViewController(jogakEditViewController, animated: true)
+            } else {
+                // 만약 navigationController가 없는 경우에 대한 처리
+                // 예를 들어, self가 UINavigationController의 자식 뷰컨트롤러인 경우
+                // 또는 self가 navigationController에 포함되어 있지 않은 경우
+                // 그냥 present로 표시하거나 다른 처리를 해야 함
+                if let window = UIApplication.shared.windows.first {
+                                window.rootViewController?.present(jogakEditViewController, animated: true, completion: nil)
+                            }
+                print("else")
+            }
+        }
+        
+    }
+    
+    @objc func dismissModal(){
+        self.dismiss(animated: true){
+            
             
         }
+        
     }
+    
     
 }
 

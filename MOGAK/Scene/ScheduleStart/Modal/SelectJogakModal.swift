@@ -14,7 +14,6 @@ import ExpyTableView
 
 class SelectJogakModal : UIViewController{
     
-    var TableViewReload : (()->())? //tableviewreload
     //셀
     var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
@@ -32,6 +31,8 @@ class SelectJogakModal : UIViewController{
     var mogakData: [ScheduleDetailMogakData] = []
     
     let Apinetwork =  ApiNetwork.shared
+    
+    let DidDismissModal: Notification.Name = Notification.Name("DidDismissModal")
     
     //MARK: - Basic Properties
     
@@ -76,10 +77,7 @@ class SelectJogakModal : UIViewController{
         return button
     }()
     
-    //클로저는 보내는 VC에서 설정 : String에서 보내고 받는쪽은 Void
-    
     //MARK: - modalart정보를 받는 곳
-    
     lazy var MogakTableView: ExpyTableView = {
         let tableView = ExpyTableView()
         return tableView
@@ -95,9 +93,10 @@ class SelectJogakModal : UIViewController{
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getModalart()
-        
     }
+    
     
     //MARK: - UIsetting
     
@@ -313,13 +312,16 @@ class SelectJogakModal : UIViewController{
         }
     }
     //MARK: - 일일 조각 시작
-    func getAddJogakDaily(id : Int){
-        Apinetwork.getAddJogakDaily(jogakId: id){ result in
+
+    func getAddJogakDaily(jogakId : Int){
+        Apinetwork.getAddJogakDaily(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
                 print(data as Any)
+                print("일일조각시작")
             case.failure(let error):
                 print(error)
+                print("일일조각시작에러")
             }
         }
     }
@@ -411,20 +413,19 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     }
     //MARK: - 추가하기 버튼 클릭시
     @objc func addJogak(){
-        dismiss(animated: true){ [weak self] in
-            print("테이블 뷰 리로드 클로저 ㅇㅇ")
-            self?.TableViewReload?()
-            //self?.getAddJogakDaily(id: 100)
-            if let jogakCell = self?.MogakTableView.visibleCells,
-               let jogakCell = jogakCell.compactMap({ $0 as? JogakTableViewCell }).first {
-                
-                for jogakID in jogakCell.clickedJogakIdList {
-                    self?.getAddJogakDaily(id: jogakID)
-                    
-                }
-            }
+        dismiss(animated: true){ [self] in
+            var Forcount : Int = 0
             
-            self?.MogakTableView.reloadData()
+            for jogakId in UserDefaultsManager.shared.clickedJogakIdList {
+                print(jogakId)
+                self.getAddJogakDaily(jogakId: jogakId)
+                Forcount = Forcount + 1
+                print("forcount : ",Forcount)
+                }
+            
+            NotificationCenter.default.post(name: DidDismissModal, object: nil, userInfo: nil)
+            
+            UserDefaultsManager.shared.clickedJogakIdList.removeAll()
             
         }
         
@@ -456,7 +457,6 @@ class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
         }
         
     }
-    
     
     private lazy var MogakLabel : CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
@@ -524,7 +524,7 @@ class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
         MogakButtonView.snp.makeConstraints {
             $0.width.height.equalTo(16)
             $0.centerY.equalTo(MogakStackView)
-            $0.trailing.equalToSuperview()
+            $0.trailing.equalToSuperview().offset(-20)
         }
     }
     
@@ -599,23 +599,25 @@ class JogakTableViewCell : UITableViewCell{
         }
     }
     
-    var clickedJogakId = Int()
-    var clickedJogakIdList = [Int]()
+    var clickedJogakId : Int = 0
     
     //MARK: - 조각 라벨 설정
-    func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool,isRoutine: Bool, jogakID : Int)) {
+
+    func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)) {
         JogakLabel.text = jogakData.title
+        
         clickedJogakId = jogakData.jogakID
         
-        print(jogakData.title, jogakData.isAlreadyAdded,jogakData.isRoutine, jogakData.jogakID)
+        print("조각 타이틀 : \(jogakData.title) 일일 조각 추가 여부 : \(jogakData.isAlreadyAdded) 루틴의 여부 :\(jogakData.isRoutine) 조각 아이디: \(jogakData.jogakID)")
         
         //이미 일일 조각에 추가가 되어있을 경우 || == or
         if (jogakData.isAlreadyAdded || jogakData.isRoutine) == true{
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
+            
         } else {
             JogakimageView.image = UIImage(systemName: "square")
             
-            if clickedJogakIdList.contains(clickedJogakId){
+            if UserDefaultsManager.shared.clickedJogakIdList.contains(clickedJogakId) {
                 JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
             }else{
                 JogakimageView.image = UIImage(systemName: "square")
@@ -630,20 +632,31 @@ class JogakTableViewCell : UITableViewCell{
     //MARK: - jogakLabel 클릭시 이벤트
     @objc func jogakLabelTap(_ sender: UITapGestureRecognizer){
         
-        print(JogakLabel.text as Any)
+        print(JogakLabel.text ?? "", clickedJogakId)
         
         if JogakimageView.image == UIImage(systemName: "square"){
+            
+            UserDefaultsManager.shared.clickedJogakIdList.append(clickedJogakId)
+            
             JogakimageView.image = UIImage(systemName: "checkmark.square.fill")?.withTintColor(DesignSystemColor.lightGreen.value, renderingMode: .alwaysOriginal)
-            clickedJogakIdList.append(clickedJogakId)
-            print(clickedJogakIdList)
         }else{
             JogakimageView.image = UIImage(systemName: "square")
-            clickedJogakIdList.removeAll { $0 == clickedJogakId }
-            print(clickedJogakIdList)
+            if let index = UserDefaultsManager.shared.clickedJogakIdList.firstIndex(of: clickedJogakId) {
+                UserDefaultsManager.shared.clickedJogakIdList.remove(at: index)
+            }
         }
-        
+        print("찐배열 \(UserDefaultsManager.shared.clickedJogakIdList)")
         jogakSelectionHandler?()
     }
+}
+
+//싱글톤 패턴 적용
+class UserDefaultsManager {
+    static let shared = UserDefaultsManager()
+    
+    private init () {}
+    
+    var clickedJogakIdList: [Int] = []
 }
 
 
