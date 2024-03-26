@@ -66,8 +66,6 @@ class MogakMainViewController: UIViewController {
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
-        print(#fileID, #function, #line, "- jogakList: \(self.mogakList)")
-        print(#fileID, #function, #line, "- selectedMogak: \(self.selectedMogak)")
         super.viewDidLoad()
         self.viewSetting()
         self.configureLayout()
@@ -124,7 +122,6 @@ class MogakMainViewController: UIViewController {
     //MARK: - ... 버튼 클릭
     /// ... 버튼 클릭
     @objc private func navigationRightBtnTapped() {
-        print(#fileID, #function, #line, "- 이클립스 버튼 체크")
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let deleteModalArtAction = UIAlertAction(title: "\(selectedMogak.title) 삭제", style: .destructive) { _ in
             //삭제하기 선택시 -> 정말 삭제하시겠습니까?라는 alert을 띄우기
@@ -137,7 +134,6 @@ class MogakMainViewController: UIViewController {
         
         ///액션sheet취소
         let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            print(#fileID, #function, #line, "- <#comment#>")
             self.dismiss(animated: false)
         }
         
@@ -205,17 +201,20 @@ extension MogakMainViewController {
     /// 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
         ///유저 액션 막기
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
+//        self.view.isUserInteractionEnabled = false
         let jogakDate = Date().jogakTodayDateToString()
         mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: jogakDate) { result in
-            self.view.isUserInteractionEnabled = true
+//            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):
                 guard let jogakList = jogakList else { return }
                 self.jogakList = jogakList
                 self.mogakMandalartCollectionView.reloadData()
+                LoadingIndicator.hideLoading()
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
@@ -223,9 +222,11 @@ extension MogakMainViewController {
     //MARK: - 모각 삭제
     /// 모각 삭제
     func deleteMogak() {
-        self.view.isUserInteractionEnabled = false
+//        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         mogakNetwork.deleteMogak(mogakId: selectedMogak.mogakId) { result in
-            self.view.isUserInteractionEnabled = true
+//            self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let responseResult):
                 if responseResult {
@@ -240,9 +241,11 @@ extension MogakMainViewController {
     //MARK: - 모각데이터 가져오기
     /// 모각데이터 가져오기
     func getDetailMogakData() {
-        self.view.isUserInteractionEnabled = false
+//        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         modalartNetwork.getDetailMogakData(modalartId: self.modalartId) { result in
-            self.view.isUserInteractionEnabled = true
+//            self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let data):
                 self.mogakList = data?.result?.mogaks ?? []
@@ -269,9 +272,11 @@ extension MogakMainViewController {
     //MARK: - 조각 삭제
     /// 조각 삭제
     func deleteJogak(_ jogakId: Int) {
-        self.view.isUserInteractionEnabled = false
+//        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         mogakNetwork.deleteJogak(jogakId: jogakId) { result in
-            self.view.isUserInteractionEnabled = true
+//            self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(_):
                 self.getMogakDetail(self.selectedMogak)

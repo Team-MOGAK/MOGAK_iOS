@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0E16A07A5135254924AA7BBC /* Pods_MOGAK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5C70052B46096077CFF257 /* Pods_MOGAK.framework */; };
+		4D06E86C2BB305C600AFECBA /* mogakLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D06E86B2BB305C600AFECBA /* mogakLoading.json */; };
 		4D3077512AF3D841001FDD77 /* ShowModalArtListModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */; };
 		4D3077532AF3E990001FDD77 /* ShowModalArtListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */; };
 		4D488E0D2B20C1E80000D4E6 /* MogakMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D488E0C2B20C1E80000D4E6 /* MogakMainViewController.swift */; };
@@ -162,6 +163,7 @@
 /* Begin PBXFileReference section */
 		12F1BF204BE4BB075C412C38 /* Pods-MOGAK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MOGAK.debug.xcconfig"; path = "Target Support Files/Pods-MOGAK/Pods-MOGAK.debug.xcconfig"; sourceTree = "<group>"; };
 		3A5C70052B46096077CFF257 /* Pods_MOGAK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MOGAK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D06E86B2BB305C600AFECBA /* mogakLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = mogakLoading.json; sourceTree = "<group>"; };
 		4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListModal.swift; sourceTree = "<group>"; };
 		4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListCell.swift; sourceTree = "<group>"; };
 		4D488E0C2B20C1E80000D4E6 /* MogakMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakMainViewController.swift; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 			isa = PBXGroup;
 			children = (
 				4D7D14662BAB212700AB56CE /* loading.json */,
+				4D06E86B2BB305C600AFECBA /* mogakLoading.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -895,6 +898,7 @@
 			files = (
 				9CFA7D112A45810B003E80A7 /* LaunchScreen.storyboard in Resources */,
 				9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */,
+				4D06E86C2BB305C600AFECBA /* mogakLoading.json in Resources */,
 				9CE426B82A594062001629DC /* Pretendard-ExtraBold.otf in Resources */,
 				9CE426B02A59404A001629DC /* Pretendard-ExtraLight.otf in Resources */,
 				9CE426B42A59404A001629DC /* Pretendard-SemiBold.otf in Resources */,
