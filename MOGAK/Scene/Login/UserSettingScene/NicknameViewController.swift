@@ -14,6 +14,7 @@ import Combine
 class NicknameViewController: UIViewController {
     let registerUserInfo = RegisterUserInfo.shared
     let apiManger = ApiManager.shared
+    /// 프로필 수정하러 들어올때와 회원가입 시 프로필을 생성할 때를 구분하기 위한 변수 (프로필 수정할때 -> true, 회원가입 시 프로필 입력 -> false)
     var nicknameAndImageChange: Bool = false
     var profileImageChange: Bool = false
     var changeProfileImage: UIImage? = nil
@@ -332,9 +333,11 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 extension NicknameViewController {
     //MARK: - 닉네임 타당성 검증 요청
     func validateNickname(nickName: String) {
+        LoadingIndicator.showLoading()
         let nicknameRequest = NicknameChangeRequest(nickname: nickName)
         AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
             .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
+                LoadingIndicator.hideLoading()
                 switch response.result {
                 case .success(let data):
                     if data.code == "success" {
@@ -359,7 +362,9 @@ extension NicknameViewController {
     
     //MARK: - 닉네임 변경
     func nicknameChange(nickname: String) {
+        LoadingIndicator.showLoading()
         UserNetwork.shared.nicknameChange(nickname) { result in
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
@@ -416,9 +421,11 @@ extension NicknameViewController {
     
     //MARK: - 프로필 사진 변경 요청
     func profileImageChangeRequest() {
+        LoadingIndicator.showLoading()
         let userNetwork = UserNetwork.shared
         guard let profileImage = changeProfileImage else { return }
         userNetwork.userImageChange(profileImage) { result in
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")

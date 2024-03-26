@@ -10,8 +10,8 @@ import Lottie
 
 final class LoadingView: UIView {
     let loadingView: LottieAnimationView = {
-//        let view = LottieAnimationView(name: "mogakLoading")
-        let view = LottieAnimationView(name: "loading")
+        let view = LottieAnimationView(name: "mogakLoading")
+//        let view = LottieAnimationView(name: "loading")
         view.loopMode = .loop
         return view
     }()
