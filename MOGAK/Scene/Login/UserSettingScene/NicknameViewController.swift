@@ -52,7 +52,7 @@ class NicknameViewController: UIViewController {
     private lazy var nicknameTextField : UITextField = {
         let textField = UITextField()
         let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.medium, size: 16), NSAttributedString.Key.foregroundColor : UIColor(hex: "BFC3D4")]
-        let placeholderText = "닉네임을 입력해주세요."
+        let placeholderText = RegisterUserInfo.shared.nickName != nil && RegisterUserInfo.shared.nickName != "" ? RegisterUserInfo.shared.nickName ?? "닉네임을 입력해주세요." : "닉네임을 입력해주세요."
         textField.textAlignment = .left
         textField.delegate = self
         textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 20.0, height: 0.0))
@@ -105,6 +105,7 @@ class NicknameViewController: UIViewController {
         self.configureButton()
         self.configureDeleteButton()
         
+        // profile 설정한 사진과 연동되도록 설정
         registerUserInfo.$profileImage.sink { image in
             if self.nicknameAndImageChange && self.profileImageChange {
                 self.nextButton.isUserInteractionEnabled = true
