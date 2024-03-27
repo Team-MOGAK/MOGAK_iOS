@@ -26,28 +26,29 @@ class TabBarViewController: UITabBarController{
     private func setupViews() {
         let homeTabBarItem = UITabBarItem(title: "조각시작", image: UIImage(named: "start"), selectedImage: UIImage(named: "selectedStart"))
         let modalArtBarItem = UITabBarItem(title: "모다라트", image: UIImage(named: "modalArt"), selectedImage: UIImage(named: ""))
-        let reportTabBarItem = UITabBarItem(title: "마이 히스토리", image: UIImage(named: "History"), selectedImage: UIImage(named: "selectedHistory"))
+//        let reportTabBarItem = UITabBarItem(title: "마이 히스토리", image: UIImage(named: "History"), selectedImage: UIImage(named: "selectedHistory"))
         let mypageTabBarItem = UITabBarItem(title: "마이페이지", image: UIImage(named: "mypage"), selectedImage: UIImage(named: "selectedMypage"))
         
         let insets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
         
         homeTabBarItem.imageInsets = insets
         modalArtBarItem.imageInsets = insets
-        reportTabBarItem.imageInsets = insets
+//        reportTabBarItem.imageInsets = insets
         mypageTabBarItem.imageInsets = insets
         
         let titleOffset = UIOffset(horizontal: 0, vertical: 10)
         homeTabBarItem.titlePositionAdjustment = titleOffset
         modalArtBarItem.titlePositionAdjustment = titleOffset
-        reportTabBarItem.titlePositionAdjustment = titleOffset
+//        reportTabBarItem.titlePositionAdjustment = titleOffset
         mypageTabBarItem.titlePositionAdjustment = titleOffset
         
         let homeVC = generateNavController(vc: ScheduleStartViewController(), tabBarItem: homeTabBarItem)
         let modalArtVC = generateNavController(vc: ModalartMainViewController(), tabBarItem: modalArtBarItem)
-        let reportVC = generateNavController(vc: MyHistoryViewController(), tabBarItem: reportTabBarItem)
+//        let reportVC = generateNavController(vc: MyHistoryViewController(), tabBarItem: reportTabBarItem)
         let mypageVC = generateNavController(vc: MyPageViewController(), tabBarItem: mypageTabBarItem)
     
-        self.viewControllers = [homeVC,modalArtVC, reportVC, mypageVC]
+//        self.viewControllers = [homeVC, modalArtVC, reportVC, mypageVC]
+        self.viewControllers = [homeVC, modalArtVC, mypageVC]
         self.selectedIndex = 0
     }
     

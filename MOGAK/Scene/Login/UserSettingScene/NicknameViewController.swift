@@ -14,6 +14,7 @@ import Combine
 class NicknameViewController: UIViewController {
     let registerUserInfo = RegisterUserInfo.shared
     let apiManger = ApiManager.shared
+    /// 프로필 수정하러 들어올때와 회원가입 시 프로필을 생성할 때를 구분하기 위한 변수 (프로필 수정할때 -> true, 회원가입 시 프로필 입력 -> false)
     var nicknameAndImageChange: Bool = false
     var profileImageChange: Bool = false
     var changeProfileImage: UIImage? = nil
@@ -52,7 +53,7 @@ class NicknameViewController: UIViewController {
     private lazy var nicknameTextField : UITextField = {
         let textField = UITextField()
         let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.medium, size: 16), NSAttributedString.Key.foregroundColor : UIColor(hex: "BFC3D4")]
-        let placeholderText = "닉네임을 입력해주세요."
+        let placeholderText = RegisterUserInfo.shared.nickName != nil && RegisterUserInfo.shared.nickName != "" ? RegisterUserInfo.shared.nickName ?? "닉네임을 입력해주세요." : "닉네임을 입력해주세요."
         textField.textAlignment = .left
         textField.delegate = self
         textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 20.0, height: 0.0))
@@ -66,7 +67,7 @@ class NicknameViewController: UIViewController {
     
     private let tfSubLabel : UILabel = {
         let label = UILabel()
-        label.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+        label.text = "최대 10자까지 입력할 수 있습니다."
         label.font = UIFont.pretendard(.medium, size: 14)
         label.textColor = UIColor(hex: "808497")
         return label
@@ -105,6 +106,7 @@ class NicknameViewController: UIViewController {
         self.configureButton()
         self.configureDeleteButton()
         
+        // profile 설정한 사진과 연동되도록 설정
         registerUserInfo.$profileImage.sink { image in
             if self.nicknameAndImageChange && self.profileImageChange {
                 self.nextButton.isUserInteractionEnabled = true
@@ -251,14 +253,15 @@ extension NicknameViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        tfSubLabel.text = "문자, 숫자, 특수문자 조합 최대 10자를 적어주세요."
+        tfSubLabel.text = "최대 10글자까지 입력가능합니다."
         tfSubLabel.textColor = UIColor(hex: "808497")
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text else { return }
 
-        if text.validateNickname() {
+//        if text.validateNickname() {
+        if text.count <= 10 {
             nextButton.isUserInteractionEnabled = true
             nextButton.backgroundColor = UIColor(hex: "475FFD")
         } else {
@@ -330,9 +333,11 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 extension NicknameViewController {
     //MARK: - 닉네임 타당성 검증 요청
     func validateNickname(nickName: String) {
+        LoadingIndicator.showLoading()
         let nicknameRequest = NicknameChangeRequest(nickname: nickName)
         AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
             .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
+                LoadingIndicator.hideLoading()
                 switch response.result {
                 case .success(let data):
                     if data.code == "success" {
@@ -357,7 +362,9 @@ extension NicknameViewController {
     
     //MARK: - 닉네임 변경
     func nicknameChange(nickname: String) {
+        LoadingIndicator.showLoading()
         UserNetwork.shared.nicknameChange(nickname) { result in
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
@@ -414,9 +421,11 @@ extension NicknameViewController {
     
     //MARK: - 프로필 사진 변경 요청
     func profileImageChangeRequest() {
+        LoadingIndicator.showLoading()
         let userNetwork = UserNetwork.shared
         guard let profileImage = changeProfileImage else { return }
         userNetwork.userImageChange(profileImage) { result in
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")

@@ -11,6 +11,7 @@ import SnapKit
 
 /// 조각 페이지에서 중앙 모각 탭시 올라오는 모각 뷰
 class MogakMainBottomModalViewController: UIViewController {
+    weak var delegate: MogakSettingButtonTappedDelegate?
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
   
     var startDeleteJogak: (() -> ())? = nil

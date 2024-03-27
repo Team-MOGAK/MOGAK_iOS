@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
+/// 설정이 안된 조각
 class EmptyJogakCell: UICollectionViewCell {
     static let identifier = "EmptyJogakCell"
     

@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import SnapKit
+import Lottie
 
 protocol MogakSettingButtonTappedDelegate: AnyObject {
     func cellButtonTapped(mogakData: DetailMogakData)
@@ -30,7 +31,18 @@ class ModalartMainViewController: UIViewController {
     //var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
     var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     
-    var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
+    ///현재 보여지는 모다라트 메인 셀의 배경색
+    var modalArtMainCellBgColor: String = ""
+    
+    lazy var loadingView: LottieAnimationView = {
+        let view = LottieAnimationView(name: "loading")
+        view.backgroundColor = .gray
+        view.layer.cornerRadius = 10
+        view.loopMode = .loop
+        view.center = self.view.center
+        view.isHidden = true
+        return view
+    }()
     
     ///만다라트 이름 라벨
     private lazy var modalArtNameLabel: UILabel = {
@@ -72,6 +84,11 @@ class ModalartMainViewController: UIViewController {
         configureLayout()
         getModalartAllList()
         modalartNameLabelTapGesture()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     //MARK: - viewDidAppear
@@ -137,8 +154,6 @@ class ModalartMainViewController: UIViewController {
     
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
     @objc private func tacoBtnTapped() {
-        print(#fileID, #function, #line, "- userId: \(UserDefaults.standard.integer(forKey: "userId"))")
-        print(#fileID, #function, #line, "- 모다라트 추가 삭제버튼(타코버튼) 탭 ⭐️")
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         ///모다라트 추가하기
@@ -211,24 +226,17 @@ class ModalartMainViewController: UIViewController {
 extension ModalartMainViewController {
     //MARK: - 모다라트 전체 리스트 가져오기
     func getModalartAllList() {
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         modalartNetwork.getModalartList { result in
-            self.view.isUserInteractionEnabled = true
             switch result {
             case .failure(let error):
                 print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             case .success(let list):
                 guard let modalartList = list else { return }
                 self.modalartList = modalartList
-                print(#fileID, #function, #line, "- modalartList checking:\(self.modalartList)")
-                
                 if self.modalartList.isEmpty {
                     self.createModalart()
-//                    self.modalartName = "내 모다라트"
-//                    self.modalArtNameLabel.text = self.modalartName
-////                    self.modalartList =
-//                    self.modalArtMainCellBgColor = "BFC3D4"
-//                    self.modalArtCollectionView.reloadData()
                 }
                 else {
                     guard let firstData = modalartList.first else { return }
@@ -236,18 +244,22 @@ extension ModalartMainViewController {
                     self.nowShowModalArtIndex = 0
                     self.getModalartDetailInfo(id: self.nowShowModalArtNum)
                 }
+                LoadingIndicator.hideLoading()
             }
         }
     }
 
     //MARK: - 단일 모다라트 디테일 정보 가져오기
     func getModalartDetailInfo(id: Int) {
-        self.view.isUserInteractionEnabled = false
+//        self.loadingViewPlay()
+        LoadingIndicator.showLoading()
         modalartNetwork.getDetailModalartInfo(modalartId: id) { result in
-            self.view.isUserInteractionEnabled = true
+
             switch result {
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+//                self.loadingViewStop()
+                LoadingIndicator.hideLoading()
             case .success(let modalInfo):
                 guard let modalInfo = modalInfo else { return }
 
@@ -257,28 +269,34 @@ extension ModalartMainViewController {
                 self.modalArtMainCellBgColor = modalInfo.color
                 
                 self.modalArtCollectionView.reloadData()
+//                self.loadingViewStop()
+                LoadingIndicator.hideLoading()
             }
         }
         getDetailMogakData(id: id)
     }
     
     func getDetailMogakData(id: Int) {
-        self.view.isUserInteractionEnabled = false
+//        self.loadingViewPlay()
+        LoadingIndicator.showLoading()
         modalartNetwork.getDetailMogakData(modalartId: id) { result in
-            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let data):
                 self.mogakData = data?.result?.mogaks ?? []
                 self.modalArtCollectionView.reloadData()
+//                self.loadingViewStop()
+                LoadingIndicator.hideLoading()
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+//                self.loadingViewStop()
+                LoadingIndicator.hideLoading()
             }
         }
     }
 
     //MARK: - 모다라트 생성 요청
     func createModalart() {
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         let color = "BFC3D4"
         let modalartLast = self.modalartList.last ?? ModalartList(id: 0, title: "")
         
@@ -287,10 +305,9 @@ extension ModalartMainViewController {
 
         let data = ModalartMainData(id: createdId, title: createdTitle, color: color)
         modalartNetwork.createDetailModalart(data: data) { result in
-            self.view.isUserInteractionEnabled = true
+//            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let modalartMainData):
-                print(#fileID, #function, #line, "- modalartMainData🌸: \(modalartMainData)")
                 self.nowShowModalArtNum = modalartMainData.id
                 self.modalartName = modalartMainData.title
                 self.modalArtNameLabel.text = modalartMainData.title
@@ -298,56 +315,58 @@ extension ModalartMainViewController {
                 self.mogakData = []
                 self.modalartList.append(ModalartList(id: modalartMainData.id, title: modalartMainData.title))
                 self.modalArtCollectionView.reloadData()
+                LoadingIndicator.hideLoading()
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     
     //MARK: - 모다라트 삭제 요청
     func deleteModalart() {
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         modalartNetwork.deleteModalart(id: self.nowShowModalArtNum) { result in
-            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let responseResult):
                 if responseResult {
                     self.getModalartAllList()
+                    LoadingIndicator.hideLoading()
                 }
             case .failure(let error):
                 print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     
     //MARK: - 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         let jogakDate = Date().jogakTodayDateToString()
         mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: jogakDate) { result in
-            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let jogakList):
-                print(#fileID, #function, #line, "- jogakList: \(jogakList)")
                 guard let jogakList = jogakList else { return }
                 let mogakMainVC = MogakMainViewController()
                 mogakMainVC.mogakList = self.mogakData
                 mogakMainVC.selectedMogak = mogakData
                 mogakMainVC.jogakList = jogakList
                 mogakMainVC.modalartId = self.nowShowModalArtNum
+                LoadingIndicator.hideLoading()
                 self.navigationController?.pushViewController(mogakMainVC, animated: true)
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     
     //MARK: - 모다라트 수정
     func editModalart(_ changeTitle: String, _ changeColor: String) {
-        self.view.isUserInteractionEnabled = false
+        LoadingIndicator.showLoading()
         let data = ModalartMainData(id: self.nowShowModalArtNum, title: changeTitle, color: changeColor)
         modalartNetwork.editModalart(data: data) { result in
-            self.view.isUserInteractionEnabled = true
             switch result {
             case .success(let modalartMainData):
                 self.modalartName = modalartMainData.title
@@ -355,23 +374,48 @@ extension ModalartMainViewController {
                 self.modalArtNameLabel.text = modalartMainData.title
                 self.modalartList[self.nowShowModalArtIndex] = ModalartList(id: modalartMainData.id, title: modalartMainData.title)
                 self.modalArtCollectionView.reloadData()
+                LoadingIndicator.hideLoading()
+                
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
+    }
+    
+    func loadingViewPlay() {
+        self.view.backgroundColor = .white
+        self.view.isUserInteractionEnabled = false
+        loadingView.isHidden = false
+        loadingView.play()
+    }
+    
+    func loadingViewStop() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.loadingView.stop()
+            self.view.isUserInteractionEnabled = true
+            self.loadingView.isHidden = true
+        }
+        
     }
 }
 
 //MARK: - 모다라트VC 뷰들 레이아웃 잡기
 extension ModalartMainViewController {
     func configureLayout() {
-        self.view.addSubviews(modalArtNameLabel, showModalArtListBtn, tacoBtn, modalArtCollectionView)
+        self.view.addSubviews(modalArtNameLabel, showModalArtListBtn, tacoBtn, modalArtCollectionView, loadingView)
         
         //모다라트 사이즈 설정
         guard let window = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         let screenWidthSize = window.screen.bounds.width
         let modalArtWidthSize = screenWidthSize - 50 //모각 사이간격이 10, padding이 20
         
+        loadingView.snp.makeConstraints { make in
+            make.width.equalTo(200)
+            make.height.equalTo(200)
+//            make.size.equalTo(300)
+            make.center.equalToSuperview()
+        }
         //MARK: - 모다라트 이름 라벨 레이아웃
         modalArtNameLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
@@ -446,15 +490,12 @@ extension ModalartMainViewController: UICollectionViewDelegate {
                 }
                 sheet.prefersGrabberVisible = true
             }
-
             bottomSheetVC.titleSetTextField.text = hasModalArtNameChecking ? modalartName : nil
             bottomSheetVC.isTitleSetUp = hasModalArtNameChecking ? true : false
             bottomSheetVC.titleBgColor = hasModalArtNameChecking ? modalArtMainCellBgColor : ""
-
             bottomSheetVC.changeMainMogak = { bgColor, modalartTitle in
                 self.editModalart(modalartTitle, bgColor)
             }
-
             self.present(bottomSheetVC, animated: true)
         }
         else {
@@ -464,6 +505,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         }
     }
 }
+
 
 extension ModalartMainViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -501,20 +543,20 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     }
     
     //MARK: - 중앙 셀을 기준으로 중앙 셀 앞에 있는 셀인지 뒤에 있는 셀인지 체크
-    func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-        print(#fileID, #function, #line, "- mogakData.count⭐️: \(mogakData.count)")
-        if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
-            mogakCell.mogakCellData = mogakData[row]
-            mogakCell.cellDataSetting()
-            return mogakCell
-        } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
-            mogakCell.mogakCellData = mogakData[row - 1]
-            mogakCell.cellDataSetting()
-            return mogakCell
-        } else {
-            return emptyMogakCell
+        func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
+            print(#fileID, #function, #line, "- mogakData.count⭐️: \(mogakData.count)")
+            if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
+                mogakCell.mogakCellData = mogakData[row]
+                mogakCell.cellDataSetting()
+                return mogakCell
+            } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
+                mogakCell.mogakCellData = mogakData[row - 1]
+                mogakCell.cellDataSetting()
+                return mogakCell
+            } else {
+                return emptyMogakCell
+            }
         }
-    }
     
 }
 
