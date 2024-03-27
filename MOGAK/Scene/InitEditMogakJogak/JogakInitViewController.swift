@@ -13,6 +13,7 @@ import ReusableKit
 import FSCalendar
 import Alamofire
 
+/// 조각 생성 vc
 class JogakInitViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
     var currentMogakId: Int = 0

@@ -9,11 +9,15 @@ import Foundation
 import UIKit
 import SnapKit
 
+/// 모각 리스트(세부목표 화면에서 상단에 있는 모각 리스트)
 class MogakListCell: UICollectionViewCell {
     static let identifier = "MogakListCell"
+    /// 모각 제목 text(title label에 들어갈 내용)
     var mogakTitle: String = ""
     
+    /// 모각 제목 label
     var titleLabel: UILabel!
+    /// 그 아래 파란색 바텀 바
     var bottomBar: UIView!
     
     override init(frame: CGRect) {
@@ -25,6 +29,8 @@ class MogakListCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - 레이아웃 잡기
+    /// 레이아웃 잡기
     func configureLayout() {
         titleLabel = UILabel()
         bottomBar = UIView()
@@ -42,6 +48,8 @@ class MogakListCell: UICollectionViewCell {
         }
     }
     
+    //MARK: - 해당 모각이 선택됬을 경우
+    /// 해당 모각이 선택됬을 경우(바텀바의 색상을 변경해줘야 함)
     override var isSelected: Bool {
         didSet {
             if isSelected {

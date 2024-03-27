@@ -155,6 +155,7 @@ class UserNetwork {
     }
     
     func getUserData(_ completionHandler: @escaping((Result<Bool, Error>) -> Void)) {
+        LoadingIndicator.showLoading()
         AF.request(UserRouter.getUserData, interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
             .responseData { response in
@@ -164,6 +165,7 @@ class UserNetwork {
                     if response.response?.statusCode == 200 {
                         let decodeData = try? decoder.decode(GetUserDataSuccessResponse.self, from: data)
                         print(#fileID, #function, #line, "- decodeData: \(decodeData)")
+                        LoadingIndicator.hideLoading()
                         guard let result = decodeData?.result else { return }
                         RegisterUserInfo.shared.nickName = result.nickname
                         RegisterUserInfo.shared.userJob = result.job
@@ -177,14 +179,17 @@ class UserNetwork {
                                 }
                             })
                         }
+                        LoadingIndicator.hideLoading()
                         completionHandler(.success(true))
                         
                     } else {
                         let decodeData = try? decoder.decode(GetUserDataFailureResponse.self, from: data)
+                        LoadingIndicator.hideLoading()
                         completionHandler(.success(false))
                     }
                 case .failure(let error):
                     print(#fileID, #function, #line, "- error: \(error)")
+                    LoadingIndicator.hideLoading()
                     completionHandler(.failure(error))
                 }
                 

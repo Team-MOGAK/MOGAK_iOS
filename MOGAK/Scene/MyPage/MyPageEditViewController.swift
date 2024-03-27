@@ -15,9 +15,8 @@ class MyPageEditViewController: UIViewController {
     
     private let profileImage = UIImageView().then {
         $0.image = UIImage(named: "default")
-        $0.layer.cornerRadius = 35
-        $0.clipsToBounds = true
-        $0.clipsToBounds = true
+//        $0.layer.cornerRadius = 50
+//        $0.clipsToBounds = true
     }
     
     private let userName = UILabel().then {
@@ -124,10 +123,11 @@ class MyPageEditViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        profileImage.layer.cornerRadius = profileImage.frame.height / 2
-        
+        print(#fileID, #function, #line, "- self.profileImage.frame.height: \(self.profileImage.frame.height)")
+        profileImage.layer.cornerRadius = self.profileImage.frame.height / 2
+        profileImage.layer.borderWidth = 1
+        profileImage.layer.borderColor = UIColor.white.cgColor
+        profileImage.clipsToBounds = true
     }
     
     private func configureNavBar() {
@@ -175,14 +175,19 @@ class MyPageEditViewController: UIViewController {
         UserNetwork.shared.withDraw { result in
             switch result {
             case .success(let success):
+                print(#fileID, #function, #line, "- sucess")
                 let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)  { _ in
+                    UserDefaults.standard.removeObject(forKey: "isFirstTime")
+                    UserDefaults.standard.removeObject(forKey: "refreshToken")
+                    RegisterUserInfo.shared.userAccessToken = ""
                     RegisterUserInfo.shared.loginState = false
+                    RegisterUserInfo.shared.nickName = ""
                 }
                 let withdrawAlert = UIAlertController(title: "회원탈퇴", message: "회원탈퇴되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
                 withdrawAlert.addAction(withdrawAlertAction)
                 self.present(withdrawAlert, animated: true)
             case .failure(let error):
-                print(#fileID, #function, #line, "- fail: \(error)")
+                print(#fileID, #function, #line, "- fail error: \(error)")
             }
         }
     }
@@ -199,6 +204,7 @@ class MyPageEditViewController: UIViewController {
         askWithdrawAlert.addAction(okayWithdrawAlertAction)
         self.present(askWithdrawAlert, animated: true)
     }
+
     
     private func configureProfile() {
         [profileImage, userName, job].forEach({view.addSubview($0)})
