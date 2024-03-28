@@ -671,7 +671,7 @@ extension JogakInitViewController: UICollectionViewDelegateFlowLayout {
         }
         let size = label.frame.size
         
-        return CGSize(width: size.width + 37, height: size.height + 32)
+        return CGSize(width: size.width + 37, height: size.height + 30)
     }
 }
 
@@ -961,6 +961,7 @@ extension JogakInitViewController {
 extension JogakInitViewController {
     // 조각 생성
     func createJogak() {
+        self.view.isUserInteractionEnabled = false
         let mogakId = currentMogakId
         //let mogakId = 14
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"

@@ -1,12 +1,12 @@
 PODS:
-  - Alamofire (5.7.1)
-  - BSImagePicker (3.3.1)
+  - Alamofire (5.9.0)
+  - BSImagePicker (3.3.2)
   - ExpyTableView (1.2.1)
   - FSCalendar (2.8.4)
   - Kingfisher (5.15.8):
     - Kingfisher/Core (= 5.15.8)
   - Kingfisher/Core (5.15.8)
-  - lottie-ios (4.4.0)
+  - lottie-ios (4.4.1)
   - ReusableKit (4.0.0):
     - ReusableKit/Core (= 4.0.0)
   - ReusableKit/Core (4.0.0)
@@ -40,12 +40,12 @@ SPEC REPOS:
     - Then
 
 SPEC CHECKSUMS:
-  Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
-  BSImagePicker: 0fe04b574d4d6b81093785d2af6c26227efc8428
+  Alamofire: 02b772c9910e8eba1a079227c32fbd9e46c90a24
+  BSImagePicker: 568ba98dcd066fb10f85dc84e3f8385881bdd1f8
   ExpyTableView: 19cf224c2ff04b1ec215ec52bc4ba6f81fa809ed
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   Kingfisher: a3c03d702433fa6cfedabb2bddbe076fb8f2e902
-  lottie-ios: ef1be1f90d54255f08e09d767950e43714661178
+  lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
   ReusableKit: 8caaff6dc6e2d4c12beb395010086930454b12c3
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
@@ -53,4 +53,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f8640cd5a22e3f112a1a85b787aaba1adfdd7b9d
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.12.1

@@ -743,7 +743,7 @@ extension JogakEditViewController: UICollectionViewDelegateFlowLayout {
         }
         let size = label.frame.size
         
-        return CGSize(width: size.width + 37, height: size.height + 32)
+        return CGSize(width: size.width + 37, height: size.height + 30)
     }
 }
 
@@ -1027,6 +1027,7 @@ extension JogakEditViewController {
 extension JogakEditViewController {
     // 조각 수정
     func editJogak() {
+        self.view.isUserInteractionEnabled = false
         let jogakId = currentJogakId
         //let jogakId = 18
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
