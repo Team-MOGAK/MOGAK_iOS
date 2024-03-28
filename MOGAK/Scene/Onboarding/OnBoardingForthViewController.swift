@@ -44,7 +44,7 @@ class OnBoardingForthViewController: UIViewController {
         
         image.snp.makeConstraints({
             $0.top.equalTo(self.titleLabel.snp.bottom).offset(24)
-            $0.leading.equalToSuperview().offset(18)
+//            $0.leading.equalToSuperview().offset(18)
             $0.bottom.equalToSuperview().offset(-10)
             $0.centerX.equalToSuperview()
         })
