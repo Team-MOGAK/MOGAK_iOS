@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import Lottie
 
 final class LoadingView: UIView {

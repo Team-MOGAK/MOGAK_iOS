@@ -128,7 +128,7 @@ class MogakMainViewController: UIViewController {
         self.present(actionSheet, animated: true)
     }
     
-   
+    
     func showAskDeleteModal(_ isJogakDelete: Bool, _ jogakId: Int? = nil) {
         let bottomSheetVC = AskDeleteModal()
         if let sheet = bottomSheetVC.sheetPresentationController {
@@ -169,7 +169,7 @@ extension MogakMainViewController {
         }
         
         mogakMandalartCollectionView.snp.makeConstraints{
-//            $0.width.equalTo(modalArtWidthSize)
+            //            $0.width.equalTo(modalArtWidthSize)
             $0.leading.equalToSuperview().offset(20)
             $0.height.equalTo(520)
             $0.centerX.equalToSuperview()
@@ -283,43 +283,97 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         return 0
     }
     
+    //    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    //        let row = indexPath.row
+    //        if collectionView == self.mogakListCollectionView {
+    //            guard let cell = mogakListCollectionView.dequeueReusableCell(withReuseIdentifier: MogakListCell.identifier, for: indexPath) as? MogakListCell else { return UICollectionViewCell() }
+    //
+    //            print(#fileID, #function, #line, "- mogakList: \(mogakList)")
+    //            cell.titleLabel.text = mogakList[row].bigCategory.name
+    //            cell.titleLabel.tag = mogakList[row].mogakId
+    ////            guard let selectedMogakTitle = selectedMogak.title else { return UICollectionViewCell() }
+    //            print(#fileID, #function, #line, "- cell.tag: \(cell.titleLabel.tag)")
+    //            print(#fileID, #function, #line, "- cell.tag: \(selectedMogak.bigCategory.id)")
+    //            if cell.titleLabel.tag == selectedMogak.mogakId {
+    //                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
+    //            }
+    //            return cell
+    //        }
+    //
+    //        else if collectionView == self.mogakMandalartCollectionView {
+    //            guard let emptyJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyJogakCell.identifier, for: indexPath) as? EmptyJogakCell else { return UICollectionViewCell() }
+    //
+    //            guard let mainJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
+    //
+    //            guard let jogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: JogakCell.identifier, for: indexPath) as? JogakCell else { return UICollectionViewCell() }
+    //
+    //            guard let isRoutineJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: IsRoutineJogakCell.identifier, for: indexPath) as? IsRoutineJogakCell else { return UICollectionViewCell() }
+    //
+    //            if row == 4 {
+    //                mainJogakCell.mainLabelText = selectedMogak.title
+    //                mainJogakCell.mainBackgroundColor = selectedMogak.color ?? "475FFD"
+    //                mainJogakCell.cellDataSetting()
+    //                return mainJogakCell
+    //            } else {
+    //                return checkEmptyCell(row, jogakCell, emptyJogakCell, isRoutineJogakCell)
+    //            }
+    //
+    //        }
+    //        return UICollectionViewCell()
+    //    }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let row = indexPath.row
         if collectionView == self.mogakListCollectionView {
+            // 기존 코드 동일...
             guard let cell = mogakListCollectionView.dequeueReusableCell(withReuseIdentifier: MogakListCell.identifier, for: indexPath) as? MogakListCell else { return UICollectionViewCell() }
-            
-            print(#fileID, #function, #line, "- mogakList: \(mogakList)")
             cell.titleLabel.text = mogakList[row].bigCategory.name
             cell.titleLabel.tag = mogakList[row].mogakId
-//            guard let selectedMogakTitle = selectedMogak.title else { return UICollectionViewCell() }
-            print(#fileID, #function, #line, "- cell.tag: \(cell.titleLabel.tag)")
-            print(#fileID, #function, #line, "- cell.tag: \(selectedMogak.bigCategory.id)")
             if cell.titleLabel.tag == selectedMogak.mogakId {
                 collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
             }
             return cell
-        }
-        
-        else if collectionView == self.mogakMandalartCollectionView {
-            guard let emptyJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyJogakCell.identifier, for: indexPath) as? EmptyJogakCell else { return UICollectionViewCell() }
             
-            guard let mainJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
-            
-            guard let jogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: JogakCell.identifier, for: indexPath) as? JogakCell else { return UICollectionViewCell() }
-            
-            guard let isRoutineJogakCell = mogakMandalartCollectionView.dequeueReusableCell(withReuseIdentifier: IsRoutineJogakCell.identifier, for: indexPath) as? IsRoutineJogakCell else { return UICollectionViewCell() }
-            
+        } else if collectionView == self.mogakMandalartCollectionView {
             if row == 4 {
+                guard let mainJogakCell = collectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
                 mainJogakCell.mainLabelText = selectedMogak.title
                 mainJogakCell.mainBackgroundColor = selectedMogak.color ?? "475FFD"
                 mainJogakCell.cellDataSetting()
                 return mainJogakCell
             } else {
-                return checkEmptyCell(row, jogakCell, emptyJogakCell, isRoutineJogakCell)
+                return getJogakCell(row: row, indexPath: indexPath, collectionView: collectionView)
             }
-            
         }
         return UICollectionViewCell()
+    }
+    
+    func getJogakCell(row: Int, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let targetIndex = row < 4 ? row : row - 1
+        
+        if jogakList.count > targetIndex {
+            let jogakData = jogakList[targetIndex]
+            let daysText = (jogakData.daysSetting?.isEmpty == false) ? jogakData.daysSetting!.joined(separator: ",") : "0회"
+            
+            if jogakData.isRoutine {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: IsRoutineJogakCell.identifier, for: indexPath) as? IsRoutineJogakCell else { return UICollectionViewCell() }
+                cell.goalRepeatDayLabelText = daysText
+                cell.goalContentLabelText = jogakData.title
+                cell.goalCategoryLabelTextColor = selectedMogak.color ?? "475FFD"
+                cell.cellDataSetting()
+                return cell
+            } else {
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: JogakCell.identifier, for: indexPath) as? JogakCell else { return UICollectionViewCell() }
+                cell.goalRepeatDayLabelText = daysText
+                cell.goalContentLabelText = jogakData.title
+                cell.goalCategoryLabelTextColor = selectedMogak.color ?? "475FFD"
+                cell.cellDataSetting()
+                return cell
+            }
+        }
+        else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyJogakCell.identifier, for: indexPath) as? EmptyJogakCell else { return UICollectionViewCell() }
+            return cell
+        }
     }
     
     @objc func editBtnTapped() {
@@ -446,7 +500,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 jogakCell.goalContentLabelText = jogakList[row].title
                 jogakCell.goalCategoryLabelTextColor = selectedMogak.color ?? "475FFD"
                 jogakCell.cellDataSetting()
-            
+                
                 return jogakCell
             }
             
@@ -487,21 +541,36 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
 extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        //        if collectionView == self.mogakListCollectionView {
+        //            guard let cell = mogakListCollectionView.dequeueReusableCell(withReuseIdentifier: MogakListCell.identifier, for: indexPath) as? MogakListCell else {
+        //                return .zero
+        //            }
+        //            cell.titleLabel.text = mogakList[indexPath.row].bigCategory.name
+        //            // ✅ sizeToFit() : 텍스트에 맞게 사이즈가 조절
+        //            cell.titleLabel.sizeToFit()
+        //
+        //            // ✅ cellWidth = 글자수에 맞는 UILabel 의 width + 20(여백)
+        //            let cellWidth = cell.titleLabel.frame.width + 30
+        //
+        //            return CGSize(width: cellWidth, height: 30)
+        //        } else {
+        //            let cellWidth: CGFloat = self.mogakMandalartCollectionView.frame.width / 3.0 - 10 //하나의 셀이 가지는 넓이의최소 크기
+        //            let cellHeight: CGFloat = self.mogakMandalartCollectionView.frame.height / 3.0 - 10//하나의 셀이 가지는 높이의 최소 크기
+        //            return CGSizeMake(cellWidth, cellHeight)
+        //        }
         if collectionView == self.mogakListCollectionView {
-            guard let cell = mogakListCollectionView.dequeueReusableCell(withReuseIdentifier: MogakListCell.identifier, for: indexPath) as? MogakListCell else {
-                return .zero
-            }
-            cell.titleLabel.text = mogakList[indexPath.row].bigCategory.name
-            // ✅ sizeToFit() : 텍스트에 맞게 사이즈가 조절
-            cell.titleLabel.sizeToFit()
+            // ❌ 여기서 셀을 또 꺼내면 안 됩니다!
+            // 아래처럼 문자열(String)의 길이로 사이즈를 계산하도록 변경해 주세요.
+            let text = mogakList[indexPath.row].bigCategory.name
+            let font = UIFont.systemFont(ofSize: 14) // ⚠️ 실제 사용하는 폰트로 변경해 주세요
+            let textSize = text.size(withAttributes: [.font: font])
             
-            // ✅ cellWidth = 글자수에 맞는 UILabel 의 width + 20(여백)
-            let cellWidth = cell.titleLabel.frame.width + 30
-            
+            let cellWidth = textSize.width + 30
             return CGSize(width: cellWidth, height: 30)
+            
         } else {
-            let cellWidth: CGFloat = self.mogakMandalartCollectionView.frame.width / 3.0 - 10 //하나의 셀이 가지는 넓이의최소 크기
-            let cellHeight: CGFloat = self.mogakMandalartCollectionView.frame.height / 3.0 - 10//하나의 셀이 가지는 높이의 최소 크기
+            let cellWidth: CGFloat = self.mogakMandalartCollectionView.frame.width / 3.0 - 10
+            let cellHeight: CGFloat = self.mogakMandalartCollectionView.frame.height / 3.0 - 10
             return CGSizeMake(cellWidth, cellHeight)
         }
     }
@@ -517,7 +586,7 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
-
+    
 }
 
 
@@ -555,9 +624,9 @@ extension MogakMainViewController: MogakSettingButtonTappedDelegate {
         let color = mogakData.color
         print(color!)
         let colorPalette = mogakEditVC.titleColorPalette
-//        let colorIndex = colorPalette.firstIndex(of: color!)!
-//        print(#fileID, #function, #line, "- mogakData Color: \(String(describing: mogakData.color))")
-//        mogakEditVC.colorCollectionView.selectItem(at: [0, colorIndex], animated: false, scrollPosition: .init())
+        //        let colorIndex = colorPalette.firstIndex(of: color!)!
+        //        print(#fileID, #function, #line, "- mogakData Color: \(String(describing: mogakData.color))")
+        //        mogakEditVC.colorCollectionView.selectItem(at: [0, colorIndex], animated: false, scrollPosition: .init())
         if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
             print("#########3")
         }

@@ -509,6 +509,57 @@ extension ModalartMainViewController: UICollectionViewDelegate {
 }
 
 
+//extension ModalartMainViewController: UICollectionViewDataSource {
+//    func numberOfSections(in collectionView: UICollectionView) -> Int {
+//        return 1
+//    }
+//    
+//    //MARK: - 한 섹션에 몇개의 아이템이 들어갈지
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        return 9
+//    }
+//    
+//    //MARK: - 어떤 셀을 만들어줄 건지
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        guard let emptyMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell else { return UICollectionViewCell() }
+//        
+//        guard let mainMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
+//        
+//        guard let mogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: MogakCell.identifier, for: indexPath) as? MogakCell else { return UICollectionViewCell() }
+//        
+//        mogakCell.delegate = self
+//        
+//        let row = indexPath.row
+//        
+//        ///4번재 row는 중앙 셀이므로 중앙 셀을 표시
+//        if(row == 4) {
+//            let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
+//            mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? modalArtMainCellBgColor : "BFC3D4"
+//            
+//            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalartName : "큰 목표 \n추가"//
+//            mainMogakCell.cellDataSetting()
+//            return mainMogakCell
+//        } else { //그외에는 일반 셀
+//            return checkEmptyCell(row, mogakCell, emptyMogakCell)
+//        }
+//    }
+//    
+//    //MARK: - 중앙 셀을 기준으로 중앙 셀 앞에 있는 셀인지 뒤에 있는 셀인지 체크
+//        func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
+//            if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
+//                mogakCell.mogakCellData = mogakData[row]
+//                mogakCell.cellDataSetting()
+//                return mogakCell
+//            } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
+//                mogakCell.mogakCellData = mogakData[row - 1]
+//                mogakCell.cellDataSetting()
+//                return mogakCell
+//            } else {
+//                return emptyMogakCell
+//            }
+//        }
+//    
+//}
 extension ModalartMainViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -521,46 +572,48 @@ extension ModalartMainViewController: UICollectionViewDataSource {
     
     //MARK: - 어떤 셀을 만들어줄 건지
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let emptyMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell else { return UICollectionViewCell() }
-        
-        guard let mainMogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
-        
-        guard let mogakCell = modalArtCollectionView.dequeueReusableCell(withReuseIdentifier: MogakCell.identifier, for: indexPath) as? MogakCell else { return UICollectionViewCell() }
-        
-        mogakCell.delegate = self
-        
         let row = indexPath.row
         
-        ///4번재 row는 중앙 셀이므로 중앙 셀을 표시
-        if(row == 4) {
+        /// 4번째 row는 중앙 셀이므로 중앙 셀을 표시
+        if row == 4 {
+            // ✅ 필요할 때 딱 1번만 꺼냅니다.
+            guard let mainMogakCell = collectionView.dequeueReusableCell(withReuseIdentifier: ModalartMainCell.identifier, for: indexPath) as? ModalartMainCell else { return UICollectionViewCell() }
+            
             let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
             mainMogakCell.mainBackgroundColor = hasModalArtNameChecking ? modalArtMainCellBgColor : "BFC3D4"
-            
-            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalartName : "큰 목표 \n추가"//
+            mainMogakCell.mainLabelText = hasModalArtNameChecking ? modalartName : "큰 목표 \n추가"
             mainMogakCell.cellDataSetting()
+            
             return mainMogakCell
-        } else { //그외에는 일반 셀
-            return checkEmptyCell(row, mogakCell, emptyMogakCell)
+        } else {
+            // 그 외에는 일반 셀 처리 메서드로 위임 (collectionView와 indexPath를 넘겨 안에서 꺼내도록 함)
+            return getMogakCell(row: row, indexPath: indexPath, collectionView: collectionView)
         }
     }
     
-    //MARK: - 중앙 셀을 기준으로 중앙 셀 앞에 있는 셀인지 뒤에 있는 셀인지 체크
-        func checkEmptyCell(_ row: Int, _ mogakCell: MogakCell, _ emptyMogakCell: EmptyMogakCell) -> UICollectionViewCell {
-            if (mogakData.count > row && row < 4) { //0, 1, 2, 3 row
-                mogakCell.mogakCellData = mogakData[row]
-                mogakCell.cellDataSetting()
-                return mogakCell
-            } else if (mogakData.count > row - 1 && row > 4) { //5, 6, 7, 8 row
-                mogakCell.mogakCellData = mogakData[row - 1]
-                mogakCell.cellDataSetting()
-                return mogakCell
-            } else {
-                return emptyMogakCell
-            }
+    //MARK: - 일반 셀 혹은 빈 셀을 안전하게 꺼내서 반환하는 메서드
+    func getMogakCell(row: Int, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        // 중앙 셀(row 4)을 건너뛰기 때문에 인덱스 보정이 필요
+        let targetIndex = row < 4 ? row : row - 1
+        
+        // 데이터가 존재하는 모각 셀인 경우
+        if mogakData.count > targetIndex {
+            guard let mogakCell = collectionView.dequeueReusableCell(withReuseIdentifier: MogakCell.identifier, for: indexPath) as? MogakCell else { return UICollectionViewCell() }
+            
+            mogakCell.delegate = self
+            mogakCell.mogakCellData = mogakData[targetIndex]
+            mogakCell.cellDataSetting()
+            
+            return mogakCell
         }
-    
+        // 데이터가 없는 빈 셀인 경우
+        else {
+            guard let emptyMogakCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmptyMogakCell.identifier, for: indexPath) as? EmptyMogakCell else { return UICollectionViewCell() }
+            
+            return emptyMogakCell
+        }
+    }
 }
-
 //MARK: - 모다라트 collectionview flowlayout
 extension ModalartMainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

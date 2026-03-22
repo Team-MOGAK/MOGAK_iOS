@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Then
 
 class FeedDetailViewController: UIViewController {
     // scrollview 선언

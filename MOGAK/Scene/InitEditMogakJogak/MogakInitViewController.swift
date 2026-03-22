@@ -7,10 +7,9 @@
 
 import UIKit
 import SnapKit
-import Then
-import ReusableKit
 import FSCalendar
 import Alamofire
+import ReusableKit
 
 class MogakInitViewController: UIViewController {
     weak var delegate: MogakCreatedReloadDelegate?

@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Then
 
 ///비어있는 모각 Cell
 class EmptyMogakCell: UICollectionViewCell {

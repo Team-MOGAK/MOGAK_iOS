@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import Then
 import Alamofire
 import ExpyTableView
 
@@ -339,7 +338,7 @@ class SelectJogakModal : UIViewController{
 
 extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
     
-    func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) { //섹션이 열리고 닫히기
+    nonisolated func tableView(_ tableView: ExpyTableView, expyState state: ExpyState, changeForSection section: Int) { //섹션이 열리고 닫히기
         
         switch state {
         case .willExpand:
@@ -448,7 +447,7 @@ extension Date {
 }
 //MARK: - MogakTableViewCell
 #warning("MogakTableViewCell")
-class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
+class MogakTableViewCell : UITableViewCell, ExpyTableViewHeaderCell{
     
     func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
         switch state {
@@ -659,7 +658,7 @@ class JogakTableViewCell : UITableViewCell{
 
 //싱글톤 패턴 적용
 class UserDefaultsManager {
-    static let shared = UserDefaultsManager()
+    nonisolated(unsafe) static let shared = UserDefaultsManager()
     
     private init () {}
     

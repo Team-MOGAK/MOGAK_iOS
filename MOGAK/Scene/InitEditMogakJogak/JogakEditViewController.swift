@@ -7,9 +7,7 @@
 
 
 import UIKit
-import UIKit
 import SnapKit
-import Then
 import ReusableKit
 import FSCalendar
 import Alamofire
@@ -29,7 +27,7 @@ class JogakEditViewController: UIViewController {
         return Date()
     }()
     
-     var endDate: String = ""
+    var endDate: String = ""
     
     private var repeatSelectedList : [String] = []
     private var collectionViewHeightConstraint: NSLayoutConstraint!
@@ -136,7 +134,7 @@ class JogakEditViewController: UIViewController {
         $0.textColor = UIColor(hex: "6E707B")
     }
     
-     lazy var toggleButton = UISwitch().then {
+    lazy var toggleButton = UISwitch().then {
         $0.isOn = false
         $0.addTarget(self, action: #selector(toggleSwitchChanged(_:)), for: .valueChanged)
     }
@@ -211,7 +209,7 @@ class JogakEditViewController: UIViewController {
         //calendar.register(DatePickerCalendarCell.self, forCellReuseIdentifier: "cell")
         //calendar.register(DIYCalendarCell.self, forCellReuseIdentifier: "cell")
         //calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
-
+        
         calendar.locale = Locale(identifier: "ko_KR")
         calendar.scope = .month
         
@@ -311,13 +309,13 @@ class JogakEditViewController: UIViewController {
             print(self.currentJogak.days)
             /**테스트**/
             //selectedRepeatIndexPaths.insert([0,0])
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
-//                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
-//                
-//                self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
-//                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
-//            }
+            //            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            //                self.routineRepeatCollectionView.selectItem(at: [0, 0], animated: false, scrollPosition: .init())
+            //                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 0, section: 0))
+            //
+            //                self.routineRepeatCollectionView.selectItem(at: [0, 1], animated: false, scrollPosition: .init())
+            //                self.collectionView(self.routineRepeatCollectionView.self, didSelectItemAt: IndexPath(item: 1, section: 0))
+            //            }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 if !(self.currentJogak.days == nil) {
@@ -371,17 +369,17 @@ class JogakEditViewController: UIViewController {
         self.configureCategory()
         self.configureJogakDetailTitle()
         self.configureRoutine()
-//        self.configureMogakTop()
-//        self.configureCategory()
-//        self.configureRepeat()
-//        self.configureDate()
+        //        self.configureMogakTop()
+        //        self.configureCategory()
+        //        self.configureRepeat()
+        //        self.configureDate()
         self.configureEndDate()
-//        self.configureColorCollectionView()
-//
-//        let today = startCalendar.today!
-//        self.headerTitle.text = setYearAndMonth(of: today)
-//        self.endHeaderTitle.text = setYearAndMonth(of: today)
-//
+        //        self.configureColorCollectionView()
+        //
+        //        let today = startCalendar.today!
+        //        self.headerTitle.text = setYearAndMonth(of: today)
+        //        self.endHeaderTitle.text = setYearAndMonth(of: today)
+        //
         self.configureCompleteButton()
         
         calendar.register(CalendarCell.self, forCellReuseIdentifier: "cell")
@@ -565,9 +563,9 @@ class JogakEditViewController: UIViewController {
             $0.bottom.equalToSuperview().offset(-15)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(50)
-//            $0.top.equalTo(endCalendar.snp.bottom).offset(50)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.height.equalTo(50)
+            //            $0.top.equalTo(endCalendar.snp.bottom).offset(50)
+            //            $0.leading.trailing.equalToSuperview().inset(20)
+            //            $0.height.equalTo(50)
         })
     }
     
@@ -667,7 +665,7 @@ class JogakEditViewController: UIViewController {
         print("")
     }
     
-
+    
     
 }
 
@@ -692,10 +690,10 @@ extension JogakEditViewController: UITextFieldDelegate {
                                                            attributes: [NSAttributedString.Key.font: endLabel.font!],
                                                            context: nil).size
             
-//            contentView.snp.remakeConstraints({
-//                $0.bottom.equalTo(completeButton.snp.bottom).offset(30)
-//                $0.width.equalToSuperview().multipliedBy(1.0)
-//            })
+            //            contentView.snp.remakeConstraints({
+            //                $0.bottom.equalTo(completeButton.snp.bottom).offset(30)
+            //                $0.width.equalToSuperview().multipliedBy(1.0)
+            //            })
             completeButton.snp.remakeConstraints({
                 $0.top.equalTo(calendar.snp.bottom).offset(50)
                 $0.leading.trailing.equalToSuperview().inset(20)
@@ -726,7 +724,7 @@ extension JogakEditViewController: UICollectionViewDelegate {
         print("TESTTESTTESTTESTESTEST")
         //let selectedCell = collectionView.cellForItem(at: indexPath) as! RepeatCell
         guard let selectedCell = collectionView.cellForItem(at: indexPath) as? RepeatCell else {print("INDEXPATH: \(indexPath)")
-        return}
+            return}
         
         // 이미 선택된 셀인지 확인
         if selectedRepeatIndexPaths.contains(indexPath) {
@@ -773,7 +771,7 @@ extension JogakEditViewController {
         return dateString
     }
     
-     func datesRange(from startDate: Date, to endDate: Date) -> [Date] {
+    func datesRange(from startDate: Date, to endDate: Date) -> [Date] {
         // 여기에 startDate부터 endDate까지의 날짜 배열을 생성하는 로직을 추가하세요.
         // 예를 들어, DateComponents를 사용하여 날짜 간격을 계산하고 배열을 만들 수 있습니다.
         var dates: [Date] = []
@@ -818,76 +816,76 @@ extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
         self.configureCell(cell, for: date, at: monthPosition)
     }
     
-//    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillSelectionColorFor date: Date) -> UIColor? {
-//        return appearance.selectionColor
-//    }
+    //    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillSelectionColorFor date: Date) -> UIColor? {
+    //        return appearance.selectionColor
+    //    }
     /*
-    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        // nothing selected:
-        if firstDate == nil {
-            firstDate = date
-            datesRange = [firstDate!]
-            
-            print("datesRange contains: \(datesRange!)")
-            return
-        }
-        
-        // only first date is selected:
-        if firstDate != nil && lastDate == nil {
-            // handle the case of if the last date is less than the first date:
-            if date <= firstDate! {
-                calendar.deselect(firstDate!)
-                firstDate = date
-                datesRange = [firstDate!]
-                
-                print("datesRange contains: \(datesRange!)")
-                return
-            }
-            
-            let range = datesRange(from: firstDate!, to: date)
-
-            lastDate = range.last
-            
-            for d in range {
-                calendar.select(d)
-            }
-            
-            datesRange = range
-            
-            print("datesRange contains: \(datesRange!)")
-            
-            for days in calendar.selectedDates {
-                configureVisibleCells()
-            }
-            
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy/M/d(EEE)"
-            let selectedDateStr = dateFormatter.string(from: lastDate!)
-            print("종료 Selected Date: \(selectedDateStr)")
-            endTextField.text = selectedDateStr
-            
-            let dateFormatter2 = DateFormatter()
-            dateFormatter2.dateFormat = "yyyy-MM-dd"
-            endDate = dateFormatter2.string(from: lastDate!)
-            
-            return
-        }
-        
-        // both are selected:
-        if firstDate != nil && lastDate != nil {
-            for d in calendar.selectedDates {
-                calendar.deselect(d)
-            }
-            
-            lastDate = nil
-            firstDate = nil
-            
-            datesRange = []
-            
-            print("datesRange contains: \(datesRange!)")
-        }
-        
-    }
+     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+     // nothing selected:
+     if firstDate == nil {
+     firstDate = date
+     datesRange = [firstDate!]
+     
+     print("datesRange contains: \(datesRange!)")
+     return
+     }
+     
+     // only first date is selected:
+     if firstDate != nil && lastDate == nil {
+     // handle the case of if the last date is less than the first date:
+     if date <= firstDate! {
+     calendar.deselect(firstDate!)
+     firstDate = date
+     datesRange = [firstDate!]
+     
+     print("datesRange contains: \(datesRange!)")
+     return
+     }
+     
+     let range = datesRange(from: firstDate!, to: date)
+     
+     lastDate = range.last
+     
+     for d in range {
+     calendar.select(d)
+     }
+     
+     datesRange = range
+     
+     print("datesRange contains: \(datesRange!)")
+     
+     for days in calendar.selectedDates {
+     configureVisibleCells()
+     }
+     
+     let dateFormatter = DateFormatter()
+     dateFormatter.dateFormat = "yyyy/M/d(EEE)"
+     let selectedDateStr = dateFormatter.string(from: lastDate!)
+     print("종료 Selected Date: \(selectedDateStr)")
+     endTextField.text = selectedDateStr
+     
+     let dateFormatter2 = DateFormatter()
+     dateFormatter2.dateFormat = "yyyy-MM-dd"
+     endDate = dateFormatter2.string(from: lastDate!)
+     
+     return
+     }
+     
+     // both are selected:
+     if firstDate != nil && lastDate != nil {
+     for d in calendar.selectedDates {
+     calendar.deselect(d)
+     }
+     
+     lastDate = nil
+     firstDate = nil
+     
+     datesRange = []
+     
+     print("datesRange contains: \(datesRange!)")
+     }
+     
+     }
      */
     
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
@@ -904,57 +902,57 @@ extension JogakEditViewController: FSCalendarDelegate, FSCalendarDataSource {
 extension JogakEditViewController {
     
     /*
-    func configureVisibleCells() {
-        self.calendar.visibleCells().forEach { (cell) in
-            let date = self.calendar.date(for: cell)
-            let position = self.calendar.monthPosition(for: cell)
-            self.configureCell(cell, for: date, at: position)
-        }
-    }
-    
-    func configureCell(_ cell: FSCalendarCell?, for date: Date?, at position: FSCalendarMonthPosition) {
-        let diyCell = (cell as! DIYCalendarCell)
-        // configure selection layer
-        if position == .current {
-            
-            var selectionType = SelectionType.none
-
-            if calendar.selectedDates.contains(date!) {
-                let previousDate = self.gregorian.date(byAdding: .day, value: -1, to: date!)!
-                let nextDate = self.gregorian.date(byAdding: .day, value: 1, to: date!)!
-                if calendar.selectedDates.contains(date!) {
-                    if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(nextDate) {
-                        diyCell.selectionLayer!.fillColor = highlightedColorForRange.cgColor
-                        selectionType = .middle
-                    }
-                    else if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(date!) {
-                        selectionType = .single // .rightBorder
-                    }
-                    else if calendar.selectedDates.contains(nextDate) {
-                        selectionType = .single // .leftBorder
-                    }
-                    else {
-                        selectionType = .middle //.single
-                    }
-                }
-            }
-        }
-    }*/
+     func configureVisibleCells() {
+     self.calendar.visibleCells().forEach { (cell) in
+     let date = self.calendar.date(for: cell)
+     let position = self.calendar.monthPosition(for: cell)
+     self.configureCell(cell, for: date, at: position)
+     }
+     }
+     
+     func configureCell(_ cell: FSCalendarCell?, for date: Date?, at position: FSCalendarMonthPosition) {
+     let diyCell = (cell as! DIYCalendarCell)
+     // configure selection layer
+     if position == .current {
+     
+     var selectionType = SelectionType.none
+     
+     if calendar.selectedDates.contains(date!) {
+     let previousDate = self.gregorian.date(byAdding: .day, value: -1, to: date!)!
+     let nextDate = self.gregorian.date(byAdding: .day, value: 1, to: date!)!
+     if calendar.selectedDates.contains(date!) {
+     if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(nextDate) {
+     diyCell.selectionLayer!.fillColor = highlightedColorForRange.cgColor
+     selectionType = .middle
+     }
+     else if calendar.selectedDates.contains(previousDate) && calendar.selectedDates.contains(date!) {
+     selectionType = .single // .rightBorder
+     }
+     else if calendar.selectedDates.contains(nextDate) {
+     selectionType = .single // .leftBorder
+     }
+     else {
+     selectionType = .middle //.single
+     }
+     }
+     }
+     }
+     }*/
     
     private func configureCell(_ cell: FSCalendarCell?, for date: Date?, at position: FSCalendarMonthPosition) {
-//        guard let cell = cell as? CalendarCell else {
-//            print("제발2제발2")
-//            return
-//        }
+        //        guard let cell = cell as? CalendarCell else {
+        //            print("제발2제발2")
+        //            return
+        //        }
         if let cell = calendar.cell(for: date!, at: position) as? CalendarCell {
             var selectionType = SelectionType.none
-
+            
             if let date = date,
-                let cellCalendar = cell.calendar,
-                cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
+               let cellCalendar = cell.calendar,
+               cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
                let previousDate = self.calendarHelper.date(byAdding: .day, value: -1, to: date),
-                let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
-
+               let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
+                
                 if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(nextDate) {
                     selectionType = .middle
                 } else if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(date) {
@@ -969,43 +967,43 @@ extension JogakEditViewController {
             } else {
                 selectionType = .none
             }
-        cell.selectionType = selectionType
-        print("selectselectselectselect")
+            cell.selectionType = selectionType
+            print("selectselectselectselect")
         }
-//            var selectionType = SelectionType.none
-//
-//            if let date = date,
-//                let cellCalendar = cell.calendar,
-//                cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
-//               let previousDate = self.calendarHelper.date(byAdding: .day, value: -1, to: date),
-//                let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
-//
-//                if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(nextDate) {
-//                    selectionType = .middle
-//                } else if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(date) {
-//                    selectionType = .rightBorder
-//                } else if cellCalendar.selectedDates.contains(nextDate) {
-//                    selectionType = .leftBorder
-//                } else {
-//                    selectionType = .single
-//                }
-//            } else if let date = date, date.isEqual() {
-//                selectionType = .today
-//            } else {
-//                selectionType = .none
-//            }
-//        cell.selectionType = selectionType
-//        print("selectselectselectselect")
+        //            var selectionType = SelectionType.none
+        //
+        //            if let date = date,
+        //                let cellCalendar = cell.calendar,
+        //                cellCalendar.selectedDates.contains(where: { $0.isEqual(date: date, toGranularity: .day) }),
+        //               let previousDate = self.calendarHelper.date(byAdding: .day, value: -1, to: date),
+        //                let nextDate = self.calendarHelper.date(byAdding: .day, value: 1, to: date) {
+        //
+        //                if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(nextDate) {
+        //                    selectionType = .middle
+        //                } else if cellCalendar.selectedDates.contains(previousDate) && cellCalendar.selectedDates.contains(date) {
+        //                    selectionType = .rightBorder
+        //                } else if cellCalendar.selectedDates.contains(nextDate) {
+        //                    selectionType = .leftBorder
+        //                } else {
+        //                    selectionType = .single
+        //                }
+        //            } else if let date = date, date.isEqual() {
+        //                selectionType = .today
+        //            } else {
+        //                selectionType = .none
+        //            }
+        //        cell.selectionType = selectionType
+        //        print("selectselectselectselect")
     }
-
-        private func configureVisibleCells() {
-            print("제발")
-            calendar.visibleCells().forEach { (cell) in
-                let date = calendar.date(for: cell)
-                let position = calendar.monthPosition(for: cell)
-                configureCell(cell, for: date, at: position)
-            }
+    
+    private func configureVisibleCells() {
+        print("제발")
+        calendar.visibleCells().forEach { (cell) in
+            let date = calendar.date(for: cell)
+            let position = calendar.monthPosition(for: cell)
+            configureCell(cell, for: date, at: position)
         }
+    }
     
 }
 
@@ -1068,7 +1066,7 @@ extension JogakEditViewController {
             //createJogakEndDate = nil
             createJogakEndDate = "9999-09-09"
         }
-
+        
         
         let data = EditJogakRequestMainData(title: jogakTitle, isRoutine: isRoutine, days: days, endDate: createJogakEndDate)
         

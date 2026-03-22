@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon-park-outline_stopwatch-start.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

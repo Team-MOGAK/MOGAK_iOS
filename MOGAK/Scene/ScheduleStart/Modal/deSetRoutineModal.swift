@@ -7,7 +7,6 @@
 
 
 import SnapKit
-import Then
 
 class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
     

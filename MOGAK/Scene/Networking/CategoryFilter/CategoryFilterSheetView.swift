@@ -7,8 +7,6 @@
 
 import UIKit
 import SnapKit
-import ReusableKit
-import Then
 
 class CategoryFilterSheetView: UIViewController {
     
@@ -17,7 +15,7 @@ class CategoryFilterSheetView: UIViewController {
     var selectedCategoryIndexPath: IndexPath?
     
     enum Reusable {
-        static let categoryCell = ReusableCell<CategoryFilterCollectionViewCell>()
+//        static let categoryCell = ReusableCell<CategoryFilterCollectionViewCell>()
     }
     
     // private let categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init()).then {

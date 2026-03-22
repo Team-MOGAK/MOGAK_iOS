@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import SnapKit
-import Then
 import Alamofire
 
 class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {

@@ -8,7 +8,6 @@
 import UIKit
 import SnapKit
 import FSCalendar
-import Then
 import Alamofire
 
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{

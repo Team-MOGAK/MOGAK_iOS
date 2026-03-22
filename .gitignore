@@ -1,13 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/swift,cocoapods,xcode
-# Edit at https://www.toptal.com/developers/gitignore?templates=swift,cocoapods,xcode
-
-### CocoaPods ###
-## CocoaPods GitIgnore Template
-
-# CocoaPods - Only use to conserve bandwidth / Save time on Pushing
-#           - Also handy if you have a large number of dependant pods
-#           - AS PER https://guides.cocoapods.org/using/using-cocoapods.html NEVER IGNORE THE LOCK FILE
-Pods/
+# Created by https://www.toptal.com/developers/gitignore/api/swift
+# Edit at https://www.toptal.com/developers/gitignore?templates=swift
 
 ### Swift ###
 # Xcode
@@ -93,26 +85,4 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-### Xcode ###
-
-## Xcode 8 and earlier
-
-### Xcode Patch ###
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
-!*.xcodeproj/xcshareddata/
-!*.xcodeproj/project.xcworkspace/
-!*.xcworkspace/contents.xcworkspacedata
-/*.gcno
-**/xcshareddata/WorkspaceSettings.xcsettings
-
-# End of https://www.toptal.com/developers/gitignore/api/swift,cocoapods,xcode
-
-### .DS_Store
-.DS_Store
-
-.DS_Store
-<<<<<<< HEAD
-.DS_Store
-=======
->>>>>>> develop2
+# End of https://www.toptal.com/developers/gitignore/api/swift

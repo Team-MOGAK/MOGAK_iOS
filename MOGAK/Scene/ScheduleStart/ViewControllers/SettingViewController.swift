@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Then
 
 class SettingViewController : UIViewController, UISheetPresentationControllerDelegate{  //지워주기
     

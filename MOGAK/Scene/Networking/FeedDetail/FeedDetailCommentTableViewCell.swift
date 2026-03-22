@@ -6,9 +6,8 @@
 //
 
 import UIKit
-import SnapKit
 import Then
-import ReusableKit
+import SnapKit
 
 
 class FeedDetailCommentTableViewCell: UITableViewCell {

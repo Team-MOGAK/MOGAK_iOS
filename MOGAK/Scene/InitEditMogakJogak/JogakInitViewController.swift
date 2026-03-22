@@ -6,12 +6,10 @@
 //
 
 import UIKit
-import UIKit
 import SnapKit
-import Then
-import ReusableKit
 import FSCalendar
 import Alamofire
+import ReusableKit
 
 /// 조각 생성 vc
 class JogakInitViewController: UIViewController {

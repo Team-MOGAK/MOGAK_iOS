@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Then
 
 class AppGuideViewController: UIViewController {
     // 하단 버튼 클릭 시 페이지 이동을 위한 index
