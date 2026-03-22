@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alamofire
 
 public protocol RequestTarget {
     var baseURL: String { get }

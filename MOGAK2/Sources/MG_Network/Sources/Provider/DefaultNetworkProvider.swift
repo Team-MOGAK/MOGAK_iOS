@@ -16,13 +16,13 @@ public struct DefaultNetworkProvider: NetworkProvider {
     init(session: Session) {
         self.session = session
     }
-    
-    public func request<T>(target: any RequestTarget) async throws -> T {
-        do{
-            
-        }catch{
-          throw error
-        }
-    }
+//    
+//    public func request<T>(target: any RequestTarget) async throws -> T {
+//        do{
+//            
+//        }catch{
+//          throw error
+//        }
+//    }
     
 }

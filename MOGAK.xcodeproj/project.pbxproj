@@ -840,13 +840,6 @@
 			path = CustomView;
 			sourceTree = "<group>";
 		};
-		D106B68A2F6FC58D002BA818 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		D106B68D2F6FC58D002BA818 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1069,10 +1062,17 @@
 		D106B6B22F6FC58D002BA818 /* MOGAK2 */ = {
 			isa = PBXGroup;
 			children = (
-				D106B68A2F6FC58D002BA818 /* Resources */,
+				D106B6C02F6FC706002BA818 /* Resources */,
 				D106B6B12F6FC58D002BA818 /* Sources */,
 			);
 			path = MOGAK2;
+			sourceTree = "<group>";
+		};
+		D106B6C02F6FC706002BA818 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		D16D54262B37D43600CAC0E1 /* API */ = {
