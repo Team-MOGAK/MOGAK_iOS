@@ -8,13 +8,13 @@
 import Foundation
 import Alamofire
 
-let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MjE0NzYzLCJleHAiOjE3MDcyMjE5NjN9.vG0GDgQSJv9znIH9zE7ElwhpSiyeWnk6oEVy3AlBduw"
+//let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MjE0NzYzLCJleHAiOjE3MDcyMjE5NjN9.vG0GDgQSJv9znIH9zE7ElwhpSiyeWnk6oEVy3AlBduw"
 
 let BaseURL = "https://mogak.shop:8080"
 
 enum ApiRouter : URLRequestConvertible{
     
-    case getModalartList                                    //모다라트 리스트 조회
+//    case getModalartList                                    //모다라트 리스트 조회
     case detailModalart(modaratId: Int)                      //모다라트 디테일
     case getDetailMogakData(modaratId: Int)                 //모각 데이터 조회
     case getJogakList(mogakId : Int, DailyDate : String)       // 조각  조회
@@ -31,8 +31,8 @@ enum ApiRouter : URLRequestConvertible{
     // url가르기
     var endPoint: String {
         switch self {
-        case .getModalartList:
-            return "/api/modarats"
+//        case .getModalartList:
+//            return "/api/modarats"
         case .detailModalart(modaratId: let modaratId):
             return "/api/modarats/\(modaratId)"
         case .getDetailMogakData(let modaratId):
@@ -70,7 +70,7 @@ enum ApiRouter : URLRequestConvertible{
     //어떤 방식(get, post, delete, update)
     var method: HTTPMethod {
         switch self {
-        case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth, .getdailyJogakDetail : return .get
+        case /*.getModalartList,*/ .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth, .getdailyJogakDetail : return .get
 //        case .makePost: return .post
         case .getAddJogakToday : return .post
         case .JogakSuccess: return .put
@@ -93,8 +93,8 @@ enum ApiRouter : URLRequestConvertible{
         request.headers = headers
         
         switch self {
-        case .getModalartList:
-            request = try URLEncoding.queryString.encode(request, with: parameters)
+//        case .getModalartList:
+//            request = try URLEncoding.queryString.encode(request, with: parameters)
         case .detailModalart:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .getDetailMogakData:

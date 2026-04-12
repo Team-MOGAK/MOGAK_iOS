@@ -9,5 +9,5 @@ import Foundation
 import Alamofire
 
 public protocol NetworkProvider {
-    func request<T: Decodable>(target: RequestTarget) async throws -> T
+    func request<T: Decodable>(target: URLRequestConvertible) async throws -> T
 }

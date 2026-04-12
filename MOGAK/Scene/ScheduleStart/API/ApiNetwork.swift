@@ -12,21 +12,21 @@ class ApiNetwork{
     
     static let shared = ApiNetwork()
     
-    //MARK: - 모다라트 리스트 조회
-    func getModalartList( completionHandler: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
-                AF.request(ApiRouter.getModalartList, interceptor: CommonLoginManage())
-//        AF.request(ApiRouter.getModalartList)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: ScheduleModalartListResponse.self) { (response: DataResponse<ScheduleModalartListResponse, AFError>) in
-                switch response.result {
-                case .failure(let error):
-                    //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
-                case .success(let data):
-                    completionHandler(.success(data.modalartList))
-                }
-            }
-    }
+//    //MARK: - 모다라트 리스트 조회
+//    func getModalartList( completionHandler: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
+//                AF.request(ApiRouter.getModalartList, interceptor: CommonLoginManage())
+////        AF.request(ApiRouter.getModalartList)
+//            .validate(statusCode: 200..<300)
+//            .responseDecodable(of: ScheduleModalartListResponse.self) { (response: DataResponse<ScheduleModalartListResponse, AFError>) in
+//                switch response.result {
+//                case .failure(let error):
+//                    //print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+//                    completionHandler(.failure(error))
+//                case .success(let data):
+//                    completionHandler(.success(data.modalartList))
+//                }
+//            }
+//    }
     //MARK: - 모다라트 상세 내용 API
     func getDetailModalartInfo(modalartId: Int, completionHandler: @escaping (Result<ScheduleModalartInfo?, Error>) -> Void) {
                 AF.request(ApiRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())

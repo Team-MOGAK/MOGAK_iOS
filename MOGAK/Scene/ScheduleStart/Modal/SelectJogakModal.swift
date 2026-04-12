@@ -170,32 +170,32 @@ class SelectJogakModal : UIViewController{
     
     func getModalart() {
         LoadingIndicator.showLoading()
-        Apinetwork.getModalartList { result in
-            switch result {
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-                LoadingIndicator.hideLoading()
-            case .success(let list):
-                guard let modalartList = list else { return }
-                
-                self.modalartList = modalartList.map { modalart in
-                    return ScheduleModalartList(id: modalart.id, title: modalart.title, color: modalart.color)
-                }
-                
-                self.modalartTitles = self.modalartList.map { $0.title }
-                
-                
-                if self.modalartList.isEmpty {
-                    self.mainLabel.setTitle("내 모다라트", for: .normal)
-                } else {
-                    guard let firstData = self.modalartList.first else { return }
-                    self.nowShowModalArtNum = firstData.id
-                    self.nowShowModalArtIndex = 0
-                    self.setupMenu()
-                }
-                LoadingIndicator.hideLoading()
-            }
-        }
+//        Apinetwork.getModalartList { result in
+//            switch result {
+//            case .failure(let error):
+//                print("\(error.localizedDescription)")
+//                LoadingIndicator.hideLoading()
+//            case .success(let list):
+//                guard let modalartList = list else { return }
+//                
+//                self.modalartList = modalartList.map { modalart in
+//                    return ScheduleModalartList(id: modalart.id, title: modalart.title, color: modalart.color)
+//                }
+//                
+//                self.modalartTitles = self.modalartList.map { $0.title }
+//                
+//                
+//                if self.modalartList.isEmpty {
+//                    self.mainLabel.setTitle("내 모다라트", for: .normal)
+//                } else {
+//                    guard let firstData = self.modalartList.first else { return }
+//                    self.nowShowModalArtNum = firstData.id
+//                    self.nowShowModalArtIndex = 0
+//                    self.setupMenu()
+//                }
+//                LoadingIndicator.hideLoading()
+//            }
+//        }
     }
     
     //MARK: - 모다라트 리스트 보는 UImenu
