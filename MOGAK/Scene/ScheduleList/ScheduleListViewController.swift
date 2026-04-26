@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ScheduleListViewController: UIViewController {
     private var progressCount = 3
     private var failCount = 3
@@ -409,21 +412,22 @@ extension ScheduleListViewController: UITableViewDelegate, UITableViewDataSource
 
 extension ScheduleListViewController {
     func login() {
-        NetworkManager.shared.post(path: "/api/users/login/hyun123@naver.com") { response in
-            switch response.result {
-            case .success(let data):
-                // 결과 처리... 이 때, `data`는 `Data?` 타입이므로 필요하다면 언래핑해야 합니다.
-                
-                if let httpResponse = response.response, let authValue = httpResponse.allHeaderFields["Authorization"] as? String {
-                    print("Authorization header value: \(authValue)")
-                    UserDefaults.standard.set(authValue, forKey: "accessToken")
-                } else {
-                    print("No Authorization header found")
-                }
-                
-            case .failure(let error):
-                print("Error during POST request: \(error.localizedDescription)")
-            }
-        }
+        // Legacy MOGAK1 direct network route (inactive)
+        // NetworkManager.shared.post(path: "/api/users/login/hyun123@naver.com") { response in
+        //     switch response.result {
+        //     case .success:
+        //         if let httpResponse = response.response,
+        //            let authValue = httpResponse.allHeaderFields["Authorization"] as? String {
+        //             print("Authorization header value: \(authValue)")
+        //             UserDefaults.standard.set(authValue, forKey: "accessToken")
+        //         } else {
+        //             print("No Authorization header found")
+        //         }
+        //     case .failure(let error):
+        //         print("Error during POST request: \(error.localizedDescription)")
+        //     }
+        // }
     }
 }
+
+#endif

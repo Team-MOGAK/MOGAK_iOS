@@ -7,6 +7,9 @@
 
 import UIKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// UICollectionViewCell 최대한 왼쪽정렬시켜주는 flowLayout
 class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -35,3 +38,5 @@ class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
     return attributes
   }
 }
+
+#endif

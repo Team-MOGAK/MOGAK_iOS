@@ -8,6 +8,8 @@
 import Foundation
 import SnapKit
 
+#if false
+// Legacy MOGAK1 implementation (inactive after 1:1 migration to MG_Presentation).
 class OnBoardingForthViewController: UIViewController {
     
     private let titleLabel = UILabel().then {
@@ -75,4 +77,3 @@ struct ViewController_PreviewProvider4: PreviewProvider {
     }
 }
 #endif
-

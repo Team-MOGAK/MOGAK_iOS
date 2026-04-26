@@ -8,6 +8,9 @@
 import Foundation
 import UIKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 루틴으로 설정된 조각의 경우
 class IsRoutineJogakCell: UICollectionViewCell {
     static let identifier: String = "IsRoutineJogakCell"
@@ -98,3 +101,5 @@ extension IsRoutineJogakCell {
         }
     }
 }
+
+#endif

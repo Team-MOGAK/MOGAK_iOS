@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 login/user-setting implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class NameCell: UITableViewCell {
     
     var checkCount = 0
@@ -71,3 +74,5 @@ class NameCell: UITableViewCell {
     }
     
 }
+
+#endif

@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         dataSource.count
@@ -189,3 +192,5 @@ class LocationFilterSheetView: UIViewController, UITableViewDelegate, UITableVie
         }
 }
 
+
+#endif

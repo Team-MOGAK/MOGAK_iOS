@@ -12,6 +12,9 @@ import Security
 import Combine
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
 
 
 
@@ -93,29 +96,43 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                 let loginRequestTokenData = LoginRequest(idToken: idTokenString)
                 
                 //MARK: - 로그인 요청
-                AF.request(LoginRouter.login(data: loginRequestTokenData))
-                    .responseDecodable(of: LoginResponse.self) { (response: DataResponse<LoginResponse, AFError> ) in
-                        
-                        switch response.result {
-                        case .failure(let error):
-                            print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                        case .success(let data):
-                            if let dataResult = data.result {
-                                print(#fileID, #function, #line, "- accessToken: \(dataResult.tokens.accessToken)")
-                                UserDefaults.standard.set(dataResult.tokens.accessToken, forKey: "accessToken")
-                                UserDefaults.standard.set(dataResult.tokens.refreshToken, forKey: "refreshToken")
-                                UserDefaults.standard.set(dataResult.userID, forKey: "userId")
-                                UserDefaults.standard.synchronize()
-                                
-                                self.registerUserInfo.userIsRegistered = dataResult.isRegistered//유저가 등록이 되어져
-                            }
+                // MOGAK2 bridge route (active)
+                MG2LegacyAuthBridge.shared.login(idToken: loginRequestTokenData.idToken) { result in
+                    switch result {
+                    case .failure(let error):
+                        print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                    case .success(let session):
+                        UserDefaults.standard.set(session.tokens.accessToken, forKey: "accessToken")
+                        UserDefaults.standard.set(session.tokens.refreshToken, forKey: "refreshToken")
+                        UserDefaults.standard.set(session.userId, forKey: "userId")
+                        UserDefaults.standard.synchronize()
 
-                            let userEmail = appleIDCredential.email ?? "이메일 제공안함"
-//                             있는지 확인
-                            self.registerUserInfo.userEmail = userEmail
-                            self.registerUserInfo.loginState = .login
-                        }
+                        self.registerUserInfo.userIsRegistered = session.isRegistered
+                        let userEmail = appleIDCredential.email ?? "이메일 제공안함"
+                        self.registerUserInfo.userEmail = userEmail
+                        self.registerUserInfo.loginState = .login
                     }
+                }
+
+                // Legacy MOGAK1 route (inactive)
+                // AF.request(LoginRouter.login(data: loginRequestTokenData))
+                //     .responseDecodable(of: LoginResponse.self) { (response: DataResponse<LoginResponse, AFError> ) in
+                //         switch response.result {
+                //         case .failure(let error):
+                //             print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                //         case .success(let data):
+                //             if let dataResult = data.result {
+                //                 UserDefaults.standard.set(dataResult.tokens.accessToken, forKey: "accessToken")
+                //                 UserDefaults.standard.set(dataResult.tokens.refreshToken, forKey: "refreshToken")
+                //                 UserDefaults.standard.set(dataResult.userID, forKey: "userId")
+                //                 UserDefaults.standard.synchronize()
+                //                 self.registerUserInfo.userIsRegistered = dataResult.isRegistered
+                //             }
+                //             let userEmail = appleIDCredential.email ?? "이메일 제공안함"
+                //             self.registerUserInfo.userEmail = userEmail
+                //             self.registerUserInfo.loginState = .login
+                //         }
+                //     }
 
             }
         }
@@ -133,18 +150,24 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
         print(#fileID, #function, #line, "- token checking⭐️: \(String(describing: token))")
         //token으로 데이터 삭제
         if let token = token {
-            let url = URL(string: "https://us-central1-pickdrink-492de.cloudfunctions.net/revokeToken?refresh_token=\(token)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "https://apple.com")!
-            
-            let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
-                guard data != nil else { return }
+            // MOGAK2 bridge route (active)
+            MG2LegacyAuthBridge.shared.revokeAppleToken(refreshToken: token) { error in
                 print(#fileID, #function, #line, "- revoke token error🔥: \(String(describing: error?.localizedDescription))")
-                print(#fileID, #function, #line, "- revokeToken response checking🔥: \(String(describing: response))")
-                
             }
-            task.resume()
+
+            // Legacy MOGAK1 route (inactive)
+            // let url = URL(string: "https://us-central1-pickdrink-492de.cloudfunctions.net/revokeToken?refresh_token=\(token)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "https://apple.com")!
+            // let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
+            //     guard data != nil else { return }
+            //     print(#fileID, #function, #line, "- revoke token error🔥: \(String(describing: error?.localizedDescription))")
+            //     print(#fileID, #function, #line, "- revokeToken response checking🔥: \(String(describing: response))")
+            // }
+            // task.resume()
         }
         print(#fileID, #function, #line, "- revokeToken success⭐️")
         // Delete other information from the database...
         
     }
 }
+
+#endif

@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
 struct UserInfo: Codable {
     let uid: String
     let email: String?
@@ -101,3 +104,5 @@ struct WithDrawErrorResponse: Codable {
     let time, code, message: String
     let status: Int
 }
+
+#endif

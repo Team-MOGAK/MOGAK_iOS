@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 let accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
 
 enum ModalartRouter: URLRequestConvertible {
@@ -82,3 +85,5 @@ enum ModalartRouter: URLRequestConvertible {
         return request
     }
 }
+
+#endif

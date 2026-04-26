@@ -11,6 +11,9 @@ import FSCalendar
 import Alamofire
 import ReusableKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class MogakEditViewController: UIViewController {
     
     weak var delegate: MogakCreatedReloadDelegate?
@@ -1478,3 +1481,5 @@ extension MogakEditViewController {
 //    }
     
 }
+
+#endif

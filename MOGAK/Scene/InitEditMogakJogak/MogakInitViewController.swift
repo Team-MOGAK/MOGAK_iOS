@@ -11,6 +11,9 @@ import FSCalendar
 import Alamofire
 import ReusableKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class MogakInitViewController: UIViewController {
     weak var delegate: MogakCreatedReloadDelegate?
     let mogakNetwork = MogakNetwork()
@@ -1484,25 +1487,26 @@ extension MogakInitViewController {
             "endAt": end
         ]
         
-        NetworkManager.shared.post(path: path, parameters: parameters, headers: headers) { response in
-            switch response.result {
-            case .success(let data):
-                guard let jsonData = data else {
-                    print("No data received")
-                    return
-                }
-                if let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
-                    print("모각 생성 완료 \(responseModel)")
-                    self.navigationController?.popViewController(animated: true)
-                } else {
-                    print("디코딩 실패")
-                }
-            case .failure(let error):
-                print("실패 \(error)")
-                print("token \(accessToken)")
-                debugPrint(response)
-            }
-        }
+        // Legacy MOGAK1 direct network route (inactive)
+        // NetworkManager.shared.post(path: path, parameters: parameters, headers: headers) { response in
+        //     switch response.result {
+        //     case .success(let data):
+        //         guard let jsonData = data else {
+        //             print("No data received")
+        //             return
+        //         }
+        //         if let responseModel = try? JSONDecoder().decode(MogakInitModel.self, from: jsonData) {
+        //             print("모각 생성 완료 \(responseModel)")
+        //             self.navigationController?.popViewController(animated: true)
+        //         } else {
+        //             print("디코딩 실패")
+        //         }
+        //     case .failure(let error):
+        //         print("실패 \(error)")
+        //         print("token \(accessToken)")
+        //         debugPrint(response)
+        //     }
+        // }
     }
     
 }
@@ -1514,3 +1518,5 @@ extension MogakInitViewController {
      MogakInitViewController()
  }
  
+
+#endif

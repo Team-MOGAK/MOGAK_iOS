@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 모각 리스트(세부목표 화면에서 상단에 있는 모각 리스트)
 class MogakListCell: UICollectionViewCell {
     static let identifier = "MogakListCell"
@@ -60,3 +63,5 @@ class MogakListCell: UICollectionViewCell {
         }
     }
 }
+
+#endif

@@ -8,6 +8,9 @@
 import Foundation
 import Security
 
+#if false
+// Legacy MOGAK1 implementation (inactive after migration/deprecation in MOGAK2).
+
 final class KeychainService {
     
     private enum Const {
@@ -107,3 +110,5 @@ extension KeychainService {
         return keychainQuery
     }
 }
+
+#endif

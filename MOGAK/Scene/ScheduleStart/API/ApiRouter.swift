@@ -8,6 +8,10 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
+// Legacy router (inactive): runtime API path now goes through MOGAK2 bridges.
 //let Accesstoken = "Bearer" + "  eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MSwiZW1haWwiOiJoeXVuMTIzQG5hdmVyLmNvbSIsInN1YiI6Imh5dW4xMjNAbmF2ZXIuY29tIiwiaWF0IjoxNzA3MjE0NzYzLCJleHAiOjE3MDcyMjE5NjN9.vG0GDgQSJv9znIH9zE7ElwhpSiyeWnk6oEVy3AlBduw"
 
 let BaseURL = "https://mogak.shop:8080"
@@ -125,3 +129,5 @@ enum ApiRouter : URLRequestConvertible{
         return request
     }
 }
+
+#endif

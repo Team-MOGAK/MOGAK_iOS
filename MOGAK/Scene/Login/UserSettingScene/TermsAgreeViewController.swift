@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 login/user-setting implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class TermsAgreeViewController: UIViewController {
     
     private var allAgreeIsOn = false
@@ -357,3 +360,5 @@ class TermsAgreeViewController: UIViewController {
     }
     
 }
+
+#endif

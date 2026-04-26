@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 struct ScheduleModalartDetailInfo: Codable {
     let time, status, code, message: String?
     let result: ScheduleModalartInfo?
@@ -93,3 +96,5 @@ struct ScheduleMainCategory: Codable {
     let id: Int
     let name: String
 }
+
+#endif

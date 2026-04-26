@@ -11,6 +11,9 @@ import Then
 import ReusableKit
 import FSCalendar
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class TestViewController: UIViewController {
     
     private var categorySelectedList : [String] = []
@@ -822,3 +825,5 @@ extension TestViewController: FSCalendarDelegate, FSCalendarDataSource {
     }
 }
 
+
+#endif

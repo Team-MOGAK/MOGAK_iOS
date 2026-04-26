@@ -11,6 +11,9 @@ import FSCalendar
 import Alamofire
 import ReusableKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 조각 생성 vc
 class JogakInitViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
@@ -1020,3 +1023,5 @@ extension JogakInitViewController {
 #Preview("JogakInitVC") {
     JogakInitViewController()
 }
+
+#endif

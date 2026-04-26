@@ -8,6 +8,9 @@
 import FSCalendar
 import UIKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 enum SelectionType {
     case none
     case today
@@ -161,3 +164,5 @@ class CalendarCell: FSCalendarCell {
         }
     }
 }
+
+#endif

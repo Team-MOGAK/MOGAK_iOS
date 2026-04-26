@@ -11,6 +11,9 @@ import Kingfisher
 import Alamofire
 import Combine
 
+#if false
+// Legacy MOGAK1 login/user-setting implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class NicknameViewController: UIViewController {
     let registerUserInfo = RegisterUserInfo.shared
     let apiManger = ApiManager.shared
@@ -338,27 +341,43 @@ extension NicknameViewController {
             return
         }
         LoadingIndicator.showLoading()
-        let nicknameRequest = NicknameChangeRequest(nickname: nickName)
-        AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
-            .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
-                LoadingIndicator.hideLoading()
-                switch response.result {
-                case .success(let data):
-                    if data.code == "success" {
-                        print("성공")
-                        self.registerUserInfo.nickName = self.nicknameTextField.text
-                        
-                        let chooseJobVC = ChooseJobViewController()
-                        chooseJobVC.modalPresentationStyle = .fullScreen
-                        self.navigationController?.pushViewController(chooseJobVC, animated: true)
-                    }
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error)")
-                    let decoder = JSONDecoder()
-                    let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
-                    self.makeNicknameErrorAlert(errorMessage: decodeData?.message)
+        // MOGAK2 bridge route (active)
+        MG2LegacyUserBridge.shared.nicknameVerify(nickName) { result in
+            LoadingIndicator.hideLoading()
+            switch result {
+            case .success(let data):
+                if data.code == "success" {
+                    self.registerUserInfo.nickName = self.nicknameTextField.text
+                    let chooseJobVC = ChooseJobViewController()
+                    chooseJobVC.modalPresentationStyle = .fullScreen
+                    self.navigationController?.pushViewController(chooseJobVC, animated: true)
+                } else {
+                    self.makeNicknameErrorAlert(errorMessage: data.message)
                 }
+            case .failure(let error):
+                self.makeNicknameErrorAlert(errorMessage: error.localizedDescription)
             }
+        }
+
+        // Legacy MOGAK1 route (inactive)
+        // let nicknameRequest = NicknameChangeRequest(nickname: nickName)
+        // AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
+        //     .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
+        //         LoadingIndicator.hideLoading()
+        //         switch response.result {
+        //         case .success(let data):
+        //             if data.code == "success" {
+        //                 self.registerUserInfo.nickName = self.nicknameTextField.text
+        //                 let chooseJobVC = ChooseJobViewController()
+        //                 chooseJobVC.modalPresentationStyle = .fullScreen
+        //                 self.navigationController?.pushViewController(chooseJobVC, animated: true)
+        //             }
+        //         case .failure(let error):
+        //             let decoder = JSONDecoder()
+        //             let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
+        //             self.makeNicknameErrorAlert(errorMessage: decodeData?.message)
+        //         }
+        //     }
     }
     
     func makeNicknameErrorAlert(errorMessage: String?) {
@@ -457,3 +476,4 @@ extension NicknameViewController {
     }
 }
 
+#endif

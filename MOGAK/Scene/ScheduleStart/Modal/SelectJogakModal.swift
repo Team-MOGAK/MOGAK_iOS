@@ -11,6 +11,9 @@ import SnapKit
 import Alamofire
 import ExpyTableView
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class SelectJogakModal : UIViewController{
     
     //셀
@@ -713,5 +716,6 @@ struct abBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
         }
         
     }
-} #endif
+}
+#endif
 

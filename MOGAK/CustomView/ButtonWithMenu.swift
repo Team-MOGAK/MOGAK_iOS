@@ -1,3 +1,4 @@
+#if false
 //
 //  ButtonWithMenu.swift
 //  MOGAK
@@ -16,3 +17,5 @@ class ButtonWithMenu: UIButton {
 }
 
 
+
+#endif

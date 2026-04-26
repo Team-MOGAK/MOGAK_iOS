@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
 enum UserRouter: URLRequestConvertible {
     case nicknameVerify(nickname: NicknameChangeRequest)
     case userJoin(userData: String) //나중에는 여기로 수정해야 하지만 현재는 따로 빠져있음(userNetwork의 userJoin함수에 전부 들어가있음)
@@ -82,3 +85,5 @@ enum UserRouter: URLRequestConvertible {
         return request
     }
 }
+
+#endif

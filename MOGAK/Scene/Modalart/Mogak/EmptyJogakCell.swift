@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 설정이 안된 조각
 class EmptyJogakCell: UICollectionViewCell {
     static let identifier = "EmptyJogakCell"
@@ -65,3 +68,5 @@ extension EmptyJogakCell {
         }
     }
 }
+
+#endif

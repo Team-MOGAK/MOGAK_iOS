@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class DateHelper {
 
     static let shared = DateHelper()
@@ -27,3 +30,5 @@ extension Date {
         return ordered == .orderedSame
     }
 }
+
+#endif

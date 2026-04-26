@@ -11,6 +11,9 @@ import SwiftUI
 import Alamofire
 import Kingfisher
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class NetworkingViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - PROPERTIES
     var scrollView: UIScrollView!
@@ -338,14 +341,14 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
             "size": 5
         ]
         
-        AF.request("http://43.200.36.231:8080/api/posts/pacemakers",
-                   method: .get,
-                   parameters: params,
-                   //encoding: JSONEncoding.default,
-                   encoding: URLEncoding.default,
-                   headers: headers)
-        .responseDecodable(of: PacemakerFeedsResponse.self) { response in
-            switch response.result {
+        // MOGAK2 bridge route (active)
+        MG2LegacyCoreBridge.shared.get(
+            url: "http://43.200.36.231:8080/api/posts/pacemakers",
+            parameters: params,
+            headers: headers,
+            encoding: URLEncoding.default
+        ) { (result: Result<PacemakerFeedsResponse, AFError>) in
+            switch result {
             case .success(let serverResponse):
                 print(serverResponse)
                 completion(serverResponse.result)
@@ -354,6 +357,23 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
                 completion(nil)
             }
         }
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request("http://43.200.36.231:8080/api/posts/pacemakers",
+        //            method: .get,
+        //            parameters: params,
+        //            encoding: URLEncoding.default,
+        //            headers: headers)
+        // .responseDecodable(of: PacemakerFeedsResponse.self) { response in
+        //     switch response.result {
+        //     case .success(let serverResponse):
+        //         print(serverResponse)
+        //         completion(serverResponse.result)
+        //     case .failure(let error):
+        //         print("ERROR: \(error)")
+        //         completion(nil)
+        //     }
+        // }
     } //: PacemakerFeedsGET()
     
     func setUpFeed() {
@@ -491,3 +511,5 @@ extension LocationFilterSheetView: UISheetPresentationControllerDelegate {
      return 2
  }
  */
+
+#endif

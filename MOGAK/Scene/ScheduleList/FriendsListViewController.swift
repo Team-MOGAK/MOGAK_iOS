@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class FriendsListViewController: UIViewController {
     
     private lazy var containerView : UIView = {
@@ -169,3 +172,5 @@ extension FriendsListViewController: FollowingDelegate {
     }
 }
 
+
+#endif

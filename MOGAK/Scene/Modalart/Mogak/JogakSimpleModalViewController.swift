@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 조각에 대한 간단한 정보를 나타내주는 조각 바텀 모달(조각 눌렀을 떄 나오는 바텀 모달)
 class JogakSimpleModalViewController: UIViewController {
     var mogakCategory: String = ""

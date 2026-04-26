@@ -1,3 +1,4 @@
+#if false
 //
 //  UIColor+Ext.swift
 //  MOGAK
@@ -28,3 +29,5 @@ extension UIColor {
                   alpha: 1.0)
     }
 }
+
+#endif

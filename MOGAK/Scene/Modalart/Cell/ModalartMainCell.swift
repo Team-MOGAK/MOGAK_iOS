@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 모다라트 정중앙에 들어가는 Cell
 class ModalartMainCell: UICollectionViewCell {
     static let identifier = "ModalartMainCell"
@@ -54,3 +57,5 @@ extension ModalartMainCell {
         }
     }
 }
+
+#endif

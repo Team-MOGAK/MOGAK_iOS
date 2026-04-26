@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 struct CreateMogakResponse: Codable {
     let time, status, code, message: String?
     //let result: MogakMainData
@@ -144,3 +147,5 @@ struct MemoirPageable: Codable {
 struct MemoirSort: Codable {
     let empty, unsorted, sorted: Bool
 }
+
+#endif

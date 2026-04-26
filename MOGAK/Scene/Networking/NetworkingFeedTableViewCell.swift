@@ -9,6 +9,9 @@ import UIKit
 import SnapKit
 import Kingfisher
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class NetworkingFeedTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -335,3 +338,5 @@ class NetworkingFeedTableViewCell: UITableViewCell {
      imageView.clipsToBounds = true
      */
 }
+
+#endif

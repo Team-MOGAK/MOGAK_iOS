@@ -1,3 +1,4 @@
+#if false
 //
 //  APICall.swift
 //  MOGAK
@@ -18,3 +19,5 @@ enum APIError: Error, Equatable {
 //    case imageDeserialization
 }
 
+
+#endif

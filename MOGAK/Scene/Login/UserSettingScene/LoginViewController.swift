@@ -11,6 +11,9 @@ import AuthenticationServices
 import Alamofire
 import Combine
 
+#if false
+// Legacy MOGAK1 login/user-setting implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class LoginViewController: UIViewController {
     
     let registerUserInfo = RegisterUserInfo.shared

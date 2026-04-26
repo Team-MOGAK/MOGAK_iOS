@@ -10,6 +10,9 @@ import SnapKit
 import FSCalendar
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance, UISheetPresentationControllerDelegate{
     
     let Apinetwork =  ApiNetwork.shared
@@ -532,7 +535,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     @objc func goStart(_ sender : UIButton){
         if RegisterUserInfo.shared.loginState == .guest {
-            CommonLoginManage.gotoLoginViewController(self)
+            MG2CommonLoginGate.gotoLoginViewController(self)
             return
         }
         let vc = SelectModalartTableView()
@@ -806,4 +809,5 @@ struct cabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
         }
         
     }
-} #endif
+}
+#endif

@@ -10,6 +10,8 @@ import SnapKit
 import AuthenticationServices
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
 class LoginViewController: UIViewController {
     
     let registerUserInfo = RegisterUserInfo.shared
@@ -233,3 +235,4 @@ extension UIView {
 //        
 //    }
 //}
+#endif

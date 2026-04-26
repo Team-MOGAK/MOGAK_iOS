@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 사용자가 목표를 설정했을때 생성되는 모각
 class MogakCell: UICollectionViewCell {
     weak var delegate: MogakSettingButtonTappedDelegate?
@@ -98,3 +101,5 @@ extension MogakCell {
         
     }
 }
+
+#endif

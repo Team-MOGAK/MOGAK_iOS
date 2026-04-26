@@ -1,3 +1,4 @@
+#if false
 //
 //  UILabel+Ext.swift
 //  MOGAK
@@ -32,3 +33,5 @@ extension UILabel {
         attributedText = attributedString
     }
 }
+
+#endif

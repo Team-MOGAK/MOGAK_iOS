@@ -1,3 +1,4 @@
+#if false
 //
 //  UIImage+Ext.swift
 //  MOGAK
@@ -31,3 +32,5 @@ extension UIImage {
         return newImage
     }
 }
+
+#endif

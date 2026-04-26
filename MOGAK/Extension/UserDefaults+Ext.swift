@@ -1,3 +1,4 @@
+#if false
 //
 //  UserDefaults+Ext.swift
 //  MOGAK
@@ -66,3 +67,5 @@ extension UserDefaults {
         }
     }
 }
+
+#endif

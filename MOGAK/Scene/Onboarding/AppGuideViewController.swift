@@ -7,7 +7,11 @@
 
 import UIKit
 
+#if false
+// Legacy MOGAK1 onboarding container (inactive after 1:1 migration to MG_Presentation).
 class AppGuideViewController: UIViewController {
+    // Legacy MOGAK1 onboarding container.
+    // MOGAK2 active route: MG2OnboardingContainerViewController (SceneDelegate switched).
     // 하단 버튼 클릭 시 페이지 이동을 위한 index
     private var buttonPageIndex = 0
     private let pageCount = 4 //온보딩 총 개수

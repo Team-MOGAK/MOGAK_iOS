@@ -7,6 +7,11 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 implementation (inactive after migration/deprecation in MOGAK2).
+
 struct ValidateNicknameModel: Codable {
     let time, status, code, message: String?
 }
+
+#endif

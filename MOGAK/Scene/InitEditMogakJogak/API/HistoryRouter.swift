@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 enum MogakRouter: URLRequestConvertible {
     
     case createMogak(data: MogakMainData)
@@ -117,3 +120,5 @@ enum MemoirRouter: URLRequestConvertible {
         return request
     }
 }
+
+#endif

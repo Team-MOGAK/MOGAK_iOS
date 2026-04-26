@@ -8,22 +8,30 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class MogakDetailNetwork: NSObject {
     static let shared = MogakDetailNetwork()
     func getAllMogakDetailJogaks(mogakId: Int, date: String, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId, date), interceptor: CommonLoginManage())
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
-                switch response.result {
-                case .success(let jogakDetailResponse):
-                    completionHandler(.success(jogakDetailResponse.result))
-                case .failure(let error):
-                    completionHandler(.failure(error))
-                }
-            }
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyMogakDetailBridge.shared.getAllMogakDetailJogaks(mogakId: mogakId, date: date, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId, date), interceptor: CommonLoginManage())
+        //     .validate(statusCode: 200..<300)
+        //     .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
+        //         switch response.result {
+        //         case .success(let jogakDetailResponse):
+        //             completionHandler(.success(jogakDetailResponse.result))
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         }
+        //     }
     }
     
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
@@ -32,21 +40,21 @@ class MogakDetailNetwork: NSObject {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-//        AF.request(ModalartRouter.delteModalart(modaratId: mogakId), interceptor: CommonLoginManage())
-        AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId), interceptor: CommonLoginManage())
-        .validate()
-          .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-              switch response.result{
-              case .failure(let error):
-                  print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
-    
-                  completionHandler(.failure(error))
-              case .success(_):
-                  print(#fileID, #function, #line, "- data")
-                  completionHandler(.success(true))
-              }
 
-          }
+        // MOGAK2 bridge route (active)
+        MG2LegacyMogakDetailBridge.shared.deleteMogak(mogakId: mogakId, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId), interceptor: CommonLoginManage())
+        // .validate()
+        // .responseData(emptyResponseCodes: [200, 204, 205]) { response in
+        //     switch response.result {
+        //     case .failure(let error):
+        //         completionHandler(.failure(error))
+        //     case .success:
+        //         completionHandler(.success(true))
+        //     }
+        // }
     }
     
     //MARK: - 모다라트 삭제 요청 API
@@ -54,20 +62,23 @@ class MogakDetailNetwork: NSObject {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        AF.request(MogakDetailRouter.deleteJogak(jogakId), interceptor: CommonLoginManage())
-//        AF.request(MogakDetailRouter.deleteJogak(jogakId))
-        .validate()
-          .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-              switch response.result{
-              case .failure(let error):
-                  print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
-                  completionHandler(.failure(error))
-              case .success(_):
-                  print(#fileID, #function, #line, "- data")
-                  completionHandler(.success(true))
-              }
 
-          }
+        // MOGAK2 bridge route (active)
+        MG2LegacyMogakDetailBridge.shared.deleteJogak(jogakId: jogakId, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(MogakDetailRouter.deleteJogak(jogakId), interceptor: CommonLoginManage())
+        // .validate()
+        // .responseData(emptyResponseCodes: [200, 204, 205]) { response in
+        //     switch response.result {
+        //     case .failure(let error):
+        //         completionHandler(.failure(error))
+        //     case .success:
+        //         completionHandler(.success(true))
+        //     }
+        // }
     }
     
 }
+
+#endif

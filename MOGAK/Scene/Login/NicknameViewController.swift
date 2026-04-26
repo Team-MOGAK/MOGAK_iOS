@@ -10,6 +10,9 @@ import SnapKit
 import Kingfisher
 import Alamofire
 
+#if false
+// Legacy MOGAK1 nickname/profile implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class NicknameViewController: UIViewController {
     
     let registerUserInfo = RegisterUserInfo.shared
@@ -293,3 +296,5 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 //    }
 //}
 
+
+#endif

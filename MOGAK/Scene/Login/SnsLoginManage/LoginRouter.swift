@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
 enum LoginRouter: URLRequestConvertible {
     case login(data: LoginRequest)
     case getNewAccessToken(refreshToken: String)
@@ -63,3 +66,5 @@ enum LoginRouter: URLRequestConvertible {
         return request
     }
 }
+
+#endif

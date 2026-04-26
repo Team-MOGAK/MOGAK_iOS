@@ -1,3 +1,4 @@
+#if false
 //
 //  ApiConstants.swift
 //  MOGAK
@@ -12,3 +13,5 @@ struct ApiConstants {
     
     static let join = baseURL + "/api/users/join"
 }
+
+#endif

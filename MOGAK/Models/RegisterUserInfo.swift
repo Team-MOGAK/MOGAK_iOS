@@ -1,3 +1,4 @@
+#if false
 //
 //  RegisterUserInfo.swift
 //  MOGAK
@@ -40,3 +41,5 @@ class RegisterUserInfo {
     
     private init() {}
 }
+
+#endif

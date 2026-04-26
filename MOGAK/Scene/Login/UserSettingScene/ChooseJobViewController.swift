@@ -10,6 +10,9 @@ import Combine
 import SnapKit
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login/user-setting implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ChooseJobViewController: UIViewController {
     
     //    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
@@ -394,3 +397,5 @@ extension ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
     
 }
+
+#endif

@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 조각 페이지에서 중앙 모각 탭시 올라오는 모각 뷰
 class MogakMainBottomModalViewController: UIViewController {
     weak var delegate: MogakSettingButtonTappedDelegate?
@@ -122,3 +125,5 @@ extension MogakMainBottomModalViewController {
         }
     }
 }
+
+#endif

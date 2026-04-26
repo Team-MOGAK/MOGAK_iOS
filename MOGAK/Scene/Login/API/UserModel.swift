@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
 struct NicknameVerify: Codable {
     let time: String?
     let status: Int?
@@ -89,3 +92,5 @@ struct UserRealData: Codable {
         case imgURL = "imgUrl"
     }
 }
+
+#endif

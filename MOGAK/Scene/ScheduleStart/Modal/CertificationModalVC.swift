@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate{
     
      lazy var titleLabel : UILabel = {
@@ -142,3 +145,5 @@ class CertificationModalVC : UIViewController, UIImagePickerControllerDelegate &
         }
     }
 
+
+#endif

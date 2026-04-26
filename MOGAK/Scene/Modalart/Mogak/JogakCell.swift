@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 /// 루틴으로 설정되지 않는 조각
 class JogakCell: UICollectionViewCell {
     static let identifier: String = "JogakCell"
@@ -90,3 +93,5 @@ extension JogakCell {
     }
 
 }
+
+#endif

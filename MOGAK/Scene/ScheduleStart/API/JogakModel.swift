@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 //MARK: - 조각 일일 조회
 struct JogakDailyCheck: Codable {
     let time, status, code, message: String?
@@ -149,3 +152,5 @@ struct JogakMonthResult: Codable {
     }
 }
 
+
+#endif

@@ -1,3 +1,4 @@
+#if false
 //
 //  WebLink.swift
 //  MOGAK
@@ -13,3 +14,5 @@ enum WebLink {
     static let googleForm = ""
     static let term = ""
 }
+
+#endif

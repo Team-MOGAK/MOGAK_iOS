@@ -1,3 +1,4 @@
+#if false
 //
 //  RoutineRegisterViewController.swift
 //  MOGAK
@@ -28,3 +29,5 @@ class ScheduleReportViewController: UIViewController {
     }
 
 }
+
+#endif

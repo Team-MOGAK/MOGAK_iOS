@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 implementation (inactive after migration/deprecation in MOGAK2).
+
 class Utils {
     // MARK: - JWT decode
     static func decode(jwtToken jwt: String) -> [String: Any] {
@@ -38,3 +41,5 @@ class Utils {
         return decodeJWTPart(segments[1]) ?? [:]
     }
 }
+
+#endif

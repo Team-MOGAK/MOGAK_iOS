@@ -10,6 +10,8 @@ import SnapKit
 import Combine
 import Alamofire
 
+#if false
+// Legacy MOGAK1 mypage edit (inactive after 1:1 migration to MOGAK2 MG_Presentation).
 class MyPageEditViewController: UIViewController {
     var cancellables = Set<AnyCancellable>()
     
@@ -275,3 +277,4 @@ class MyPageEditViewController: UIViewController {
     }
     
 }
+#endif

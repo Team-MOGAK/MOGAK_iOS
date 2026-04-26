@@ -10,6 +10,9 @@ import UIKit
 import SnapKit
 import Lottie
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 protocol MogakSettingButtonTappedDelegate: AnyObject {
     func cellButtonTapped(mogakData: DetailMogakData)
 }
@@ -124,7 +127,7 @@ class ModalartMainViewController: UIViewController {
     //MARK: - 현재 생성된 모다라트 리스트 보여줌
     @objc private func showModalartListTapped() {
         if RegisterUserInfo.shared.loginState == .guest {
-            CommonLoginManage.gotoLoginViewController(self)
+            MG2CommonLoginGate.gotoLoginViewController(self)
             return
         }
         
@@ -171,7 +174,7 @@ class ModalartMainViewController: UIViewController {
     //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
     @objc private func tacoBtnTapped() {
         if RegisterUserInfo.shared.loginState == .guest {
-            CommonLoginManage.gotoLoginViewController(self)
+            MG2CommonLoginGate.gotoLoginViewController(self)
             return
         }
         
@@ -447,7 +450,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         guard let cellType = collectionView.cellForItem(at: indexPath)?.reuseIdentifier else { return }
         if cellType == EmptyMogakCell.identifier {
             if RegisterUserInfo.shared.loginState == .guest {
-                CommonLoginManage.gotoLoginViewController(self)
+                MG2CommonLoginGate.gotoLoginViewController(self)
                 return
             }
             if String(modalartName.prefix(6)) == "내 모다라트" {
@@ -473,7 +476,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         }
         else if cellType == ModalartMainCell.identifier {
             if RegisterUserInfo.shared.loginState == .guest {
-                CommonLoginManage.gotoLoginViewController(self)
+                MG2CommonLoginGate.gotoLoginViewController(self)
                 return
             }
             let hasModalArtNameChecking: Bool = String(modalartName.prefix(6)) != "내 모다라트"
@@ -498,7 +501,7 @@ extension ModalartMainViewController: UICollectionViewDelegate {
         }
         else {
             if RegisterUserInfo.shared.loginState == .guest {
-                CommonLoginManage.gotoLoginViewController(self)
+                MG2CommonLoginGate.gotoLoginViewController(self)
                 return
             }
             let row = indexPath.row
@@ -638,7 +641,7 @@ extension ModalartMainViewController: UICollectionViewDelegateFlowLayout {
 extension ModalartMainViewController: MogakSettingButtonTappedDelegate {
     func cellButtonTapped(mogakData: DetailMogakData) {
         if RegisterUserInfo.shared.loginState == .guest {
-            CommonLoginManage.gotoLoginViewController(self)
+            MG2CommonLoginGate.gotoLoginViewController(self)
             return
         }
         print(#fileID, #function, #line, "- mogakDetailData 넘겨받기: \(mogakData)")
@@ -679,3 +682,5 @@ extension ModalartMainViewController: MogakCreatedReloadDelegate {
         modalArtCollectionView.reloadData()
     }
 }
+
+#endif

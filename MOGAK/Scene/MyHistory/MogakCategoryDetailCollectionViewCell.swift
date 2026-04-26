@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class MogakCategoryDetailCollectionViewCell: UICollectionViewCell {
     func configureMogakCategory(MogakCategoryText: String) {
         mogakNameLabel.text = MogakCategoryText
@@ -57,3 +60,5 @@ class MogakCategoryDetailCollectionViewCell: UICollectionViewCell {
         
     }
 }
+
+#endif

@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
     
     //MARK: - 조각 정보
@@ -256,3 +259,5 @@ extension UITableViewCell {
         return nil
     }
 }
+
+#endif

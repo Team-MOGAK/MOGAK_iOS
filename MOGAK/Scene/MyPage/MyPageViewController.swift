@@ -11,6 +11,8 @@ import WebKit
 import Then
 import Combine
 
+#if false
+// Legacy MOGAK1 mypage (inactive after 1:1 migration to MOGAK2 MG_Presentation).
 enum WebUrl: String {
     case noti = "https://business-dong.tistory.com/category/MOGAK%20%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD" //공지사항
     case ask = "https://open.kakao.com/o/sXxrT02f" //문의사항
@@ -332,7 +334,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     //MARK: - 프로필 수정 뷰로 이동
     @objc private func goToEditPage() {
         if RegisterUserInfo.shared.loginState == .guest {
-            CommonLoginManage.gotoLoginViewController(self)
+            MG2CommonLoginGate.gotoLoginViewController(self)
             return
         } else {
             let mypageVC = MyPageEditViewController()
@@ -560,3 +562,4 @@ struct ViewController_PreviewProvider7: PreviewProvider {
         }
     }
 }
+#endif

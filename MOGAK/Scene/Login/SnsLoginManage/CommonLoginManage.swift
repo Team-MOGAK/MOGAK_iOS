@@ -8,6 +8,8 @@
 import UIKit
 import Alamofire
 
+#if false
+// Legacy MOGAK1 login interceptor/login-gate (inactive after migration to MOGAK2 Common service).
 class CommonLoginManage: RequestInterceptor {
     //MARK: - Authorization header에 넣어줌
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
@@ -27,19 +29,31 @@ class CommonLoginManage: RequestInterceptor {
         
         // adapt를해서 돌아올때 statusCode가 401일 경우 -> accessToken만료된 것(재발급)
         if response.statusCode == 401 {
-            AF.request(LoginRouter.getNewAccessToken(refreshToken: requestToken))
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: RefreshTokenResponse.self) { (response: DataResponse<RefreshTokenResponse, AFError> ) in
-                    switch response.result {
-                    case .failure(let error):
-                        completion(.doNotRetry)
-                    case .success(let data):
-                        UserDefaults.standard.set(data.result?.accessToken, forKey: "accessToken")
-                        UserDefaults.standard.set(data.result?.refreshToken, forKey: "refreshToken")
-                        completion(.retry)
-                    }
-                    
+            // MOGAK2 bridge route (active)
+            MG2LegacyAuthBridge.shared.refreshToken(requestToken) { result in
+                switch result {
+                case .success(let token):
+                    UserDefaults.standard.set(token.accessToken, forKey: "accessToken")
+                    UserDefaults.standard.set(token.refreshToken, forKey: "refreshToken")
+                    completion(.retry)
+                case .failure:
+                    completion(.doNotRetry)
                 }
+            }
+
+            // Legacy MOGAK1 route (inactive)
+            // AF.request(LoginRouter.getNewAccessToken(refreshToken: requestToken))
+            //     .validate(statusCode: 200..<300)
+            //     .responseDecodable(of: RefreshTokenResponse.self) { (response: DataResponse<RefreshTokenResponse, AFError> ) in
+            //         switch response.result {
+            //         case .failure:
+            //             completion(.doNotRetry)
+            //         case .success(let data):
+            //             UserDefaults.standard.set(data.result?.accessToken, forKey: "accessToken")
+            //             UserDefaults.standard.set(data.result?.refreshToken, forKey: "refreshToken")
+            //             completion(.retry)
+            //         }
+            //     }
         }
         //ex. 닉네임 변경시 -> 이미 존재하고 있는 닉네임(404), 옳지 않은 닉네임(409)
         //404, 409는 nicknameVerify & nicknameChange시 잘못된 파라미터
@@ -61,7 +75,7 @@ class CommonLoginManage: RequestInterceptor {
     
     static func gotoLoginViewController(_ vc: UIViewController) {
         let gotoLoginAlertAction = UIAlertAction(title: "네", style: .default) { _ in
-            let loginVC = LoginViewController()
+            let loginVC = MG2LoginViewController()
             loginVC.modalPresentationStyle = .overFullScreen
             vc.present(loginVC, animated: false)
         }
@@ -75,3 +89,4 @@ class CommonLoginManage: RequestInterceptor {
         vc.present(needLoginAlertController, animated: false)
     }
 }
+#endif

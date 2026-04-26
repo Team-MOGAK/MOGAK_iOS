@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 struct JogakDetailResponse: Codable {
     let time, status, code, message: String?
     let result: [JogakDetail]?
@@ -56,3 +59,5 @@ struct MogakDeleteResponse: Codable {
     let time, status, code, message: String?
     let result: String?
 }
+
+#endif

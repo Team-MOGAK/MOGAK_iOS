@@ -1,3 +1,4 @@
+#if false
 //
 //  LoadingView.swift
 //  MOGAK
@@ -64,3 +65,5 @@ class LoadingIndicator {
         }
     }
 }
+
+#endif

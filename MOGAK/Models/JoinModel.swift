@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if false
+// Legacy MOGAK1 implementation (inactive after migration/deprecation in MOGAK2).
+
 struct JoinModel: Codable {
     let now: String?
     let status: Int?
@@ -14,3 +17,5 @@ struct JoinModel: Codable {
     let userId: Int?
     let nickname: String?
 }
+
+#endif

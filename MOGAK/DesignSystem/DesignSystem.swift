@@ -1,3 +1,4 @@
+#if false
 //
 //  DesignSystem.swift
 //  MOGAK
@@ -189,3 +190,5 @@ extension DesignSystemIcon {
         }
     }
 }
+
+#endif

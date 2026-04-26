@@ -9,6 +9,9 @@ import UIKit
 import SnapKit
 import Then
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ScheduleCancelModalVC : UIViewController{
     
     private lazy var canceltitleLabel : UILabel = {
@@ -97,3 +100,5 @@ class ScheduleCancelModalVC : UIViewController{
     
 }
 
+
+#endif

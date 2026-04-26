@@ -1,3 +1,4 @@
+#if false
 //
 //  File.swift
 //  MOGAK
@@ -12,3 +13,5 @@ class DismissKeyboardView: UIView {
         self.endEditing(true)
     }
 }
+
+#endif

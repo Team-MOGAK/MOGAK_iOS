@@ -9,6 +9,9 @@ import UIKit
 import SnapKit
 import PhotosUI
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 protocol RecordingVCdelegate {
     func moveRecordingVC()
 }
@@ -513,7 +516,8 @@ struct RecordingViewControllerRepresentable_PreviewProvider: PreviewProvider {
         }
         
     }
-} #endif
+}
+#endif
 
 
 

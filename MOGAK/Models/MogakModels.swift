@@ -1,3 +1,4 @@
+#if false
 //
 //  MogakModels.swift
 //  MOGAK
@@ -28,3 +29,5 @@ struct MogakResult: Codable {
 //    let title: String
 //
 //}
+
+#endif

@@ -8,6 +8,9 @@
 import Foundation
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ModalartNetwork {
     static let shared = ModalartNetwork()
     //MARK: - 모다라트 상세 내용 API
@@ -15,37 +18,42 @@ class ModalartNetwork {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        
-        AF.request(ModalartRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())
-//        AF.request(ModalartRouter.detailModalart(modaratId: modalartId))
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: ModalartDetailInfo.self) { (response: DataResponse<ModalartDetailInfo, AFError>) in
-                switch response.result {
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
-                case .success(let data):
-                    print(#fileID, #function, #line, "- data: \(String(describing: data.result?.title))")
-                    completionHandler(.success(data.result))
-                }
-            }
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.getDetailModalartInfo(modalartId: modalartId, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())
+        //     .validate(statusCode: 200..<300)
+        //     .responseDecodable(of: ModalartDetailInfo.self) { (response: DataResponse<ModalartDetailInfo, AFError>) in
+        //         switch response.result {
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         case .success(let data):
+        //             completionHandler(.success(data.result))
+        //         }
+        //     }
     }
     
     func getDetailMogakData(modalartId: Int, completionHandler: @escaping((Result<DetailMogakResponse?, Error>) -> Void)) {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        
-        AF.request(ModalartRouter.getDetailMogakData(modaratId: modalartId), interceptor: CommonLoginManage())
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: DetailMogakResponse.self) { (response: DataResponse<DetailMogakResponse, AFError>) in
-                switch response.result {
-                case .success(let data):
-                    completionHandler(.success(data))
-                case .failure(let error):
-                    completionHandler(.failure(error))
-                }
-            }
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.getDetailMogakData(modalartId: modalartId, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.getDetailMogakData(modaratId: modalartId), interceptor: CommonLoginManage())
+        //     .validate(statusCode: 200..<300)
+        //     .responseDecodable(of: DetailMogakResponse.self) { (response: DataResponse<DetailMogakResponse, AFError>) in
+        //         switch response.result {
+        //         case .success(let data):
+        //             completionHandler(.success(data))
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         }
+        //     }
     }
     
     //MARK: - 모다라트 리스트 조회 API
@@ -53,18 +61,21 @@ class ModalartNetwork {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        AF.request(ModalartRouter.getModalartList, interceptor: CommonLoginManage())
-//        AF.request(ModalartRouter.getModalartList)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: ModalartListResponse.self) { (response: DataResponse<ModalartListResponse, AFError>) in
-                switch response.result {
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
-                case .success(let data):
-                    completionHandler(.success(data.modalartList))
-                }
-            }
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.getModalartList(completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.getModalartList, interceptor: CommonLoginManage())
+        //     .validate(statusCode: 200..<300)
+        //     .responseDecodable(of: ModalartListResponse.self) { (response: DataResponse<ModalartListResponse, AFError>) in
+        //         switch response.result {
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         case .success(let data):
+        //             completionHandler(.success(data.modalartList))
+        //         }
+        //     }
     }
     
     //MARK: - 모다라트 생성 요청 API
@@ -72,20 +83,20 @@ class ModalartNetwork {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        
-        AF.request(ModalartRouter.createModalrt(data: data), interceptor: CommonLoginManage())
-//        AF.request(ModalartRouter.createModalrt(data: data))
-            .responseDecodable(of: CreateAndEditModalartResponse.self) { (response: DataResponse<CreateAndEditModalartResponse, AFError>)  in
-                switch response.result {
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                    completionHandler(.failure(error))
-                case .success(let data):
-                    print(#fileID, #function, #line, "- data title: \(data.result.title)")
-                    print(#fileID, #function, #line, "- data id: \(data.result.id)")
-                    completionHandler(.success(data.result))
-                }
-            }
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.createModalart(data: data, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.createModalrt(data: data), interceptor: CommonLoginManage())
+        //     .responseDecodable(of: CreateAndEditModalartResponse.self) { (response: DataResponse<CreateAndEditModalartResponse, AFError>)  in
+        //         switch response.result {
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         case .success(let data):
+        //             completionHandler(.success(data.result))
+        //         }
+        //     }
     }
     
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
@@ -94,22 +105,21 @@ class ModalartNetwork {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        
-        print(#fileID, #function, #line, "- id:\(id)")
-        AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
-//        AF.request(ModalartRouter.delteModalart(modaratId: id))
-        .validate()
-          .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-              switch response.result{
-              case .failure(let error):
-                  print(#fileID, #function, #line, "- error:\(error.localizedDescription)")
-                  completionHandler(.failure(error))
-              case .success(_):
-                  print(#fileID, #function, #line, "- data")
-                  completionHandler(.success(true))
-              }
 
-          }
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.deleteModalart(id: id, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
+        // .validate()
+        // .responseData(emptyResponseCodes: [200, 204, 205]) { response in
+        //     switch response.result {
+        //     case .failure(let error):
+        //         completionHandler(.failure(error))
+        //     case .success:
+        //         completionHandler(.success(true))
+        //     }
+        // }
     }
     
     
@@ -118,16 +128,21 @@ class ModalartNetwork {
         if RegisterUserInfo.shared.loginState == .guest {
             return
         }
-        AF.request(ModalartRouter.editModalart(data: data), interceptor: CommonLoginManage())
-//        AF.request(ModalartRouter.editModalart(data: data))
-            .responseDecodable(of: CreateAndEditModalartResponse.self) { (response: DataResponse<CreateAndEditModalartResponse, AFError>) in
-                switch response.result {
-                case .failure(let error) :
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                case .success(let data):
-                    completionHandler(.success(data.result))
-                }
-            }
-        
+
+        // MOGAK2 bridge route (active)
+        MG2LegacyModalartBridge.shared.editModalart(data: data, completion: completionHandler)
+
+        // Legacy MOGAK1 route (inactive)
+        // AF.request(ModalartRouter.editModalart(data: data), interceptor: CommonLoginManage())
+        //     .responseDecodable(of: CreateAndEditModalartResponse.self) { (response: DataResponse<CreateAndEditModalartResponse, AFError>) in
+        //         switch response.result {
+        //         case .failure(let error):
+        //             completionHandler(.failure(error))
+        //         case .success(let data):
+        //             completionHandler(.success(data.result))
+        //         }
+        //     }
     }
 }
+
+#endif

@@ -3,6 +3,9 @@ import UIKit
 import SnapKit
 import Alamofire
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     //MARK: - 모다라트 정보
@@ -224,3 +227,5 @@ class SelectModalartTableViewCell: UITableViewCell {
         }
     }
 }
+
+#endif

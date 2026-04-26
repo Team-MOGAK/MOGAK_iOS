@@ -1,3 +1,4 @@
+#if false
 //
 //  String+Ext.swift
 //  MOGAK
@@ -15,3 +16,5 @@ extension String {
         return predicate.evaluate(with: self)
     }
 }
+
+#endif

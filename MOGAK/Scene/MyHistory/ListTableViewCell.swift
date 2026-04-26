@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ListTableViewCell: UITableViewCell {
     weak var parentViewController: UIViewController?
     
@@ -279,3 +282,5 @@ class ListTableViewCell: UITableViewCell {
     }
     
 }
+
+#endif

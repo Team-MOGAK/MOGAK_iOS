@@ -1,3 +1,4 @@
+#if false
 //
 //  UITextField+Ext.swift
 //  MOGAK
@@ -33,3 +34,5 @@ extension UITextField {
         )
     }
 }
+
+#endif

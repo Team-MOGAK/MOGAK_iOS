@@ -7,3 +7,8 @@
 
 import Foundation
 import Combine
+
+#if false
+// Legacy MOGAK1 login API implementation (inactive after migration to MOGAK2 Data/Domain/Presentation).
+
+#endif

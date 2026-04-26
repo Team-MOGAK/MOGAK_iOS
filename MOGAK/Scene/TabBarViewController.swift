@@ -8,7 +8,11 @@
 import UIKit
 import Alamofire
 
+#if false
+// Legacy MOGAK1 implementation (inactive after 1:1 migration to MG_Presentation).
 class TabBarViewController: UITabBarController{
+    // Legacy MOGAK1 tab bar.
+    // MOGAK2 active route: MG2MainTabBarController (SceneDelegate switched).
     override func viewDidLoad(){
         super.viewDidLoad()
         self.setupViews()
@@ -150,3 +154,4 @@ struct TabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
 
     }
 } #endif
+#endif

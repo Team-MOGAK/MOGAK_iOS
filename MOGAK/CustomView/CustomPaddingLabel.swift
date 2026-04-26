@@ -1,3 +1,4 @@
+#if false
 //
 //  BasePaddingLabel.swift
 //  MOGAK
@@ -40,3 +41,5 @@ class CustomPaddingLabel: UILabel {
         return contentSize
     }
 }
+
+#endif

@@ -8,6 +8,9 @@ import Foundation
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 ///큰 목표가 없이 작은 목표 추가버튼을 눌렀을 때의 모달
 class NeedModalArtMainTitleModal: UIViewController {
     let titleLabel: UILabel = {
@@ -74,3 +77,5 @@ extension NeedModalArtMainTitleModal {
         }
     }
 }
+
+#endif

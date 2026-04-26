@@ -9,6 +9,8 @@ import Foundation
 import WebKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 mypage web view (inactive after 1:1 migration to MOGAK2 MG_Presentation).
 class MypageWebViewController: UIViewController, WKUIDelegate {
     var webView: WKWebView!
     var url: WebUrl = .perm
@@ -45,8 +47,9 @@ class MypageWebViewController: UIViewController, WKUIDelegate {
         webView.load(request)
     }
     
-
+    
     
     
     
 }
+#endif

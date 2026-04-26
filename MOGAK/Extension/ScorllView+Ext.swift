@@ -1,3 +1,4 @@
+#if false
 //
 //  ScorllView+Ext.swift
 //  MOGAK
@@ -28,3 +29,5 @@ extension UIScrollView {
     }
 }
 
+
+#endif

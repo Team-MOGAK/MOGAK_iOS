@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import FSCalendar
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 public var selectedColor = UIColor.init(red: 2/255, green: 138/255, blue: 75/255, alpha: 1)
 
 //enum SelectionType {
@@ -163,3 +166,5 @@ class DIYCalendarCell: FSCalendarCell {
     }
     
 }
+
+#endif

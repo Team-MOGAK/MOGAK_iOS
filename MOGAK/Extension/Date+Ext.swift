@@ -1,3 +1,4 @@
+#if false
 //
 //  Date+Ext.swift
 //  MOGAK
@@ -18,3 +19,5 @@ extension Date {
         return dateFormatter.string(from: date)
     }
 }
+
+#endif

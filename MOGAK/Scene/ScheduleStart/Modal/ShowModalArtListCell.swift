@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 class ShowModalArtListCell: UITableViewCell {
     static let identifier: String = "ShowModalArtListCell"
     var modalartName: String = ""
@@ -49,3 +52,5 @@ class ShowModalArtListCell: UITableViewCell {
     }
 }
 
+
+#endif

@@ -9,6 +9,9 @@ import Foundation
 import UIKit
 import FSCalendar
 
+#if false
+// Legacy MOGAK1 feature implementation (inactive after 1:1 migration to MOGAK2 MG_Presentation).
+
 //enum SelectionType : Int {
 //    case none
 //    case single
@@ -233,3 +236,5 @@ class DatePickerCalendarCell: FSCalendarCell {
     }
     
 }
+
+#endif
