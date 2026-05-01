@@ -1,5 +1,11 @@
 import UIKit
 
+struct MG2OnboardingPage {
+    let imageName: String
+    let title: String
+    let subtitle: String
+}
+
 final class MG2OnboardingPageViewController: UIViewController {
 
     private let page: MG2OnboardingPage

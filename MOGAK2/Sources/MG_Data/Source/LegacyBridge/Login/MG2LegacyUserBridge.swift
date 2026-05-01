@@ -4,7 +4,7 @@ final class MG2LegacyUserBridge {
 
     static let shared = MG2LegacyUserBridge()
 
-    fileprivate let useCase: UserUseCase
+    let useCase: UserUseCase
 
     private init() {
         let provider = DefaultNetworkProvider(session: .default)

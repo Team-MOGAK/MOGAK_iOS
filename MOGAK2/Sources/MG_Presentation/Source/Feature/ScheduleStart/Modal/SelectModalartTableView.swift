@@ -11,7 +11,7 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     
     //MARK: - 모다라트 구조체
     
-    struct ModalartInfo {
+    struct ScheduleStartModalartInfo {
         var ModalartTitle: String
         var ModalartId: Int
         var ModalartColor : String
@@ -74,7 +74,7 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    var ModalartData = [ModalartInfo]()
+    var ModalartData = [ScheduleStartModalartInfo]()
     
     func tableUI() {
         ModalartTableView.register(SelectModalartTableViewCell.self, forCellReuseIdentifier: "SelectModalartTableViewCell")
@@ -209,7 +209,7 @@ class SelectModalartTableViewCell: UITableViewCell {
         }
     }
     
-    func configureModalart(with ModalartData: SelectModalartTableView.ModalartInfo) {
+    func configureModalart(with ModalartData: SelectModalartTableView.ScheduleStartModalartInfo) {
         
         ModalartLabel.text = ModalartData.ModalartTitle
         

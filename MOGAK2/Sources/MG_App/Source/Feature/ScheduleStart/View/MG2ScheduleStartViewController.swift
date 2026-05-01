@@ -1,9 +1,9 @@
 import UIKit
 import Combine
 
-final class MG2ScheduleStartViewController: UIViewController {
+final class MG2AppScheduleStartViewController: UIViewController {
 
-    private let viewModel: MG2ScheduleStartViewModel
+    private let viewModel: MG2AppScheduleStartViewModel
     private var cancellables = Set<AnyCancellable>()
     private var items: [ScheduleModalart] = []
 
@@ -25,7 +25,7 @@ final class MG2ScheduleStartViewController: UIViewController {
         return tableView
     }()
 
-    init(viewModel: MG2ScheduleStartViewModel) {
+    init(viewModel: MG2AppScheduleStartViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,7 +76,7 @@ final class MG2ScheduleStartViewController: UIViewController {
             .store(in: &cancellables)
     }
 
-    private func render(_ state: MG2ScheduleStartViewState) {
+    private func render(_ state: MG2AppScheduleStartViewState) {
         switch state {
         case .idle, .loading:
             break
@@ -95,7 +95,7 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 }
 
-extension MG2ScheduleStartViewController: UITableViewDataSource, UITableViewDelegate {
+extension MG2AppScheduleStartViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         items.count
     }

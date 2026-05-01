@@ -9,6 +9,8 @@ import Foundation
 import Alamofire
 
 class MogakNetwork {
+    static let shared = MogakNetwork()
+
     // MARK: - 모각(작은목표)생성 API
     func createMogak(data: MogakMainData, completionHandler: @escaping (Result<CreateMogakMainData, Error>) -> Void) {
         // MOGAK2 bridge route (active)
@@ -113,6 +115,8 @@ class MogakNetwork {
         //     }
     }
 }
+
+typealias HistoryNetwork = MogakNetwork
 
 
 

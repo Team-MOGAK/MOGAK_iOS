@@ -400,9 +400,7 @@ extension LocationFilterSheetView: UISheetPresentationControllerDelegate {
 //        }
 //        
 //    }
-//} #endif
-
-
+//}
 /*
  switch (segment.selectedSegmentIndex) {
  case 0:

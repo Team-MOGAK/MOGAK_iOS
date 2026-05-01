@@ -54,12 +54,37 @@ final class MG2AppleLoginManage: NSObject {
 }
 
 extension MG2AppleLoginManage: ASAuthorizationControllerDelegate {
+    private func base64URLDecode(_ value: String) -> Data? {
+        var base64 = value.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let pad = 4 - (base64.count % 4)
+        if pad < 4 { base64 += String(repeating: "=", count: pad) }
+        return Data(base64Encoded: base64)
+    }
+
+    private func logAppleTokenClaims(_ token: String) {
+        let parts = token.split(separator: ".")
+        guard parts.count >= 2 else {
+            print("[AppleLogin] invalid jwt format")
+            return
+        }
+        guard
+            let payloadData = base64URLDecode(String(parts[1])),
+            let payloadText = String(data: payloadData, encoding: .utf8)
+        else {
+            print("[AppleLogin] payload decode failed")
+            return
+        }
+        print("[AppleLogin][JWT Payload] \(payloadText)")
+    }
+
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let appleIDToken = appleIDCredential.identityToken,
                   let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
                 return
             }
+
+            logAppleTokenClaims(idTokenString)
 
             MG2LegacyAuthBridge.shared.login(idToken: idTokenString) { result in
                 switch result {

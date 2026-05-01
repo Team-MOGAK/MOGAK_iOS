@@ -2,6 +2,10 @@ import Foundation
 import Alamofire
 
 final class DefaultUserRepository: UserRepository {
+    private var baseURL: String {
+        let value = APIConfig.TestURL
+        return value.hasSuffix("/") ? value : value + "/"
+    }
 
     private let networkProvider: NetworkProvider
 
@@ -27,7 +31,7 @@ final class DefaultUserRepository: UserRepository {
     }
 
     func userJoin(userData: UserInfoData, profileImageData: Data?) async throws -> Bool {
-        let url = APIConfig.ActiveBaseURL + "/api/users/join"
+        let url = baseURL + "api/users/join"
         let userId = UserDefaults.standard.integer(forKey: "userId")
 
         var headers: HTTPHeaders = [
@@ -74,7 +78,7 @@ final class DefaultUserRepository: UserRepository {
     }
 
     func userImageChange(imageData: Data, userNickname: String) async throws -> Bool {
-        let url = APIConfig.ActiveBaseURL + "/api/users/profile/image"
+        let url = baseURL + "api/users/profile/image"
         var headers: HTTPHeaders = [
             "Accept": "application/json, application/javascript, text/javascript, text/json",
             "Content-Type": "multipart/form-data"

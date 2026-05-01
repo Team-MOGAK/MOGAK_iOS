@@ -8,6 +8,11 @@
 import Foundation
 import Alamofire
 
+private let mogakDetailBaseURL: String = {
+    let value = APIConfig.TestURL
+    return value.hasSuffix("/") ? value : value + "/"
+}()
+
 enum MogakDetailRouter: URLRequestConvertible {
     case getAllMogakDetailJogaks(_ mogakId: Int, _ date: String)
     case deleteMogak(_mogakId: Int)
@@ -45,7 +50,7 @@ enum MogakDetailRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = BASE_URL.appending(endPoint)
+        var url = mogakDetailBaseURL.appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
         

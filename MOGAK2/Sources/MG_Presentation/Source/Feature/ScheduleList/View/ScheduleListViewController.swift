@@ -336,7 +336,7 @@ class ScheduleListViewController: UIViewController {
     
     @objc private func profileImageTapped() {
         print("클릭")
-        let settingVC = MyPageViewController()
+        let settingVC = MG2MyPageViewController()
         self.navigationController?.pushViewController(settingVC, animated: true)
     }
     

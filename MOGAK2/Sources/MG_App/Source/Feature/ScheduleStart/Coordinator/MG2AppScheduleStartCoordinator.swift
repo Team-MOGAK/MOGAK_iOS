@@ -1,6 +1,6 @@
 import UIKit
 
-final class MG2ScheduleStartCoordinator: Coordinator {
+final class MG2AppScheduleStartCoordinator: Coordinator {
 
     let navigationController: UINavigationController
 
@@ -13,16 +13,16 @@ final class MG2ScheduleStartCoordinator: Coordinator {
 
     @discardableResult
     func start() -> UIViewController {
-        let viewModel = MG2ScheduleStartViewModel(useCase: useCase)
+        let viewModel = MG2AppScheduleStartViewModel(useCase: useCase)
         viewModel.coordinator = self
 
-        let viewController = MG2ScheduleStartViewController(viewModel: viewModel)
+        let viewController = MG2AppScheduleStartViewController(viewModel: viewModel)
         navigationController.viewControllers = [viewController]
         return viewController
     }
 }
 
-extension MG2ScheduleStartCoordinator: MG2ScheduleStartRouting {
+extension MG2AppScheduleStartCoordinator: MG2AppScheduleStartRouting {
     func showModalartDetail(modalartId: Int) {
         // 상세 화면 전환은 기존 MOGAK1 화면 규격을 유지하면서 순차 적용한다.
     }

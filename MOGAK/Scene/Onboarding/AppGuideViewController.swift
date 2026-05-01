@@ -176,27 +176,3 @@ extension AppGuideViewController: UIScrollViewDelegate {
 }
 
 
-#if DEBUG
-import SwiftUI
-struct Preview5: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        AppGuideViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct AppGuideViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview5()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-        }
-    }
-}
-#endif

@@ -11,7 +11,7 @@ import Then
 import ReusableKit
 import FSCalendar
 
-class MogakInitViewController: UIViewController {
+class ScheduleListMogakInitViewController: UIViewController {
     
     private var categorySelectedList : [String] = []
     private var repeatSelectedList : [String] = []
@@ -633,7 +633,7 @@ class MogakInitViewController: UIViewController {
 
 // MARK: - 익스텐션
 
-extension MogakInitViewController: UITextFieldDelegate {
+extension ScheduleListMogakInitViewController: UITextFieldDelegate {
     // 리턴 키 입력 시 키보드 내림
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -742,7 +742,7 @@ extension MogakInitViewController: UITextFieldDelegate {
     }
 }
 
-extension MogakInitViewController: UICollectionViewDataSource {
+extension ScheduleListMogakInitViewController: UICollectionViewDataSource {
     // cell갯수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView.tag == 1 {
@@ -775,7 +775,7 @@ extension MogakInitViewController: UICollectionViewDataSource {
     }
 }
 
-extension MogakInitViewController: UICollectionViewDelegate {
+extension ScheduleListMogakInitViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView.tag == 1 {
@@ -828,7 +828,7 @@ extension MogakInitViewController: UICollectionViewDelegate {
     }
 }
 
-extension MogakInitViewController: UICollectionViewDelegateFlowLayout {
+extension ScheduleListMogakInitViewController: UICollectionViewDelegateFlowLayout {
     // 셀 크기설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
@@ -856,7 +856,7 @@ extension MogakInitViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
+extension ScheduleListMogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         if calendar == startCalendar {
             let dateFormatter = DateFormatter()
@@ -876,4 +876,3 @@ extension MogakInitViewController: FSCalendarDelegate, FSCalendarDataSource {
         // 여기서 selectedDateStr을 원하는 대로 활용할 수 있습니다.
     }
 }
-

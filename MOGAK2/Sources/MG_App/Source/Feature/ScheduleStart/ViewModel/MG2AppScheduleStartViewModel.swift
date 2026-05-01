@@ -1,23 +1,23 @@
 import Foundation
 import Combine
 
-enum MG2ScheduleStartViewState {
+enum MG2AppScheduleStartViewState {
     case idle
     case loading
     case loaded([ScheduleModalart])
     case failed(String)
 }
 
-protocol MG2ScheduleStartRouting: AnyObject {
+protocol MG2AppScheduleStartRouting: AnyObject {
     func showModalartDetail(modalartId: Int)
 }
 
-final class MG2ScheduleStartViewModel {
+final class MG2AppScheduleStartViewModel {
 
-    @Published private(set) var state: MG2ScheduleStartViewState = .idle
+    @Published private(set) var state: MG2AppScheduleStartViewState = .idle
 
     private let useCase: ScheduleStartUseCase
-    weak var coordinator: MG2ScheduleStartRouting?
+    weak var coordinator: MG2AppScheduleStartRouting?
 
     init(useCase: ScheduleStartUseCase) {
         self.useCase = useCase

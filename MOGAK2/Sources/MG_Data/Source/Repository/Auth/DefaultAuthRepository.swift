@@ -9,7 +9,9 @@ final class DefaultAuthRepository: AuthRepository {
     }
 
     func login(idToken: String) async throws -> MG2AuthSession {
-        let response: MG2AuthLoginResponseDTO = try await networkProvider.request(target: AuthRouter.login(idToken: idToken))
+        let response: MG2AuthLoginResponseDTO = try await networkProvider.request(
+            target: AuthRouter.socialLogin(provider: "apple", token: idToken)
+        )
         guard let session = response.result?.toDomain() else {
             throw NSError(domain: "AuthRepository", code: -1)
         }

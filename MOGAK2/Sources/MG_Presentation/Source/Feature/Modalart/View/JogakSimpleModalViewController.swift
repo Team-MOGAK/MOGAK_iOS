@@ -262,28 +262,3 @@ extension JogakSimpleModalViewController {
     }
 }
 
-#if DEBUG
-import SwiftUI
-struct Preview10: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        JogakSimpleModalViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct ViewController_PreviewProvider10: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-                .previewDevice(PreviewDevice(rawValue: "iPhone 12 Pro"))
-        }
-    }
-}
-#endif

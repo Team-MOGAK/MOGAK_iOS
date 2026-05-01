@@ -3,6 +3,7 @@ import Alamofire
 
 enum AuthRouter {
     case login(idToken: String)
+    case socialLogin(provider: String, token: String)
     case refresh(refreshToken: String)
     case logout(accessToken: String?)
     case withdraw(accessToken: String?)
@@ -14,6 +15,8 @@ extension AuthRouter: RequestTarget {
         case .login:
             // MOGAK1 endpoint (active)
             return "/api/auth/login"
+        case .socialLogin(let provider, _):
+            return "/api/auth/\(provider)/login"
             // MOGAK2 endpoint (inactive)
             // return "/v2/auth/login"
         case .refresh:
@@ -55,7 +58,7 @@ extension AuthRouter: RequestTarget {
                 header["Authorization"] = "Bearer \(accessToken)"
             }
             return header
-        case .login:
+        case .login, .socialLogin:
             return [
                 "accept": "application/json",
                 "Content-Type": "application/json"
@@ -67,6 +70,8 @@ extension AuthRouter: RequestTarget {
         switch self {
         case .login(let idToken):
             return ["id_token": idToken]
+        case .socialLogin(_, let token):
+            return ["token": token]
         case .refresh, .logout, .withdraw:
             return nil
         }

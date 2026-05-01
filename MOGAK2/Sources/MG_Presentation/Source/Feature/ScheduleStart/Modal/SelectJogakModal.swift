@@ -685,31 +685,3 @@ class UserDefaultsManager {
 
 
 //Preview code
-#if DEBUG
-import SwiftUI
-struct abBarViewControllerRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        SelectJogakModal()
-    }
-}
-@available(iOS 13.0, *)
-struct abBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                abBarViewControllerRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-} #endif

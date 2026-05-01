@@ -516,7 +516,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     
     @objc func goSchedule(_ sender : UIButton){
-        if let tabBarController = navigationController?.tabBarController as? TabBarViewController {
+        if let tabBarController = navigationController?.tabBarController {
             tabBarController.selectedIndex = 1
         }
         
@@ -778,31 +778,3 @@ extension UILabel {
 
 
 //Preview code
-#if DEBUG
-import SwiftUI
-struct cabBarViewControllerRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        ScheduleStartViewController()
-    }
-}
-@available(iOS 13.0, *)
-struct cabBarViewControllerRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                cabBarViewControllerRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone se3"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-} #endif

@@ -164,28 +164,4 @@ class LoginViewController: UIViewController {
 }
 
 
-#if DEBUG
-import SwiftUI
-struct Preview8: UIViewControllerRepresentable {
-    
-    // 여기 ViewController를 변경해주세요
-    func makeUIViewController(context: Context) -> UIViewController {
-        LoginViewController()
-    }
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-}
-
-struct LoginViewController_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            Preview8()
-                .edgesIgnoringSafeArea(.all)
-                .previewDisplayName("Preview")
-        }
-    }
-}
-#endif
 

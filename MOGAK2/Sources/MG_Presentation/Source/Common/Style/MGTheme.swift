@@ -1,6 +1,6 @@
 import UIKit
 
-enum MGColor {
+enum MGThemeColor {
     static let primary = DesignSystemColor.signature.value
     static let background = DesignSystemColor.signatureBag.value
     static let surface = DesignSystemColor.white.value
@@ -10,7 +10,7 @@ enum MGColor {
     static let border = DesignSystemColor.gray2.value
 }
 
-enum MGFont {
+enum MGThemeFont {
     static let titleLarge = UIFont.pretendard(.bold, size: 24)
     static let title = UIFont.pretendard(.bold, size: 22)
     static let subtitle = UIFont.pretendard(.medium, size: 16)
@@ -19,7 +19,7 @@ enum MGFont {
     static let button = UIFont.pretendard(.medium, size: 18)
 }
 
-enum MGSpacing {
+enum MGThemeSpacing {
     static let screenInset: CGFloat = 20
     static let section: CGFloat = 24
     static let item: CGFloat = 12

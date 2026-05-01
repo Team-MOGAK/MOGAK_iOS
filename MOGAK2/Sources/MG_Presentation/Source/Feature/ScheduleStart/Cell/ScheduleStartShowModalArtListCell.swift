@@ -8,8 +8,8 @@
 import UIKit
 import SnapKit
 
-class ShowModalArtListCell: UITableViewCell {
-    static let identifier: String = "ShowModalArtListCell"
+class ScheduleStartShowModalArtListCell: UITableViewCell {
+    static let identifier: String = "ScheduleStartShowModalArtListCell"
     var modalartName: String = ""
     
     private var modalartLabel: UILabel!
@@ -48,4 +48,3 @@ class ShowModalArtListCell: UITableViewCell {
 //        modalartLabel.backgroundColor = .red
     }
 }
-

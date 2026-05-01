@@ -121,32 +121,3 @@ class SetRoutineModal : UIViewController,UISheetPresentationControllerDelegate{
 
 
 //Preview code
-#if DEBUG
-import SwiftUI
-struct SetRoutineModalVCRepresentable: UIViewControllerRepresentable {
-    
-    func updateUIViewController(_ uiView: UIViewController,context: Context) {
-        // leave this empty
-    }
-    @available(iOS 13.0.0, *)
-    func makeUIViewController(context: Context) -> UIViewController{
-        SetRoutineModal()
-    }
-}
-@available(iOS 13.0, *)
-struct SelectJogakModalRepresentable_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        Group {
-            if #available(iOS 14.0, *) {
-                SetRoutineModalVCRepresentable()
-                    .ignoresSafeArea()
-                    .previewDisplayName(/*@START_MENU_TOKEN@*/"Preview"/*@END_MENU_TOKEN@*/)
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 15pro"))
-            } else {
-                // Fallback on earlier versions
-            }
-        }
-        
-    }
-}
-#endif

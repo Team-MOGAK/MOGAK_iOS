@@ -4,6 +4,7 @@ import Alamofire
 enum MG2ScheduleStartRouter {
     case jogakList(mogakId: Int, date: String)
     case jogakDailyCheck(date: String)
+    case oneTimeJogaks(date: String)
     case addJogakToday(jogakId: Int)
     case dailyJogakDetail(jogakId: Int)
     case jogakFail(dailyJogakId: Int)
@@ -18,7 +19,9 @@ extension MG2ScheduleStartRouter: RequestTarget {
         case .jogakList(let mogakId, let date):
             return "/api/modarats/mogaks/\(mogakId)/jogaks?date=\(date)"
         case .jogakDailyCheck(let date):
-            return "/api/modarats/mogaks/jogaks/day?date=\(date)"
+            return "/api/modarats/mogaks/jogaks?date=\(date)"
+        case .oneTimeJogaks(let date):
+            return "/api/modarats/mogaks/jogaks/daily?date=\(date)"
         case .addJogakToday(let jogakId):
             return "/api/modarats/mogaks/jogaks/\(jogakId)/start"
         case .dailyJogakDetail(let jogakId):
@@ -34,7 +37,7 @@ extension MG2ScheduleStartRouter: RequestTarget {
 
     var method: HTTPMethod {
         switch self {
-        case .jogakList, .jogakDailyCheck, .dailyJogakDetail, .jogakMonth:
+        case .jogakList, .jogakDailyCheck, .oneTimeJogaks, .dailyJogakDetail, .jogakMonth:
             return .get
         case .addJogakToday:
             return .post

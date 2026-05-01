@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
-class MakeTitleAlertBottomSheetView: UIView {
+class MyHistoryMakeTitleAlertBottomSheetView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "작은 목표를 설정하기 전에\n큰 목표를 추가해주세요."
@@ -87,7 +87,7 @@ class MakeTitleAlertBottomSheetView: UIView {
 }
 
 //MARK: - 오토레이아웃 설정
-extension MakeTitleAlertBottomSheetView {
+extension MyHistoryMakeTitleAlertBottomSheetView {
     private func configureLayout() {
         self.addSubviews(titleLabel, subTitleLabel, stk)
         

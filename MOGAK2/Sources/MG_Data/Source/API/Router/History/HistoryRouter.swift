@@ -8,6 +8,11 @@
 import Foundation
 import Alamofire
 
+private let historyBaseURL: String = {
+    let value = APIConfig.TestURL
+    return value.hasSuffix("/") ? value : value + "/"
+}()
+
 enum MogakRouter: URLRequestConvertible {
     
     case createMogak(data: MogakMainData)
@@ -47,7 +52,7 @@ enum MogakRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = BASE_URL.appending(endPoint)
+        var url = historyBaseURL.appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
         
@@ -101,7 +106,7 @@ enum MemoirRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = BASE_URL.appending(endPoint)
+        var url = historyBaseURL.appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
         

@@ -9,6 +9,10 @@ import Foundation
 import Alamofire
 
 let accesstoken = "Bearer" + " eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VyUGsiOiIxIiwiaWF0IjoxNjkyNzIyNDEwLCJleHAiOjE3MjQyNTg0MTB9.sqb4ioXK5fTGz7CRzL1ZBZ9yxDvBwIUfY-Azbo3aVuM"
+private let modalartBaseURL: String = {
+    let value = APIConfig.TestURL
+    return value.hasSuffix("/") ? value : value + "/"
+}()
 
 enum ModalartRouter: URLRequestConvertible {
     
@@ -54,7 +58,7 @@ enum ModalartRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = BASE_URL.appending(endPoint)
+        var url = modalartBaseURL.appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
         

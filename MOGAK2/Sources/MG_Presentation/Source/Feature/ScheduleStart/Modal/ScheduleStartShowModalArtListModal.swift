@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 ///모다라트 리스트 보여주는 모달
-class ShowModalArtListModal: UIViewController {
+class ScheduleStartShowModalArtListModal: UIViewController {
     //MARK: - properties
     //모다라트 리스트들 -> 이 개수만큼 반복문을 돌려서
     var modalArtNameList: [ModalartList] = []
@@ -61,14 +61,14 @@ class ShowModalArtListModal: UIViewController {
     
     //MARK: - tableview setting
     func setUpTableView() {
-        modalArtListTableView.register(ShowModalArtListCell.self, forCellReuseIdentifier: ShowModalArtListCell.identifier)
+        modalArtListTableView.register(ScheduleStartShowModalArtListCell.self, forCellReuseIdentifier: ScheduleStartShowModalArtListCell.identifier)
         modalArtListTableView.delegate = self
         modalArtListTableView.dataSource = self
     }
     
 }
 
-extension ShowModalArtListModal {
+extension ScheduleStartShowModalArtListModal {
     //MARK: - 뷰들 레이아웃 잡기
     func configureLayout() {
         self.view.addSubviews(dimmedBackgroundView, mainView)
@@ -98,7 +98,7 @@ extension ShowModalArtListModal {
     }
 }
 
-extension ShowModalArtListModal: UITableViewDelegate {
+extension ScheduleStartShowModalArtListModal: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 53
     }
@@ -113,14 +113,14 @@ extension ShowModalArtListModal: UITableViewDelegate {
 
 }
 
-extension ShowModalArtListModal: UITableViewDataSource {
+extension ScheduleStartShowModalArtListModal: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print(#fileID, #function, #line, "- modalArtNamList count🔥: \(modalArtNameList.count)")
         return modalArtNameList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = modalArtListTableView.dequeueReusableCell(withIdentifier: ShowModalArtListCell.identifier, for: indexPath) as? ShowModalArtListCell else { return UITableViewCell() }
+        guard let cell = modalArtListTableView.dequeueReusableCell(withIdentifier: ScheduleStartShowModalArtListCell.identifier, for: indexPath) as? ScheduleStartShowModalArtListCell else { return UITableViewCell() }
         
         if indexPath.row == modalArtNameList.count - 1 { //맨 마지막 데이터일 경우 선이 안보이도록 설정
             cell.separatorInset = UIEdgeInsets(top: 0, left: modalArtListTableView.bounds.size.width, bottom: 0, right: 0);
