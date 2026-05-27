@@ -11,6 +11,7 @@ import SnapKit
 class MG2ChooseRegionViewController: UIViewController {
     
     private let region = ["서울특별시", "경기도", "세종특별자치시","대전광역시","광주광역시","대구광역시","부산광역시","울산광역시","경상남도", "경상북도","전라남도","전라북도","충청남도","충청북도","강원도", "제주도", "독도/울릉도"]
+    
     private let profileViewModel = MG2ProfileSetupViewModel()
     weak var coordinator: MG2LoginCoordinator?
     // checkButton 선택 셀 index
@@ -147,12 +148,7 @@ class MG2ChooseRegionViewController: UIViewController {
                 //유저 세팅이 끝났으므로 isFirstTime false로 체크
                 defaults.set(false, forKey: "isFirstTime")
                 
-                // MOGAK2 presentation route (active)
                 (self.coordinator ?? MG2LoginCoordinator()).routeToMain(window: self.view.window)
-
-                // Legacy MOGAK1 route (inactive)
-                // let tabBarController = TabBarViewController()
-                // self.view.window?.rootViewController = tabBarController
             }
         }
     }

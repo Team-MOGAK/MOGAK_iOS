@@ -275,7 +275,6 @@ class MG2MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecogniz
     //MARK: - viewWillDisappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.tabBarController?.tabBar.isHidden = true ///탭바 설정
     }
     
     //MARK: - viewDidLayoutSubViews

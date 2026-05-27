@@ -12,18 +12,23 @@ final class MG2ProfileSetupViewModel {
     }
 
     func validateNickname(_ nickname: String, completion: @escaping (Result<String, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let response = try await userUseCase.verifyNickname(nickname)
-                completion(.success(response.message))
+                let message = response.code == "success" ? "성공" : response.message
+                DispatchQueue.main.async {
+                    completion(.success(message))
+                }
             } catch {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
             }
         }
     }
 
     func changeNickname(_ nickname: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 _ = try await userUseCase.changeNickname(nickname)
                 MG2Deps.app.userState.nickName = nickname
@@ -40,7 +45,7 @@ final class MG2ProfileSetupViewModel {
             return
         }
         let nickname = MG2Deps.app.userState.nickName ?? ""
-        Task {
+        Task { @MainActor in
             do {
                 let result = try await userUseCase.userImageChange(imageData: data, userNickname: nickname)
                 completion(.success(result))
@@ -51,7 +56,7 @@ final class MG2ProfileSetupViewModel {
     }
 
     func changeJob(_ job: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 _ = try await userUseCase.changeJob(job)
                 MG2Deps.app.userState.userJob = job
@@ -76,12 +81,16 @@ final class MG2ProfileSetupViewModel {
             multipartFile: ""
         )
         let imageData = profileImage?.jpegData(compressionQuality: 1.0)
-        Task {
+        Task { @MainActor in
             do {
                 let joined = try await userUseCase.userJoin(userData: data, profileImageData: imageData)
-                completion(.success(joined))
+                DispatchQueue.main.async {
+                    completion(.success(joined))
+                }
             } catch {
-                completion(.failure(error))
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
             }
         }
     }

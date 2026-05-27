@@ -32,7 +32,7 @@ enum MG2NetworkingRouter: URLRequestConvertible {
         var request = URLRequest(url: url)
         request.method = method
 
-        if let accessToken = RegisterUserInfo.shared.userAccessToken, !accessToken.isEmpty {
+        if let accessToken = MG2TokenStore.accessToken, !accessToken.isEmpty {
             request.headers.add(.authorization(bearerToken: accessToken))
         }
 

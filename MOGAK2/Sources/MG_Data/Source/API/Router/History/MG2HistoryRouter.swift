@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 
 enum MG2HistoryRouter {
-    case createMogak(title: String, bigCategory: String, smallCategory: String?, color: String)
+    case createMogak(modaratId: Int, title: String, bigCategory: String, smallCategory: String?, color: String)
     case editMogak(mogakId: Int, title: String, bigCategory: String, smallCategory: String?, color: String)
     case createJogak(mogakId: Int, title: String, isRoutine: Bool, days: [String]?, today: String?, endDate: String?)
     case editJogak(jogakId: Int, title: String, isRoutine: Bool, days: [String]?, endDate: String?)
@@ -39,7 +39,7 @@ extension MG2HistoryRouter: RequestTarget {
 
     var headers: [String : String]? {
         var header = ["accept": "application/json", "Content-Type": "application/json"]
-        if let token = UserDefaults.standard.string(forKey: "accessToken"), !token.isEmpty {
+        if let token = MG2TokenStore.accessToken, !token.isEmpty {
             header["Authorization"] = "Bearer \(token)"
         }
         return header
@@ -47,8 +47,8 @@ extension MG2HistoryRouter: RequestTarget {
 
     var body: [String : Any]? {
         switch self {
-        case .createMogak(let title, let bigCategory, let smallCategory, let color):
-            var payload: [String: Any] = ["title": title, "bigCategory": bigCategory, "color": color]
+        case .createMogak(let modaratId, let title, let bigCategory, let smallCategory, let color):
+            var payload: [String: Any] = ["modaratId": modaratId, "title": title, "bigCategory": bigCategory, "color": color]
             if let smallCategory { payload["smallCategory"] = smallCategory }
             return payload
         case .editMogak(let mogakId, let title, let bigCategory, let smallCategory, let color):

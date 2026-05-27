@@ -15,22 +15,13 @@ final class MG2MainTabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureAppearance()
         configureTabs()
-    }
-
-    private func configureAppearance() {
-        tabBar.tintColor = .black
-        tabBar.unselectedItemTintColor = .gray
-        tabBar.backgroundColor = .white
     }
 
     private func configureTabs() {
         let controllers = zip(viewModel.viewControllers, viewModel.items).map { vc, item in
             let nav = UINavigationController(rootViewController: vc)
             let tab = UITabBarItem(title: item.title, image: item.image, selectedImage: item.selectedImage)
-            tab.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
-            tab.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 10)
             nav.tabBarItem = tab
             return nav
         }

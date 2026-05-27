@@ -14,19 +14,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private let appFlowCoordinator = MG2AppFlowCoordinator()
     private let launchViewModel = MG2AppLaunchViewModel()
+    private var didResolveInitialRoute = false
 
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         guard scene is UIWindowScene else { return }
 
+        Task { @MainActor in
+            let route = await launchViewModel.resolveInitialRoute()
+            didResolveInitialRoute = true
+            setRootViewController(scene, route: route)
+            presentGlobalErrorIfNeeded()
+        }
+
         MG2Deps.app.userState.$loginState
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] loginState in
                 guard let self else { return }
-                let route = self.launchViewModel.resolveRoute(loginState: loginState)
-                self.setRootViewController(scene, route: route)
-                self.presentGlobalErrorIfNeeded()
+                guard self.didResolveInitialRoute else { return }
+                Task { @MainActor in
+                    let route = self.launchViewModel.resolveRoute(loginState: loginState)
+                    self.setRootViewController(scene, route: route)
+                    self.presentGlobalErrorIfNeeded()
+                }
             }
             .store(in: &cancellables)
     }
@@ -39,24 +51,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 private extension SceneDelegate {
+    @MainActor
     func setRootViewController(_ scene: UIScene, route: MG2AppLaunchRoute) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        DispatchQueue.main.async {
-            let rootViewController = self.appFlowCoordinator.makeRoot(for: route)
+        let rootViewController = self.appFlowCoordinator.makeRoot(for: route)
 
-            if let window = self.window {
-                window.rootViewController = rootViewController
-                window.makeKeyAndVisible()
-            } else {
-                let window = UIWindow(windowScene: windowScene)
-                window.rootViewController = rootViewController
-                self.window = window
-                window.makeKeyAndVisible()
-            }
+        if let window = self.window {
+            window.rootViewController = rootViewController
+            window.makeKeyAndVisible()
+        } else {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = rootViewController
+            self.window = window
+            window.makeKeyAndVisible()
         }
     }
 
+    @MainActor
     func presentGlobalErrorIfNeeded() {
         guard MG2Deps.app.userState.happendSomeError,
               let message = MG2Deps.app.userState.someError else { return }
@@ -82,5 +94,9 @@ public class Storage {
             let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime")
             return isFirstTime
         }
+    }
+
+    static func setFirstTime(_ isFirstTime: Bool) {
+        UserDefaults.standard.set(isFirstTime, forKey: "isFirstTime")
     }
 }

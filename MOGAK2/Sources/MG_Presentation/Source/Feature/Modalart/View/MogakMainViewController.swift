@@ -24,10 +24,15 @@ class MogakMainViewController: UIViewController {
     var jogakList: [JogakDetail] = []
     private let viewModel = MG2ModalartViewModel()
     var modalartId: Int = 0
-    /// - ...버튼
+    private var hasSelectedMogak: Bool {
+        mogakList.contains { $0.mogakId == selectedMogak.mogakId }
+    }
+
+    /// - 선택한 모각 삭제 버튼
     private lazy var rightBtn: UIBarButtonItem = {
-        let btn = UIBarButtonItem(image: UIImage(named: "verticalEllipsisBlack"), style: .plain, target: self, action: #selector(navigationRightBtnTapped))
-        
+        let btn = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(navigationRightBtnTapped))
+        btn.tintColor = .systemRed
+        btn.accessibilityLabel = "선택한 세부목표 삭제"
         return btn
     }()
     
@@ -80,8 +85,12 @@ class MogakMainViewController: UIViewController {
     func navigationBarSetting() {
         self.navigationController?.navigationBar.isHidden = false
         self.navigationController?.navigationBar.tintColor = .black
-        self.navigationItem.rightBarButtonItem = self.rightBtn
         self.navigationItem.title = "세부목표"
+        self.updateDeleteButtonVisibility()
+    }
+
+    private func updateDeleteButtonVisibility() {
+        self.navigationItem.rightBarButtonItem = hasSelectedMogak ? rightBtn : nil
     }
     
     func mogakListSetting() {
@@ -105,15 +114,14 @@ class MogakMainViewController: UIViewController {
     }
     
     @objc private func navigationRightBtnTapped() {
-        print(#fileID, #function, #line, "- 이클립스 버튼 체크")
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let deleteModalArtAction = UIAlertAction(title: "\(selectedMogak.title) 삭제", style: .destructive) { _ in
-            //삭제하기 선택시 -> 정말 삭제하시겠습니까?라는 alert을 띄우기
-            if self.mogakList.isEmpty {
-                return
-            } else {
-                self.showAskDeleteModal(false)
-            }
+        guard hasSelectedMogak else {
+            updateDeleteButtonVisibility()
+            return
+        }
+
+        let actionSheet = UIAlertController(title: selectedMogak.title, message: "선택한 세부목표를 삭제할까요?", preferredStyle: .actionSheet)
+        let deleteModalArtAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
+            self.showAskDeleteModal(false)
         }
         
         ///액션sheet취소
@@ -231,9 +239,12 @@ extension MogakMainViewController {
                 self.mogakList = data?.result?.mogaks ?? []
                 if let selectedMogak = self.mogakList.first {
                     self.selectedMogak = selectedMogak
+                    self.updateDeleteButtonVisibility()
                     self.mogakListCollectionView.reloadData()
                     self.getMogakDetail(selectedMogak)
                 } else {
+                    self.selectedMogak = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
+                    self.updateDeleteButtonVisibility()
                     //여기 alert만들기
                     let modalAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
                         self.navigationController?.popViewController(animated: false)
@@ -467,6 +478,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         } else if collectionView == self.mogakListCollectionView {
             let row = indexPath.row
             self.selectedMogak = self.mogakList[row]
+            self.updateDeleteButtonVisibility()
             self.getMogakDetail(selectedMogak)
         }
     }

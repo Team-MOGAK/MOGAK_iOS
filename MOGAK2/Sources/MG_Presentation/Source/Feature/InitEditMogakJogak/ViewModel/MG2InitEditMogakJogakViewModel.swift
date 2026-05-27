@@ -11,7 +11,7 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func createMogak(data: MogakMainData, completion: @escaping (Result<CreateMogakMainData, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let entity = try await useCase.createMogak(data: data)
                 completion(.success(CreateMogakMainData(
@@ -28,7 +28,7 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func editMogak(data: EditMogakRequestMainData, completion: @escaping (Result<EditMogakMainData, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let entity = try await useCase.editMogak(data: data)
                 completion(.success(EditMogakMainData(
@@ -45,7 +45,7 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func createJogak(data: CreateJogakRequestMainData, completion: @escaping (Result<CreateJogakMainData, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let entity = try await useCase.createJogak(data: data)
                 completion(.success(CreateJogakMainData(
@@ -66,7 +66,7 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func editJogak(data: EditJogakRequestMainData, jogakId: Int, completion: @escaping (Result<EditJogakResponse, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 completion(.success(try await useCase.editJogak(data: data, jogakId: jogakId)))
             } catch {

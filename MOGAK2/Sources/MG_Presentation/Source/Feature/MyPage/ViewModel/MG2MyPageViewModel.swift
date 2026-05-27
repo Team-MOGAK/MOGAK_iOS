@@ -18,7 +18,7 @@ final class MG2MyPageViewModel {
     var isGuest: Bool { MG2Deps.app.userState.loginState == .guest }
 
     func fetchUserData(completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let profile = try await userUseCase.getUserProfile()
                 MG2Deps.app.userState.nickName = profile.nickname
@@ -31,9 +31,10 @@ final class MG2MyPageViewModel {
     }
 
     func logout(completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
-                try await authUseCase.logout(accessToken: UserDefaults.standard.string(forKey: "accessToken"))
+                try await authUseCase.logout(accessToken: MG2TokenStore.accessToken)
+                MG2TokenStore.clearTokens()
                 MG2Deps.app.userState.loginState = .logout
                 completion(.success(true))
             } catch {
@@ -43,10 +44,11 @@ final class MG2MyPageViewModel {
     }
 
     func withdraw(completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
-                let deleted = try await authUseCase.withdraw(accessToken: UserDefaults.standard.string(forKey: "accessToken"))
+                let deleted = try await authUseCase.withdraw(accessToken: MG2TokenStore.accessToken)
                 if deleted {
+                    MG2TokenStore.clearTokens()
                     MG2Deps.app.userState.loginState = .logout
                 }
                 completion(.success(deleted))

@@ -1,5 +1,4 @@
 import Foundation
-import Alamofire
 
 final class DefaultHistoryRepository: HistoryRepository {
 
@@ -9,9 +8,9 @@ final class DefaultHistoryRepository: HistoryRepository {
         self.networkProvider = networkProvider
     }
 
-    func createMogak(title: String, bigCategory: String, smallCategory: String?, color: String) async throws -> MG2HistoryMogakCreateEntity {
+    func createMogak(modaratId: Int, title: String, bigCategory: String, smallCategory: String?, color: String) async throws -> MG2HistoryMogakCreateEntity {
         let response: MG2CreateMogakResponseDTO = try await networkProvider.request(
-            target: MG2HistoryRouter.createMogak(title: title, bigCategory: bigCategory, smallCategory: smallCategory, color: color)
+            target: MG2HistoryRouter.createMogak(modaratId: modaratId, title: title, bigCategory: bigCategory, smallCategory: smallCategory, color: color)
         )
         return response.result.toEntity()
     }
@@ -37,32 +36,12 @@ final class DefaultHistoryRepository: HistoryRepository {
     }
 
     func deleteMogak(mogakId: Int) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(MG2HistoryRouter.deleteMogak(mogakId: mogakId))
-                .validate()
-                .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-                    switch response.result {
-                    case .success:
-                        continuation.resume(returning: true)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        try await networkProvider.requestEmpty(target: MG2HistoryRouter.deleteMogak(mogakId: mogakId))
+        return true
     }
 
     func deleteJogak(jogakId: Int) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(MG2HistoryRouter.deleteJogak(jogakId: jogakId))
-                .validate()
-                .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-                    switch response.result {
-                    case .success:
-                        continuation.resume(returning: true)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        try await networkProvider.requestEmpty(target: MG2HistoryRouter.deleteJogak(jogakId: jogakId))
+        return true
     }
 }

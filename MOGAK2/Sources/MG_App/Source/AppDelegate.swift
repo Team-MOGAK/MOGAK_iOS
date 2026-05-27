@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MG2DependencyBootstrap.registerDefault(container: .shared)
         MG2AppDI.configure(MG2DefaultAppDependencies())
+        clearKeychainTokensAfterReinstallIfNeeded()
 
         self.window = UIWindow(frame: UIScreen.main.bounds)
             self.window?.makeKeyAndVisible()
@@ -39,4 +40,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     
+}
+
+private extension AppDelegate {
+    func clearKeychainTokensAfterReinstallIfNeeded() {
+        let installMarkerKey = "MG2HasInstalledBefore"
+        let defaults = UserDefaults.standard
+
+        guard defaults.bool(forKey: installMarkerKey) == false else { return }
+
+        MG2TokenStore.clearTokens()
+        defaults.set(true, forKey: installMarkerKey)
+        defaults.set(true, forKey: "isFirstTime")
+    }
 }

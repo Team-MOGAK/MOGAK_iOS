@@ -2,7 +2,7 @@ import Foundation
 
 struct NicknameVerify: Codable {
     let time: String?
-    let status: Int?
+    let status: String?
     let code, message: String
 }
 

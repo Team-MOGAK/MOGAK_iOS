@@ -6,6 +6,7 @@ struct MG2TabItem {
     let selectedImage: UIImage?
 }
 
+@MainActor
 final class MG2MainTabBarViewModel {
     private let scheduleStartCoordinator = MG2ScheduleStartCoordinator()
     private let modalartCoordinator = MG2ModalartCoordinator()

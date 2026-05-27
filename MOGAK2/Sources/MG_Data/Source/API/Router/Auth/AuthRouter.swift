@@ -13,27 +13,15 @@ extension AuthRouter: RequestTarget {
     var path: String {
         switch self {
         case .login:
-            // MOGAK1 endpoint (active)
             return "/api/auth/login"
         case .socialLogin(let provider, _):
             return "/api/auth/\(provider)/login"
-            // MOGAK2 endpoint (inactive)
-            // return "/v2/auth/login"
         case .refresh:
-            // MOGAK1 endpoint (active)
             return "/api/auth/refresh"
-            // MOGAK2 endpoint (inactive)
-            // return "/v2/auth/refresh"
         case .logout:
-            // MOGAK1 endpoint (active)
             return "/api/auth/logout"
-            // MOGAK2 endpoint (inactive)
-            // return "/v2/auth/logout"
         case .withdraw:
-            // MOGAK1 endpoint (active)
             return "/api/auth/withdraw"
-            // MOGAK2 endpoint (inactive)
-            // return "/v2/auth/withdraw"
         }
     }
 

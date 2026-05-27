@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class MG2AppScheduleStartCoordinator: Coordinator {
 
     let navigationController: UINavigationController

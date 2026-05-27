@@ -1,5 +1,4 @@
 import Foundation
-import Alamofire
 
 final class DefaultModalartRepository: ModalartRepository {
 
@@ -40,47 +39,17 @@ final class DefaultModalartRepository: ModalartRepository {
     }
 
     func deleteModalart(id: Int) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(MG2ModalartRouter.modalartDelete(id: id))
-                .validate()
-                .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-                    switch response.result {
-                    case .success:
-                        continuation.resume(returning: true)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        try await networkProvider.requestEmpty(target: MG2ModalartRouter.modalartDelete(id: id))
+        return true
     }
 
     func deleteMogak(mogakId: Int) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(MG2ModalartRouter.mogakDelete(id: mogakId))
-                .validate()
-                .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-                    switch response.result {
-                    case .success:
-                        continuation.resume(returning: true)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        try await networkProvider.requestEmpty(target: MG2ModalartRouter.mogakDelete(id: mogakId))
+        return true
     }
 
     func deleteJogak(jogakId: Int) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            AF.request(MG2ModalartRouter.jogakDelete(id: jogakId))
-                .validate()
-                .responseData(emptyResponseCodes: [200, 204, 205]) { response in
-                    switch response.result {
-                    case .success:
-                        continuation.resume(returning: true)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
+        try await networkProvider.requestEmpty(target: MG2ModalartRouter.jogakDelete(id: jogakId))
+        return true
     }
 }

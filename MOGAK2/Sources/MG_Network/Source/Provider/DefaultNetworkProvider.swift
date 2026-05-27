@@ -45,5 +45,32 @@ public struct DefaultNetworkProvider: NetworkProvider {
         let data = response.data ?? Data()
         return try JSONDecoder().decode(T.self, from: data)
     }
+
+    public func requestEmpty(target: URLRequestConvertible) async throws {
+        let urlRequest = try target.asURLRequest()
+        let response = await session.request(urlRequest).serializingData().response
+
+        let statusCode = response.response?.statusCode ?? -1
+        let url = response.request?.url?.absoluteString ?? "unknown-url"
+        let responseBody = String(data: response.data ?? Data(), encoding: .utf8) ?? ""
+
+        if let error = response.error {
+            print("[Network][Error] \(url)")
+            print("[Network][Status] \(statusCode)")
+            print("[Network][Body] \(responseBody)")
+            throw error
+        }
+
+        guard (200..<300).contains(statusCode) else {
+            print("[Network][Non2xx] \(url)")
+            print("[Network][Status] \(statusCode)")
+            print("[Network][Body] \(responseBody)")
+            throw NSError(
+                domain: "NetworkProvider",
+                code: statusCode,
+                userInfo: [NSLocalizedDescriptionKey: responseBody]
+            )
+        }
+    }
     
 }

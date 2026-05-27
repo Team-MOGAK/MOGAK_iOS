@@ -89,23 +89,24 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
             return
         }
         LoadingIndicator.showLoading()
-//        Apinetwork.getModalartList { result in
-//            switch result {
-//            case .failure(let error):
-//                print("\(error.localizedDescription)")
-//                LoadingIndicator.hideLoading()
-//            case .success(let data):
-//                print(data as Any)
-//                if let ModalartArray = data {
-//                    self.modalartList = ModalartArray
-//                    self.ModalartData = ModalartArray.map { Modalart in
-//                        return ModalartInfo(ModalartTitle: Modalart.title, ModalartId: Modalart.id, ModalartColor: Modalart.color)
-//                    }
-//                    self.ModalartTableView.reloadData()
-//                }
-//                LoadingIndicator.hideLoading()
-//            }
-//        }
+        viewModel.getModalartList { result in
+            switch result {
+            case .failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            case .success(let data):
+                let modalartArray = data ?? []
+                self.modalartList = modalartArray
+                self.ModalartData = modalartArray.map { modalart in
+                    ScheduleStartModalartInfo(
+                        ModalartTitle: modalart.title,
+                        ModalartId: modalart.id,
+                        ModalartColor: modalart.color
+                    )
+                }
+                self.ModalartTableView.reloadData()
+            }
+            LoadingIndicator.hideLoading()
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

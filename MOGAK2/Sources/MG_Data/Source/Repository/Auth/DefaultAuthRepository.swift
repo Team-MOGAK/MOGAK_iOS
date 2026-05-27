@@ -27,8 +27,7 @@ final class DefaultAuthRepository: AuthRepository {
     }
 
     func logout(accessToken: String?) async throws {
-        struct EmptyResponse: Decodable {}
-        let _: EmptyResponse = try await networkProvider.request(target: AuthRouter.logout(accessToken: accessToken))
+        try await networkProvider.requestEmpty(target: AuthRouter.logout(accessToken: accessToken))
     }
 
     func withdraw(accessToken: String?) async throws -> Bool {

@@ -49,10 +49,13 @@ class ModalartMainViewController: UIViewController {
         return btn
     }()
     
-    ///...버튼
+    ///현재 모다라트 삭제 버튼
     private lazy var tacoBtn: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(named: "verticalEllipsisBlack"), for: .normal)
+        btn.setTitle("삭제", for: .normal)
+        btn.setTitleColor(.systemRed, for: .normal)
+        btn.titleLabel?.font = UIFont.pretendard(.semiBold, size: 16)
+        btn.accessibilityLabel = "현재 모다라트 삭제"
         btn.addTarget(self, action: #selector(tacoBtnTapped), for: .touchUpInside)
         return btn
     }()
@@ -95,7 +98,6 @@ class ModalartMainViewController: UIViewController {
     //MARK: - viewWillDisappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.tabBarController?.tabBar.isHidden = true
     }
     
     func guestModeDataSetting() {
@@ -167,62 +169,41 @@ class ModalartMainViewController: UIViewController {
     }
 
     
-    //MARK: - 타코버튼 탭(모다라트 추가, 삭제하기 actionSheet)
+    //MARK: - 현재 모다라트 삭제 버튼 탭
     @objc private func tacoBtnTapped() {
         if MG2Deps.app.userState.loginState == .guest {
             MG2CommonLoginGate.gotoLoginViewController(self)
             return
         }
         
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        ///모다라트 추가하기
-        let addModalArtAction = UIAlertAction(title: "모다라트 추가", style: .default) { _ in
-            self.createModalart()
+        guard !self.modalartList.isEmpty else {
+            let readyAlertAction = UIAlertAction(title: "확인", style: .default)
+            let readyAlert = UIAlertController(title: "모다라트 삭제 오류", message: "현재 생성된 모다라트가 없어서 \n삭제할 수 없습니다.", preferredStyle: .alert)
+            readyAlert.addAction(readyAlertAction)
+            self.present(readyAlert, animated: true)
+            return
         }
         
-        ///모다라트 삭제하기
-        let deleteModalArtAction = UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in
-            //삭제하기 선택시 -> 정말 삭제하시겠습니까?라는 alert을 띄우기
-            if self.modalartList.isEmpty {
-                let readyAlertAction = UIAlertAction(title: "확인", style: .default)
-                let readyAlert = UIAlertController(title: "모다라트 삭제 오류", message: "현재 생성된 모다라트가 없어서 \n삭제할 수 없습니다.", preferredStyle: .alert)
-                readyAlert.addAction(readyAlertAction)
-                self.present(readyAlert, animated: true)
-                
-            } else {
-                let bottomSheetVC = AskDeleteModal()
-                if let sheet = bottomSheetVC.sheetPresentationController {
-                    if #available(iOS 16.0, *) {
-                        sheet.detents = [.custom() { context in
-                            return 239
-                        }]
-                    } else {
-                        sheet.detents = [.medium()]
-                    }
-                    sheet.prefersGrabberVisible = true
+        let actionSheet = UIAlertController(title: self.modalartName, message: "현재 모다라트를 삭제할까요?", preferredStyle: .actionSheet)
+        let deleteModalArtAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
+            let bottomSheetVC = AskDeleteModal()
+            if let sheet = bottomSheetVC.sheetPresentationController {
+                if #available(iOS 16.0, *) {
+                    sheet.detents = [.custom() { context in
+                        return 239
+                    }]
+                } else {
+                    sheet.detents = [.medium()]
                 }
-                bottomSheetVC.startDelete = {
-                    self.deleteModalart()
-//                    if self.modalartList.count == 1 { //현재 삭제하려고 하는 모다라트가 마지막 하나일 경우 -> 다시 하나 생성
-//
-//                        self.createModalart()
-//                    } else {
-//                        self.deleteModalart()
-//                    }
-                }
-                self.present(bottomSheetVC, animated: true)
+                sheet.prefersGrabberVisible = true
             }
-
+            bottomSheetVC.startDelete = {
+                self.deleteModalart()
+            }
+            self.present(bottomSheetVC, animated: true)
         }
         
-        ///액션sheet취소
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            print(#fileID, #function, #line, "- <#comment#>")
-            self.dismiss(animated: false)
-        }
-        
-        actionSheet.addAction(addModalArtAction)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         actionSheet.addAction(deleteModalArtAction)
         actionSheet.addAction(cancelAction)
         self.present(actionSheet, animated: true)
@@ -422,9 +403,10 @@ extension ModalartMainViewController {
             $0.centerY.equalTo(modalArtNameLabel.snp.centerY)
         }
         
-        //MARK: - 타코버튼(모다라트 추가, 삭제하기 actionSheet)
+        //MARK: - 현재 모다라트 삭제 버튼
         tacoBtn.snp.makeConstraints {
-            $0.size.equalTo(24)
+            $0.width.equalTo(44)
+            $0.height.equalTo(32)
             $0.trailing.equalToSuperview().offset(-20)
             $0.centerY.equalTo(modalArtNameLabel.snp.centerY)
         }

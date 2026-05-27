@@ -176,8 +176,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.tabBarController?.tabBar.isHidden = true
-        
     }
     
     //MARK: - Calendar func

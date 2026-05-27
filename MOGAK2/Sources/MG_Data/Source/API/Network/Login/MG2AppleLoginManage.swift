@@ -6,6 +6,15 @@ import Security
 final class MG2AppleLoginManage: NSObject {
     let registerUserInfo = RegisterUserInfo.shared
     static let shared = MG2AppleLoginManage()
+    private let authUseCase: AuthUseCase
+
+    init(authUseCase: AuthUseCase? = DIContainer.shared.resolve(AuthUseCase.self)) {
+        guard let authUseCase else {
+            fatalError("AuthUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
+        }
+        self.authUseCase = authUseCase
+        super.init()
+    }
 
     private func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
@@ -40,6 +49,10 @@ final class MG2AppleLoginManage: NSObject {
 
     @available(iOS 13, *)
     func startSignInWithAppleFlow() {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { self.startSignInWithAppleFlow() }
+            return
+        }
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -86,20 +99,18 @@ extension MG2AppleLoginManage: ASAuthorizationControllerDelegate {
 
             logAppleTokenClaims(idTokenString)
 
-            MG2LegacyAuthBridge.shared.login(idToken: idTokenString) { result in
-                switch result {
-                case .failure(let error):
-                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-                case .success(let session):
-                    UserDefaults.standard.set(session.tokens.accessToken, forKey: "accessToken")
-                    UserDefaults.standard.set(session.tokens.refreshToken, forKey: "refreshToken")
+            Task { @MainActor in
+                do {
+                    let session = try await authUseCase.login(idToken: idTokenString)
+                    MG2TokenStore.save(accessToken: session.tokens.accessToken, refreshToken: session.tokens.refreshToken)
                     UserDefaults.standard.set(session.userId, forKey: "userId")
-                    UserDefaults.standard.synchronize()
 
                     self.registerUserInfo.userIsRegistered = session.isRegistered
                     let userEmail = appleIDCredential.email ?? "이메일 제공안함"
                     self.registerUserInfo.userEmail = userEmail
                     self.registerUserInfo.loginState = .login
+                } catch {
+                    print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                 }
             }
         }
@@ -110,10 +121,14 @@ extension MG2AppleLoginManage: ASAuthorizationControllerDelegate {
     }
 
     func appleLoginDeleteUser() {
-        let token = UserDefaults.standard.string(forKey: "refreshToken")
+        let token = MG2TokenStore.refreshToken
         if let token = token {
-            MG2LegacyAuthBridge.shared.revokeAppleToken(refreshToken: token) { error in
-                print(#fileID, #function, #line, "- revoke token error: \(String(describing: error?.localizedDescription))")
+            Task {
+                do {
+                    try await authUseCase.revokeAppleToken(refreshToken: token)
+                } catch {
+                    print(#fileID, #function, #line, "- revoke token error: \(error.localizedDescription)")
+                }
             }
         }
     }

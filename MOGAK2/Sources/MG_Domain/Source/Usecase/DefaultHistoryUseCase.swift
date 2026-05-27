@@ -9,7 +9,7 @@ final class DefaultHistoryUseCase: HistoryUseCase {
     }
 
     func createMogak(data: MogakMainData) async throws -> MG2HistoryMogakCreateEntity {
-        try await repository.createMogak(title: data.title, bigCategory: data.bigCategory, smallCategory: data.smallCategory, color: data.color)
+        try await repository.createMogak(modaratId: data.modaratId, title: data.title, bigCategory: data.bigCategory, smallCategory: data.smallCategory, color: data.color)
     }
 
     func editMogak(data: EditMogakRequestMainData) async throws -> MG2HistoryMogakEditEntity {

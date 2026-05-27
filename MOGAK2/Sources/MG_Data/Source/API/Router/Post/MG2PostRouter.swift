@@ -54,7 +54,7 @@ extension MG2PostRouter: RequestTarget {
 
     var headers: [String : String]? {
         var header = ["accept": "application/json", "Content-Type": "application/json"]
-        if let token = UserDefaults.standard.string(forKey: "accessToken"), !token.isEmpty {
+        if let token = MG2TokenStore.accessToken, !token.isEmpty {
             header["Authorization"] = "Bearer \(token)"
         }
         return header

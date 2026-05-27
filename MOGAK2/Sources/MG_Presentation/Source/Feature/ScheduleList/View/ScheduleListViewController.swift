@@ -416,7 +416,7 @@ extension ScheduleListViewController {
         //         if let httpResponse = response.response,
         //            let authValue = httpResponse.allHeaderFields["Authorization"] as? String {
         //             print("Authorization header value: \(authValue)")
-        //             UserDefaults.standard.set(authValue, forKey: "accessToken")
+        //             Token storage now goes through MG2TokenStore in the active auth flow.
         //         } else {
         //             print("No Authorization header found")
         //         }

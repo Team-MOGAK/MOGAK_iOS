@@ -1439,7 +1439,7 @@ extension MogakEditViewController {
 //    func initMogak(title: String, category: String, days: [String], start: String, end: String) {
 //        let path = "/api/mogaks"
 //        
-//        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
+//        guard let accessToken = MG2TokenStore.accessToken else { return }
 //        
 //        let headers: HTTPHeaders = [
 //            "Authorization": "Bearer \(accessToken)",

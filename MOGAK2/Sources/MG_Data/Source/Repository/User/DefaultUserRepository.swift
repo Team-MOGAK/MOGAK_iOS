@@ -7,6 +7,11 @@ final class DefaultUserRepository: UserRepository {
         return value.hasSuffix("/") ? value : value + "/"
     }
 
+    private var shouldUploadProfileImage: Bool {
+        guard let host = URL(string: baseURL)?.host?.lowercased() else { return true }
+        return !["localhost", "127.0.0.1", "0.0.0.0", "::1"].contains(host)
+    }
+
     private let networkProvider: NetworkProvider
 
     init(networkProvider: NetworkProvider) {
@@ -38,7 +43,7 @@ final class DefaultUserRepository: UserRepository {
             "Accept": "application/json",
             "Content-Type": "multipart/form-data"
         ]
-        if let accessToken = UserDefaults.standard.string(forKey: "accessToken"), !accessToken.isEmpty {
+        if let accessToken = MG2TokenStore.accessToken, !accessToken.isEmpty {
             headers.add(.authorization(bearerToken: accessToken))
         }
 
@@ -56,7 +61,7 @@ final class DefaultUserRepository: UserRepository {
                     multipartFormData.append(jsonData, withName: "request", mimeType: "application/json")
                 }
 
-                if let imageData = profileImageData {
+                if self.shouldUploadProfileImage, let imageData = profileImageData {
                     multipartFormData.append(
                         imageData,
                         withName: "multipartFile",
@@ -84,7 +89,7 @@ final class DefaultUserRepository: UserRepository {
             "Content-Type": "multipart/form-data"
         ]
 
-        if let accessToken = UserDefaults.standard.string(forKey: "accessToken"), !accessToken.isEmpty {
+        if let accessToken = MG2TokenStore.accessToken, !accessToken.isEmpty {
             headers.add(.authorization(bearerToken: accessToken))
         }
 

@@ -338,7 +338,6 @@ extension MG2NicknameViewController {
             return
         }
         LoadingIndicator.showLoading()
-        // MOGAK2 bridge route (active)
         profileViewModel.validateNickname(nickName) { result in
             LoadingIndicator.hideLoading()
             switch result {
@@ -353,33 +352,15 @@ extension MG2NicknameViewController {
                 self.makeNicknameErrorAlert(errorMessage: error.localizedDescription)
             }
         }
-
-        // Legacy MOGAK1 route (inactive)
-        // let nicknameRequest = NicknameChangeRequest(nickname: nickName)
-        // AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
-        //     .responseDecodable(of: ValidateNicknameModel.self) { (response: DataResponse<ValidateNicknameModel, AFError>) in
-        //         LoadingIndicator.hideLoading()
-        //         switch response.result {
-        //         case .success(let data):
-        //             if data.code == "success" {
-        //                 self.registerUserInfo.nickName = self.nicknameTextField.text
-        //                 let chooseJobVC = MG2ChooseJobViewController()
-        //                 chooseJobVC.modalPresentationStyle = .fullScreen
-        //                 self.navigationController?.pushViewController(chooseJobVC, animated: true)
-        //             }
-        //         case .failure(let error):
-        //             let decoder = JSONDecoder()
-        //             let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
-        //             self.makeNicknameErrorAlert(errorMessage: decodeData?.message)
-        //         }
-        //     }
     }
     
     func makeNicknameErrorAlert(errorMessage: String?) {
-        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: errorMessage, preferredStyle: .alert)
-        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-        self.present(nicknameErrorAlert, animated: true)
+        DispatchQueue.main.async {
+            let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+            let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: errorMessage, preferredStyle: .alert)
+            nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+            self.present(nicknameErrorAlert, animated: true)
+        }
     }
     
     //MARK: - 닉네임 변경
@@ -401,51 +382,16 @@ extension MG2NicknameViewController {
             case .failure(let failure):
                 if failure as? APIError == APIError.invalidNickname {
                     self.makeNicknameErrorAlert(errorMessage: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요")
-//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요", preferredStyle: .alert)
-//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-//                    self.present(nicknameErrorAlert, animated: true)
                 } else if failure as? APIError == APIError.NotExistUser {
                     self.makeNicknameErrorAlert(errorMessage: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요")
-//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요", preferredStyle: .alert)
-//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-//                    self.present(nicknameErrorAlert, animated: true)
                 }
                 else {
                     print(#fileID, #function, #line, "- failure: \(failure)")
                     self.makeNicknameErrorAlert(errorMessage: failure.localizedDescription)
-//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "\(failure)", preferredStyle: .alert)
-//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-//                    self.present(nicknameErrorAlert, animated: true)
                 }
                 
             }
         }
-//        let nicknameRequest = NicknameChangeRequest(nickname: nickname)
-//        let decoder = JSONDecoder()
-//        AF.request(UserRouter.nicknameChange(nickname: nicknameRequest), interceptor: CommonLoginManage())
-//            .validate(statusCode: 200..<300)
-//            .responseDecodable(of: ChangeSuccessResponse.self) { (response: DataResponse<ChangeSuccessResponse, AFError>) in
-//                switch response.result {
-//                case .failure(let error):
-//                    print(#fileID, #function, #line, "- error: \(error)")
-//                    if response.response?.statusCode == 409 {
-//                        let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
-//                        print(#fileID, #function, #line, "- decodeData: \(decodeData)")
-//                        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-//                        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
-//                        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-//                        self.present(nicknameErrorAlert, animated: true)
-//                    }
-//                case .success(let data):
-//                    self.registerUserInfo.nickName = nickname
-//                    if !self.profileImageChange {
-//                        self.navigationController?.popViewController(animated: true)
-//                    }
-//                }
-//            }
     }
     
     //MARK: - 프로필 사진 변경 요청

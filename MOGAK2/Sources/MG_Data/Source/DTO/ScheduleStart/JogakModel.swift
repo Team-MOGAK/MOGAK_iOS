@@ -52,14 +52,14 @@ struct ScheduleJogakDetail: Codable {
 //MARK: - 일일 조각 시작
 struct JogakDailyStartResponse: Codable {
     let time, status, code, message: String
-    let result: [JogakDailyStart]?
+    let result: JogakDailyStart?
 }
 
 struct JogakDailyStart: Codable {
     let jogakID, dailyJogakID: Int?
     let title, mogakTitle, category: String?
     let isRoutine: Bool?
-    let days: [String]?
+    let days: [JogakPeriodResponse]?
     let isAchievement: Bool?
     let achievements: Int?
 
@@ -68,6 +68,16 @@ struct JogakDailyStart: Codable {
         case dailyJogakID = "dailyJogakId"
         case title, mogakTitle, category, isRoutine, days, isAchievement, achievements
     }
+}
+
+struct JogakPeriodResponse: Codable {
+    let id: Int?
+    let days: String?
+    let jogakPeriods: [JogakPeriodItemResponse]?
+}
+
+struct JogakPeriodItemResponse: Codable {
+    let id: Int?
 }
 
 //MARK: - 일일 조각 디테일
@@ -101,7 +111,7 @@ struct JogakFailResponse: Codable {
     let jogakID, dailyJogakID: Int
     let title, mogakTitle, category: String
     let isRoutine: Bool
-    let days: String?
+    let days: [JogakPeriodResponse]?
     let isAchievement: Bool
     let achievements: Int
 
@@ -121,7 +131,7 @@ struct JogakSuccessResponse: Codable {
     let jogakID, dailyJogakID: Int
     let title, mogakTitle, category: String
     let isRoutine: Bool
-    let days: String?
+    let days: [JogakPeriodResponse]?
     let isAchievement: Bool
     let achievements: Int
 
@@ -148,4 +158,3 @@ struct JogakMonthResult: Codable {
         case date, isAchievement, title
     }
 }
-

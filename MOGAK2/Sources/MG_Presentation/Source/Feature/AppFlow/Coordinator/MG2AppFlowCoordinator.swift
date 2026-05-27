@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
 
     private let viewModel = MG2AppLaunchViewModel()
@@ -25,6 +26,7 @@ final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
             }
             onboarding.onFinish = { [weak self] in
                 guard let self else { return }
+                Storage.setFirstTime(false)
                 UIApplication.shared.connectedScenes
                     .compactMap { $0 as? UIWindowScene }
                     .first?.windows.first?.rootViewController = self.makeRoot(for: .login)

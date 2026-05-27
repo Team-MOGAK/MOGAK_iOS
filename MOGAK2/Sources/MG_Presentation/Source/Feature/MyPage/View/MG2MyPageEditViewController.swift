@@ -175,8 +175,7 @@ class MG2MyPageEditViewController: UIViewController {
                 print(#fileID, #function, #line, "- sucess")
                 let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)  { _ in
                     UserDefaults.standard.removeObject(forKey: "isFirstTime")
-                    UserDefaults.standard.removeObject(forKey: "refreshToken")
-                    MG2Deps.app.userState.userAccessToken = ""
+                    MG2TokenStore.clearTokens()
                     MG2Deps.app.userState.loginState = .logout
                     MG2Deps.app.userState.nickName = ""
                 }

@@ -2,21 +2,18 @@ import Foundation
 
 final class MG2ScheduleStartViewModel {
     private let useCase: ScheduleStartUseCase
-    private let network: ApiNetwork
 
     init(
-        useCase: ScheduleStartUseCase? = DIContainer.shared.resolve(ScheduleStartUseCase.self),
-        network: ApiNetwork = MG2Deps.app.scheduleStartNetwork
+        useCase: ScheduleStartUseCase? = DIContainer.shared.resolve(ScheduleStartUseCase.self)
     ) {
         guard let useCase else {
             fatalError("ScheduleStartUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
         }
         self.useCase = useCase
-        self.network = network
     }
 
     func getModalartList(completion: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let modalarts = try await useCase.getModalartList().map {
                     ScheduleModalartList(id: $0.id, title: $0.title, color: $0.color)
@@ -29,7 +26,7 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getDetailModalartInfo(modalartId: Int, completion: @escaping (Result<ScheduleModalartInfo?, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let detail = try await useCase.getModalartDetail(modalartId: modalartId)
                 let mapped = detail.map {
@@ -55,7 +52,7 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getDetailMogakData(modalartId: Int, completion: @escaping (Result<ScheduleDetailMogakResponse?, Error>) -> Void) {
-        Task {
+        Task { @MainActor in
             do {
                 let page = try await useCase.getMogakPage(modalartId: modalartId)
                 let response = ScheduleDetailMogakResponse(
@@ -87,26 +84,62 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getAllMogakDetailJogaks(mogakId: Int, dailyDate: String, completion: @escaping (Result<[ScheduleJogakDetail]?, Error>) -> Void) {
-        network.getAllMogakDetailJogaks(mogakId: mogakId, DailyDate: dailyDate, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.getMogakDetailJogaks(mogakId: mogakId, dailyDate: dailyDate)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func getCheckDailyJogak(dailyDate: String, completion: @escaping (Result<[JogakDailyCheck]?, Error>) -> Void) {
-        network.getCheckDailyJogak(DailyDate: dailyDate, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.getCheckDailyJogak(dailyDate: dailyDate)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func getAddJogakDaily(jogakId: Int, completion: @escaping (Result<[JogakDailyStartResponse]?, Error>) -> Void) {
-        network.getAddJogakDaily(jogakId: jogakId, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.addJogakDaily(jogakId: jogakId)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func getdailyJogakDetail(jogakId: Int, completion: @escaping (Result<DailyJogakDetail?, Error>) -> Void) {
-        network.getdailyJogakDetail(jogakId: jogakId, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.getDailyJogakDetail(jogakId: jogakId)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func getJogakFail(dailyJogakId: Int, completion: @escaping (Result<[JogakFail]?, Error>) -> Void) {
-        network.getJogakFail(dailyJogakId: dailyJogakId, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.jogakFail(dailyJogakId: dailyJogakId)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func getJogakSuccess(dailyJogakId: Int, completion: @escaping (Result<[JogakSuccess]?, Error>) -> Void) {
-        network.getJogakSuccess(dailyJogakId: dailyJogakId, completionHandler: completion)
+        Task { @MainActor in
+            do {
+                completion(.success(try await useCase.jogakSuccess(dailyJogakId: dailyJogakId)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }

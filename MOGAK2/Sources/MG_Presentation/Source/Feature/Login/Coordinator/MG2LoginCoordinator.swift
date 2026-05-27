@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 final class MG2LoginCoordinator: MG2PresentationCoordinator {
     func start() -> UIViewController {
         let vc = MG2LoginViewController()
