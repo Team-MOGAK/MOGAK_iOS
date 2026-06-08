@@ -3,7 +3,7 @@ import Alamofire
 
 enum MG2UserRouter {
     case login(email: String)
-    case join(payload: [String: Any])
+    case join(payload: [String: any Sendable])
     case nicknameVerify(nickname: String)
     case nicknameChange(nickname: String)
     case jobChange(job: String)
@@ -55,7 +55,7 @@ extension MG2UserRouter: RequestTarget {
         case .login(let email):
             return ["email": email]
         case .join(let payload):
-            return payload
+            return payload.mapValues { $0 as Any }
         case .nicknameVerify(let nickname), .nicknameChange(let nickname):
             return ["nickname": nickname]
         case .jobChange(let job):

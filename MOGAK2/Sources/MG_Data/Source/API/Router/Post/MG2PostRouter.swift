@@ -16,7 +16,7 @@ enum MG2PostRouter {
 
     case mogakPosts(mogakId: Int, page: Int?, size: Int)
     case jogakPostByDate(jogakId: Int, targetDate: String)
-    case jogakPostCreate(jogakId: Int, payload: [String: Any])
+    case jogakPostCreate(jogakId: Int, payload: [String: any Sendable])
 }
 
 extension MG2PostRouter: RequestTarget {
@@ -88,7 +88,7 @@ extension MG2PostRouter: RequestTarget {
         case .like(let postId):
             return ["postId": postId]
         case .jogakPostCreate(_, let payload):
-            return payload
+            return payload.mapValues { $0 as Any }
         default:
             return nil
         }

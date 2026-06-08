@@ -4,14 +4,9 @@ import CryptoKit
 import Security
 
 final class MG2AppleLoginManage: NSObject {
-    let registerUserInfo = RegisterUserInfo.shared
-    static let shared = MG2AppleLoginManage()
     private let authUseCase: AuthUseCase
 
-    init(authUseCase: AuthUseCase? = DIContainer.shared.resolve(AuthUseCase.self)) {
-        guard let authUseCase else {
-            fatalError("AuthUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(authUseCase: AuthUseCase) {
         self.authUseCase = authUseCase
         super.init()
     }
@@ -48,11 +43,8 @@ final class MG2AppleLoginManage: NSObject {
     fileprivate var currentNonce: String?
 
     @available(iOS 13, *)
+    @MainActor
     func startSignInWithAppleFlow() {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { self.startSignInWithAppleFlow() }
-            return
-        }
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -99,16 +91,11 @@ extension MG2AppleLoginManage: ASAuthorizationControllerDelegate {
 
             logAppleTokenClaims(idTokenString)
 
-            Task { @MainActor in
+            let userEmail = appleIDCredential.email ?? "이메일 제공안함"
+            Task {
                 do {
-                    let session = try await authUseCase.login(idToken: idTokenString)
-                    MG2TokenStore.save(accessToken: session.tokens.accessToken, refreshToken: session.tokens.refreshToken)
-                    UserDefaults.standard.set(session.userId, forKey: "userId")
-
-                    self.registerUserInfo.userIsRegistered = session.isRegistered
-                    let userEmail = appleIDCredential.email ?? "이메일 제공안함"
-                    self.registerUserInfo.userEmail = userEmail
-                    self.registerUserInfo.loginState = .login
+                    let session = try await authUseCase.login(provider: .apple, token: idTokenString)
+                    MG2SocialLoginSessionStore.apply(session: session, email: userEmail)
                 } catch {
                     print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                 }

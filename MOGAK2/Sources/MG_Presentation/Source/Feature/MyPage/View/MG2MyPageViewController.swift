@@ -20,8 +20,17 @@ enum MG2WebUrl: String {
 
 class MG2MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerDelegate {
     var cancellables = Set<AnyCancellable>()
-    private let viewModel = MG2MyPageViewModel()
+    private let viewModel: MG2MyPageViewModel
     weak var coordinator: MG2MyPageCoordinator?
+
+    init(viewModel: MG2MyPageViewModel = DIContainer.shared.resolveRequired(MG2MyPageViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var profileView : UIView = {
         let uiview = UIView()

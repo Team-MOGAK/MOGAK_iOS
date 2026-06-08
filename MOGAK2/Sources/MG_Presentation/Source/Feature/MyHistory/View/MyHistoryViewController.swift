@@ -21,13 +21,22 @@ class MyHistoryViewController: UIViewController {
     var modalArtMainCellBgColor: String = "" ///현재 보여지는 모다라트 메인 셀의 배경색
     ///
     
-    private let viewModel = MG2MyHistoryViewModel()
+    private let viewModel: MG2MyHistoryViewModel
     
     var selectedSmallModalartIndexPath: IndexPath?
     var selectedMogakCategoryIndexPath: IndexPath?
     private var tableViewData: [[String]] = []
     private var mogakCategoryViewData: [String] = []
     var MemoirListTableViewData: [MemoirContent] = []
+
+    init(viewModel: MG2MyHistoryViewModel = DIContainer.shared.resolveRequired(MG2MyHistoryViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     //    override func viewWillAppear(_ animated: Bool) {
     //        super.viewWillAppear(animated)
     //        self.tabBarController?.tabBar.isHidden = false

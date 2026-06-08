@@ -29,7 +29,16 @@ class SelectJogakModal : UIViewController{
     var jogakData: [ScheduleJogakDetail] = []
     var mogakData: [ScheduleDetailMogakData] = []
     
-    private let viewModel = MG2ScheduleStartViewModel()
+    private let viewModel: MG2ScheduleStartViewModel
+
+    init(viewModel: MG2ScheduleStartViewModel = DIContainer.shared.resolveRequired(MG2ScheduleStartViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     let DidDismissModal: Notification.Name = Notification.Name("DidDismissModal")
     

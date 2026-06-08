@@ -22,8 +22,18 @@ class MogakMainViewController: UIViewController {
     var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
     
     var jogakList: [JogakDetail] = []
-    private let viewModel = MG2ModalartViewModel()
+    private let viewModel: MG2ModalartViewModel
     var modalartId: Int = 0
+
+    init(viewModel: MG2ModalartViewModel = DIContainer.shared.resolveRequired(MG2ModalartViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private var hasSelectedMogak: Bool {
         mogakList.contains { $0.mogakId == selectedMogak.mogakId }
     }

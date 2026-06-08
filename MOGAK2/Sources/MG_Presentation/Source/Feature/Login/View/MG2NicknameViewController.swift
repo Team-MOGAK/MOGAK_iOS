@@ -12,13 +12,22 @@ import Combine
 
 class MG2NicknameViewController: UIViewController {
     let registerUserInfo = MG2Deps.app.userState
-    private let profileViewModel = MG2ProfileSetupViewModel()
+    private let profileViewModel: MG2ProfileSetupViewModel
     weak var coordinator: MG2LoginCoordinator?
     /// 프로필 수정하러 들어올때와 회원가입 시 프로필을 생성할 때를 구분하기 위한 변수 (프로필 수정할때 -> true, 회원가입 시 프로필 입력 -> false)
     var nicknameAndImageChange: Bool = false
     var profileImageChange: Bool = false
     var changeProfileImage: UIImage? = nil
     var cancellables = Set<AnyCancellable>()
+
+    init(profileViewModel: MG2ProfileSetupViewModel = DIContainer.shared.resolveRequired(MG2ProfileSetupViewModel.self)) {
+        self.profileViewModel = profileViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private let setNicknameLabel : UILabel = {
         let label = UILabel()

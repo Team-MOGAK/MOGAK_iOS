@@ -12,8 +12,17 @@ class MG2ChooseRegionViewController: UIViewController {
     
     private let region = ["서울특별시", "경기도", "세종특별자치시","대전광역시","광주광역시","대구광역시","부산광역시","울산광역시","경상남도", "경상북도","전라남도","전라북도","충청남도","충청북도","강원도", "제주도", "독도/울릉도"]
     
-    private let profileViewModel = MG2ProfileSetupViewModel()
+    private let profileViewModel: MG2ProfileSetupViewModel
     weak var coordinator: MG2LoginCoordinator?
+
+    init(profileViewModel: MG2ProfileSetupViewModel = DIContainer.shared.resolveRequired(MG2ProfileSetupViewModel.self)) {
+        self.profileViewModel = profileViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     // checkButton 선택 셀 index
     private var previousIndexPath: IndexPath?
     private var selectedIndexPath: IndexPath?

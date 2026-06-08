@@ -7,17 +7,14 @@ enum MG2AppLaunchRoute {
     case onboarding
 }
 
+@MainActor
 final class MG2AppLaunchViewModel {
     private let authUseCase: AuthUseCase
 
-    init(authUseCase: AuthUseCase? = DIContainer.shared.resolve(AuthUseCase.self)) {
-        guard let authUseCase else {
-            fatalError("AuthUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(authUseCase: AuthUseCase) {
         self.authUseCase = authUseCase
     }
 
-    @MainActor
     func resolveInitialRoute() async -> MG2AppLaunchRoute {
         guard let refreshToken = MG2TokenStore.refreshToken, !refreshToken.isEmpty else {
             return Storage.isFirstTime() ? .onboarding : .login

@@ -10,8 +10,17 @@ import Combine
 import SnapKit
 
 class MG2ChooseJobViewController: UIViewController {
-    private let profileViewModel = MG2ProfileSetupViewModel()
+    private let profileViewModel: MG2ProfileSetupViewModel
     weak var coordinator: MG2LoginCoordinator?
+
+    init(profileViewModel: MG2ProfileSetupViewModel = DIContainer.shared.resolveRequired(MG2ProfileSetupViewModel.self)) {
+        self.profileViewModel = profileViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
     private var items = ["기획/전략", "법무,사무,총무", "인사/HR", "회계/세무", "마케팅/광고/MD", "개발/데이터", "디자인", "물류/무역", "운전/운송/배송", "영업", "고객상담/TM", "금융/보험", "식/음료", "고객서비스/리테일", "엔지니어링/설계", "제조/생산", "교육", "건축/시설", "의료/바이오", "미디어/문화", "스포츠", "공공복지", "자영업", "군인", "의료", "회계사", "법무사", "노무사", "세무사", "관세사", "교사", "디지털노마드", "영상제작자", "크리에이터"]

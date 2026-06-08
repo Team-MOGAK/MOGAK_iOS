@@ -13,9 +13,18 @@ import Combine
 class MG2LoginViewController: UIViewController {
     
     let registerUserInfo = MG2Deps.app.userState
-    private let viewModel = MG2LoginViewModel()
+    private let viewModel: MG2LoginViewModel
     weak var coordinator: MG2LoginCoordinator?
     var cancellables = Set<AnyCancellable>()
+
+    init(viewModel: MG2LoginViewModel = DIContainer.shared.resolveRequired(MG2LoginViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private let mogakLabel : UILabel = {
         let label = UILabel()
@@ -31,18 +40,40 @@ class MG2LoginViewController: UIViewController {
         $0.image = UIImage(named: "LoginLogo")
     }
     
-    private lazy var appleLoginButton : UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 10
-        button.backgroundColor = .black
-        button.setImage(UIImage(systemName: "apple.logo"), for: .normal)
-        button.semanticContentAttribute = .forceRightToLeft
-        button.setTitle("Apple로 로그인", for: .normal)
-        button.setTitleColor(UIColor(hex: "ffffff"), for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        button.imageView?.tintColor = .white
-        button.layer.borderWidth = 0.5
+    private lazy var appleLoginButton: UIButton = {
+        let button = makeSocialLoginButton(
+            title: "Apple로 로그인",
+            backgroundColor: .black,
+            titleColor: .white,
+            image: UIImage(systemName: "apple.logo"),
+            imageTintColor: .white
+        )
         button.addTarget(self, action: #selector(appleLoginClicked), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var kakaoLoginButton: UIButton = {
+        let button = makeSocialLoginButton(
+            title: "카카오로 로그인",
+            backgroundColor: UIColor(hex: "FEE500"),
+            titleColor: UIColor(hex: "191919"),
+            image: UIImage(systemName: "message.fill"),
+            imageTintColor: UIColor(hex: "191919")
+        )
+        button.addTarget(self, action: #selector(kakaoLoginClicked), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var googleLoginButton: UIButton = {
+        let button = makeSocialLoginButton(
+            title: "G  Google로 로그인",
+            backgroundColor: .white,
+            titleColor: UIColor(hex: "191919"),
+            image: nil,
+            imageTintColor: nil,
+            borderColor: UIColor(hex: "DADCE0")
+        )
+        button.addTarget(self, action: #selector(googleLoginClicked), for: .touchUpInside)
         return button
     }()
     
@@ -57,6 +88,19 @@ class MG2LoginViewController: UIViewController {
         button.layer.borderWidth = 1
         button.addTarget(self, action: #selector(guestLoginClicked), for: .touchUpInside)
         return button
+    }()
+
+    private lazy var loginButtonStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            appleLoginButton,
+            kakaoLoginButton,
+            googleLoginButton,
+            guestLoginButton
+        ])
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        stackView.distribution = .fillEqually
+        return stackView
     }()
     
     override func viewDidLoad() {
@@ -110,24 +154,17 @@ class MG2LoginViewController: UIViewController {
         loginImage.snp.makeConstraints({
             $0.top.equalTo(self.mogakLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(6)
-            //            $0.bottom.equalTo(self.appleLoginButton.snp.top).offset(-129)
-            $0.height.equalToSuperview().multipliedBy(0.53)
+            $0.bottom.equalTo(self.loginButtonStackView.snp.top).offset(-20)
         })
     }
     
     private func configureButton() {
-        self.view.addSubviews(appleLoginButton, guestLoginButton)
-        
-        appleLoginButton.snp.makeConstraints({
-            $0.bottom.equalTo(self.guestLoginButton.snp.top).offset(-26)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalToSuperview().multipliedBy(0.057)
-        })
-        
-        guestLoginButton.snp.makeConstraints { make in
+        self.view.addSubview(loginButtonStackView)
+
+        loginButtonStackView.snp.makeConstraints { make in
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-26)
             make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalToSuperview().multipliedBy(0.057)
+            make.height.equalTo(220)
         }
     }
 
@@ -154,10 +191,38 @@ class MG2LoginViewController: UIViewController {
 //        }
 //        .store(in: &cancellables)
     }
+
+    @objc private func kakaoLoginClicked() {
+        viewModel.startKakaoLogin()
+    }
+
+    @objc private func googleLoginClicked() {
+        viewModel.startGoogleLogin()
+    }
     
     @objc private func guestLoginClicked() {
         viewModel.continueAsGuest()
     }
+
+    private func makeSocialLoginButton(title: String,
+                                       backgroundColor: UIColor,
+                                       titleColor: UIColor,
+                                       image: UIImage?,
+                                       imageTintColor: UIColor?,
+                                       borderColor: UIColor? = nil) -> UIButton {
+        let button = UIButton(type: .system)
+        button.layer.cornerRadius = 10
+        button.backgroundColor = backgroundColor
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(titleColor, for: .normal)
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        button.setImage(image, for: .normal)
+        button.tintColor = imageTintColor ?? titleColor
+        button.semanticContentAttribute = .forceLeftToRight
+        if let borderColor {
+            button.layer.borderWidth = 1
+            button.layer.borderColor = borderColor.cgColor
+        }
+        return button
+    }
 }
-
-

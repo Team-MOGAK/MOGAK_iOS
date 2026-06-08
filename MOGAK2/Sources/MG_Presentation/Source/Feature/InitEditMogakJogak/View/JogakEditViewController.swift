@@ -14,7 +14,16 @@ import FSCalendar
 class JogakEditViewController: UIViewController {
     
     weak var delegate: JogakCreatedReloadDelegate?
-    private let viewModel = MG2InitEditMogakJogakViewModel()
+    private let viewModel: MG2InitEditMogakJogakViewModel
+
+    init(viewModel: MG2InitEditMogakJogakViewModel = DIContainer.shared.resolveRequired(MG2InitEditMogakJogakViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     var currentJogakId: Int = 0
     

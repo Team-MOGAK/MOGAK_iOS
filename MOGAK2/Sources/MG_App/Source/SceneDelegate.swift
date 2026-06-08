@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     private let appFlowCoordinator = MG2AppFlowCoordinator()
-    private let launchViewModel = MG2AppLaunchViewModel()
+    private let launchViewModel: MG2AppLaunchViewModel = DIContainer.shared.resolveRequired(MG2AppLaunchViewModel.self)
     private var didResolveInitialRoute = false
 
     func scene(_ scene: UIScene,
@@ -21,11 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                options connectionOptions: UIScene.ConnectionOptions) {
         guard scene is UIWindowScene else { return }
 
-        Task { @MainActor in
+        Task {
             let route = await launchViewModel.resolveInitialRoute()
-            didResolveInitialRoute = true
-            setRootViewController(scene, route: route)
-            presentGlobalErrorIfNeeded()
+            applyRoute(scene, route: route, markInitialResolved: true)
         }
 
         MG2Deps.app.userState.$loginState
@@ -34,10 +32,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .sink { [weak self] loginState in
                 guard let self else { return }
                 guard self.didResolveInitialRoute else { return }
-                Task { @MainActor in
-                    let route = self.launchViewModel.resolveRoute(loginState: loginState)
-                    self.setRootViewController(scene, route: route)
-                    self.presentGlobalErrorIfNeeded()
+                let route = self.launchViewModel.resolveRoute(loginState: loginState)
+                Task {
+                    self.applyRoute(scene, route: route)
                 }
             }
             .store(in: &cancellables)
@@ -48,9 +45,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {}
     func sceneWillEnterForeground(_ scene: UIScene) {}
     func sceneDidEnterBackground(_ scene: UIScene) {}
+
+    @MainActor
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        if MG2KakaoLoginManage.handleOpenUrl(url) { return }
+        if MG2GoogleLoginManage.handleOpenUrl(url) { return }
+    }
 }
 
 private extension SceneDelegate {
+    @MainActor
+    func applyRoute(_ scene: UIScene, route: MG2AppLaunchRoute, markInitialResolved: Bool = false) {
+        if markInitialResolved {
+            didResolveInitialRoute = true
+        }
+        setRootViewController(scene, route: route)
+        presentGlobalErrorIfNeeded()
+    }
+
     @MainActor
     func setRootViewController(_ scene: UIScene, route: MG2AppLaunchRoute) {
         guard let windowScene = scene as? UIWindowScene else { return }

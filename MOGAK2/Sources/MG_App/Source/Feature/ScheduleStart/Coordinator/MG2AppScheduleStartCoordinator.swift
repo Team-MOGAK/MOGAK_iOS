@@ -1,22 +1,21 @@
 import UIKit
 
-@MainActor
 final class MG2AppScheduleStartCoordinator: Coordinator {
-
     let navigationController: UINavigationController
+    private let viewModel: MG2AppScheduleStartViewModel
 
-    private let useCase: ScheduleStartUseCase
-
-    init(navigationController: UINavigationController, useCase: ScheduleStartUseCase) {
+    init(
+        navigationController: UINavigationController,
+        viewModel: MG2AppScheduleStartViewModel = DIContainer.shared.resolveRequired(MG2AppScheduleStartViewModel.self)
+    ) {
         self.navigationController = navigationController
-        self.useCase = useCase
+        self.viewModel = viewModel
     }
 
     @discardableResult
+    @MainActor
     func start() -> UIViewController {
-        let viewModel = MG2AppScheduleStartViewModel(useCase: useCase)
         viewModel.coordinator = self
-
         let viewController = MG2AppScheduleStartViewController(viewModel: viewModel)
         navigationController.viewControllers = [viewController]
         return viewController

@@ -14,7 +14,16 @@ class MogakEditViewController: UIViewController {
     
     weak var delegate: MogakCreatedReloadDelegate?
     weak var delegate2: JogakCreatedReloadDelegate?
-    private let viewModel = MG2InitEditMogakJogakViewModel()
+    private let viewModel: MG2InitEditMogakJogakViewModel
+
+    init(viewModel: MG2InitEditMogakJogakViewModel = DIContainer.shared.resolveRequired(MG2InitEditMogakJogakViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - 데이터
     private var currentModalartId: Int = 0

@@ -11,3 +11,12 @@ import Foundation
 public protocol DependencyResolver {
     func resolve<T>(_ type: T.Type) -> T?
 }
+
+extension DependencyResolver {
+    func resolveRequired<T>(_ type: T.Type) -> T {
+        guard let dependency = resolve(type) else {
+            fatalError("\(String(describing: type)) is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
+        }
+        return dependency
+    }
+}

@@ -1,26 +1,25 @@
 import Foundation
 
+@MainActor
 final class MG2InitEditMogakJogakViewModel {
     private let useCase: HistoryUseCase
 
-    init(useCase: HistoryUseCase? = DIContainer.shared.resolve(HistoryUseCase.self)) {
-        guard let useCase else {
-            fatalError("HistoryUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(useCase: HistoryUseCase) {
         self.useCase = useCase
     }
 
     func createMogak(data: MogakMainData, completion: @escaping (Result<CreateMogakMainData, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let entity = try await useCase.createMogak(data: data)
-                completion(.success(CreateMogakMainData(
+                let mogak = CreateMogakMainData(
                     id: entity.id,
                     title: entity.title,
                     bigCategory: BigCategory(id: entity.bigCategoryId, name: entity.bigCategoryName),
                     smallCategory: entity.smallCategory,
                     color: entity.color
-                )))
+                )
+                completion(.success(mogak))
             } catch {
                 completion(.failure(error))
             }
@@ -28,16 +27,17 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func editMogak(data: EditMogakRequestMainData, completion: @escaping (Result<EditMogakMainData, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let entity = try await useCase.editMogak(data: data)
-                completion(.success(EditMogakMainData(
+                let mogak = EditMogakMainData(
                     id: entity.id,
                     title: entity.title,
                     bigCategory: BigCategory(id: entity.bigCategoryId, name: entity.bigCategoryName),
                     smallCategory: entity.smallCategory,
                     color: entity.color
-                )))
+                )
+                completion(.success(mogak))
             } catch {
                 completion(.failure(error))
             }
@@ -45,10 +45,10 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func createJogak(data: CreateJogakRequestMainData, completion: @escaping (Result<CreateJogakMainData, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let entity = try await useCase.createJogak(data: data)
-                completion(.success(CreateJogakMainData(
+                let jogak = CreateJogakMainData(
                     jogakId: entity.jogakId,
                     mogakTitle: entity.mogakTitle,
                     category: entity.category,
@@ -58,7 +58,8 @@ final class MG2InitEditMogakJogakViewModel {
                     achievements: entity.achievements,
                     startDate: entity.startDate,
                     endDate: entity.endDate
-                )))
+                )
+                completion(.success(jogak))
             } catch {
                 completion(.failure(error))
             }
@@ -66,9 +67,10 @@ final class MG2InitEditMogakJogakViewModel {
     }
 
     func editJogak(data: EditJogakRequestMainData, jogakId: Int, completion: @escaping (Result<EditJogakResponse, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.editJogak(data: data, jogakId: jogakId)))
+                let jogak = try await useCase.editJogak(data: data, jogakId: jogakId)
+                completion(.success(jogak))
             } catch {
                 completion(.failure(error))
             }

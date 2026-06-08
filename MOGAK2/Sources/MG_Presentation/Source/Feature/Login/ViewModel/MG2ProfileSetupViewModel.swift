@@ -1,34 +1,28 @@
 import Foundation
 import UIKit
 
+@MainActor
 final class MG2ProfileSetupViewModel {
     private let userUseCase: UserUseCase
 
-    init(userUseCase: UserUseCase? = DIContainer.shared.resolve(UserUseCase.self)) {
-        guard let userUseCase else {
-            fatalError("UserUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(userUseCase: UserUseCase) {
         self.userUseCase = userUseCase
     }
 
     func validateNickname(_ nickname: String, completion: @escaping (Result<String, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let response = try await userUseCase.verifyNickname(nickname)
                 let message = response.code == "success" ? "성공" : response.message
-                DispatchQueue.main.async {
-                    completion(.success(message))
-                }
+                completion(.success(message))
             } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
             }
         }
     }
 
     func changeNickname(_ nickname: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 _ = try await userUseCase.changeNickname(nickname)
                 MG2Deps.app.userState.nickName = nickname
@@ -45,7 +39,7 @@ final class MG2ProfileSetupViewModel {
             return
         }
         let nickname = MG2Deps.app.userState.nickName ?? ""
-        Task { @MainActor in
+        Task {
             do {
                 let result = try await userUseCase.userImageChange(imageData: data, userNickname: nickname)
                 completion(.success(result))
@@ -56,7 +50,7 @@ final class MG2ProfileSetupViewModel {
     }
 
     func changeJob(_ job: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 _ = try await userUseCase.changeJob(job)
                 MG2Deps.app.userState.userJob = job
@@ -81,16 +75,12 @@ final class MG2ProfileSetupViewModel {
             multipartFile: ""
         )
         let imageData = profileImage?.jpegData(compressionQuality: 1.0)
-        Task { @MainActor in
+        Task {
             do {
                 let joined = try await userUseCase.userJoin(userData: data, profileImageData: imageData)
-                DispatchQueue.main.async {
-                    completion(.success(joined))
-                }
+                completion(.success(joined))
             } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
             }
         }
     }

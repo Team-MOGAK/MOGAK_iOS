@@ -26,9 +26,18 @@ class ModalartMainViewController: UIViewController {
     var nowShowModalArtNum: Int = 0 ///현재 보여지는 모다라트의 번호
     var nowShowModalArtIndex: Int = 0
     var mogakData: [DetailMogakData] = []
-    private let viewModel = MG2ModalartViewModel()
+    private let viewModel: MG2ModalartViewModel
     //var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", state: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "", startAt: "", endAt: "")
     var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
+
+    init(viewModel: MG2ModalartViewModel = DIContainer.shared.resolveRequired(MG2ModalartViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     ///현재 보여지는 모다라트 메인 셀의 배경색
     var modalArtMainCellBgColor: String = ""

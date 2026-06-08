@@ -2,6 +2,7 @@ import Foundation
 
 protocol AuthUseCase {
     func login(idToken: String) async throws -> MG2AuthSession
+    func login(provider: MG2SocialLoginProvider, token: String) async throws -> MG2AuthSession
     func refresh(refreshToken: String) async throws -> MG2TokenPair
     func logout(accessToken: String?) async throws
     func withdraw(accessToken: String?) async throws -> Bool

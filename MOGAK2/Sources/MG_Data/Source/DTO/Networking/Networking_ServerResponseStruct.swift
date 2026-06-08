@@ -35,3 +35,17 @@ struct PacemakerFeedsResponse: Codable {
     
 }
 
+extension PacemakerFeedsResponse.Result {
+    func toEntity() -> MG2NetworkingFeedEntity? {
+        guard let firstImage = imgUrls.first else { return nil }
+
+        return MG2NetworkingFeedEntity(
+            userName: user.nickname,
+            category: user.job,
+            feedImageURL: firstImage,
+            feedContent: contents,
+            likeCount: likeCnt,
+            messageCount: comments.count
+        )
+    }
+}

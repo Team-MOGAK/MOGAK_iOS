@@ -1,17 +1,21 @@
 import UIKit
 
-@MainActor
 final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
-
-    private let viewModel = MG2AppLaunchViewModel()
+    private let viewModel: MG2AppLaunchViewModel
     private let loginCoordinator = MG2LoginCoordinator()
     private let tabBarCoordinator = MG2TabBarCoordinator()
     private let onboardingCoordinator = MG2OnboardingCoordinator()
 
+    init(viewModel: MG2AppLaunchViewModel = DIContainer.shared.resolveRequired(MG2AppLaunchViewModel.self)) {
+        self.viewModel = viewModel
+    }
+
+    @MainActor
     func start() -> UIViewController {
         return makeRoot(for: viewModel.resolveRoute(loginState: MG2Deps.app.userState.loginState))
     }
 
+    @MainActor
     func makeRoot(for route: MG2AppLaunchRoute) -> UIViewController {
         switch route {
         case .login:

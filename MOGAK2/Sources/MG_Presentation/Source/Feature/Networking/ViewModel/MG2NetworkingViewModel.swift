@@ -1,29 +1,28 @@
 import Foundation
 
+@MainActor
 final class MG2NetworkingViewModel {
-    private let network: MG2NetworkingNetwork
+    private let useCase: NetworkingUseCase
 
-    init(network: MG2NetworkingNetwork = .shared) {
-        self.network = network
+    init(useCase: NetworkingUseCase) {
+        self.useCase = useCase
     }
 
     func fetchPacemakerFeeds(completion: @escaping ([FeedModel]) -> Void) {
-        network.getPacemakerFeeds { result in
-            switch result {
-            case let .success(response):
-                let feeds = response.result.compactMap { post -> FeedModel? in
-                    guard let firstImage = post.imgUrls.first else { return nil }
-                    return FeedModel(
-                        userName: post.user.nickname,
-                        category: post.user.job,
-                        feedImageURL: firstImage,
-                        feedContent: post.contents,
-                        likeCnt: post.likeCnt,
-                        messageCnt: post.comments.count
+        Task {
+            do {
+                let feeds = try await useCase.getPacemakerFeeds(cursor: 0, size: 5).map {
+                    FeedModel(
+                        userName: $0.userName,
+                        category: $0.category,
+                        feedImageURL: $0.feedImageURL,
+                        feedContent: $0.feedContent,
+                        likeCnt: $0.likeCount,
+                        messageCnt: $0.messageCount
                     )
                 }
                 completion(feeds)
-            case .failure:
+            } catch {
                 completion([])
             }
         }

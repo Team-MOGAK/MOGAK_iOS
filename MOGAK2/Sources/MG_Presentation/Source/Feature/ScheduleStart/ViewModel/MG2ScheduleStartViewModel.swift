@@ -1,19 +1,15 @@
 import Foundation
 
+@MainActor
 final class MG2ScheduleStartViewModel {
     private let useCase: ScheduleStartUseCase
 
-    init(
-        useCase: ScheduleStartUseCase? = DIContainer.shared.resolve(ScheduleStartUseCase.self)
-    ) {
-        guard let useCase else {
-            fatalError("ScheduleStartUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(useCase: ScheduleStartUseCase) {
         self.useCase = useCase
     }
 
     func getModalartList(completion: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let modalarts = try await useCase.getModalartList().map {
                     ScheduleModalartList(id: $0.id, title: $0.title, color: $0.color)
@@ -26,7 +22,7 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getDetailModalartInfo(modalartId: Int, completion: @escaping (Result<ScheduleModalartInfo?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let detail = try await useCase.getModalartDetail(modalartId: modalartId)
                 let mapped = detail.map {
@@ -52,7 +48,7 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getDetailMogakData(modalartId: Int, completion: @escaping (Result<ScheduleDetailMogakResponse?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let page = try await useCase.getMogakPage(modalartId: modalartId)
                 let response = ScheduleDetailMogakResponse(
@@ -84,9 +80,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getAllMogakDetailJogaks(mogakId: Int, dailyDate: String, completion: @escaping (Result<[ScheduleJogakDetail]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.getMogakDetailJogaks(mogakId: mogakId, dailyDate: dailyDate)))
+                let jogaks = try await useCase.getMogakDetailJogaks(mogakId: mogakId, dailyDate: dailyDate)
+                completion(.success(jogaks))
             } catch {
                 completion(.failure(error))
             }
@@ -94,9 +91,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getCheckDailyJogak(dailyDate: String, completion: @escaping (Result<[JogakDailyCheck]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.getCheckDailyJogak(dailyDate: dailyDate)))
+                let jogaks = try await useCase.getCheckDailyJogak(dailyDate: dailyDate)
+                completion(.success(jogaks))
             } catch {
                 completion(.failure(error))
             }
@@ -104,9 +102,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getAddJogakDaily(jogakId: Int, completion: @escaping (Result<[JogakDailyStartResponse]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.addJogakDaily(jogakId: jogakId)))
+                let response = try await useCase.addJogakDaily(jogakId: jogakId)
+                completion(.success(response))
             } catch {
                 completion(.failure(error))
             }
@@ -114,9 +113,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getdailyJogakDetail(jogakId: Int, completion: @escaping (Result<DailyJogakDetail?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.getDailyJogakDetail(jogakId: jogakId)))
+                let detail = try await useCase.getDailyJogakDetail(jogakId: jogakId)
+                completion(.success(detail))
             } catch {
                 completion(.failure(error))
             }
@@ -124,9 +124,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getJogakFail(dailyJogakId: Int, completion: @escaping (Result<[JogakFail]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.jogakFail(dailyJogakId: dailyJogakId)))
+                let response = try await useCase.jogakFail(dailyJogakId: dailyJogakId)
+                completion(.success(response))
             } catch {
                 completion(.failure(error))
             }
@@ -134,9 +135,10 @@ final class MG2ScheduleStartViewModel {
     }
 
     func getJogakSuccess(dailyJogakId: Int, completion: @escaping (Result<[JogakSuccess]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.jogakSuccess(dailyJogakId: dailyJogakId)))
+                let response = try await useCase.jogakSuccess(dailyJogakId: dailyJogakId)
+                completion(.success(response))
             } catch {
                 completion(.failure(error))
             }

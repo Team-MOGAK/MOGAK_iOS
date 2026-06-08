@@ -13,7 +13,16 @@ import Kingfisher
 class NetworkingViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - PROPERTIES
     var scrollView: UIScrollView!
-    private let viewModel = MG2NetworkingViewModel()
+    private let viewModel: MG2NetworkingViewModel
+
+    init(viewModel: MG2NetworkingViewModel = DIContainer.shared.resolveRequired(MG2NetworkingViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - segment
     private lazy var containerView : UIView = {
@@ -313,10 +322,8 @@ class NetworkingViewController: UIViewController, UIScrollViewDelegate {
 
     func setUpFeed() {
         viewModel.fetchPacemakerFeeds { feeds in
-            DispatchQueue.main.async {
-                self.PacemakerFeedData = feeds
-                self.listTableView.reloadData()
-            }
+            self.PacemakerFeedData = feeds
+            self.listTableView.reloadData()
         }
     } //: setUpFeed()
 }

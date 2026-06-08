@@ -14,7 +14,16 @@ import ReusableKit
 class JogakInitViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
     var currentMogakId: Int = 0
-    private let viewModel = MG2InitEditMogakJogakViewModel()
+    private let viewModel: MG2InitEditMogakJogakViewModel
+
+    init(viewModel: MG2InitEditMogakJogakViewModel = DIContainer.shared.resolveRequired(MG2InitEditMogakJogakViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     fileprivate let gregorian = Calendar(identifier: .gregorian)
     let highlightedColorForRange = UIColor.init(red: 2/255, green: 138/255, blue: 75/238, alpha: 0.2)

@@ -21,10 +21,26 @@ public final class DIContainer: DependencyInjectable {
         let key = String(describing: type)
         services[key] = factory
     }
+
+    public func registerMainActor<T>(_ type: T.Type, factory: @escaping @MainActor (DependencyResolver) -> T) {
+        let key = String(describing: type)
+        services[key] = { resolver in
+            MainActor.assumeIsolated {
+                factory(resolver)
+            }
+        }
+    }
     
     public func resolve<T>(_ type: T.Type) -> T? {
         let key = String(describing: type)
         guard let service = services[key]?(self) as? T else { return nil }
         return service
+    }
+
+    public func resolveRequired<T>(_ type: T.Type) -> T {
+        guard let dependency = resolve(type) else {
+            fatalError("\(String(describing: type)) is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
+        }
+        return dependency
     }
 }

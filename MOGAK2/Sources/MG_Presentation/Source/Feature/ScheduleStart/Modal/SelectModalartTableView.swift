@@ -7,7 +7,16 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     //MARK: - 모다라트 정보
     
     var modalartList: [ScheduleModalartList] = []
-    private let viewModel = MG2ScheduleStartViewModel()
+    private let viewModel: MG2ScheduleStartViewModel
+
+    init(viewModel: MG2ScheduleStartViewModel = DIContainer.shared.resolveRequired(MG2ScheduleStartViewModel.self)) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: - 모다라트 구조체
     
@@ -163,15 +172,12 @@ class SelectModalartTableViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var ModalartView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
     private lazy var ModalartStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [ModalartView])
+        let stackView = UIStackView(arrangedSubviews: [ModalartLabel])
         stackView.axis = .horizontal
-        stackView.alignment = .leading
+        stackView.alignment = .center
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
         stackView.backgroundColor = .white
         return stackView
     }()
@@ -192,21 +198,9 @@ class SelectModalartTableViewCell: UITableViewCell {
     
     func layoutModalart() {
         contentView.addSubviews(ModalartStackView)
-        ModalartView.addSubview(ModalartLabel)
         
         ModalartStackView.snp.makeConstraints{
             $0.edges.equalToSuperview()
-        }
-        
-        ModalartView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.top.bottom.equalToSuperview().inset(12)
-            $0.centerY.equalToSuperview()
-        }
-        
-        ModalartLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview()
-            $0.centerY.equalTo(ModalartStackView)
         }
     }
     

@@ -8,11 +8,11 @@ enum MG2AppScheduleStartViewState {
     case failed(String)
 }
 
-@MainActor
 protocol MG2AppScheduleStartRouting: AnyObject {
     func showModalartDetail(modalartId: Int)
 }
 
+@MainActor
 final class MG2AppScheduleStartViewModel {
 
     @Published private(set) var state: MG2AppScheduleStartViewState = .idle
@@ -28,12 +28,10 @@ final class MG2AppScheduleStartViewModel {
         Task { await loadModalarts() }
     }
 
-    @MainActor
     func didTapModalart(id: Int) {
         coordinator?.showModalartDetail(modalartId: id)
     }
 
-    @MainActor
     private func loadModalarts() async {
         state = .loading
 

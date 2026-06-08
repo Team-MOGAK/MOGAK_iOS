@@ -1,7 +1,8 @@
 import UIKit
 
-@MainActor
 final class MG2MyPageCoordinator: MG2PresentationCoordinator {
+    private let loginCoordinator = MG2LoginCoordinator()
+
     func start() -> UIViewController {
         let vc = MG2MyPageViewController()
         vc.coordinator = self
@@ -20,25 +21,29 @@ final class MG2MyPageCoordinator: MG2PresentationCoordinator {
         return vc
     }
 
+    @MainActor
     func routeToEdit(from navigationController: UINavigationController?) {
         navigationController?.pushViewController(makeEditViewController(), animated: true)
     }
 
+    @MainActor
     func routeToWeb(url: MG2WebUrl, from navigationController: UINavigationController?) {
         navigationController?.pushViewController(makeWebViewController(url: url), animated: true)
     }
 
+    @MainActor
     func routeToNicknameEdit(from navigationController: UINavigationController?) {
         let vc = MG2NicknameViewController()
         vc.nicknameAndImageChange = true
-        vc.coordinator = MG2LoginCoordinator()
+        vc.coordinator = loginCoordinator
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    @MainActor
     func routeToJobEdit(from navigationController: UINavigationController?) {
         let vc = MG2ChooseJobViewController()
         vc.changeJob = true
-        vc.coordinator = MG2LoginCoordinator()
+        vc.coordinator = loginCoordinator
         navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -13,7 +13,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     //MARK: - 조각 정보
     
     var jogakData: [ScheduleJogakDetail] = []
-    private let viewModel = MG2ScheduleStartViewModel()
+    private let viewModel: MG2ScheduleStartViewModel
     
     //MARK: - properties
     
@@ -144,6 +144,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     //MARK: - init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        self.viewModel = DIContainer.shared.resolveRequired(MG2ScheduleStartViewModel.self)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         CellUI()
         

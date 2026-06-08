@@ -1,17 +1,15 @@
 import Foundation
 
+@MainActor
 final class MG2ModalartViewModel {
     private let useCase: ModalartUseCase
 
-    init(useCase: ModalartUseCase? = DIContainer.shared.resolve(ModalartUseCase.self)) {
-        guard let useCase else {
-            fatalError("ModalartUseCase is not registered. Call MG2DependencyBootstrap.registerDefault() first.")
-        }
+    init(useCase: ModalartUseCase) {
         self.useCase = useCase
     }
 
     func getModalartList(completion: @escaping (Result<[ModalartList]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let items = try await useCase.getModalartList().map { ModalartList(id: $0.id, title: $0.title) }
                 completion(.success(items))
@@ -22,7 +20,7 @@ final class MG2ModalartViewModel {
     }
 
     func getDetailModalartInfo(modalartId: Int, completion: @escaping (Result<ModalartInfo?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let detail = try await useCase.getModalartDetail(modalartId: modalartId)
                 let mapped = detail.map {
@@ -48,7 +46,7 @@ final class MG2ModalartViewModel {
     }
 
     func getDetailMogakData(modalartId: Int, completion: @escaping (Result<DetailMogakResponse?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let page = try await useCase.getModalartMogakPage(modalartId: modalartId)
                 let response = page.map {
@@ -79,10 +77,11 @@ final class MG2ModalartViewModel {
     }
 
     func createModalart(data: ModalartMainData, completion: @escaping (Result<ModalartMainData, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let created = try await useCase.createModalart(title: data.title, color: data.color)
-                completion(.success(ModalartMainData(id: created.id, title: created.title, color: created.color)))
+                let modalart = ModalartMainData(id: created.id, title: created.title, color: created.color)
+                completion(.success(modalart))
             } catch {
                 completion(.failure(error))
             }
@@ -90,10 +89,11 @@ final class MG2ModalartViewModel {
     }
 
     func editModalart(data: ModalartMainData, completion: @escaping (Result<ModalartMainData, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
                 let edited = try await useCase.editModalart(id: data.id, title: data.title, color: data.color)
-                completion(.success(ModalartMainData(id: edited.id, title: edited.title, color: edited.color)))
+                let modalart = ModalartMainData(id: edited.id, title: edited.title, color: edited.color)
+                completion(.success(modalart))
             } catch {
                 completion(.failure(error))
             }
@@ -101,9 +101,10 @@ final class MG2ModalartViewModel {
     }
 
     func deleteModalart(id: Int, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.deleteModalart(id: id)))
+                let deleted = try await useCase.deleteModalart(id: id)
+                completion(.success(deleted))
             } catch {
                 completion(.failure(error))
             }
@@ -111,9 +112,10 @@ final class MG2ModalartViewModel {
     }
 
     func getAllMogakDetailJogaks(mogakId: Int, date: String, completion: @escaping (Result<[JogakDetail]?, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.getMogakDetailJogaks(mogakId: mogakId, date: date)))
+                let jogaks = try await useCase.getMogakDetailJogaks(mogakId: mogakId, date: date)
+                completion(.success(jogaks))
             } catch {
                 completion(.failure(error))
             }
@@ -121,9 +123,10 @@ final class MG2ModalartViewModel {
     }
 
     func deleteMogak(mogakId: Int, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.deleteMogak(mogakId: mogakId)))
+                let deleted = try await useCase.deleteMogak(mogakId: mogakId)
+                completion(.success(deleted))
             } catch {
                 completion(.failure(error))
             }
@@ -131,9 +134,10 @@ final class MG2ModalartViewModel {
     }
 
     func deleteJogak(jogakId: Int, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Task { @MainActor in
+        Task {
             do {
-                completion(.success(try await useCase.deleteJogak(jogakId: jogakId)))
+                let deleted = try await useCase.deleteJogak(jogakId: jogakId)
+                completion(.success(deleted))
             } catch {
                 completion(.failure(error))
             }
