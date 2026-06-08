@@ -28,10 +28,6 @@
 		D18C0F942F6F90950014DA6D /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F932F6F90950014DA6D /* SwiftyJSON */; };
 		D18C0F972F6F90D30014DA6D /* ExpyTableView in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F962F6F90D30014DA6D /* ExpyTableView */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
-		D2A101012F70000100100001 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D2A103012F70000100100001 /* GoogleSignIn */; };
-		D2A101022F70000100100002 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = D2A103022F70000100100002 /* KakaoSDKCommon */; };
-		D2A101032F70000100100003 /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D2A103032F70000100100003 /* KakaoSDKAuth */; };
-		D2A101042F70000100100004 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = D2A103042F70000100100004 /* KakaoSDKUser */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -183,8 +179,6 @@
 		D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deSetRoutineModal.swift; sourceTree = "<group>"; };
 		D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakModel.swift; sourceTree = "<group>"; };
 		D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiConstants.swift; sourceTree = "<group>"; };
-		D2A104012F70000200100001 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
-		D2A104022F70000200100002 /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -197,10 +191,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D154EF052F6FA04B00A18D99 /* ReusableKit in Frameworks */,
-				D2A101012F70000100100001 /* GoogleSignIn in Frameworks */,
-				D2A101022F70000100100002 /* KakaoSDKCommon in Frameworks */,
-				D2A101032F70000100100003 /* KakaoSDKAuth in Frameworks */,
-				D2A101042F70000100100004 /* KakaoSDKUser in Frameworks */,
 				D18C0F8E2F6F902C0014DA6D /* Lottie in Frameworks */,
 				D18C0F9A2F6F92830014DA6D /* Then in Frameworks */,
 				D18C0F942F6F90950014DA6D /* SwiftyJSON in Frameworks */,
@@ -627,8 +617,6 @@
 				9CFA7D1E2A458D60003E80A7 /* Service */,
 				9CFA7D182A458C6E003E80A7 /* Extension */,
 				9CFA7D122A45810B003E80A7 /* Info.plist */,
-				D2A104012F70000200100001 /* Secrets.xcconfig */,
-				D2A104022F70000200100002 /* Secrets.example.xcconfig */,
 				9CC1AE812A4718B000B484DD /* MOGAK.entitlements */,
 			);
 			path = MOGAK;
@@ -766,8 +754,6 @@
 				D18C0F952F6F90D30014DA6D /* XCRemoteSwiftPackageReference "ExpyTableView" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */,
-				D2A102012F70000100100001 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-				D2A102022F70000100100002 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			productRefGroup = 9CFA7D022A458109003E80A7 /* Products */;
 			projectDirPath = "";
@@ -926,7 +912,6 @@
 		};
 		9CFA7D162A45810B003E80A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2A104012F70000200100001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -973,7 +958,6 @@
 		};
 		9CFA7D172A45810B003E80A7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2A104012F70000200100001 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1114,22 +1098,6 @@
 				minimumVersion = 3.0.0;
 			};
 		};
-		D2A102012F70000100100001 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
-		D2A102022F70000100100002 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1177,26 +1145,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */;
 			productName = Then;
-		};
-		D2A103012F70000100100001 /* GoogleSignIn */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D2A102012F70000100100001 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignIn;
-		};
-		D2A103022F70000100100002 /* KakaoSDKCommon */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D2A102022F70000100100002 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKCommon;
-		};
-		D2A103032F70000100100003 /* KakaoSDKAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D2A102022F70000100100002 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKAuth;
-		};
-		D2A103042F70000100100004 /* KakaoSDKUser */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D2A102022F70000100100002 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKUser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
