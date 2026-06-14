@@ -51,7 +51,7 @@ final class DefaultUserRepository: UserRepository {
             "nickname": userData.nickname,
             "job": userData.job,
             "address": userData.address,
-            "email": "rlafkdud1228@icloud.com",
+            "email": userData.email,
             "userId": userId
         ]
 

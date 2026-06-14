@@ -8,20 +8,24 @@
 import Foundation
 
 public enum APIConfig {
-    
-    private static let baseURL: String = {
-        return Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as! String
-    }()
-    
-    private static let testURL: String = {
-        return Bundle.main.object(forInfoDictionaryKey: "TEST_URL") as! String
-    }()
-    
-    static let BaseURL: String = {
-        return baseURL
-    }()
-    
-    static let TestURL: String = {
-        return testURL
+
+    private static func infoString(_ key: String) -> String {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String, !value.isEmpty else {
+            assertionFailure("[APIConfig] Missing Info.plist key: \(key)")
+            return ""
+        }
+        return value
+    }
+
+    static let BaseURL: String = infoString("BASE_URL")
+
+    static let TestURL: String = infoString("TEST_URL")
+
+    /// Apple refresh-token revoke endpoint (Cloud Function). Overridable via `APPLE_REVOKE_URL`.
+    static let appleRevokeURL: String = {
+        if let value = Bundle.main.object(forInfoDictionaryKey: "APPLE_REVOKE_URL") as? String, !value.isEmpty {
+            return value
+        }
+        return "https://us-central1-pickdrink-492de.cloudfunctions.net/revokeToken"
     }()
 }

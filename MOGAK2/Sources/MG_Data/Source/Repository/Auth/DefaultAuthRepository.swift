@@ -40,10 +40,10 @@ final class DefaultAuthRepository: AuthRepository {
     }
 
     func revokeAppleToken(refreshToken: String) async throws {
-        let encoded = "https://us-central1-pickdrink-492de.cloudfunctions.net/revokeToken?refresh_token=\(refreshToken)"
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "https://apple.com"
+        var components = URLComponents(string: APIConfig.appleRevokeURL)
+        components?.queryItems = [URLQueryItem(name: "refresh_token", value: refreshToken)]
 
-        guard let url = URL(string: encoded) else {
+        guard let url = components?.url else {
             throw NSError(domain: "AuthRepository", code: -3)
         }
 
