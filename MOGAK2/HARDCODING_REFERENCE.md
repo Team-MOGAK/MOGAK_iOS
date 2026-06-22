@@ -5,10 +5,8 @@ The following values are hardcoded in `MOGAK` and should remain behavior-compati
 ## Keep hardcoded for now (behavior parity)
 
 - API base URLs
-  - `MOGAK/API/ApiManager.swift`: `https://mogak.shop:8080/`
   - `MOGAK/API/ApiConstants.swift`: `http://43.200.36.231:8080`
   - `MOGAK/Service/NetworkManager.swift`: `https://mogak.shop:8081`
-  - `MOGAK/Scene/ScheduleStart/API/ApiRouter.swift`: `https://mogak.shop:8080`
 - Authentication/UserDefaults keys
   - `accessToken`, `refreshToken`, `userId`, `isFirstTime`, `userName`, `userEmail`
 - Temporary JWT literal used in networking feed request

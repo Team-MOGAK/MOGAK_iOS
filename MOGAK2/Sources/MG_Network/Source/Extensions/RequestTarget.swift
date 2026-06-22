@@ -20,7 +20,7 @@ public protocol RequestTarget: URLRequestConvertible {
 extension RequestTarget {
 
     var baseURL: String {
-        return "\(APIConfig.TestURL)"
+        return "\(APIConfig.BaseURL)"
     }
     
     var headers: [String: String]? { return nil }

@@ -8,6 +8,7 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-BASE_URL = http:/$()/mogak.shop:8080
-TEST_URL = http:/$()/localhost:8080
-
+//BASE_URL = http:/$()/mogak.shop:8080
+//TEST_URL = http:/$()/localhost:8080
+BASE_URL = http:/$()/mogak-spring-205717867836.asia-northeast3.run.app/
+TEST_URL = http:/$()/mogak-spring-205717867836.asia-northeast3.run.app/

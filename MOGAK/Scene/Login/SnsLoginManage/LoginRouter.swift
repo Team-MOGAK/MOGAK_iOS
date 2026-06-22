@@ -43,7 +43,7 @@ enum LoginRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = "https://mogak.shop:8080/".appending(endPoint)
+//        var url = "https://mogak.shop:8080/".appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let urlString = URL(string: url)!
         

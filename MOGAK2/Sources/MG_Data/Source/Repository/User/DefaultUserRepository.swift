@@ -3,7 +3,7 @@ import Alamofire
 
 final class DefaultUserRepository: UserRepository {
     private var baseURL: String {
-        let value = APIConfig.TestURL
+        let value = APIConfig.BaseURL
         return value.hasSuffix("/") ? value : value + "/"
     }
 

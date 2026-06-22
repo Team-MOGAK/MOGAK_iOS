@@ -10,7 +10,7 @@ import Alamofire
 
 #if false
 // Legacy MOGAK1 implementation (inactive after migration/deprecation in MOGAK2).
-let BASE_URL = "https://mogak.shop:8080/"
+//let BASE_URL = "https://mogak.shop:8080/"
 
 class ApiManager {
     
