@@ -6,7 +6,6 @@ struct MG2TabItem {
     let selectedImage: UIImage?
 }
 
-@MainActor
 final class MG2MainTabBarViewModel {
     init() {}
 

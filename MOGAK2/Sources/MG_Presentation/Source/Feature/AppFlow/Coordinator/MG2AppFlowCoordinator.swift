@@ -10,12 +10,10 @@ final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
         self.viewModel = viewModel
     }
 
-    @MainActor
     func start() -> UIViewController {
         return makeRoot(for: viewModel.resolveRoute(loginState: MG2Deps.app.userState.loginState))
     }
 
-    @MainActor
     func makeRoot(for route: MG2AppLaunchRoute) -> UIViewController {
         switch route {
         case .login:
@@ -30,7 +28,7 @@ final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
             }
             onboarding.onFinish = { [weak self] in
                 guard let self else { return }
-                Storage.setFirstTime(false)
+                MG2LaunchStorage.setFirstTime(false)
                 UIApplication.shared.connectedScenes
                     .compactMap { $0 as? UIWindowScene }
                     .first?.windows.first?.rootViewController = self.makeRoot(for: .login)

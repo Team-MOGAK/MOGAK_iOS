@@ -98,11 +98,11 @@ enum MG2DependencyBootstrap {
     }
 
     private static func registerViewModels(container: DIContainer) {
-        container.registerMainActor(MG2OnboardingViewModel.self) { _ in
+        container.register(MG2OnboardingViewModel.self) { _ in
             MG2OnboardingViewModel()
         }
 
-        container.registerMainActor(MG2MainTabBarViewModel.self) { _ in
+        container.register(MG2MainTabBarViewModel.self) { _ in
             MG2MainTabBarViewModel()
         }
 
@@ -110,7 +110,7 @@ enum MG2DependencyBootstrap {
             MG2NetworkingViewModel(useCase: resolver.resolveRequired(NetworkingUseCase.self))
         }
 
-        container.registerMainActor(MG2AppLaunchViewModel.self) { resolver in
+        container.register(MG2AppLaunchViewModel.self) { resolver in
             MG2AppLaunchViewModel(authUseCase: resolver.resolveRequired(AuthUseCase.self))
         }
 

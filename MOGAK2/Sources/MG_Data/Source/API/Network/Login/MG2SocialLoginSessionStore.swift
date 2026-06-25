@@ -8,6 +8,7 @@ enum MG2SocialLoginSessionStore {
             refreshToken: session.tokens.refreshToken
         )
         UserDefaults.standard.set(session.userId, forKey: "userId")
+        MG2LaunchStorage.setUserIsRegistered(session.isRegistered)
 
         MG2Deps.app.userState.userIsRegistered = session.isRegistered
         if let email, !email.isEmpty {

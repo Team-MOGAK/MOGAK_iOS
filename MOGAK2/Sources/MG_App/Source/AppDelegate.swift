@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MG2AppDI.configure(MG2DefaultAppDependencies())
         MG2GoogleLoginManage.configureSDK()
         MG2KakaoLoginManage.configureSDK()
-        clearKeychainTokensAfterReinstallIfNeeded()
+        prepareAuthStorage()
 
         self.window = UIWindow(frame: UIScreen.main.bounds)
             self.window?.makeKeyAndVisible()
@@ -49,19 +49,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if MG2GoogleLoginManage.handleOpenUrl(url) { return true }
         return false
     }
-    
-    
-}
 
-private extension AppDelegate {
-    func clearKeychainTokensAfterReinstallIfNeeded() {
+    private func prepareAuthStorage() {
         let installMarkerKey = "MG2HasInstalledBefore"
         let defaults = UserDefaults.standard
 
         guard defaults.bool(forKey: installMarkerKey) == false else { return }
 
-        MG2TokenStore.clearTokens()
         defaults.set(true, forKey: installMarkerKey)
+
+        if hasLegacyToken(in: defaults) {
+            return
+        }
+
+        MG2TokenStore.clearTokens()
         defaults.set(true, forKey: "isFirstTime")
+    }
+
+    private func hasLegacyToken(in defaults: UserDefaults) -> Bool {
+        let accessToken = defaults.string(forKey: "accessToken") ?? ""
+        let refreshToken = defaults.string(forKey: "refreshToken") ?? ""
+        return !accessToken.isEmpty || !refreshToken.isEmpty
     }
 }

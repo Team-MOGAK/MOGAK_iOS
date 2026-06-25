@@ -185,6 +185,7 @@ class MG2MyPageEditViewController: UIViewController {
                 let withdrawAlertAction = UIAlertAction(title: "확인", style: .default)  { _ in
                     UserDefaults.standard.removeObject(forKey: "isFirstTime")
                     MG2TokenStore.clearTokens()
+                    MG2LaunchStorage.clearUserRegistration()
                     MG2Deps.app.userState.loginState = .logout
                     MG2Deps.app.userState.nickName = ""
                 }

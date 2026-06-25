@@ -33,6 +33,7 @@ final class MG2MyPageViewModel {
             do {
                 try await authUseCase.logout(accessToken: MG2TokenStore.accessToken)
                 MG2TokenStore.clearTokens()
+                MG2LaunchStorage.clearUserRegistration()
                 MG2Deps.app.userState.loginState = .logout
                 completion(.success(true))
             } catch {
@@ -47,6 +48,7 @@ final class MG2MyPageViewModel {
                 let deleted = try await authUseCase.withdraw(accessToken: MG2TokenStore.accessToken)
                 if deleted {
                     MG2TokenStore.clearTokens()
+                    MG2LaunchStorage.clearUserRegistration()
                     MG2Deps.app.userState.loginState = .logout
                 }
                 completion(.success(deleted))

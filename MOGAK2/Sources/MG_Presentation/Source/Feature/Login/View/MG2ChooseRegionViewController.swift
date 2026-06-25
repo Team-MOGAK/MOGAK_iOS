@@ -153,11 +153,10 @@ class MG2ChooseRegionViewController: UIViewController {
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             case .success(let success):
                 print(#fileID, #function, #line, "- success: \(success)")
-                var defaults = UserDefaults.standard //isFirstTime아닌지 체크하기
-                //유저 세팅이 끝났으므로 isFirstTime false로 체크
-                defaults.set(false, forKey: "isFirstTime")
-                
-                (self.coordinator ?? MG2LoginCoordinator()).routeToMain(window: self.view.window)
+                MG2LaunchStorage.setFirstTime(false)
+                MG2LaunchStorage.setUserIsRegistered(true)
+                MG2Deps.app.userState.userIsRegistered = true
+                MG2Deps.app.userState.loginState = .login
             }
         }
     }

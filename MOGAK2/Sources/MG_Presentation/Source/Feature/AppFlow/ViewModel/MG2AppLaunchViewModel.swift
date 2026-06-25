@@ -7,7 +7,6 @@ enum MG2AppLaunchRoute {
     case onboarding
 }
 
-@MainActor
 final class MG2AppLaunchViewModel {
     private let authUseCase: AuthUseCase
 
@@ -17,21 +16,24 @@ final class MG2AppLaunchViewModel {
 
     func resolveInitialRoute() async -> MG2AppLaunchRoute {
         guard let refreshToken = MG2TokenStore.refreshToken, !refreshToken.isEmpty else {
-            return Storage.isFirstTime() ? .onboarding : .login
+            return defaultRoute
         }
 
         do {
             let tokens = try await authUseCase.refresh(refreshToken: refreshToken)
             MG2TokenStore.save(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken)
-            Storage.setFirstTime(false)
-            MG2Deps.app.userState.userIsRegistered = true
-            MG2Deps.app.userState.loginState = .login
-            return .main
+            MG2LaunchStorage.setFirstTime(false)
+
+            let isRegistered = MG2LaunchStorage.storedUserIsRegistered ?? true
+            await updateSessionState(isRegistered: isRegistered, loginState: .login)
+
+            return isRegistered ? .main : .terms
         } catch {
             MG2TokenStore.clearTokens()
-            MG2Deps.app.userState.userIsRegistered = false
-            MG2Deps.app.userState.loginState = .logout
-            return Storage.isFirstTime() ? .onboarding : .login
+            MG2LaunchStorage.clearUserRegistration()
+            await updateSessionState(isRegistered: false, loginState: .logout)
+
+            return defaultRoute
         }
     }
 
@@ -45,17 +47,19 @@ final class MG2AppLaunchViewModel {
                 return .main
             }
 
-            if Storage.isFirstTime() {
-                return .onboarding
-            }
-
-            return .login
+            return defaultRoute
         }
 
-        if Storage.isFirstTime() {
-            return .onboarding
-        }
+        return defaultRoute
+    }
 
-        return .login
+    private var defaultRoute: MG2AppLaunchRoute {
+        MG2LaunchStorage.isFirstTime ? .onboarding : .login
+    }
+
+    @MainActor
+    private func updateSessionState(isRegistered: Bool, loginState: LoginStatus) {
+        MG2Deps.app.userState.userIsRegistered = isRegistered
+        MG2Deps.app.userState.loginState = loginState
     }
 }

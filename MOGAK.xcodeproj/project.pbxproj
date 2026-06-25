@@ -28,6 +28,10 @@
 		D18C0F942F6F90950014DA6D /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F932F6F90950014DA6D /* SwiftyJSON */; };
 		D18C0F972F6F90D30014DA6D /* ExpyTableView in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F962F6F90D30014DA6D /* ExpyTableView */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
+		D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FA32F7A0000014DA6D /* GoogleSignIn */; };
+		D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB52F7A0000014DA6D /* KakaoSDKAuth */; };
+		D18C0FB62F7A0000014DA6D /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB72F7A0000014DA6D /* KakaoSDKCommon */; };
+		D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB92F7A0000014DA6D /* KakaoSDKUser */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -197,6 +201,10 @@
 				D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */,
 				D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */,
 				D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */,
+				D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */,
+				D18C0FB62F7A0000014DA6D /* KakaoSDKCommon in Frameworks */,
+				D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */,
+				D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */,
 				D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */,
 				D18C0F972F6F90D30014DA6D /* ExpyTableView in Frameworks */,
 				4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */,
@@ -754,6 +762,8 @@
 				D18C0F952F6F90D30014DA6D /* XCRemoteSwiftPackageReference "ExpyTableView" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */,
+				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			productRefGroup = 9CFA7D022A458109003E80A7 /* Products */;
 			projectDirPath = "";
@@ -1092,6 +1102,22 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+		D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1139,6 +1165,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */;
 			productName = Then;
+		};
+		D18C0FA32F7A0000014DA6D /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		D18C0FB52F7A0000014DA6D /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKAuth;
+		};
+		D18C0FB72F7A0000014DA6D /* KakaoSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKCommon;
+		};
+		D18C0FB92F7A0000014DA6D /* KakaoSDKUser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKUser;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

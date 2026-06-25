@@ -19,11 +19,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
-        guard scene is UIWindowScene else { return }
+        guard let windowScene = scene as? UIWindowScene else { return }
 
-        Task {
+        Task { [weak self, weak windowScene] in
+            guard let self else { return }
             let route = await launchViewModel.resolveInitialRoute()
-            applyRoute(scene, route: route, markInitialResolved: true)
+            await MainActor.run {
+                guard let windowScene else { return }
+                self.applyRoute(windowScene, route: route, markInitialResolved: true)
+            }
         }
 
         MG2Deps.app.userState.$loginState
@@ -33,9 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 guard let self else { return }
                 guard self.didResolveInitialRoute else { return }
                 let route = self.launchViewModel.resolveRoute(loginState: loginState)
-                Task {
-                    self.applyRoute(scene, route: route)
-                }
+                self.applyRoute(windowScene, route: route)
             }
             .store(in: &cancellables)
     }
@@ -52,22 +54,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if MG2KakaoLoginManage.handleOpenUrl(url) { return }
         if MG2GoogleLoginManage.handleOpenUrl(url) { return }
     }
-}
 
-private extension SceneDelegate {
-    @MainActor
-    func applyRoute(_ scene: UIScene, route: MG2AppLaunchRoute, markInitialResolved: Bool = false) {
+    private func applyRoute(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute, markInitialResolved: Bool = false) {
         if markInitialResolved {
             didResolveInitialRoute = true
         }
-        setRootViewController(scene, route: route)
+        setRootViewController(windowScene, route: route)
         presentGlobalErrorIfNeeded()
     }
 
-    @MainActor
-    func setRootViewController(_ scene: UIScene, route: MG2AppLaunchRoute) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-
+    private func setRootViewController(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute) {
         let rootViewController = self.appFlowCoordinator.makeRoot(for: route)
 
         if let window = self.window {
@@ -81,8 +77,7 @@ private extension SceneDelegate {
         }
     }
 
-    @MainActor
-    func presentGlobalErrorIfNeeded() {
+    private func presentGlobalErrorIfNeeded() {
         guard MG2Deps.app.userState.happendSomeError,
               let message = MG2Deps.app.userState.someError else { return }
 
@@ -94,22 +89,5 @@ private extension SceneDelegate {
         alertController.addAction(okAction)
 
         window?.rootViewController?.present(alertController, animated: false)
-    }
-}
-
-public class Storage {
-    static func isFirstTime() -> Bool {
-        let defaults = UserDefaults.standard
-        if defaults.object(forKey: "isFirstTime") == nil {
-            defaults.set(true, forKey: "isFirstTime")
-            return true
-        } else {
-            let isFirstTime = UserDefaults.standard.bool(forKey: "isFirstTime")
-            return isFirstTime
-        }
-    }
-
-    static func setFirstTime(_ isFirstTime: Bool) {
-        UserDefaults.standard.set(isFirstTime, forKey: "isFirstTime")
     }
 }

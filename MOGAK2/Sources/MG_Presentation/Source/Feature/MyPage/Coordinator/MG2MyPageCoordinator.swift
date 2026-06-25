@@ -21,17 +21,14 @@ final class MG2MyPageCoordinator: MG2PresentationCoordinator {
         return vc
     }
 
-    @MainActor
     func routeToEdit(from navigationController: UINavigationController?) {
         navigationController?.pushViewController(makeEditViewController(), animated: true)
     }
 
-    @MainActor
     func routeToWeb(url: MG2WebUrl, from navigationController: UINavigationController?) {
         navigationController?.pushViewController(makeWebViewController(url: url), animated: true)
     }
 
-    @MainActor
     func routeToNicknameEdit(from navigationController: UINavigationController?) {
         let vc = MG2NicknameViewController()
         vc.nicknameAndImageChange = true
@@ -39,7 +36,6 @@ final class MG2MyPageCoordinator: MG2PresentationCoordinator {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    @MainActor
     func routeToJobEdit(from navigationController: UINavigationController?) {
         let vc = MG2ChooseJobViewController()
         vc.changeJob = true
