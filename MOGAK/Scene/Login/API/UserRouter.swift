@@ -55,7 +55,7 @@ enum UserRouter: URLRequestConvertible {
     }
     
     func asURLRequest() throws -> URLRequest {
-        var url = "https://mogak.shop:8080/".appending(endPoint)
+//        var url = "https://mogak.shop:8080/".appending(endPoint)
 //        var url = "https://mogak.shop:8081/".appending(endPoint)
         url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         

@@ -17,9 +17,9 @@ public enum APIConfig {
         return value
     }
 
-    static let BaseURL: String = infoString("BASE_URL")
+    static let BaseURL: String = "http://mogak-spring-205717867836.asia-northeast3.run.app" /*infoString("BASE_URL")*/
 
-    static let TestURL: String = infoString("TEST_URL")
+//    static let TestURL: String = infoString("TEST_URL")
 
     /// Apple refresh-token revoke endpoint (Cloud Function). Overridable via `APPLE_REVOKE_URL`.
     static let appleRevokeURL: String = {

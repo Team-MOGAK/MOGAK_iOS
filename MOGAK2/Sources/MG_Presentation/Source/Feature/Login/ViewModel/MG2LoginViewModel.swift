@@ -10,13 +10,13 @@ protocol MG2SocialLoginUseCase {
 
 final class DefaultMG2SocialLoginUseCase: MG2SocialLoginUseCase {
     private let appleLoginManage: MG2AppleLoginManage
-    private let googleLoginManage: MG2GoogleLoginManage
-    private let kakaoLoginManage: MG2KakaoLoginManage
+//    private let googleLoginManage: MG2GoogleLoginManage
+//    private let kakaoLoginManage: MG2KakaoLoginManage
 
     init(authUseCase: AuthUseCase) {
         self.appleLoginManage = MG2AppleLoginManage(authUseCase: authUseCase)
-        self.googleLoginManage = MG2GoogleLoginManage(authUseCase: authUseCase)
-        self.kakaoLoginManage = MG2KakaoLoginManage(authUseCase: authUseCase)
+//        self.googleLoginManage = MG2GoogleLoginManage(authUseCase: authUseCase)
+//        self.kakaoLoginManage = MG2KakaoLoginManage(authUseCase: authUseCase)
     }
 
     func continueAsGuest() {
@@ -28,11 +28,11 @@ final class DefaultMG2SocialLoginUseCase: MG2SocialLoginUseCase {
     }
 
     func startGoogleLogin() {
-        googleLoginManage.startGoogleLogin()
+//        googleLoginManage.startGoogleLogin()
     }
 
     func startKakaoLogin() {
-        kakaoLoginManage.startKakaoLogin()
+//        kakaoLoginManage.startKakaoLogin()
     }
 }
 

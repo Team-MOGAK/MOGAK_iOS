@@ -936,6 +936,7 @@
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 요청";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
 				INFOPLIST_KEY_TEST_URL = "$(TEST_URL)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -979,6 +980,7 @@
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 요청";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범 접근 권한을 허용해주세요.";
 				INFOPLIST_KEY_TEST_URL = "$(TEST_URL)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

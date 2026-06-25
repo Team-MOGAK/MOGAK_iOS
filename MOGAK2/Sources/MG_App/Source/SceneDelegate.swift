@@ -51,8 +51,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @MainActor
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
-        if MG2KakaoLoginManage.handleOpenUrl(url) { return }
-        if MG2GoogleLoginManage.handleOpenUrl(url) { return }
+//        if MG2KakaoLoginManage.handleOpenUrl(url) { return }
+//        if MG2GoogleLoginManage.handleOpenUrl(url) { return }
     }
 
     private func applyRoute(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute, markInitialResolved: Bool = false) {

@@ -4,7 +4,7 @@ import Alamofire
 enum MG2NetworkingRouter: URLRequestConvertible {
     case pacemakerFeeds(cursor: Int, size: Int)
 
-    private var baseURL: String { ApiConstants.baseURL }
+    private var baseURL: String { APIConfig.BaseURL }
 
     private var method: HTTPMethod {
         switch self {
