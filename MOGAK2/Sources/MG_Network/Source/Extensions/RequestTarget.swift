@@ -20,11 +20,7 @@ public protocol RequestTarget: URLRequestConvertible {
 extension RequestTarget {
 
     var baseURL: String {
-<<<<<<< HEAD
         return APIConfig.BaseURL
-=======
-        return "\(APIConfig.BaseURL)"
->>>>>>> 00c51c38ac82853c9015b3247ebefe340c8bbbee
     }
     
     var headers: [String: String]? { return nil }

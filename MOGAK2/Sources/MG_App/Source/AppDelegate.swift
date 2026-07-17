@@ -17,8 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MG2DependencyBootstrap.registerDefault(container: .shared)
         MG2AppDI.configure(MG2DefaultAppDependencies())
-        MG2GoogleLoginManage.configureSDK()
-        MG2KakaoLoginManage.configureSDK()
+//        MG2GoogleLoginManage.configureSDK()
+//        MG2KakaoLoginManage.configureSDK()
         prepareAuthStorage()
 
         self.window = UIWindow(frame: UIScreen.main.bounds)
@@ -45,8 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication,
                      open url: URL,
                      options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        if MG2KakaoLoginManage.handleOpenUrl(url) { return true }
-        if MG2GoogleLoginManage.handleOpenUrl(url) { return true }
+//        if MG2KakaoLoginManage.handleOpenUrl(url) { return true }
+//        if MG2GoogleLoginManage.handleOpenUrl(url) { return true }
         return false
     }
 
