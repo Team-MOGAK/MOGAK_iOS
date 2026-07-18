@@ -3,11 +3,14 @@ import UIKit
 final class MG2MainTabBarController: UITabBarController {
 
     private let viewModel: MG2MainTabBarViewModel
-    private let rootViewControllers: [UIViewController]
+    private let navigationControllers: [UINavigationController]
 
-    init(viewModel: MG2MainTabBarViewModel, rootViewControllers: [UIViewController]) {
+    init(
+        viewModel: MG2MainTabBarViewModel,
+        navigationControllers: [UINavigationController]
+    ) {
         self.viewModel = viewModel
-        self.rootViewControllers = rootViewControllers
+        self.navigationControllers = navigationControllers
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -21,9 +24,12 @@ final class MG2MainTabBarController: UITabBarController {
     }
 
     private func configureTabs() {
-        let controllers = zip(rootViewControllers, viewModel.items).map { vc, item in
-            let nav = UINavigationController(rootViewController: vc)
-            let tab = UITabBarItem(title: item.title, image: item.image, selectedImage: item.selectedImage)
+        let controllers = zip(navigationControllers, viewModel.items).map { nav, item in
+            let tab = UITabBarItem(
+                title: item.title,
+                image: UIImage(named: item.imageName),
+                selectedImage: UIImage(named: item.selectedImageName)
+            )
             nav.tabBarItem = tab
             return nav
         }

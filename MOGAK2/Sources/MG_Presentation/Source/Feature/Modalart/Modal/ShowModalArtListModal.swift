@@ -9,13 +9,29 @@ import UIKit
 import SnapKit
 
 ///모다라트 리스트 보여주는 모달
-class ShowModalArtListModal: UIViewController {
-    //MARK: - properties
-    //모다라트 리스트들 -> 이 개수만큼 반복문을 돌려서
-    var modalArtNameList: [ModalartList] = []
-    
-    //선택한 모다라트로 변경함
-    var changeToSelectedModalart: ((_ modalartInfo: ModalartList, _ listIndex: Int) -> ())? = nil
+final class ShowModalArtListModal: UIViewController {
+    private let modalarts: [MG2ModalartListItemEntity]
+    private let includesAddAction: Bool
+    var onSelection: ((MG2ModalartListItemEntity, Int) -> Void)?
+    var onAdd: (() -> Void)?
+    var onDismiss: (() -> Void)?
+
+    private var rowCount: Int {
+        modalarts.count + (includesAddAction ? 1 : 0)
+    }
+
+    init(
+        modalarts: [MG2ModalartListItemEntity],
+        includesAddAction: Bool = false
+    ) {
+        self.modalarts = modalarts
+        self.includesAddAction = includesAddAction
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private var dimmedBackgroundView: UIView = {
         let view = UIView()
@@ -31,7 +47,7 @@ class ShowModalArtListModal: UIViewController {
         return view
     }()
     
-    var modalArtListTableView: UITableView = {
+    private let modalArtListTableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.cornerRadius = 15
         return tableView
@@ -40,15 +56,13 @@ class ShowModalArtListModal: UIViewController {
     //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        modalArtNameList.append(ModalartList(id: 0, title: "모다라트 추가"))
-//        modalArtNameList.append("모다라트 추가")
         configureLayout()
         dimmedBackGroundSetting()
         setUpTableView()
     }
     
     //MARK: - 뒤에 투명한 배경 탭 설정
-    func dimmedBackGroundSetting() {
+    private func dimmedBackGroundSetting() {
         let dimmedTap = UITapGestureRecognizer(target: self, action: #selector(dimmendBackgroundViewTapped(_:)))
         dimmedBackgroundView.addGestureRecognizer(dimmedTap)
         dimmedBackgroundView.isUserInteractionEnabled = true
@@ -56,11 +70,11 @@ class ShowModalArtListModal: UIViewController {
     
     //MARK: - 배경색 탭 했을 떄
     @objc private func dimmendBackgroundViewTapped(_ tapRecognizer: UITapGestureRecognizer) {
-        self.dismiss(animated: false)
+        onDismiss?()
     }
     
     //MARK: - tableview setting
-    func setUpTableView() {
+    private func setUpTableView() {
         modalArtListTableView.register(ShowModalArtListCell.self, forCellReuseIdentifier: ShowModalArtListCell.identifier)
         modalArtListTableView.delegate = self
         modalArtListTableView.dataSource = self
@@ -70,7 +84,7 @@ class ShowModalArtListModal: UIViewController {
 
 extension ShowModalArtListModal {
     //MARK: - 뷰들 레이아웃 잡기
-    func configureLayout() {
+    private func configureLayout() {
         self.view.addSubviews(dimmedBackgroundView, mainView)
         self.mainView.addSubview(modalArtListTableView)
         
@@ -85,7 +99,7 @@ extension ShowModalArtListModal {
             make.centerX.equalToSuperview()
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.height.equalTo(modalArtNameList.count * 53)
+            make.height.equalTo(rowCount * 53)
         }
         
         modalArtListTableView.snp.makeConstraints { make in
@@ -104,31 +118,30 @@ extension ShowModalArtListModal: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(#fileID, #function, #line, "- selectedRow는?⭐️: \(indexPath.row)")
-        let modalArtNum = indexPath.row //몇번쨰 모다라트인지
-        let modalartInfo = modalArtNameList[modalArtNum]
-        changeToSelectedModalart?(modalartInfo, modalArtNum)
-        self.dismiss(animated: false)
+        if indexPath.row < modalarts.count {
+            onSelection?(modalarts[indexPath.row], indexPath.row)
+        } else {
+            onAdd?()
+        }
     }
 
 }
 
 extension ShowModalArtListModal: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(#fileID, #function, #line, "- modalArtNamList count🔥: \(modalArtNameList.count)")
-        return modalArtNameList.count
+        return rowCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = modalArtListTableView.dequeueReusableCell(withIdentifier: ShowModalArtListCell.identifier, for: indexPath) as? ShowModalArtListCell else { return UITableViewCell() }
         
-        if indexPath.row == modalArtNameList.count - 1 { //맨 마지막 데이터일 경우 선이 안보이도록 설정
+        if indexPath.row == rowCount - 1 { //맨 마지막 데이터일 경우 선이 안보이도록 설정
             cell.separatorInset = UIEdgeInsets(top: 0, left: modalArtListTableView.bounds.size.width, bottom: 0, right: 0);
         }
-        cell.modalartName = modalArtNameList[indexPath.row].title ?? ""
-//        print(#fileID, #function, #line, "- ⭐️: \(modalArtNameList[indexPath.row])")
-        cell.configureLayout()
-        cell.setUpLabel()
+        let title = indexPath.row < modalarts.count
+            ? modalarts[indexPath.row].title
+            : "모다라트 추가"
+        cell.configure(name: title)
         return cell
     }
     

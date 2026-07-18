@@ -1,147 +1,132 @@
 import Foundation
 
+struct MG2DailyJogakItem {
+    let title: String
+    let dailyJogakID: Int
+    let jogakID: Int?
+    var isAchievement: Bool
+    let isRoutine: Bool
+
+    var isReadOnly: Bool {
+        dailyJogakID <= 0 || jogakID == nil
+    }
+}
+
+struct MG2ScheduleStartViewState {
+    var selectedDate = Date()
+    var dailyJogaks = [MG2DailyJogakItem]()
+
+    var isEmpty: Bool { dailyJogaks.isEmpty }
+}
+
 @MainActor
 final class MG2ScheduleStartViewModel {
+    private static let calendarHeaderFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월"
+        return formatter
+    }()
+
     private let useCase: ScheduleStartUseCase
+    private let userState: MG2UserState
+    private(set) var state = MG2ScheduleStartViewState()
 
-    init(useCase: ScheduleStartUseCase) {
+    init(
+        useCase: ScheduleStartUseCase,
+        userState: MG2UserState
+    ) {
         self.useCase = useCase
+        self.userState = userState
     }
 
-    func getModalartList(completion: @escaping (Result<[ScheduleModalartList]?, Error>) -> Void) {
-        Task {
-            do {
-                let modalarts = try await useCase.getModalartList().map {
-                    ScheduleModalartList(id: $0.id, title: $0.title, color: $0.color)
-                }
-                completion(.success(modalarts))
-            } catch {
-                completion(.failure(error))
-            }
+    var isGuest: Bool { userState.loginState == .guest }
+
+    func calendarHeader(for date: Date) -> String {
+        Self.calendarHeaderFormatter.string(from: date)
+    }
+
+    func isToday(_ date: Date) -> Bool {
+        Calendar.current.isDateInToday(date)
+    }
+
+    func calendarPage(from currentPage: Date, offset: Int, isWeekly: Bool) -> Date? {
+        let component: Calendar.Component = isWeekly ? .weekOfMonth : .month
+        return Calendar.current.date(byAdding: component, value: offset, to: currentPage)
+    }
+
+    func loadDailyJogaks(
+        date: Date,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        state.selectedDate = date
+        guard !isGuest else {
+            state.dailyJogaks = []
+            completion(.success(()))
+            return
         }
-    }
 
-    func getDetailModalartInfo(modalartId: Int, completion: @escaping (Result<ScheduleModalartInfo?, Error>) -> Void) {
         Task {
             do {
-                let detail = try await useCase.getModalartDetail(modalartId: modalartId)
-                let mapped = detail.map {
-                    ScheduleModalartInfo(
-                        id: $0.id,
+                state.dailyJogaks = try await useCase.getDailyJogaks(date: date).map {
+                    MG2DailyJogakItem(
                         title: $0.title,
-                        color: $0.color,
-                        mogakCategory: $0.mogaks.map {
-                            ScheduleMogakCategory(
-                                title: $0.title,
-                                bigCategory: ScheduleBigCategory(id: $0.bigCategory.id, name: $0.bigCategory.name),
-                                smallCategory: $0.smallCategory,
-                                color: $0.color
-                            )
-                        }
+                        dailyJogakID: $0.dailyID,
+                        jogakID: $0.id,
+                        isAchievement: $0.isAchievement,
+                        isRoutine: $0.isRoutine
                     )
                 }
-                completion(.success(mapped))
+                completion(.success(()))
             } catch {
                 completion(.failure(error))
             }
         }
     }
 
-    func getDetailMogakData(modalartId: Int, completion: @escaping (Result<ScheduleDetailMogakResponse?, Error>) -> Void) {
+    @discardableResult
+    func toggleJogakAchievement(
+        at index: Int,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) -> Bool? {
+        guard state.dailyJogaks.indices.contains(index) else { return nil }
+        let original = state.dailyJogaks[index]
+        guard !original.isReadOnly else { return nil }
+
+        let updatedValue = !original.isAchievement
+        state.dailyJogaks[index].isAchievement = updatedValue
+
         Task {
             do {
-                let page = try await useCase.getMogakPage(modalartId: modalartId)
-                let response = ScheduleDetailMogakResponse(
-                    time: nil,
-                    status: nil,
-                    code: nil,
-                    message: nil,
-                    result: ScheduleDetailMogak(
-                        mogaks: page.mogaks.map {
-                            ScheduleDetailMogakData(
-                                mogakId: $0.id,
-                                title: $0.title,
-                                state: $0.state,
-                                bigCategory: ScheduleMainCategory(id: $0.bigCategory.id, name: $0.bigCategory.name),
-                                smallCategory: $0.smallCategory,
-                                color: $0.color,
-                                startAt: $0.startAt,
-                                endAt: $0.endAt
-                            )
-                        },
-                        size: page.totalCount
-                    )
+                try await useCase.setJogakAchievement(
+                    dailyJogakId: original.dailyJogakID,
+                    isAchievement: updatedValue
                 )
-                completion(.success(response))
+                completion(.success(()))
+            } catch {
+                if let currentIndex = state.dailyJogaks.firstIndex(where: {
+                    $0.dailyJogakID == original.dailyJogakID
+                }), state.dailyJogaks[currentIndex].isAchievement == updatedValue {
+                    state.dailyJogaks[currentIndex].isAchievement = original.isAchievement
+                }
+                completion(.failure(error))
+            }
+        }
+        return updatedValue
+    }
+
+    func getJogakForEditing(
+        jogakId: Int,
+        completion: @escaping (Result<MG2JogakDetailEntity?, Error>) -> Void
+    ) {
+        Task {
+            do {
+                completion(.success(try await useCase.getDailyJogakDetail(jogakId: jogakId)))
             } catch {
                 completion(.failure(error))
             }
         }
     }
 
-    func getAllMogakDetailJogaks(mogakId: Int, dailyDate: String, completion: @escaping (Result<[ScheduleJogakDetail]?, Error>) -> Void) {
-        Task {
-            do {
-                let jogaks = try await useCase.getMogakDetailJogaks(mogakId: mogakId, dailyDate: dailyDate)
-                completion(.success(jogaks))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    func getCheckDailyJogak(dailyDate: String, completion: @escaping (Result<[JogakDailyCheck]?, Error>) -> Void) {
-        Task {
-            do {
-                let jogaks = try await useCase.getCheckDailyJogak(dailyDate: dailyDate)
-                completion(.success(jogaks))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    func getAddJogakDaily(jogakId: Int, completion: @escaping (Result<[JogakDailyStartResponse]?, Error>) -> Void) {
-        Task {
-            do {
-                let response = try await useCase.addJogakDaily(jogakId: jogakId)
-                completion(.success(response))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    func getdailyJogakDetail(jogakId: Int, completion: @escaping (Result<DailyJogakDetail?, Error>) -> Void) {
-        Task {
-            do {
-                let detail = try await useCase.getDailyJogakDetail(jogakId: jogakId)
-                completion(.success(detail))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    func getJogakFail(dailyJogakId: Int, completion: @escaping (Result<[JogakFail]?, Error>) -> Void) {
-        Task {
-            do {
-                let response = try await useCase.jogakFail(dailyJogakId: dailyJogakId)
-                completion(.success(response))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
-    func getJogakSuccess(dailyJogakId: Int, completion: @escaping (Result<[JogakSuccess]?, Error>) -> Void) {
-        Task {
-            do {
-                let response = try await useCase.jogakSuccess(dailyJogakId: dailyJogakId)
-                completion(.success(response))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
 }

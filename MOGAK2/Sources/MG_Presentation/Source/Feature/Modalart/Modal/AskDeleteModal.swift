@@ -5,15 +5,15 @@
 //  Created by 김라영 on 2023/11/14.
 //
 
-import Foundation
 import UIKit
 import SnapKit
 
 ///진짜 삭제할건지 물어보는 모달
-class AskDeleteModal: UIViewController {
-    var startDelete: (() -> ())? = nil
+final class AskDeleteModal: UIViewController {
+    var onCancel: (() -> Void)?
+    var onConfirm: (() -> Void)?
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 삭제하시겠어요?"
         label.textColor = DesignSystemColor.black.value
@@ -22,7 +22,7 @@ class AskDeleteModal: UIViewController {
         return label
     }()
     
-    var subTitleLabel: UILabel = {
+    private let subTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "다시 복원할 수 없어요 :(\n신중하게 선택해주세요"
         label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
@@ -31,7 +31,7 @@ class AskDeleteModal: UIViewController {
         return label
     }()
     
-    lazy var noBtn: UIButton = {
+    private lazy var noBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("아니요", for: .normal)
         btn.backgroundColor = DesignSystemColor.signatureBag.value
@@ -42,7 +42,7 @@ class AskDeleteModal: UIViewController {
         return btn
     }()
     
-    lazy var yesBtn: UIButton = {
+    private lazy var yesBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("네", for: .normal)
         btn.backgroundColor = DesignSystemColor.signature.value
@@ -53,7 +53,7 @@ class AskDeleteModal: UIViewController {
         return btn
     }()
     
-    lazy var stk: UIStackView = {
+    private lazy var stk: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
         stk.alignment = .fill
@@ -70,15 +70,12 @@ class AskDeleteModal: UIViewController {
         self.view.backgroundColor = .white
     }
     
-    @objc func noBtnTapped() {
-        self.dismiss(animated: true)
+    @objc private func noBtnTapped() {
+        onCancel?()
     }
     
-    @objc func yesBtnTapped() {
-        print(#fileID, #function, #line, "- 네 버튼 클릭")
-        guard let startDelete = startDelete else { return }
-        startDelete()
-        self.dismiss(animated: true)
+    @objc private func yesBtnTapped() {
+        onConfirm?()
     }
 }
 

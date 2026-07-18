@@ -1,28 +1,19 @@
 import Foundation
-import UIKit
 
 protocol MG2AppDependencies {
-    var userState: RegisterUserInfo { get }
+    var userState: MG2UserState { get }
+    var sessionStore: MG2SessionStoring { get }
 }
 
 final class MG2DefaultAppDependencies: MG2AppDependencies {
-    let userState: RegisterUserInfo
+    let userState: MG2UserState
+    let sessionStore: MG2SessionStoring
 
     init(
-        userState: RegisterUserInfo = RegisterUserInfo.shared
+        userState: MG2UserState = MG2UserState(),
+        sessionStore: MG2SessionStoring = MG2SessionStore()
     ) {
         self.userState = userState
+        self.sessionStore = sessionStore
     }
-}
-
-enum MG2AppDI {
-    static var shared: MG2AppDependencies = MG2DefaultAppDependencies()
-
-    static func configure(_ dependencies: MG2AppDependencies) {
-        shared = dependencies
-    }
-}
-
-enum MG2Deps {
-    static var app: MG2AppDependencies { MG2AppDI.shared }
 }

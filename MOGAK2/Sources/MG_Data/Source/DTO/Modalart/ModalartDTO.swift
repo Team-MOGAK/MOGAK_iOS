@@ -7,9 +7,10 @@ struct MG2ModalartListResponseDTO: Decodable {
 struct MG2ModalartListItemDTO: Decodable {
     let id: Int
     let title: String
+    let color: String
 
     func toEntity() -> MG2ModalartListItemEntity {
-        MG2ModalartListItemEntity(id: id, title: title)
+        MG2ModalartListItemEntity(id: id, title: title, color: color)
     }
 }
 
@@ -21,14 +22,14 @@ struct MG2ModalartDetailDTO: Decodable {
     let id: Int
     let title: String
     let color: String
-    let mogakDtoList: [MG2ModalartCategoryDTO]?
+    let mogaks: [MG2ModalartCategoryDTO]?
 
     func toEntity() -> MG2ModalartDetailEntity {
         MG2ModalartDetailEntity(
             id: id,
             title: title,
             color: color,
-            categories: (mogakDtoList ?? []).map { $0.toEntity() }
+            categories: (mogaks ?? []).map { $0.toEntity() }
         )
     }
 }

@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 ///비어있는 모각 Cell
-class EmptyMogakCell: UICollectionViewCell {
+final class EmptyMogakCell: UICollectionViewCell {
     static let identifier = "EmptyMogakCell"
     
     private lazy var goalLabel : CustomPaddingLabel = {
@@ -32,17 +32,8 @@ class EmptyMogakCell: UICollectionViewCell {
         return imageView
     }()
     
-    private lazy var addBtn : UIButton = {
-        let btn = UIButton()
-        btn.setImage(UIImage(named: "mogakPlusBtn"), for: .normal)
-        btn.contentMode = .scaleToFill
-//        btn.addTarget(self, action: #selector(addBtnTapped), for: .touchUpInside)
-        return btn
-    }()
-    
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        print(#fileID, #function, #line, "- emptyMogakCell⭐️")
         self.backgroundColor = DesignSystemColor.white.value
         self.layer.cornerRadius = 15
         configureLayout()
@@ -51,12 +42,6 @@ class EmptyMogakCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    //MARK: - +버튼을 눌렀을 경우
-    @objc private func addBtnTapped() {
-        print(#fileID, #function, #line, "- addBtnTapped⭐️")
-    }
-    
     
 }
 

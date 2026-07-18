@@ -2,18 +2,24 @@ import Foundation
 import Alamofire
 
 enum AuthRouter {
-    case login(idToken: String)
     case socialLogin(provider: String, token: String)
     case refresh(refreshToken: String)
-    case logout(accessToken: String?)
-    case withdraw(accessToken: String?)
+    case logout
+    case withdraw
 }
 
 extension AuthRouter: RequestTarget {
+    var requiresAuthorization: Bool {
+        switch self {
+        case .socialLogin, .refresh:
+            return false
+        case .logout, .withdraw:
+            return true
+        }
+    }
+
     var path: String {
         switch self {
-        case .login:
-            return "/api/auth/login"
         case .socialLogin(let provider, _):
             return "/api/auth/\(provider)/login"
         case .refresh:
@@ -37,16 +43,7 @@ extension AuthRouter: RequestTarget {
                 "Content-Type": "application/json",
                 "RefreshToken": refreshToken
             ]
-        case .logout(let accessToken), .withdraw(let accessToken):
-            var header = [
-                "accept": "application/json",
-                "Content-Type": "application/json"
-            ]
-            if let accessToken, !accessToken.isEmpty {
-                header["Authorization"] = "Bearer \(accessToken)"
-            }
-            return header
-        case .login, .socialLogin:
+        case .socialLogin, .logout, .withdraw:
             return [
                 "accept": "application/json",
                 "Content-Type": "application/json"
@@ -56,8 +53,6 @@ extension AuthRouter: RequestTarget {
 
     var body: [String : Any]? {
         switch self {
-        case .login(let idToken):
-            return ["id_token": idToken]
         case .socialLogin(_, let token):
             return ["token": token]
         case .refresh, .logout, .withdraw:

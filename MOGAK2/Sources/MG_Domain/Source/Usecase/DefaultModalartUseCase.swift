@@ -20,7 +20,7 @@ final class DefaultModalartUseCase: ModalartUseCase {
         try await repository.getModalartMogakPage(modalartId: modalartId)
     }
 
-    func getMogakDetailJogaks(mogakId: Int, date: String) async throws -> [JogakDetail] {
+    func getMogakDetailJogaks(mogakId: Int, date: Date) async throws -> [MG2JogakDetailEntity] {
         try await repository.getMogakDetailJogaks(mogakId: mogakId, date: date)
     }
 
@@ -32,15 +32,15 @@ final class DefaultModalartUseCase: ModalartUseCase {
         try await repository.editModalart(id: id, title: title, color: color)
     }
 
-    func deleteModalart(id: Int) async throws -> Bool {
+    func deleteModalart(id: Int) async throws {
         try await repository.deleteModalart(id: id)
     }
 
-    func deleteMogak(mogakId: Int) async throws -> Bool {
+    func deleteMogak(mogakId: Int) async throws {
         try await repository.deleteMogak(mogakId: mogakId)
     }
 
-    func deleteJogak(jogakId: Int) async throws -> Bool {
+    func deleteJogak(jogakId: Int) async throws {
         try await repository.deleteJogak(jogakId: jogakId)
     }
 }

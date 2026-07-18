@@ -7,18 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4D06E86C2BB305C600AFECBA /* mogakLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D06E86B2BB305C600AFECBA /* mogakLoading.json */; };
-		4D7D14672BAB212700AB56CE /* loading.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D7D14662BAB212700AB56CE /* loading.json */; };
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
-		9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426A92A594049001629DC /* Pretendard-Bold.otf */; };
-		9CE426B02A59404A001629DC /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */; };
-		9CE426B12A59404A001629DC /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AB2A59404A001629DC /* Pretendard-Light.otf */; };
-		9CE426B22A59404A001629DC /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AC2A59404A001629DC /* Pretendard-Medium.otf */; };
-		9CE426B32A59404A001629DC /* Pretendard-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AD2A59404A001629DC /* Pretendard-Black.otf */; };
-		9CE426B42A59404A001629DC /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426AE2A59404A001629DC /* Pretendard-SemiBold.otf */; };
-		9CE426B82A594062001629DC /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B52A594062001629DC /* Pretendard-ExtraBold.otf */; };
-		9CE426B92A594062001629DC /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B62A594062001629DC /* Pretendard-Regular.otf */; };
-		9CE426BA2A594062001629DC /* Pretendard-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9CE426B72A594062001629DC /* Pretendard-Thin.otf */; };
 		D154EF052F6FA04B00A18D99 /* ReusableKit in Frameworks */ = {isa = PBXBuildFile; productRef = D154EF042F6FA04B00A18D99 /* ReusableKit */; };
 		D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F842F6F8FA60014DA6D /* Kingfisher */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
@@ -35,154 +24,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4D06E86B2BB305C600AFECBA /* mogakLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = mogakLoading.json; sourceTree = "<group>"; };
-		4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListModal.swift; sourceTree = "<group>"; };
-		4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowModalArtListCell.swift; sourceTree = "<group>"; };
-		4D488E0C2B20C1E80000D4E6 /* MogakMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakMainViewController.swift; sourceTree = "<group>"; };
-		4D488E0E2B20CBE40000D4E6 /* MogakListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakListCell.swift; sourceTree = "<group>"; };
-		4D488E242B2344010000D4E6 /* EmptyJogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyJogakCell.swift; sourceTree = "<group>"; };
-		4D488E2C2B274E060000D4E6 /* LoginRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRouter.swift; sourceTree = "<group>"; };
-		4D488E2F2B274E6F0000D4E6 /* CommonLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonLoginManage.swift; sourceTree = "<group>"; };
-		4D609E9C2B838C2100E12E7B /* MogakMainBottomModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakMainBottomModal.swift; sourceTree = "<group>"; };
-		4D63E7CF2B35C181006A8501 /* MogakDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakDetailRouter.swift; sourceTree = "<group>"; };
-		4D63E7D12B35C2D0006A8501 /* MogakDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakDetailModel.swift; sourceTree = "<group>"; };
-		4D63E7D32B35C341006A8501 /* MogakDetailNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakDetailNetwork.swift; sourceTree = "<group>"; };
-		4D63E7D52B35D32F006A8501 /* JogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakCell.swift; sourceTree = "<group>"; };
-		4D63E7D72B36073A006A8501 /* IsRoutineJogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IsRoutineJogakCell.swift; sourceTree = "<group>"; };
-		4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetModalartTitleModal.swift; sourceTree = "<group>"; };
-		4D6C6DF22B10E8AB00206DD6 /* ModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartModel.swift; sourceTree = "<group>"; };
-		4D6C6DF42B10E8DE00206DD6 /* ModalartRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartRouter.swift; sourceTree = "<group>"; };
-		4D6C6E032B14D4F900206DD6 /* OnBoardingForthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingForthViewController.swift; sourceTree = "<group>"; };
-		4D725C0D2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedModalArtMainTitleModal.swift; sourceTree = "<group>"; };
-		4D72B3362B3317B0004BF3CE /* JogakSimpleModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakSimpleModalViewController.swift; sourceTree = "<group>"; };
-		4D72B3392B331929004BF3CE /* UserRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouter.swift; sourceTree = "<group>"; };
-		4D72B33B2B331E0C004BF3CE /* UserNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNetwork.swift; sourceTree = "<group>"; };
-		4D72B33D2B331FFA004BF3CE /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
-		4D742A042AEE8AFE0002DBCF /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
-		4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskDeleteModal.swift; sourceTree = "<group>"; };
-		4D7848192B06543A0004DB45 /* ModalartNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartNetwork.swift; sourceTree = "<group>"; };
-		4D7861AF2AD25C06006B8E88 /* AppleLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleLoginManage.swift; sourceTree = "<group>"; };
-		4D7861B22AD25C3F006B8E88 /* GoogleLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleLoginManage.swift; sourceTree = "<group>"; };
-		4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoLoginManage.swift; sourceTree = "<group>"; };
-		4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
-		4D7D14662BAB212700AB56CE /* loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loading.json; sourceTree = "<group>"; };
-		4D7E49742AFBCBFB00DEB70C /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
-		4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainViewController.swift; sourceTree = "<group>"; };
-		4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyMogakCell.swift; sourceTree = "<group>"; };
-		4DBEEE7D2B7BDA7800E0B2B1 /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
-		4DD74EE82AD58FC000147E9C /* MogakCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCell.swift; sourceTree = "<group>"; };
-		4DD74EEA2AD5A5D900147E9C /* ModalartMainCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalartMainCell.swift; sourceTree = "<group>"; };
 		4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		4DF83CF42B18BDDF00E1BD6D /* MypageWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MypageWebViewController.swift; sourceTree = "<group>"; };
-		4DF83CF82B18D0CC00E1BD6D /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
-		652586B82B24C47900ED9B92 /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
-		652586BA2B24C4AE00ED9B92 /* HistoryNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryNetwork.swift; sourceTree = "<group>"; };
-		652586BC2B24C4D100ED9B92 /* HistoryRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRouter.swift; sourceTree = "<group>"; };
-		652586BE2B24C4F600ED9B92 /* DatePickerCalendarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerCalendarCell.swift; sourceTree = "<group>"; };
-		652586C02B24C52000ED9B92 /* JogakInitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakInitViewController.swift; sourceTree = "<group>"; };
-		652586C22B24C54900ED9B92 /* MogakEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakEditViewController.swift; sourceTree = "<group>"; };
-		652C05D92A73AB34004CE9C4 /* LocationFilterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTableViewCell.swift; sourceTree = "<group>"; };
-		652C05DB2A7404B4004CE9C4 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
-		652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterSheetView.swift; sourceTree = "<group>"; };
-		65306A582AD6B3B2004807F7 /* MyHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyHistoryViewController.swift; sourceTree = "<group>"; };
-		6544766D2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking_ServerResponseStruct.swift; sourceTree = "<group>"; };
-		6544766F2A950B480050AE9E /* FeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
-		65566D462AF6A96700AC7D90 /* EllipsisAlertBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EllipsisAlertBottomSheetView.swift; sourceTree = "<group>"; };
-		655A21FC2B282EE900321E77 /* DateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
-		655A21FE2B282F3C00321E77 /* CalendarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCell.swift; sourceTree = "<group>"; };
-		655E95C42B274A2C003ED696 /* DIYCalendarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIYCalendarCell.swift; sourceTree = "<group>"; };
-		656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		6574D3522A89417700F53A69 /* FeedDetailCommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailCommentTableViewCell.swift; sourceTree = "<group>"; };
-		657736192B124680009F0465 /* MogakInitColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakInitColorCell.swift; sourceTree = "<group>"; };
-		6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingFeedTableViewCell.swift; sourceTree = "<group>"; };
-		65852B312AFB830B008200E3 /* SegmentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentCollectionViewCell.swift; sourceTree = "<group>"; };
-		659E936F2B3EED8200AC61B8 /* JogakEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakEditViewController.swift; sourceTree = "<group>"; };
-		65AEDB812B0264FA00B7A3F1 /* MemoirDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoirDetailViewController.swift; sourceTree = "<group>"; };
-		65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmEdittingFeedSheetViewController.swift; sourceTree = "<group>"; };
-		65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDeletingFeedSheetViewController.swift; sourceTree = "<group>"; };
-		65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryFilterSheetView.swift; sourceTree = "<group>"; };
-		65E27E9B2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakCategoryDetailCollectionViewCell.swift; sourceTree = "<group>"; };
-		65F880E52A86AD35005543C9 /* FeedDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailViewController.swift; sourceTree = "<group>"; };
-		65F880E72A86B0C7005543C9 /* UIImage+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Ext.swift"; sourceTree = "<group>"; };
-		6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
-		6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
-		6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmViewController.swift; sourceTree = "<group>"; };
-		6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetRoutineModal.swift; sourceTree = "<group>"; };
-		6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelModalVC.swift; sourceTree = "<group>"; };
-		6CC638BA2A922B21009BC333 /* RecordingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingViewController.swift; sourceTree = "<group>"; };
-		6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CertificationModalVC.swift; sourceTree = "<group>"; };
-		9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
-		9C2EF7E82A6C2A7600E8C8F4 /* MogakInitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakInitViewController.swift; sourceTree = "<group>"; };
-		9C2EF7EB2A6CF79700E8C8F4 /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
-		9C2EF7ED2A6CFB6000E8C8F4 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
-		9C2EF7F12A6D1B1F00E8C8F4 /* RepeatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepeatViewCell.swift; sourceTree = "<group>"; };
-		9C2EF7F32A74899600E8C8F4 /* DismissKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissKeyboardView.swift; sourceTree = "<group>"; };
-		9C2EF7F52A76351D00E8C8F4 /* ScorllView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScorllView+Ext.swift"; sourceTree = "<group>"; };
-		9C2EF7F72A76901B00E8C8F4 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
-		9C2EF7F92A7E050B00E8C8F4 /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
-		9C2EF7FB2A7F296C00E8C8F4 /* RegionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionCell.swift; sourceTree = "<group>"; };
-		9C2EF7FD2A7FA55B00E8C8F4 /* JogakDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakDetailViewController.swift; sourceTree = "<group>"; };
-		9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakDetailCell.swift; sourceTree = "<group>"; };
-		9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
-		9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsListViewController.swift; sourceTree = "<group>"; };
-		9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingCell.swift; sourceTree = "<group>"; };
-		9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageEditViewController.swift; sourceTree = "<group>"; };
-		9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailPageViewController.swift; sourceTree = "<group>"; };
-		9C638AAD2A46C6AA002AB791 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
-		9C638AAF2A46DC75002AB791 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
-		9C638ABB2A46E6CD002AB791 /* WebLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebLink.swift; sourceTree = "<group>"; };
-		9C82D4492A95159800CBC1C3 /* MogakModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakModels.swift; sourceTree = "<group>"; };
-		9CC1AE812A4718B000B484DD /* MOGAK.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MOGAK.entitlements; sourceTree = "<group>"; };
-		9CCB39CF2A8B39BE00968CDB /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		9CCB39D22A8FDA3C00968CDB /* RegisterUserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterUserInfo.swift; sourceTree = "<group>"; };
-		9CCB39D42A9062E600968CDB /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
-		9CCB39D62A91186200968CDB /* ApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiManager.swift; sourceTree = "<group>"; };
-		9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateNicknameModel.swift; sourceTree = "<group>"; };
-		9CCB39DC2A92677100968CDB /* JoinModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinModel.swift; sourceTree = "<group>"; };
-		9CE426A92A594049001629DC /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
-		9CE426AB2A59404A001629DC /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
-		9CE426AC2A59404A001629DC /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		9CE426AD2A59404A001629DC /* Pretendard-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Black.otf"; sourceTree = "<group>"; };
-		9CE426AE2A59404A001629DC /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
-		9CE426B52A594062001629DC /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
-		9CE426B62A594062001629DC /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		9CE426B72A594062001629DC /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Thin.otf"; sourceTree = "<group>"; };
-		9CE426C22A594C47001629DC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		9CE426C42A59573F001629DC /* UserDefaults+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Ext.swift"; sourceTree = "<group>"; };
-		9CE426D92A59C559001629DC /* AppGuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGuideViewController.swift; sourceTree = "<group>"; };
-		9CE426E42A5A3976001629DC /* OnBoardingFirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingFirstViewController.swift; sourceTree = "<group>"; };
-		9CE426E62A5A3A4F001629DC /* OnBoardingSecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingSecondViewController.swift; sourceTree = "<group>"; };
-		9CE426E82A5A3A58001629DC /* OnBoardingThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingThirdViewController.swift; sourceTree = "<group>"; };
-		9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAgreeViewController.swift; sourceTree = "<group>"; };
-		9CE426F12A5D24A5001629DC /* NicknameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameViewController.swift; sourceTree = "<group>"; };
-		9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseJobViewController.swift; sourceTree = "<group>"; };
-		9CE426F52A5EA04F001629DC /* NameCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCell.swift; sourceTree = "<group>"; };
-		9CE426F72A5FD9CD001629DC /* ChooseRegionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseRegionViewController.swift; sourceTree = "<group>"; };
-		9CE426F92A5FE50F001629DC /* UITextField+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Ext.swift"; sourceTree = "<group>"; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleStartViewController.swift; sourceTree = "<group>"; };
-		9CFA7D122A45810B003E80A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9CFA7D192A458C91003E80A7 /* Font+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Ext.swift"; sourceTree = "<group>"; };
-		9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
-		9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
-		9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleListViewController.swift; sourceTree = "<group>"; };
-		9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingViewController.swift; sourceTree = "<group>"; };
-		9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleReportViewController.swift; sourceTree = "<group>"; };
-		D106B6742F6FC22A002BA818 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
-		D106B6772F6FC22A002BA818 /* ButtonWithMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithMenu.swift; sourceTree = "<group>"; };
-		D106B6782F6FC22A002BA818 /* CustomPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPaddingLabel.swift; sourceTree = "<group>"; };
-		D106B6792F6FC22A002BA818 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
-		D1187A6F2B132D2400589718 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
-		D132F86C2BA588C800CCD54A /* SelectModalartTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectModalartTableView.swift; sourceTree = "<group>"; };
-		D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiRouter.swift; sourceTree = "<group>"; };
-		D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiNetwork.swift; sourceTree = "<group>"; };
-		D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModalartModel.swift; sourceTree = "<group>"; };
-		D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectJogakModal.swift; sourceTree = "<group>"; };
-		D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
-		D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deSetRoutineModal.swift; sourceTree = "<group>"; };
-		D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakModel.swift; sourceTree = "<group>"; };
-		D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiConstants.swift; sourceTree = "<group>"; };
+		D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Auth.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -222,384 +66,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4D488E0B2B20C0F80000D4E6 /* Mogak */ = {
-			isa = PBXGroup;
-			children = (
-				4D488E242B2344010000D4E6 /* EmptyJogakCell.swift */,
-				4D488E0C2B20C1E80000D4E6 /* MogakMainViewController.swift */,
-				4D488E0E2B20CBE40000D4E6 /* MogakListCell.swift */,
-				4D72B3362B3317B0004BF3CE /* JogakSimpleModalViewController.swift */,
-				4D63E7D52B35D32F006A8501 /* JogakCell.swift */,
-				4D63E7D72B36073A006A8501 /* IsRoutineJogakCell.swift */,
-			);
-			path = Mogak;
-			sourceTree = "<group>";
-		};
-		4D488E2E2B274E430000D4E6 /* UserSettingScene */ = {
-			isa = PBXGroup;
-			children = (
-				9CE426C22A594C47001629DC /* LoginViewController.swift */,
-				9CE426EF2A5AD705001629DC /* TermsAgreeViewController.swift */,
-				9CE426F12A5D24A5001629DC /* NicknameViewController.swift */,
-				9CE426F32A5D38E3001629DC /* ChooseJobViewController.swift */,
-				9CE426F72A5FD9CD001629DC /* ChooseRegionViewController.swift */,
-				9CE426F52A5EA04F001629DC /* NameCell.swift */,
-				9C2EF7FB2A7F296C00E8C8F4 /* RegionCell.swift */,
-			);
-			path = UserSettingScene;
-			sourceTree = "<group>";
-		};
-		4D6C6DF12B10E87900206DD6 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				4D7848192B06543A0004DB45 /* ModalartNetwork.swift */,
-				4D6C6DF22B10E8AB00206DD6 /* ModalartModel.swift */,
-				4D6C6DF42B10E8DE00206DD6 /* ModalartRouter.swift */,
-				4D63E7CF2B35C181006A8501 /* MogakDetailRouter.swift */,
-				4D63E7D12B35C2D0006A8501 /* MogakDetailModel.swift */,
-				4D63E7D32B35C341006A8501 /* MogakDetailNetwork.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
-		4D72B3382B33191A004BF3CE /* API */ = {
-			isa = PBXGroup;
-			children = (
-				4D72B3392B331929004BF3CE /* UserRouter.swift */,
-				4D72B33B2B331E0C004BF3CE /* UserNetwork.swift */,
-				4D72B33D2B331FFA004BF3CE /* UserModel.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
-		4D7861B12AD25C0F006B8E88 /* SnsLoginManage */ = {
-			isa = PBXGroup;
-			children = (
-				4D7861AF2AD25C06006B8E88 /* AppleLoginManage.swift */,
-				4DF83CF82B18D0CC00E1BD6D /* LoginModel.swift */,
-				4D7861B22AD25C3F006B8E88 /* GoogleLoginManage.swift */,
-				4D7861B42AD25C50006B8E88 /* KakaoLoginManage.swift */,
-				4D488E2C2B274E060000D4E6 /* LoginRouter.swift */,
-				4D488E2F2B274E6F0000D4E6 /* CommonLoginManage.swift */,
-			);
-			path = SnsLoginManage;
-			sourceTree = "<group>";
-		};
-		4D7CE03A2B17746D00764E7E /* MyPage */ = {
-			isa = PBXGroup;
-			children = (
-				9C2EF8012A812F2500E8C8F4 /* MyPageViewController.swift */,
-				4DF83CF42B18BDDF00E1BD6D /* MypageWebViewController.swift */,
-				9C2EF8072A83D9E700E8C8F4 /* MyPageEditViewController.swift */,
-			);
-			path = MyPage;
-			sourceTree = "<group>";
-		};
-		4D7D14652BAB20F900AB56CE /* Lottie */ = {
-			isa = PBXGroup;
-			children = (
-				4D7D14662BAB212700AB56CE /* loading.json */,
-				4D06E86B2BB305C600AFECBA /* mogakLoading.json */,
-			);
-			path = Lottie;
-			sourceTree = "<group>";
-		};
-		4D7D3E632AE52DB200335073 /* Modal */ = {
-			isa = PBXGroup;
-			children = (
-				4D725C0D2AE2D16B0063A2E3 /* NeedModalArtMainTitleModal.swift */,
-				4D3077502AF3D841001FDD77 /* ShowModalArtListModal.swift */,
-				4D7847FB2B03AAA00004DB45 /* AskDeleteModal.swift */,
-				4D6673F62B0A2AE9001B18A1 /* SetModalartTitleModal.swift */,
-				4D609E9C2B838C2100E12E7B /* MogakMainBottomModal.swift */,
-			);
-			path = Modal;
-			sourceTree = "<group>";
-		};
-		4D9439292ACD337B00864336 /* Modalart */ = {
-			isa = PBXGroup;
-			children = (
-				4D94392A2ACD347F00864336 /* ModalartMainViewController.swift */,
-				4D488E0B2B20C0F80000D4E6 /* Mogak */,
-				4D6C6DF12B10E87900206DD6 /* API */,
-				4D7D3E632AE52DB200335073 /* Modal */,
-				4D94392C2ACD3AD600864336 /* Cell */,
-			);
-			path = Modalart;
-			sourceTree = "<group>";
-		};
-		4D94392C2ACD3AD600864336 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-				4D94392F2ACD54E000864336 /* EmptyMogakCell.swift */,
-				4DD74EE82AD58FC000147E9C /* MogakCell.swift */,
-				4DD74EEA2AD5A5D900147E9C /* ModalartMainCell.swift */,
-				4D742A042AEE8AFE0002DBCF /* ColorCell.swift */,
-				4D3077522AF3E990001FDD77 /* ShowModalArtListCell.swift */,
-			);
-			path = Cell;
-			sourceTree = "<group>";
-		};
-		652586B62B24C42B00ED9B92 /* InitEditMogakJogak */ = {
-			isa = PBXGroup;
-			children = (
-				652586B72B24C44000ED9B92 /* API */,
-				652586BE2B24C4F600ED9B92 /* DatePickerCalendarCell.swift */,
-				652586C02B24C52000ED9B92 /* JogakInitViewController.swift */,
-				659E936F2B3EED8200AC61B8 /* JogakEditViewController.swift */,
-				9C2EF7E82A6C2A7600E8C8F4 /* MogakInitViewController.swift */,
-				652586C22B24C54900ED9B92 /* MogakEditViewController.swift */,
-				655E95C42B274A2C003ED696 /* DIYCalendarCell.swift */,
-				655A21FC2B282EE900321E77 /* DateHelper.swift */,
-				655A21FE2B282F3C00321E77 /* CalendarCell.swift */,
-			);
-			path = InitEditMogakJogak;
-			sourceTree = "<group>";
-		};
-		652586B72B24C44000ED9B92 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				652586B82B24C47900ED9B92 /* HistoryModel.swift */,
-				652586BA2B24C4AE00ED9B92 /* HistoryNetwork.swift */,
-				652586BC2B24C4D100ED9B92 /* HistoryRouter.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
-		65306A572AD6B28C004807F7 /* MyHistory */ = {
-			isa = PBXGroup;
-			children = (
-				65306A582AD6B3B2004807F7 /* MyHistoryViewController.swift */,
-				9C2EF7E42A63CE0600E8C8F4 /* ListTableViewCell.swift */,
-				65566D462AF6A96700AC7D90 /* EllipsisAlertBottomSheetView.swift */,
-				65852B312AFB830B008200E3 /* SegmentCollectionViewCell.swift */,
-				65AEDB812B0264FA00B7A3F1 /* MemoirDetailViewController.swift */,
-				657736192B124680009F0465 /* MogakInitColorCell.swift */,
-				65E27E9B2B325C760087079A /* MogakCategoryDetailCollectionViewCell.swift */,
-			);
-			path = MyHistory;
-			sourceTree = "<group>";
-		};
-		6574D3542A89418100F53A69 /* FeedDetail */ = {
-			isa = PBXGroup;
-			children = (
-				65F880E52A86AD35005543C9 /* FeedDetailViewController.swift */,
-				6574D3522A89417700F53A69 /* FeedDetailCommentTableViewCell.swift */,
-				65B139322A9107920088452E /* ConfirmEdittingFeedSheetViewController.swift */,
-				65B139342A9107CD0088452E /* ConfirmDeletingFeedSheetViewController.swift */,
-			);
-			path = FeedDetail;
-			sourceTree = "<group>";
-		};
-		65C119ED2A7A76320040DFFB /* LocationFilter */ = {
-			isa = PBXGroup;
-			children = (
-				652C05D92A73AB34004CE9C4 /* LocationFilterTableViewCell.swift */,
-				652C05DD2A740667004CE9C4 /* LocationFilterSheetView.swift */,
-			);
-			path = LocationFilter;
-			sourceTree = "<group>";
-		};
-		65C119EE2A7A76530040DFFB /* CategoryFilter */ = {
-			isa = PBXGroup;
-			children = (
-				656A53DF2A74F06B00A527A1 /* CategoryFilterCollectionViewCell.swift */,
-				65C119EB2A7941FE0040DFFB /* CategoryFilterSheetView.swift */,
-			);
-			path = CategoryFilter;
-			sourceTree = "<group>";
-		};
-		6C33C0A12A874D6200A56D46 /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D082A458109003E80A7 /* ScheduleStartViewController.swift */,
-				6C3502352A6EC24E00080017 /* ScheduleTableViewCell.swift */,
-				6C4EE4E52A7AA15000DE0D5C /* SettingViewController.swift */,
-				6C51FD9F2A7CC249005B1738 /* AlarmViewController.swift */,
-				D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */,
-				6CC638BA2A922B21009BC333 /* RecordingViewController.swift */,
-			);
-			path = ViewControllers;
-			sourceTree = "<group>";
-		};
-		6CFDCACE2A89492700A7A73C /* Modal */ = {
-			isa = PBXGroup;
-			children = (
-				6CB3DEA82A7B7F850056C596 /* CancelModalVC.swift */,
-				6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */,
-				6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */,
-				D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */,
-				D1187A6F2B132D2400589718 /* PaddingLabel.swift */,
-				D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */,
-				D132F86C2BA588C800CCD54A /* SelectModalartTableView.swift */,
-			);
-			path = Modal;
-			sourceTree = "<group>";
-		};
-		9C2EF7EA2A6CF76A00E8C8F4 /* Category */ = {
-			isa = PBXGroup;
-			children = (
-				9C2EF7EB2A6CF79700E8C8F4 /* CategoryCell.swift */,
-			);
-			path = Category;
-			sourceTree = "<group>";
-		};
-		9C2EF7EF2A6D1AE900E8C8F4 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				9C2EF7ED2A6CFB6000E8C8F4 /* LeftAlignedCollectionViewFlowLayout.swift */,
-			);
-			path = Common;
-			sourceTree = "<group>";
-		};
-		9C2EF7F02A6D1AF500E8C8F4 /* Repeat */ = {
-			isa = PBXGroup;
-			children = (
-				9C2EF7F12A6D1B1F00E8C8F4 /* RepeatViewCell.swift */,
-			);
-			path = Repeat;
-			sourceTree = "<group>";
-		};
-		9C638AA82A46C5E9002AB791 /* ScheduleStart */ = {
-			isa = PBXGroup;
-			children = (
-				D16D54262B37D43600CAC0E1 /* API */,
-				6CFDCACE2A89492700A7A73C /* Modal */,
-				6C33C0A12A874D6200A56D46 /* ViewControllers */,
-			);
-			path = ScheduleStart;
-			sourceTree = "<group>";
-		};
-		9C638AA92A46C609002AB791 /* ScheduleList */ = {
-			isa = PBXGroup;
-			children = (
-				9C2EF7F02A6D1AF500E8C8F4 /* Repeat */,
-				9C2EF7EF2A6D1AE900E8C8F4 /* Common */,
-				9C2EF7EA2A6CF76A00E8C8F4 /* Category */,
-				9CFA7D212A4590F9003E80A7 /* ScheduleListViewController.swift */,
-				9C2EF7F72A76901B00E8C8F4 /* TestViewController.swift */,
-				9C2EF7FD2A7FA55B00E8C8F4 /* JogakDetailViewController.swift */,
-				9C2EF7FF2A7FAC9B00E8C8F4 /* JogakDetailCell.swift */,
-				9C2EF8032A8285C100E8C8F4 /* FriendsListViewController.swift */,
-				9C2EF8052A8289D100E8C8F4 /* FollowingCell.swift */,
-				9C2EF8092A86624400E8C8F4 /* FriendDetailPageViewController.swift */,
-			);
-			path = ScheduleList;
-			sourceTree = "<group>";
-		};
-		9C638AAA2A46C614002AB791 /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D232A45915B003E80A7 /* NetworkingViewController.swift */,
-				6582BDE62A6A786200C87FDE /* NetworkingFeedTableViewCell.swift */,
-				6544766D2A94C8EF0050AE9E /* Networking_ServerResponseStruct.swift */,
-				6544766F2A950B480050AE9E /* FeedModel.swift */,
-				6574D3542A89418100F53A69 /* FeedDetail */,
-				65C119ED2A7A76320040DFFB /* LocationFilter */,
-				65C119EE2A7A76530040DFFB /* CategoryFilter */,
-				652C05DB2A7404B4004CE9C4 /* Data.swift */,
-			);
-			path = Networking;
-			sourceTree = "<group>";
-		};
-		9C638AAB2A46C623002AB791 /* ScheduleReport */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D252A4591AB003E80A7 /* ScheduleReportViewController.swift */,
-			);
-			path = ScheduleReport;
-			sourceTree = "<group>";
-		};
-		9C638AB32A46E5F7002AB791 /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				9C638ABB2A46E6CD002AB791 /* WebLink.swift */,
-			);
-			path = Domain;
-			sourceTree = "<group>";
-		};
-		9C638ABD2A46E7C2002AB791 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				4D7D14652BAB20F900AB56CE /* Lottie */,
-				9C638ABE2A46E7C8002AB791 /* Fonts */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		9C638ABE2A46E7C8002AB791 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				9CE426A82A59400D001629DC /* Pretendard */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
-		9CCB39D12A8FDA2000968CDB /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				9CCB39D22A8FDA3C00968CDB /* RegisterUserInfo.swift */,
-				9CCB39DA2A911F8B00968CDB /* ValidateNicknameModel.swift */,
-				9CCB39DC2A92677100968CDB /* JoinModel.swift */,
-				9C82D4492A95159800CBC1C3 /* MogakModels.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		9CE426A32A5932F1001629DC /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				9CE426D92A59C559001629DC /* AppGuideViewController.swift */,
-				9CE426E42A5A3976001629DC /* OnBoardingFirstViewController.swift */,
-				9CE426E62A5A3A4F001629DC /* OnBoardingSecondViewController.swift */,
-				9CE426E82A5A3A58001629DC /* OnBoardingThirdViewController.swift */,
-				4D6C6E032B14D4F900206DD6 /* OnBoardingForthViewController.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		9CE426A82A59400D001629DC /* Pretendard */ = {
-			isa = PBXGroup;
-			children = (
-				9CE426B52A594062001629DC /* Pretendard-ExtraBold.otf */,
-				9CE426B62A594062001629DC /* Pretendard-Regular.otf */,
-				9CE426B72A594062001629DC /* Pretendard-Thin.otf */,
-				9CE426AD2A59404A001629DC /* Pretendard-Black.otf */,
-				9CE426A92A594049001629DC /* Pretendard-Bold.otf */,
-				9CE426AA2A594049001629DC /* Pretendard-ExtraLight.otf */,
-				9CE426AB2A59404A001629DC /* Pretendard-Light.otf */,
-				9CE426AC2A59404A001629DC /* Pretendard-Medium.otf */,
-				9CE426AE2A59404A001629DC /* Pretendard-SemiBold.otf */,
-			);
-			path = Pretendard;
-			sourceTree = "<group>";
-		};
-		9CE426C12A594C2C001629DC /* Login */ = {
-			isa = PBXGroup;
-			children = (
-				4D72B3382B33191A004BF3CE /* API */,
-				4D488E2E2B274E430000D4E6 /* UserSettingScene */,
-				4D7861B12AD25C0F006B8E88 /* SnsLoginManage */,
-			);
-			path = Login;
-			sourceTree = "<group>";
-		};
-		9CE426EA2A5AA98E001629DC /* API */ = {
-			isa = PBXGroup;
-			children = (
-				9CCB39D62A91186200968CDB /* ApiManager.swift */,
-				4D7E49742AFBCBFB00DEB70C /* APIError.swift */,
-				D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
 		9CFA7CF82A458109003E80A7 = {
 			isa = PBXGroup;
 			children = (
+				D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */,
 				9CFA7D022A458109003E80A7 /* Products */,
 				49735387F313C5F5C869DD30 /* Frameworks */,
-				9CFA7D032A458109003E80A7 /* MOGAK */,
 				D1090C862F6FC92A001FFF4E /* MOGAK2 */,
 			);
 			sourceTree = "<group>";
@@ -610,99 +82,6 @@
 				9CFA7D012A458109003E80A7 /* MOGAK.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		9CFA7D032A458109003E80A7 /* MOGAK */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D1D2A458D25003E80A7 /* Scene */,
-				D106B67A2F6FC22A002BA818 /* CustomView */,
-				D106B6752F6FC22A002BA818 /* DesignSystem */,
-				9CCB39D12A8FDA2000968CDB /* Models */,
-				9CE426EA2A5AA98E001629DC /* API */,
-				9C638ABD2A46E7C2002AB791 /* Resources */,
-				9C638AB32A46E5F7002AB791 /* Domain */,
-				9CFA7D1E2A458D60003E80A7 /* Service */,
-				9CFA7D182A458C6E003E80A7 /* Extension */,
-				9CFA7D122A45810B003E80A7 /* Info.plist */,
-				9CC1AE812A4718B000B484DD /* MOGAK.entitlements */,
-			);
-			path = MOGAK;
-			sourceTree = "<group>";
-		};
-		9CFA7D182A458C6E003E80A7 /* Extension */ = {
-			isa = PBXGroup;
-			children = (
-				9CFA7D192A458C91003E80A7 /* Font+Ext.swift */,
-				9CFA7D1B2A458CCC003E80A7 /* UIColor+Ext.swift */,
-				9CE426C42A59573F001629DC /* UserDefaults+Ext.swift */,
-				9CE426F92A5FE50F001629DC /* UITextField+Ext.swift */,
-				9C2EF7F32A74899600E8C8F4 /* DismissKeyboardView.swift */,
-				9C2EF7F52A76351D00E8C8F4 /* ScorllView+Ext.swift */,
-				9C2EF7F92A7E050B00E8C8F4 /* UILabel+Ext.swift */,
-				9CCB39D42A9062E600968CDB /* String+Ext.swift */,
-				65F880E72A86B0C7005543C9 /* UIImage+Ext.swift */,
-				4D7861BD2AD40938006B8E88 /* UIView+Ext.swift */,
-				4DBEEE7D2B7BDA7800E0B2B1 /* Date+Ext.swift */,
-			);
-			path = Extension;
-			sourceTree = "<group>";
-		};
-		9CFA7D1D2A458D25003E80A7 /* Scene */ = {
-			isa = PBXGroup;
-			children = (
-				4D7CE03A2B17746D00764E7E /* MyPage */,
-				652586B62B24C42B00ED9B92 /* InitEditMogakJogak */,
-				65306A572AD6B28C004807F7 /* MyHistory */,
-				9CE426C12A594C2C001629DC /* Login */,
-				9CE426A32A5932F1001629DC /* Onboarding */,
-				9C638AA82A46C5E9002AB791 /* ScheduleStart */,
-				9CFA7D1F2A458E89003E80A7 /* TabBarViewController.swift */,
-				9C638AA92A46C609002AB791 /* ScheduleList */,
-				9C638AAA2A46C614002AB791 /* Networking */,
-				4D9439292ACD337B00864336 /* Modalart */,
-				9C638AAB2A46C623002AB791 /* ScheduleReport */,
-			);
-			path = Scene;
-			sourceTree = "<group>";
-		};
-		9CFA7D1E2A458D60003E80A7 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-				9C638AAD2A46C6AA002AB791 /* NetworkManager.swift */,
-				9C638AAF2A46DC75002AB791 /* KeyChainService.swift */,
-				9CCB39CF2A8B39BE00968CDB /* Utils.swift */,
-			);
-			path = Service;
-			sourceTree = "<group>";
-		};
-		D106B6752F6FC22A002BA818 /* DesignSystem */ = {
-			isa = PBXGroup;
-			children = (
-				D106B6742F6FC22A002BA818 /* DesignSystem.swift */,
-			);
-			path = DesignSystem;
-			sourceTree = "<group>";
-		};
-		D106B67A2F6FC22A002BA818 /* CustomView */ = {
-			isa = PBXGroup;
-			children = (
-				D106B6772F6FC22A002BA818 /* ButtonWithMenu.swift */,
-				D106B6782F6FC22A002BA818 /* CustomPaddingLabel.swift */,
-				D106B6792F6FC22A002BA818 /* LoadingView.swift */,
-			);
-			path = CustomView;
-			sourceTree = "<group>";
-		};
-		D16D54262B37D43600CAC0E1 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */,
-				D16D54272B37DF0100CAC0E1 /* ApiRouter.swift */,
-				D16D54292B37E41C00CAC0E1 /* ApiNetwork.swift */,
-				D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */,
-			);
-			path = API;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -779,17 +158,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CE426AF2A59404A001629DC /* Pretendard-Bold.otf in Resources */,
-				4D06E86C2BB305C600AFECBA /* mogakLoading.json in Resources */,
-				9CE426B82A594062001629DC /* Pretendard-ExtraBold.otf in Resources */,
-				9CE426B02A59404A001629DC /* Pretendard-ExtraLight.otf in Resources */,
-				9CE426B42A59404A001629DC /* Pretendard-SemiBold.otf in Resources */,
-				9CE426B12A59404A001629DC /* Pretendard-Light.otf in Resources */,
-				9CE426B92A594062001629DC /* Pretendard-Regular.otf in Resources */,
-				9CE426B32A59404A001629DC /* Pretendard-Black.otf in Resources */,
-				4D7D14672BAB212700AB56CE /* loading.json in Resources */,
-				9CE426BA2A594062001629DC /* Pretendard-Thin.otf in Resources */,
-				9CE426B22A59404A001629DC /* Pretendard-Medium.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -922,17 +290,18 @@
 		};
 		9CFA7D162A45810B003E80A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BASE_URL = "http://mogak.shop:8080";
-				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5664C7G97A;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MOGAK/Info.plist;
+				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
@@ -966,17 +335,18 @@
 		};
 		9CFA7D172A45810B003E80A7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BASE_URL = "http://mogak.shop:8080";
-				CODE_SIGN_ENTITLEMENTS = MOGAK/MOGAK.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5664C7G97A;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MOGAK/Info.plist;
+				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";

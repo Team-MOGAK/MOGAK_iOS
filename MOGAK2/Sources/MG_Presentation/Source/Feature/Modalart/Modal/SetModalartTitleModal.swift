@@ -5,31 +5,15 @@
 //  Created by 김라영 on 2023/11/19.
 //
 
-import Foundation
 import UIKit
 import SnapKit
 
-class SetModalartTitleModal: UIViewController {
-    //MARK: - properties
-    //모다라트 타이틀
-    var modalArtTitle: String = ""
+final class SetModalartTitleModal: UIViewController {
+    private let viewModel: MG2ModalartTitleEditorViewModel
+    var onCancel: (() -> Void)?
+    var onSubmit: ((String, String) -> Void)?
     
-    //모다라트 배경색
-    var titleBgColor: String!
-
-    //모다라트 배경색으로 선택 가능한 컬러차트
-    let titleColorPalette: [String] = ["#475FFD", "#11D796", "#009967", "#FF2323", "#F98A08", "#FF6827", "#9C31FF", "#21CAFF"]
-    
-    //완료를 눌렀을때 모다라트 타이틀이랑 중앙 모각 설정
-    var changeMainMogak: ((_ mogakBGColor: String, _ mogakTitle: String) -> ())? = nil
-
-    //모각 색 설정되었는지
-    var isColorSelected: Bool = false
-    
-    //모각 타이틀이 설정 되었는지
-    var isTitleSetUp: Bool = false
-    
-    var titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "나의 가장 큰 목표는?"
         label.numberOfLines = 1
@@ -37,7 +21,7 @@ class SetModalartTitleModal: UIViewController {
         return label
     }()
     
-    var titleSetTextField: UITextField = {
+    private let titleSetTextField: UITextField = {
         let textField = UITextField()
         
         textField.placeholder = "이루고픈 목표를 입력해 주세요."
@@ -47,7 +31,7 @@ class SetModalartTitleModal: UIViewController {
         return textField
     }()
     
-    var cancelBtn: UIButton = {
+    private let cancelBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("취소", for: .normal)
         btn.backgroundColor = DesignSystemColor.gray2.value
@@ -57,7 +41,7 @@ class SetModalartTitleModal: UIViewController {
         return btn
     }()
 
-    var completeBtn: UIButton = {
+    private let completeBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("완료", for: .normal)
         btn.backgroundColor = DesignSystemColor.gray3.value
@@ -67,7 +51,7 @@ class SetModalartTitleModal: UIViewController {
         return btn
     }()
     
-    var btnStackView: UIStackView = {
+    private let btnStackView: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
         stk.alignment = .fill
@@ -77,7 +61,7 @@ class SetModalartTitleModal: UIViewController {
     }()
     
     //MARK: - 컬러 차트
-    var colorCollectionView: UICollectionView = {
+    private let colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 40, height: 40)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
@@ -87,22 +71,34 @@ class SetModalartTitleModal: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
-    
+
+    init(viewModel: MG2ModalartTitleEditorViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         viewSetting()
         configureLayout()
         collectionViewSetUp()
-    }
-    
-    //MARK: - viewDidAppear
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        changeCompleteBtn()
+        titleSetTextField.text = viewModel.state.title
+        if let selectedColorIndex = viewModel.selectedColorIndex {
+            colorCollectionView.selectItem(
+                at: IndexPath(item: selectedColorIndex, section: 0),
+                animated: false,
+                scrollPosition: []
+            )
+        }
+        renderSubmitState()
     }
     
     //MARK: - 뷰컨 셋팅(textField에 텍스트 넣어주기, addTarget달아주기)
-    func viewSetting() {
+    private func viewSetting() {
         self.view.backgroundColor = .white
 
         titleSetTextField.delegate = self
@@ -118,52 +114,36 @@ class SetModalartTitleModal: UIViewController {
     }
     
     //MARK: - 취소버튼 눌렀을 때
-    @objc func cancelBtnTapped(_ sender: UIButton) {
-        print(#fileID, #function, #line, "- 취소버튼 클릭")
-        self.dismiss(animated: true)
+    @objc private func cancelBtnTapped(_ sender: UIButton) {
+        onCancel?()
     }
     
     //MARK: - 완료버튼 눌렀을 때
-    @objc func completeBtnTapped(_ sender: UIButton) {
-        print(#fileID, #function, #line, "- 완료버튼 클릭🔥")
-        
-        guard let indexPath = colorCollectionView.indexPathsForSelectedItems?[0][1],
-              let modalartNewTitle = titleSetTextField.text else { return }
-        let selectedColor = titleColorPalette[indexPath]
-
-        changeMainMogak?(selectedColor, modalartNewTitle) //컴플레션 터트려주기
-        self.dismiss(animated: true)
+    @objc private func completeBtnTapped(_ sender: UIButton) {
+        guard let submission = viewModel.submission() else { return }
+        onSubmit?(submission.title, submission.color)
     }
     
     //MARK: - textField가 변경되고 난 후
-    @objc func textFieldDidChange(_ textField: UITextField) {
-        guard let modalartTitle = textField.text else { return }
-        print(#fileID, #function, #line, "- 변경? : \(modalartTitle)")
-        if modalartTitle == "" {
-            isTitleSetUp = false
-        } else {
-            isTitleSetUp = true
-        }
-        changeCompleteBtn()
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        viewModel.updateTitle(textField.text ?? "")
+        renderSubmitState()
     }
     
     //MARK: - 컬러 차트 collectionView 셋팅
-    func collectionViewSetUp() {
-        colorCollectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
+    private func collectionViewSetUp() {
+        colorCollectionView.register(MG2ColorSelectionCell.self, forCellWithReuseIdentifier: MG2ColorSelectionCell.identifier)
         
         colorCollectionView.dataSource = self
         colorCollectionView.delegate = self
     }
     
     //MARK: - 완료 버튼 backgroundColor & isEnabled변경
-    func changeCompleteBtn() {
-        if isColorSelected && isTitleSetUp {
-            completeBtn.isEnabled = true
-            completeBtn.backgroundColor = DesignSystemColor.signature.value
-        } else {
-            completeBtn.isEnabled = false
-            completeBtn.backgroundColor = DesignSystemColor.gray3.value
-        }
+    private func renderSubmitState() {
+        completeBtn.isEnabled = viewModel.state.canSubmit
+        completeBtn.backgroundColor = viewModel.state.canSubmit
+            ? DesignSystemColor.signature.value
+            : DesignSystemColor.gray3.value
     }
     
 }
@@ -209,11 +189,10 @@ extension SetModalartTitleModal: UITextFieldDelegate {
     //MARK: - 텍스트필드 글자수 제한
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         guard let currentText = textField.text else { return false }
-        print(#fileID, #function, #line, "- currentText🥺: \(currentText)")
 
         guard let stringLength = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringLength, with: string)
-        return updatedText.count <= 20
+        return viewModel.canUpdateTitle(updatedText)
     }
     
     //MARK: - return키 눌렀을때 키보드 내려가도록 설정
@@ -228,24 +207,16 @@ extension SetModalartTitleModal: UITextFieldDelegate {
 extension SetModalartTitleModal: UICollectionViewDataSource{
     //MARK: - 한 섹션안에 컬러 차트의 개수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        titleColorPalette.count
+        viewModel.colors.count
     }
 
     //MARK: - cell 셋팅
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = colorCollectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
-        cell.color = UIColor(hex: titleColorPalette[indexPath.row])
-        
-        if titleColorPalette[indexPath.row] == titleBgColor { //만약에 지금 보여줘야 하는 셀이 타이틀 백그라운드 색이랑 같다면 해당 컬러차트 표시
-            isColorSelected = true
-            cell.innerView.backgroundColor = .white
-            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .init())
-            changeCompleteBtn()
-        }
-        
-        cell.setUpColorView()
-        cell.setUpInnerView()
-        
+        guard let cell = colorCollectionView.dequeueReusableCell(
+            withReuseIdentifier: MG2ColorSelectionCell.identifier,
+            for: indexPath
+        ) as? MG2ColorSelectionCell else { return UICollectionViewCell() }
+        cell.configure(color: UIColor(hex: viewModel.colors[indexPath.row]))
         return cell
     }
     
@@ -255,10 +226,7 @@ extension SetModalartTitleModal: UICollectionViewDataSource{
 extension SetModalartTitleModal: UICollectionViewDelegate {
     //MARK: - 컬러가 선택되었을 때
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(#fileID, #function, #line, "- selected🔥")
-        if !isColorSelected {
-            isColorSelected = true
-            changeCompleteBtn()
-        }
+        viewModel.selectColor(at: indexPath.row)
+        renderSubmitState()
     }
 }

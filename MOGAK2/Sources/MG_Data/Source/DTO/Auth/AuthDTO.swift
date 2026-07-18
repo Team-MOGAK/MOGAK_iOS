@@ -2,7 +2,7 @@ import Foundation
 
 struct MG2AuthLoginResponseDTO: Decodable {
     let status: String
-    let result: MG2AuthLoginResultDTO?
+    let result: MG2AuthLoginResultDTO
 }
 
 struct MG2AuthLoginResultDTO: Decodable {
@@ -30,7 +30,7 @@ struct MG2TokenPairDTO: Decodable {
 
 struct MG2RefreshResponseDTO: Decodable {
     let status: String
-    let result: MG2TokenPairDTO?
+    let result: MG2TokenPairDTO
 }
 
 struct MG2WithdrawResponseDTO: Decodable {
@@ -38,5 +38,5 @@ struct MG2WithdrawResponseDTO: Decodable {
 }
 
 struct MG2WithdrawResultDTO: Decodable {
-    let deleted: Bool
+    let isDeleted: Bool
 }

@@ -7,17 +7,15 @@
 
 import UIKit
 import SnapKit
-import AuthenticationServices
-import Combine
+import Then
 
-class MG2LoginViewController: UIViewController {
-    
-    let registerUserInfo = MG2Deps.app.userState
-    private let viewModel: MG2LoginViewModel
+final class MG2LoginViewController: UIViewController {
     weak var coordinator: MG2LoginCoordinator?
-    var cancellables = Set<AnyCancellable>()
+    var onAuthenticationCompleted: (() -> Void)?
+    var onGuestContinue: (() -> Void)?
 
-    init(viewModel: MG2LoginViewModel = DIContainer.shared.resolveRequired(MG2LoginViewModel.self)) {
+    private let viewModel: MG2LoginViewModel
+    init(viewModel: MG2LoginViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -107,36 +105,12 @@ class MG2LoginViewController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         view.backgroundColor = UIColor(hex: "FFFFFF")
-//        self.configureNavBar()
         self.configureLabel()
         self.configureButton()
         self.configureImage()
+        bindViewModel()
+        render(viewModel.state)
     }
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        self.navigationController?.navigationBar.isHidden = true
-//    }
-//
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        self.navigationController?.navigationBar.isHidden = true
-//    }
-//
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        self.navigationController?.navigationBar.isHidden = true
-//    }
-    //
-    //    override func viewWillDisappear(_ animated: Bool) {
-    //        super.viewWillDisappear(animated)
-    //        self.navigationController?.navigationBar.isHidden = false
-    //    }
-    
-    //    private func configureNavBar() {
-    //        self.navigationController?.navigationBar.topItem?.title = ""
-    //        self.navigationController?.navigationBar.tintColor = .gray
-    //    }
     
     private func configureLabel() {
         self.view.addSubview(mogakLabel)
@@ -168,40 +142,48 @@ class MG2LoginViewController: UIViewController {
         }
     }
 
+    private func bindViewModel() {
+        viewModel.onStateChange = { [weak self] state in
+            self?.render(state)
+        }
+    }
+
+    private func render(_ state: MG2LoginViewState) {
+        let buttons = [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton]
+        buttons.forEach {
+            $0.isEnabled = !state.isLoading
+            $0.alpha = state.isLoading ? 0.6 : 1
+        }
+        state.isLoading ? showLoading() : hideLoading()
+
+        guard let errorMessage = state.errorMessage,
+              presentedViewController == nil else { return }
+        coordinator?.presentLoginError(errorMessage, from: self) { [weak self] in
+            self?.viewModel.clearError()
+        }
+    }
+
     @objc private func appleLoginClicked() {
-        viewModel.startAppleLogin()
-//        registerUserInfo.$loginState.sink { loginState in
-//            if let loginState = loginState {
-//                if loginState {
-//                    if self.registerUserInfo.userIsRegistered {
-//                        let tabBarController = TabBarViewController()
-//                        self.view.window?.rootViewController = tabBarController
-//                    } else {
-//                        let termAgreeNavigationVC = TermsAgreeViewController()
-//                        let navigationController = UINavigationController(rootViewController: termAgreeNavigationVC)
-//                        self.view.window?.rootViewController = navigationController
-//                    }
-//                }else {
-//                    print(#fileID, #function, #line, "- 로그인 완료 안됨: \(loginState)")
-//                    let loginViewController = MG2LoginViewController()
-//                    self.present(loginViewController, animated: false)
-////                    self.view.window?.rootViewController = loginViewController
-//                }
-//            }
-//        }
-//        .store(in: &cancellables)
+        viewModel.startAppleLogin { [weak self] in
+            self?.onAuthenticationCompleted?()
+        }
     }
 
     @objc private func kakaoLoginClicked() {
-        viewModel.startKakaoLogin()
+        viewModel.startKakaoLogin { [weak self] in
+            self?.onAuthenticationCompleted?()
+        }
     }
 
     @objc private func googleLoginClicked() {
-        viewModel.startGoogleLogin()
+        viewModel.startGoogleLogin { [weak self] in
+            self?.onAuthenticationCompleted?()
+        }
     }
     
     @objc private func guestLoginClicked() {
         viewModel.continueAsGuest()
+        onGuestContinue?()
     }
 
     private func makeSocialLoginButton(title: String,

@@ -8,13 +8,27 @@
 import UIKit
 import Combine
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var cancellables = Set<AnyCancellable>()
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    private var cancellables = Set<AnyCancellable>()
     var window: UIWindow?
 
-    private let appFlowCoordinator = MG2AppFlowCoordinator()
-    private let launchViewModel: MG2AppLaunchViewModel = DIContainer.shared.resolveRequired(MG2AppLaunchViewModel.self)
+    private lazy var launchViewModel: MG2AppLaunchViewModel =
+        DIContainer.shared.resolveRequired(MG2AppLaunchViewModel.self)
+    private lazy var appDependencies: MG2AppDependencies =
+        DIContainer.shared.resolveRequired(MG2AppDependencies.self)
+    private lazy var appFlowCoordinator: MG2AppFlowCoordinator = {
+        let coordinator = MG2CoordinatorFactory.makeAppFlowCoordinator(
+            launchViewModel: launchViewModel
+        )
+        coordinator.onRouteChange = { [weak self] route in
+            guard let self, let windowScene = window?.windowScene else { return }
+            applyRoute(windowScene, route: route)
+        }
+        return coordinator
+    }()
     private var didResolveInitialRoute = false
+    private var currentRoute: MG2AppLaunchRoute?
+    private var currentLoginState: MG2LoginStatus?
 
     func scene(_ scene: UIScene,
                willConnectTo session: UISceneSession,
@@ -30,36 +44,44 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
 
-        MG2Deps.app.userState.$loginState
-            .removeDuplicates()
+        Publishers.CombineLatest(
+            appDependencies.userState.$loginState.removeDuplicates(),
+            appDependencies.userState.$isRegistered.removeDuplicates()
+        )
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] loginState in
+            .sink { [weak self] loginState, _ in
                 guard let self else { return }
                 guard self.didResolveInitialRoute else { return }
                 let route = self.launchViewModel.resolveRoute(loginState: loginState)
-                self.applyRoute(windowScene, route: route)
+                let requiresSessionRefresh = self.currentLoginState != loginState
+                    && self.currentRoute == route
+                self.applyRoute(
+                    windowScene,
+                    route: route,
+                    force: requiresSessionRefresh
+                )
             }
             .store(in: &cancellables)
     }
 
-    func sceneDidDisconnect(_ scene: UIScene) {}
-    func sceneDidBecomeActive(_ scene: UIScene) {}
-    func sceneWillResignActive(_ scene: UIScene) {}
-    func sceneWillEnterForeground(_ scene: UIScene) {}
-    func sceneDidEnterBackground(_ scene: UIScene) {}
-
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
-//        if MG2KakaoLoginManage.handleOpenUrl(url) { return }
-//        if MG2GoogleLoginManage.handleOpenUrl(url) { return }
+        _ = MG2SocialLoginURLHandler.handle(url)
     }
 
-    private func applyRoute(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute, markInitialResolved: Bool = false) {
+    private func applyRoute(
+        _ windowScene: UIWindowScene,
+        route: MG2AppLaunchRoute,
+        markInitialResolved: Bool = false,
+        force: Bool = false
+    ) {
         if markInitialResolved {
             didResolveInitialRoute = true
         }
+        guard force || currentRoute != route else { return }
+        currentRoute = route
+        currentLoginState = appDependencies.userState.loginState
         setRootViewController(windowScene, route: route)
-        presentGlobalErrorIfNeeded()
     }
 
     private func setRootViewController(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute) {
@@ -76,17 +98,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func presentGlobalErrorIfNeeded() {
-        guard MG2Deps.app.userState.happendSomeError,
-              let message = MG2Deps.app.userState.someError else { return }
-
-        let alertController = UIAlertController(title: "에러", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            MG2Deps.app.userState.happendSomeError = false
-            MG2Deps.app.userState.someError = nil
-        }
-        alertController.addAction(okAction)
-
-        window?.rootViewController?.present(alertController, animated: false)
-    }
 }

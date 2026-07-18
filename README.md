@@ -1,99 +1,78 @@
-### MOGAK - 자기계발 동기부여 솔루션
+# MOGAK iOS
 
-## Migration Summary (Non-View)
-1. 레거시 단일 API 브리지(`MG2LegacyAPIBridge`) -> Feature 브리지 분리
-2. 레거시 단일 라우터(`LegacyFeatureRouter`) -> Scene/Feature 라우터 분리
-3. 레거시 네트워크 직호출 중심 -> Clean Architecture(Entity/DTO/Repository/UseCase) 경유
-4. 레거시 `MOGAK/Scene/**/API/*Network.swift` 실행 코드 -> `MOGAK2` 브리지 호출로 전환
-5. 레거시 `MOGAK`의 기존 AF/URLSession 구현 -> 주석 처리(Traceability 유지)
-6. 레거시 `MOGAK` 공용 네트워크(`ApiManager`, `NetworkManager`) -> `MG2LegacyCoreBridge` 경유
-7. 레거시 Login API 혼합 구현 -> `Auth/User` UseCase + Repository 기반으로 정리
-8. 레거시 multipart 업로드(브리지 직접) -> User Repository로 이동
-9. 레거시 Apple revoke(URLSession 직접) -> Auth Repository/UseCase 경유
-10. 레거시 혼합 폴더 구조 -> `MOGAK2/Sources/MG_Data/Source/{API,DTO,LegacyBridge}` 계층 통일 (`Scene` 제거)
-11. 레거시 로그인 API(`UserModel/UserNetwork/UserRouter/LoginModel/LoginRouter/AppleLoginManage`) -> `MOGAK2` DTO/Entity/Service(`MG2UserNetwork`, `MG2AppleLoginManage`)로 전환 후 MOGAK `#if false` 비활성화
+MOGAK의 iOS 클라이언트입니다. 현재 실행 대상은 `MOGAK2/Sources`이며, 이전 `MOGAK` 소스는 제거되었습니다.
 
-## Feature Foldering (MOGAK2)
-- `API/Router/{Auth,History,Login,Modalart,Networking,ScheduleStart}`
-- `API/Network/{History,Login,Modalart,Networking,ScheduleStart}`
-- `DTO/{Auth,Common,History,Modalart,Networking,ScheduleStart,User}`
-- `LegacyBridge/{History,Login,Modalart,ScheduleStart}`
+## Requirements
 
-## Clean Layers Added
-- Entity: `Auth`, `ScheduleStart`, `Modalart`, `History`, `User`
-- DTO: `Auth`, `ScheduleStart`, `Modalart`, `History`, `User`
-- Repository: `Auth`, `ScheduleStart`, `Modalart`, `History`, `User`
-- UseCase: `Auth`, `ScheduleStart`, `Modalart`, `History`, `User`
+- Xcode 17 이상
+- iOS 16 이상
+- 로컬 API를 사용할 경우 실행 중인 MOGAK Spring 서버
 
-## Audit Snapshot
-- 대상: `MOGAK/Scene/**/API`, `MOGAK/API`, `MOGAK/Service`, Login non-view manager
-- 결과: 비주석 직접 네트워크 호출(`AF.request`, `AF.upload`, `URLSession.shared.dataTask`) 0건
+## Configuration
 
-## Migration Summary (Foundational View)
-1. 레거시 온보딩 컨테이너(`AppGuideViewController`) -> `MG2OnboardingContainerViewController`
-2. 레거시 탭바(`TabBarViewController`) -> `MG2MainTabBarController`
-3. 레거시 App 진입 분기(SceneDelegate 직접 분기) -> `MG2AppFlowCoordinator + MG2AppLaunchViewModel`
-4. 레거시 화면 생성 분산 -> `MG2LegacyViewFactory`로 통일
-5. 공통 버튼 스타일 분산 -> `MG2PrimaryActionButton` 공통 컴포넌트화
-6. 레거시 기본 View는 유지하되 SceneDelegate 라우팅은 MOGAK2 Presentation 경유로 전환
-7. 레거시 마이페이지(`MyPageViewController`, `MyPageEditViewController`, `MypageWebViewController`) -> `MG2MyPage*` 1:1 마이그레이션 및 MOGAK 레거시 `#if false` 비활성화
-8. 레거시 로그인/회원설정(`Login/Terms/Nickname/ChooseJob/ChooseRegion/Cell`) -> `MG2Login*` 1:1 마이그레이션 및 MOGAK 레거시 `#if false` 비활성화
+1. `Configuration/Secrets.example.xcconfig`를 참고해 로컬 전용 `Configuration/Secrets.xcconfig`를 만듭니다.
+2. Google과 Kakao 콘솔의 iOS 앱 설정이 Xcode의 Bundle ID 및 URL Scheme과 일치하는지 확인합니다.
+3. API URL은 기존 xcconfig와 `Configuration/Info.plist`의 빌드 설정 치환을 통해 주입됩니다. URL을 Swift 코드에 중복 선언하지 않습니다.
 
-## Full Folder Audit (MOGAK)
-- Full-scan report: `MOGAK2/MIGRATION_AUDIT_STATUS.md`
-- Snapshot:
-  - Total Swift files in `MOGAK`: 143
-  - Disabled via `#if false`: 143
-  - Still active: 0
+`Secrets.xcconfig`는 Git에 포함되지 않습니다.
 
-## Foldering Normalization (MOGAK2)
-1. 네트워크 코드 재배치:
-   - `MG_Presentation/Feature/**/API/*` -> `MG_Data/Source/API/{Router,Network}/*`
-   - `MG_Presentation/Common/Service/MG2UserNetwork.swift` -> `MG_Data/Source/API/Network/Login/MG2UserNetwork.swift`
-   - `MG_Presentation/Common/Service/MG2AppleLoginManage.swift` -> `MG_Data/Source/API/Network/Login/MG2AppleLoginManage.swift`
-2. 공통/기반 코드 재배치:
-   - `APIError`, `ApiConstants` -> `MG_Network/Source/Common`
-   - `DesignSystem`, `UIFont/UIColor 확장` -> `MG_Design/Source`
-   - 공용 컴포넌트/확장 -> `MG_Presentation/Source/Common/{Component,Extensions}`
-   - `RegisterUserInfo` -> `MG_Core/Source/State`
-   - `MogakModels` -> `MG_Data/Source/DTO/Common`
-   - `WebLink` -> `MG_Domain/Source/Entity/Common`
+## Social Login
 
-## Clean Architecture Harden (Additional)
-1. `MG_Presentation`의 `Alamofire` import 제거 (Presentation -> Network 직접 의존 제거)
-2. `Networking` 피처의 API/Router/Response/Model를 `MG_Data/Source/API` + `MG_Data/Source/DTO/Networking`로 이동
-3. `NetworkingViewController`의 직접 통신 제거, `MG2NetworkingViewModel` 경유로 변경
-4. 로그인/프로필 수정 화면 네트워크 호출을 ViewController -> ViewModel로 이동
-   - `MG2ProfileSetupViewModel` 추가
-   - `MG2LoginViewModel`에서 Apple Login 시작 책임 수용
-   - `MG2MyPageViewModel`에서 유저조회/로그아웃/탈퇴 책임 수용
-5. `MG_Presentation` 기능 폴더 정규화
-   - 중복 계층 제거: `Feature/<Feature>/<Feature>/...` -> `Feature/<Feature>/...`
-   - 공통 구조 통일: `View`, `ViewModel`, `Coordinator`, `Component` 중심 재배치
-6. Coordinator 적용 확장
-   - `Login`, `MyPage`, `AppFlow`, `TabBar` 실사용 라우팅 연결
-   - 나머지 피처(`ScheduleStart`, `Modalart`, `MyHistory`, `Networking`, `ScheduleList`, `ScheduleReport`, `InitEditMogakJogak`, `Onboarding`) Coordinator 골격 추가
-7. `MG_Presentation` 폴더 세분화
-   - `Feature/<Feature>/<Feature>/...` 제거 및 `Feature/<Feature>/...`로 평탄화
-   - `*ViewController.swift`를 기능별 `View` 하위로 이동
-   - 셀/보조 뷰 일부를 `Component` 폴더로 분리
+클라이언트는 아래 토큰을 서버의 `POST /api/auth/{provider}/login`에 JSON `token` 필드로 전달합니다.
 
-## Migration Summary (ViewModel + UseCase Wiring, 2026-04-26)
-1. `MG_Presentation`에서 View/Cell의 직접 API 호출 제거
-   - `ModalartMainViewController`, `MogakMainViewController`, `MyHistoryViewController`
-   - `MogakInitViewController`, `MogakEditViewController`, `JogakInitViewController`, `JogakEditViewController`
-   - `ScheduleStartViewController`, `SelectJogakModal`, `ScheduleTableViewCell`
-2. ViewModel 중심 호출 구조로 전환
-   - `MG2ModalartViewModel`: `ModalartUseCase` 기반 조회/생성/수정/삭제 + 모각/조각 삭제
-   - `MG2InitEditMogakJogakViewModel`: `HistoryUseCase` 기반 모각/조각 생성·수정
-   - `MG2ScheduleStartViewModel`: `ScheduleStartUseCase` 기반 모다라트 계열 + 일일 조각 API 래핑
-   - `MG2MyHistoryViewModel`: `MG2ModalartViewModel` 경유
-3. Login/MyPage ViewModel UseCase 전환
-   - `MG2ProfileSetupViewModel`: `UserUseCase` 기반 닉네임/직무/이미지/회원가입
-   - `MG2MyPageViewModel`: `UserUseCase` + `AuthUseCase` 기반 유저조회/로그아웃/탈퇴
-4. 검증 스크립트 추가
-   - `MOGAK2/scripts/migration_gap_check.sh`
-   - 점검 항목: Scene->Feature 폴더 대응, 핵심 폴더 규칙, View 직접 API 호출 금지, Presentation의 LegacyBridge 참조 금지, API 레이어 인벤토리
-5. 구조/규칙 검증 결과
-   - `MOGAK2/scripts/migration_gap_check.sh`: PASS
-   - `MOGAK2/scripts/architecture_audit.sh`: PASSED (0 violations)
+- Apple: identity token
+- Google: ID token
+- Kakao: access token
+
+서버 설정:
+
+- iOS Bundle ID: `com.team.mogaks`
+- Google: `GOOGLE_CLIENT_IDS` 또는 `GOOGLE_CLIENT_ID`에 iOS OAuth Client ID `855761715346-qe8iq5a8jsu4g5bhei2fe6mucl67j42h.apps.googleusercontent.com`을 등록해야 합니다. 여러 ID는 쉼표로 구분합니다.
+- Google 신규 계정은 ID token에 이메일과 `email_verified=true`가 있어야 합니다.
+- Kakao: 현재 서버 구현은 클라이언트 access token으로 Kakao 사용자 API를 호출하므로 REST API 키나 Client Secret을 요구하지 않습니다. 서버에서 `https://kapi.kakao.com`으로 나가는 HTTPS 통신은 가능해야 합니다.
+- Kakao Developers의 iOS 플랫폼 Bundle ID는 `com.team.mogaks`로 등록하고, 카카오계정 이메일 동의 항목을 활성화해야 합니다. 현재 서버의 `KakaoOAuthUserProvider`는 이메일이 없으면 `SOCIAL_EMAIL_REQUIRED`로 거절합니다.
+
+클라이언트 콘솔 설정:
+
+- Google Cloud의 iOS OAuth 앱 Bundle ID를 `com.team.mogaks`로 설정합니다.
+- Kakao Native App Key는 `Configuration/Secrets.xcconfig`에만 넣고, URL Scheme은 `kakao{NATIVE_APP_KEY}` 형식을 사용합니다. 이 키는 현재 서버 환경변수로 전달하지 않습니다.
+
+로컬 서버 예시:
+
+```sh
+export GOOGLE_CLIENT_IDS='855761715346-qe8iq5a8jsu4g5bhei2fe6mucl67j42h.apps.googleusercontent.com'
+export APPLE_CLIENT_IDS='com.team.mogaks'
+sh gradlew run
+```
+
+`application-local.yml`의 기본 Google Client ID와 Apple Client ID는 실제 앱 값이 아니므로, 위 환경변수는 서버 시작 전에 설정해야 합니다. 서버는 Google ID token의 `aud`를 `GOOGLE_CLIENT_IDS`와 비교하고, Kakao는 앱이 전달한 access token으로 `/v2/user/me`를 조회합니다.
+
+## Build
+
+```sh
+xcodebuild -project MOGAK.xcodeproj \
+  -scheme MOGAK \
+  -destination 'generic/platform=iOS Simulator' \
+  build
+```
+
+## Architecture
+
+```text
+MOGAK2/Sources/
+├── MG_App          # 앱 시작, DI, 소셜 SDK 통합
+├── MG_Core         # 공용 상태와 기반 인터페이스
+├── MG_Domain       # Entity, UseCase, Repository 인터페이스
+├── MG_Data         # DTO, Router, Repository 구현
+├── MG_Network      # 공용 네트워크 제공자
+├── MG_Presentation # View, ViewModel, Coordinator
+└── MG_Design       # 디자인 시스템과 리소스
+```
+
+ViewController는 네트워크나 Repository를 직접 호출하지 않습니다. 화면 입력과 표시는 View가, 상태와 기능 실행은 ViewModel/UseCase가 담당합니다.
+
+## Audit
+
+```sh
+sh MOGAK2/scripts/architecture_audit.sh
+```

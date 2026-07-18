@@ -6,14 +6,18 @@
 //
 
 import UIKit
-import Combine
 import SnapKit
 
-class MG2ChooseJobViewController: UIViewController {
+final class MG2ChooseJobViewController: UIViewController {
     private let profileViewModel: MG2ProfileSetupViewModel
+    private let mode: MG2ProfileSetupMode
     weak var coordinator: MG2LoginCoordinator?
 
-    init(profileViewModel: MG2ProfileSetupViewModel = DIContainer.shared.resolveRequired(MG2ProfileSetupViewModel.self)) {
+    init(
+        mode: MG2ProfileSetupMode = .registration,
+        profileViewModel: MG2ProfileSetupViewModel
+    ) {
+        self.mode = mode
         self.profileViewModel = profileViewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -21,19 +25,6 @@ class MG2ChooseJobViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    //    private var items = ["광고기획자", "개발자", "기업가", "고객관리", "기술자", "공무원", "나", "다", "라", "마", "바", "사", "자", "차", "카", "타", "파", "하"]
-    private var items = ["기획/전략", "법무,사무,총무", "인사/HR", "회계/세무", "마케팅/광고/MD", "개발/데이터", "디자인", "물류/무역", "운전/운송/배송", "영업", "고객상담/TM", "금융/보험", "식/음료", "고객서비스/리테일", "엔지니어링/설계", "제조/생산", "교육", "건축/시설", "의료/바이오", "미디어/문화", "스포츠", "공공복지", "자영업", "군인", "의료", "회계사", "법무사", "노무사", "세무사", "관세사", "교사", "디지털노마드", "영상제작자", "크리에이터"]
-    // 검색 결과를 담는 배열
-    private var filteredItems: [String] = []
-    // checkButton 선택 셀 index
-    private var previousIndexPath: IndexPath?
-    private var selectedIndexPath: IndexPath?
-    
-    var selectedIndexPaths: Set<IndexPath> = []
-    
-    var changeJob: Bool = false
-    var selectedJob: String = ""
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -68,20 +59,15 @@ class MG2ChooseJobViewController: UIViewController {
     
     private let tableView : UITableView = {
         let tableView = UITableView()
-        //        tableView.separatorStyle = .none
         return tableView
     }()
     
-    private lazy var nextButton : UIButton = {
-        let button = UIButton()
+    private lazy var nextButton: UIButton = {
+        let button = MG2PrimaryActionButton()
         button.setTitle("다음", for: .normal)
-        button.backgroundColor = UIColor(hex: "BFC3D4")
-        button.titleLabel?.textColor = .white
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         button.titleLabel?.textAlignment = .center
-        button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(nextButtonIsClicked), for: .touchUpInside)
-        button.isUserInteractionEnabled = false
+        button.isEnabled = false
         return button
     }()
     
@@ -101,7 +87,7 @@ class MG2ChooseJobViewController: UIViewController {
         self.configureButton()
         self.configureTableView()
         
-        self.reload()
+        updateJobSections(query: "")
     }
     
     private func configureNavBar() {
@@ -129,7 +115,6 @@ class MG2ChooseJobViewController: UIViewController {
         searchBar.snp.makeConstraints({
             $0.top.equalTo(subLabel.snp.bottom).offset(48)
             $0.leading.trailing.equalToSuperview().inset(20)
-            //            $0.height.equalTo(33)
             $0.height.equalToSuperview().multipliedBy(0.061)
         })
         
@@ -151,55 +136,39 @@ class MG2ChooseJobViewController: UIViewController {
         })
     }
     
-    private func reload() {
-        self.tableView.reloadData()
-    }
-    
     private func configureButton() {
         self.view.addSubview(nextButton)
         
         nextButton.snp.makeConstraints({
             $0.leading.trailing.equalToSuperview().inset(20)
-            //            $0.height.equalTo(53)
             $0.height.equalToSuperview().multipliedBy(0.061)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-23)
         })
     }
     
-    private func nextButtonIsOn() {
-        nextButton.isUserInteractionEnabled = true
-        nextButton.backgroundColor = UIColor(hex: "475FFD")
+    private func renderSelection() {
+        let hasSelection = !profileViewModel.state.selectedJob.isEmpty
+        nextButton.isEnabled = hasSelection
     }
-    
-    private func nextButtonIsOff() {
-        nextButton.isUserInteractionEnabled = false
-        nextButton.backgroundColor = UIColor(hex: "BFC3D4")
+
+    private func updateJobSections(query: String) {
+        profileViewModel.updateJobSections(matching: query)
+        tableView.reloadData()
+        renderSelection()
     }
     
     @objc private func nextButtonIsClicked() {
-        if changeJob {
-//            self.dismiss(animated: true)
-            self.changeJobRequest()
-        } else {
-            MG2Deps.app.userState.userJob = selectedJob
-            (coordinator ?? MG2LoginCoordinator()).routeToChooseRegion(from: navigationController)
-        }
-        
-    }
-    
-    func changeJobRequest() {
-        profileViewModel.changeJob(selectedJob) { result in
+        profileViewModel.submitSelectedJob(mode: mode) { [weak self] result in
+            guard let self else { return }
             switch result {
-            case .success(let success):
-                if success {
-                    MG2Deps.app.userState.userJob = self.selectedJob
-                    self.navigationController?.popViewController(animated: true)
-                }
-            case .failure(let failure):
-                print(#fileID, #function, #line, "- failure: \(failure)")
+            case .success(.selectedForRegistration):
+                coordinator?.routeToChooseRegion(from: self)
+            case .success(.profileUpdated):
+                coordinator?.routeBack(from: self)
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
             }
         }
-            
     }
 }
 
@@ -216,189 +185,47 @@ extension MG2ChooseJobViewController: UISearchBarDelegate {
     
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filterItems(with: searchText)
-        self.reload()
+        updateJobSections(query: searchText)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // 취소 버튼을 누를 때 검색어를 초기화하고 테이블 뷰를 갱신합니다.
         searchBar.text = nil
-        searchBar.resignFirstResponder() // 키보드 내림
-        filterItems(with: "")
-        self.reload()
-    }
-    
-    private func filterItems(with searchText: String) {
-        if searchText.isEmpty {
-            filteredItems = items // 검색어가 비어있으면 모든 항목을 포함
-        } else {
-            filteredItems = items.filter { $0.range(of: searchText, options: .caseInsensitive) != nil }
-            // 검색어를 기준으로 items 배열을 필터링하여 검색 결과를 filteredItems에 저장
-        }
-    }
-    
-}
-// 직무선택을 위한 코드
-extension MG2ChooseJobViewController {
-    func updateCellSelectionState(_ cell: MG2NameCell, at indexPath: IndexPath) {
-        if let selectedIndexPath = selectedIndexPath, selectedIndexPath == indexPath {
-            cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
-            nextButtonIsOn()
-        } else {
-            cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
-            // 다른 선택된 셀이 있는지 확인하여 nextButton의 상태 업데이트
-            if selectedIndexPaths.isEmpty {
-                nextButtonIsOff()
-            }
-        }
-        print("selectedIndexPath \(selectedIndexPath)")
-    }
-    
-    private func updateNextButtonState() {
-        if selectedIndexPaths.isEmpty {
-            nextButtonIsOff()
-        } else {
-            nextButtonIsOn()
-        }
-        
-        
+        searchBar.resignFirstResponder()
+        updateJobSections(query: "")
     }
 }
 
 extension MG2ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        let sectionTitles = getSectionTitles()
-        return sectionTitles.count
+        profileViewModel.state.jobSections.count
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let filteredItemsInSection = getFilteredItemsInSection(section)
-        return filteredItemsInSection.count
+        profileViewModel.state.jobSections[section].jobs.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MG2NameCell
-            
-            let filteredItemsInSection = getFilteredItemsInSection(indexPath.section)
-            let item = filteredItemsInSection[indexPath.row]
-            cell.textLabel?.text = item
-            cell.selectionStyle = .none
-            
-            if selectedIndexPaths.contains(indexPath) {
-                cell.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
-            } else {
-                cell.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
-            }
-            
-            return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? MG2NameCell else {
+            return UITableViewCell()
+        }
 
+        let job = profileViewModel.state.jobSections[indexPath.section].jobs[indexPath.row]
+        cell.configure(name: job, isChecked: profileViewModel.state.selectedJob == job)
+        cell.selectionStyle = .none
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if selectedIndexPaths.contains(indexPath) {
-                selectedIndexPaths.remove(indexPath)
-            } else {
-                // 하나의 셀만 선택될 수 있도록 이전에 선택된 셀을 모두 해제합니다.
-                selectedIndexPaths.removeAll()
-                selectedIndexPaths.insert(indexPath)
-            }
-        
-            tableView.reloadData() // 선택 상태 업데이트
-            updateNextButtonState()
-        
-        // 선택된 셀의 정보 가져오기
-           if let cell = tableView.cellForRow(at: indexPath) as? MG2NameCell {
-               if let nameLabel = cell.textLabel?.text {
-                   selectedJob = nameLabel
-//                   MG2Deps.app.userState.userJob = nameLabel
-                   print("Selected cell's nameLabel: \(nameLabel)")
-               }
-           }
+        profileViewModel.selectJob(section: indexPath.section, row: indexPath.row)
+        renderSelection()
+        tableView.reloadData()
     }
     
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        // 섹션 헤더에 표시할 문자열을 반환합니다.
-        let sectionTitles = getSectionTitles()
-        if section < sectionTitles.count {
-            return sectionTitles[section]
-        }
-        return nil
+        profileViewModel.state.jobSections[section].title
     }
-    
-    private func searchBarIsEmpty() -> Bool {
-        return searchBar.text?.isEmpty ?? true
-    }
-    
-    private func getSectionTitles() -> [String] {
-        // 이름의 첫 글자로 이루어진 섹션 타이틀 배열을 반환합니다.
-        let sectionTitles = items.map { name -> String in
-            if let firstCharacter = name.first, let unicodeScalar = firstCharacter.unicodeScalars.first {
-                let scalarValue = unicodeScalar.value
-                if (0xAC00 <= scalarValue && scalarValue <= 0xD7A3) { // 첫 글자가 한글인 경우
-                    let unicodeValue = scalarValue - 0xAC00
-                    let choseongIndex = Int(unicodeValue / (21 * 28))
-                    let choseong = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
-                    let choseongCharacter = choseong[choseongIndex]
-                    return choseongCharacter
-                } else { // 첫 글자가 한글이 아닌 경우
-                    return name.prefix(1).uppercased()
-                }
-            } else { // 이름이 비어있는 경우
-                return ""
-            }
-        }
-        
-        let uniqueTitles = Array(Set(sectionTitles)).sorted()
-        return uniqueTitles
-    }
-    
-    private func getFilteredItemsInSection(_ section: Int) -> [String] {
-        let sectionTitles = getSectionTitles()
-        let sectionTitle = sectionTitles[section]
-        
-        let filteredItemsInSection: [String]
-        if searchBarIsEmpty() {
-            filteredItemsInSection = items.filter { item -> Bool in
-                if let firstCharacter = item.first, let unicodeScalar = firstCharacter.unicodeScalars.first {
-                    let scalarValue = unicodeScalar.value
-                    if (0xAC00 <= scalarValue && scalarValue <= 0xD7A3) { // 첫 글자가 한글인 경우
-                        let unicodeValue = scalarValue - 0xAC00
-                        let choseongIndex = Int(unicodeValue / (21 * 28))
-                        let choseong = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
-                        let choseongCharacter = choseong[choseongIndex]
-                        return "\(choseongCharacter)" == sectionTitle
-                    } else { // 첫 글자가 한글이 아닌 경우
-                        return item.prefix(1).uppercased() == sectionTitle
-                    }
-                } else { // 이름이 비어있는 경우
-                    return sectionTitle.isEmpty
-                }
-            }
-        } else {
-            filteredItemsInSection = filteredItems.filter { item -> Bool in
-                if let firstCharacter = item.first, let unicodeScalar = firstCharacter.unicodeScalars.first {
-                    let scalarValue = unicodeScalar.value
-                    if (0xAC00 <= scalarValue && scalarValue <= 0xD7A3) { // 첫 글자가 한글인 경우
-                        let unicodeValue = scalarValue - 0xAC00
-                        let choseongIndex = Int(unicodeValue / (21 * 28))
-                        let choseong = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
-                        let choseongCharacter = choseong[choseongIndex]
-                        return "\(choseongCharacter)" == sectionTitle
-                    } else { // 첫 글자가 한글이 아닌 경우
-                        return item.prefix(1).uppercased() == sectionTitle
-                    }
-                } else { // 이름이 비어있는 경우
-                    return sectionTitle.isEmpty
-                }
-            }
-        }
-        
-        return filteredItemsInSection
-    }
-    
-    
 }

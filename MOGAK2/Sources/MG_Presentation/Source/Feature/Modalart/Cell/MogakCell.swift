@@ -5,21 +5,19 @@
 //  Created by 김라영 on 2023/10/10.
 //
 
-import Foundation
 import UIKit
 import SnapKit
 
 /// 사용자가 목표를 설정했을때 생성되는 모각
-class MogakCell: UICollectionViewCell {
-    weak var delegate: MogakSettingButtonTappedDelegate?
+final class MogakCell: UICollectionViewCell {
+    private weak var delegate: MG2MogakSettingsDelegate?
     
     static let identifier: String = "MogakCell"
-    var mogakCellData: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
+    private var mogak: MG2ModalartMogakItemEntity?
     
     private lazy var goalCategoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 6, bottom: 6, left: 12, right: 12)
         label.numberOfLines = 0
-        label.text = self.mogakCellData.bigCategory.name
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
         label.font = UIFont.pretendard(.medium, size: 12)
@@ -30,7 +28,6 @@ class MogakCell: UICollectionViewCell {
     private lazy var goalContentLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.text = mogakCellData.title
         label.textColor = DesignSystemColor.black.value
         label.font = UIFont.pretendard(.regular, size: 14)
         label.textAlignment = .center
@@ -56,21 +53,34 @@ class MogakCell: UICollectionViewCell {
     }
     
     //MARK: - 셀 안의 내용을 셋팅하는 부분
-    func cellDataSetting() {
+    func configure(with mogak: MG2ModalartMogakItemEntity, delegate: MG2MogakSettingsDelegate) {
+        self.mogak = mogak
+        self.delegate = delegate
         //카테고리
-        self.goalCategoryLabel.text = mogakCellData.bigCategory.name
+        self.goalCategoryLabel.text = mogak.bigCategoryName
         //카테고리의 배경색
-        self.goalCategoryLabel.backgroundColor = UIColor(hex: mogakCellData.color ?? "475FFD").withAlphaComponent(0.1)
+        self.goalCategoryLabel.backgroundColor = UIColor(
+            hex: mogak.color ?? DesignSystemPalette.signatureHex
+        ).withAlphaComponent(0.1)
         //카테고리의 글자색
-        self.goalCategoryLabel.textColor = UIColor(hex: mogakCellData.color ?? "475FFD")
+        self.goalCategoryLabel.textColor = UIColor(
+            hex: mogak.color ?? DesignSystemPalette.signatureHex
+        )
         
         //실제 이루고자하는 내용
-        self.goalContentLabel.text = mogakCellData.title
+        self.goalContentLabel.text = mogak.title
     }
     
     //MARK: - 모각세팅으로 이동하는 부분
-    @objc func settingIconTapped() {
-        delegate?.cellButtonTapped(mogakData: self.mogakCellData)
+    @objc private func settingIconTapped() {
+        guard let mogak else { return }
+        delegate?.mogakSettingsTapped(mogak: mogak)
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        mogak = nil
+        delegate = nil
     }
 }
 

@@ -5,27 +5,15 @@ This file documents how coding agents should understand and work in this reposit
 ## Project Context
 
 - The workspace root is `/Users/ansehoon/Desktop/MOGAK_iOS`.
-- `MOGAK/` is the MOGAK1 legacy codebase.
 - `MOGAK2/` is the refactored and modularized codebase.
-- Default implementation, refactoring, and architecture work should target `MOGAK2/`.
-- Use `MOGAK/` as the behavior reference when checking legacy implementation details or doing 1:1 migration work.
+- All implementation, refactoring, and architecture work should target `MOGAK2/`.
+- The former MOGAK1 source tree has been removed after migration verification.
 
 ## Working Rules
 
-- Do not edit legacy `MOGAK/` code unless the task explicitly requires it.
-- Features migrated into `MOGAK2/` should preserve the behavior and screen flow of the legacy `MOGAK/` implementation.
 - Prefer small, migration-aligned changes over broad unrelated refactors.
 - Do not revert user changes.
 - When moving files, renaming types, or changing module boundaries, verify references and build impact.
-
-## MOGAK1 Legacy
-
-`MOGAK/` contains the original app implementation.
-
-- UIKit-based ViewController-heavy structure.
-- View, network, and model logic may be mixed inside feature folders.
-- Source of truth for existing app behavior.
-- Reference target for MOGAK2 migration.
 
 ## MOGAK2 Refactor
 
@@ -74,10 +62,8 @@ Important constraints:
 
 ## Migration Guidelines
 
-- Before migrating a feature into MOGAK2, inspect the MOGAK1 screen flow, API parameters, response handling, and error handling.
 - Place migrated code according to the MOGAK2 layer rules.
-- Only disable or disconnect legacy files when the full project can still build.
-- Do not judge migration status by folder presence alone. Check actual call paths.
+- Preserve established MOGAK2 screen behavior when refactoring.
 
 ## Verification
 
@@ -87,10 +73,9 @@ When possible, verify changes with:
 xcodebuild -project MOGAK.xcodeproj -scheme MOGAK -destination 'generic/platform=iOS Simulator' build
 ```
 
-Migration structure checks may use:
+Architecture checks may use:
 
 ```sh
-MOGAK2/scripts/migration_gap_check.sh
 MOGAK2/scripts/architecture_audit.sh
 ```
 

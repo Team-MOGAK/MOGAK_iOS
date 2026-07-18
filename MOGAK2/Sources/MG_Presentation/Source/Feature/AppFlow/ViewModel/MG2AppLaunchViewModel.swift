@@ -1,6 +1,6 @@
 import Foundation
 
-enum MG2AppLaunchRoute {
+enum MG2AppLaunchRoute: Equatable {
     case login
     case terms
     case main
@@ -9,38 +9,45 @@ enum MG2AppLaunchRoute {
 
 final class MG2AppLaunchViewModel {
     private let authUseCase: AuthUseCase
+    private let userState: MG2UserState
+    private let sessionStore: MG2SessionStoring
 
-    init(authUseCase: AuthUseCase) {
+    init(
+        authUseCase: AuthUseCase,
+        userState: MG2UserState,
+        sessionStore: MG2SessionStoring
+    ) {
         self.authUseCase = authUseCase
+        self.userState = userState
+        self.sessionStore = sessionStore
     }
 
     func resolveInitialRoute() async -> MG2AppLaunchRoute {
-        guard let refreshToken = MG2TokenStore.refreshToken, !refreshToken.isEmpty else {
+        guard let refreshToken = sessionStore.refreshToken, !refreshToken.isEmpty else {
             return defaultRoute
         }
 
         do {
             let tokens = try await authUseCase.refresh(refreshToken: refreshToken)
-            MG2TokenStore.save(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken)
-            MG2LaunchStorage.setFirstTime(false)
+            sessionStore.saveTokens(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken)
+            sessionStore.setFirstTime(false)
 
-            let isRegistered = MG2LaunchStorage.storedUserIsRegistered ?? true
+            let isRegistered = sessionStore.storedUserIsRegistered ?? true
             await updateSessionState(isRegistered: isRegistered, loginState: .login)
 
             return isRegistered ? .main : .terms
         } catch {
-            MG2TokenStore.clearTokens()
-            MG2LaunchStorage.clearUserRegistration()
+            sessionStore.clearAuthentication()
             await updateSessionState(isRegistered: false, loginState: .logout)
 
             return defaultRoute
         }
     }
 
-    func resolveRoute(loginState: LoginStatus?) -> MG2AppLaunchRoute {
+    func resolveRoute(loginState: MG2LoginStatus?) -> MG2AppLaunchRoute {
         if let loginState {
             if loginState == .login {
-                return MG2Deps.app.userState.userIsRegistered ? .main : .terms
+                return userState.isRegistered ? .main : .terms
             }
 
             if loginState == .guest {
@@ -53,13 +60,21 @@ final class MG2AppLaunchViewModel {
         return defaultRoute
     }
 
+    func resolveCurrentRoute() -> MG2AppLaunchRoute {
+        resolveRoute(loginState: userState.loginState)
+    }
+
+    func completeOnboarding() {
+        sessionStore.setFirstTime(false)
+    }
+
     private var defaultRoute: MG2AppLaunchRoute {
-        MG2LaunchStorage.isFirstTime ? .onboarding : .login
+        sessionStore.isFirstTime ? .onboarding : .login
     }
 
     @MainActor
-    private func updateSessionState(isRegistered: Bool, loginState: LoginStatus) {
-        MG2Deps.app.userState.userIsRegistered = isRegistered
-        MG2Deps.app.userState.loginState = loginState
+    private func updateSessionState(isRegistered: Bool, loginState: MG2LoginStatus) {
+        userState.isRegistered = isRegistered
+        userState.loginState = loginState
     }
 }

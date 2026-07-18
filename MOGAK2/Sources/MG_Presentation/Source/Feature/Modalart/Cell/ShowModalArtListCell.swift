@@ -8,23 +8,20 @@
 import UIKit
 import SnapKit
 
-class ShowModalArtListCell: UITableViewCell {
-    static let identifier: String = "ShowModalArtListCell"
-    var modalartName: String = ""
+final class ShowModalArtListCell: UITableViewCell {
+    static let identifier = String(describing: ShowModalArtListCell.self)
     
-    private var modalartLabel: UILabel!
+    private let modalartLabel = UILabel()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureLayout()
-        setUpLabel()
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
-    func configureLayout() {
-        modalartLabel = UILabel()
+    private func configureLayout() {
         contentView.addSubview(modalartLabel)
         
         modalartLabel.snp.makeConstraints { make in
@@ -35,17 +32,15 @@ class ShowModalArtListCell: UITableViewCell {
         }
     }
     
-    func setUpLabel() {
-        modalartLabel.text = modalartName
-        if modalartName.prefix(6) == "내 모다라트" {
+    func configure(name: String) {
+        modalartLabel.text = name
+        if name.hasPrefix("내 모다라트") {
             modalartLabel.textColor = DesignSystemColor.gray3.value
-        } else if modalartName.prefix(7) == "모다라트 추가" {
+        } else if name == "모다라트 추가" {
             modalartLabel.textColor = DesignSystemColor.signature.value
         } else {
             modalartLabel.textColor = DesignSystemColor.black.value
         }
         modalartLabel.textAlignment = .left
-//        modalartLabel.backgroundColor = .red
     }
 }
-

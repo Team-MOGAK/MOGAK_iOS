@@ -23,9 +23,14 @@ final class DefaultModalartRepository: ModalartRepository {
         return response.result?.toEntity()
     }
 
-    func getMogakDetailJogaks(mogakId: Int, date: String) async throws -> [JogakDetail] {
-        let response: JogakDetailResponse = try await networkProvider.request(target: MG2ModalartRouter.mogakDetailJogaks(mogakId: mogakId, date: date))
-        return response.result ?? []
+    func getMogakDetailJogaks(mogakId: Int, date: Date) async throws -> [MG2JogakDetailEntity] {
+        let response: MG2JogakDetailResponseDTO = try await networkProvider.request(
+            target: MG2ModalartRouter.mogakDetailJogaks(
+                mogakId: mogakId,
+                date: MG2APIDateCoding.encode(date)
+            )
+        )
+        return response.result?.map { $0.toEntity() } ?? []
     }
 
     func createModalart(title: String, color: String) async throws -> MG2ModalartUpsertEntity {
@@ -38,18 +43,15 @@ final class DefaultModalartRepository: ModalartRepository {
         return response.result.toEntity()
     }
 
-    func deleteModalart(id: Int) async throws -> Bool {
+    func deleteModalart(id: Int) async throws {
         try await networkProvider.requestEmpty(target: MG2ModalartRouter.modalartDelete(id: id))
-        return true
     }
 
-    func deleteMogak(mogakId: Int) async throws -> Bool {
+    func deleteMogak(mogakId: Int) async throws {
         try await networkProvider.requestEmpty(target: MG2ModalartRouter.mogakDelete(id: mogakId))
-        return true
     }
 
-    func deleteJogak(jogakId: Int) async throws -> Bool {
+    func deleteJogak(jogakId: Int) async throws {
         try await networkProvider.requestEmpty(target: MG2ModalartRouter.jogakDelete(id: jogakId))
-        return true
     }
 }

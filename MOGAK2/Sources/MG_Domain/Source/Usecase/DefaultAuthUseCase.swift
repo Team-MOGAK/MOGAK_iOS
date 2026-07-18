@@ -8,10 +8,6 @@ final class DefaultAuthUseCase: AuthUseCase {
         self.repository = repository
     }
 
-    func login(idToken: String) async throws -> MG2AuthSession {
-        try await login(provider: .apple, token: idToken)
-    }
-
     func login(provider: MG2SocialLoginProvider, token: String) async throws -> MG2AuthSession {
         try await repository.login(provider: provider, token: token)
     }
@@ -20,15 +16,12 @@ final class DefaultAuthUseCase: AuthUseCase {
         try await repository.refresh(refreshToken: refreshToken)
     }
 
-    func logout(accessToken: String?) async throws {
-        try await repository.logout(accessToken: accessToken)
+    func logout() async throws {
+        try await repository.logout()
     }
 
-    func withdraw(accessToken: String?) async throws -> Bool {
-        try await repository.withdraw(accessToken: accessToken)
+    func withdraw() async throws -> Bool {
+        try await repository.withdraw()
     }
 
-    func revokeAppleToken(refreshToken: String) async throws {
-        try await repository.revokeAppleToken(refreshToken: refreshToken)
-    }
 }

@@ -1,17 +1,27 @@
 import UIKit
 
 final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
-    private let viewModel: MG2AppLaunchViewModel
-    private let loginCoordinator = MG2LoginCoordinator()
-    private let tabBarCoordinator = MG2TabBarCoordinator()
-    private let onboardingCoordinator = MG2OnboardingCoordinator()
+    var onRouteChange: ((MG2AppLaunchRoute) -> Void)?
 
-    init(viewModel: MG2AppLaunchViewModel = DIContainer.shared.resolveRequired(MG2AppLaunchViewModel.self)) {
+    private let viewModel: MG2AppLaunchViewModel
+    private let loginCoordinator: MG2LoginCoordinator
+    private let tabBarCoordinator: MG2TabBarCoordinator
+    private let onboardingCoordinator: MG2OnboardingCoordinator
+
+    init(
+        viewModel: MG2AppLaunchViewModel,
+        loginCoordinator: MG2LoginCoordinator,
+        tabBarCoordinator: MG2TabBarCoordinator,
+        onboardingCoordinator: MG2OnboardingCoordinator
+    ) {
         self.viewModel = viewModel
+        self.loginCoordinator = loginCoordinator
+        self.tabBarCoordinator = tabBarCoordinator
+        self.onboardingCoordinator = onboardingCoordinator
     }
 
     func start() -> UIViewController {
-        return makeRoot(for: viewModel.resolveRoute(loginState: MG2Deps.app.userState.loginState))
+        return makeRoot(for: viewModel.resolveCurrentRoute())
     }
 
     func makeRoot(for route: MG2AppLaunchRoute) -> UIViewController {
@@ -23,17 +33,11 @@ final class MG2AppFlowCoordinator: MG2PresentationCoordinator {
         case .main:
             return tabBarCoordinator.start()
         case .onboarding:
-            guard let onboarding = onboardingCoordinator.start() as? MG2OnboardingContainerViewController else {
-                return onboardingCoordinator.start()
-            }
-            onboarding.onFinish = { [weak self] in
+            return onboardingCoordinator.makeContainer { [weak self] in
                 guard let self else { return }
-                MG2LaunchStorage.setFirstTime(false)
-                UIApplication.shared.connectedScenes
-                    .compactMap { $0 as? UIWindowScene }
-                    .first?.windows.first?.rootViewController = self.makeRoot(for: .login)
+                viewModel.completeOnboarding()
+                onRouteChange?(.login)
             }
-            return onboarding
         }
     }
 }

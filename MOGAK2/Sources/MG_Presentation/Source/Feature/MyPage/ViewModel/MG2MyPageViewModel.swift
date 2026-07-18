@@ -1,41 +1,80 @@
 import Foundation
+import Combine
+
+struct MG2MyPageProfileState {
+    let name: String
+    let job: String
+    let imageData: Data?
+}
 
 @MainActor
 final class MG2MyPageViewModel {
     private let userUseCase: UserUseCase
     private let authUseCase: AuthUseCase
+    private let userState: MG2UserState
+    private let sessionStore: MG2SessionStoring
 
     init(
         userUseCase: UserUseCase,
-        authUseCase: AuthUseCase
+        authUseCase: AuthUseCase,
+        userState: MG2UserState,
+        sessionStore: MG2SessionStoring
     ) {
         self.userUseCase = userUseCase
         self.authUseCase = authUseCase
+        self.userState = userState
+        self.sessionStore = sessionStore
     }
 
-    var isGuest: Bool { MG2Deps.app.userState.loginState == .guest }
+    var isGuest: Bool { userState.loginState == .guest }
+    var appVersion: String { Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "" }
 
-    func fetchUserData(completion: @escaping (Result<Bool, Error>) -> Void) {
+    var profilePublisher: AnyPublisher<MG2MyPageProfileState, Never> {
+        userState.$nickname
+            .combineLatest(
+                userState.$job,
+                userState.$profileImageData,
+                userState.$loginState
+            )
+            .map { nickname, job, imageData, loginState in
+                guard loginState != .guest else {
+                    return MG2MyPageProfileState(
+                        name: "로그인이 필요합니다.",
+                        job: "환영합니다!",
+                        imageData: nil
+                    )
+                }
+                return MG2MyPageProfileState(
+                    name: nickname,
+                    job: job,
+                    imageData: imageData
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func fetchUserData(completion: @escaping (Result<Void, Error>) -> Void) {
         Task {
             do {
                 let profile = try await userUseCase.getUserProfile()
-                MG2Deps.app.userState.nickName = profile.nickname
-                MG2Deps.app.userState.userJob = profile.job
-                completion(.success(true))
+                userState.nickname = profile.nickname
+                userState.job = profile.job
+                completion(.success(()))
             } catch {
                 completion(.failure(error))
             }
         }
     }
 
-    func logout(completion: @escaping (Result<Bool, Error>) -> Void) {
+    func logout(completion: @escaping (Result<Void, Error>) -> Void) {
         Task {
             do {
-                try await authUseCase.logout(accessToken: MG2TokenStore.accessToken)
-                MG2TokenStore.clearTokens()
-                MG2LaunchStorage.clearUserRegistration()
-                MG2Deps.app.userState.loginState = .logout
-                completion(.success(true))
+                try await authUseCase.logout()
+                sessionStore.clearAuthentication()
+                userState.loginState = .logout
+                userState.isRegistered = false
+                userState.resetProfile()
+                completion(.success(()))
             } catch {
                 completion(.failure(error))
             }
@@ -45,11 +84,12 @@ final class MG2MyPageViewModel {
     func withdraw(completion: @escaping (Result<Bool, Error>) -> Void) {
         Task {
             do {
-                let deleted = try await authUseCase.withdraw(accessToken: MG2TokenStore.accessToken)
+                let deleted = try await authUseCase.withdraw()
                 if deleted {
-                    MG2TokenStore.clearTokens()
-                    MG2LaunchStorage.clearUserRegistration()
-                    MG2Deps.app.userState.loginState = .logout
+                    sessionStore.resetAfterWithdrawal()
+                    userState.loginState = .logout
+                    userState.isRegistered = false
+                    userState.resetProfile()
                 }
                 completion(.success(deleted))
             } catch {

@@ -5,16 +5,23 @@
 //  Created by 김라영 on 2024/02/19.
 //
 
-import Foundation
 import UIKit
 import SnapKit
 
 /// 조각 페이지에서 중앙 모각 탭시 올라오는 모각 뷰
-class MogakMainBottomModalViewController: UIViewController {
-    weak var delegate: MogakSettingButtonTappedDelegate?
-    var selectedMogak: DetailMogakData = DetailMogakData(mogakId: 0, title: "", bigCategory: MainCategory(id: 0, name: ""), smallCategory: "", color: "")
-  
-    var startDeleteJogak: (() -> ())? = nil
+final class MogakMainBottomModalViewController: UIViewController {
+    private let selectedMogak: MG2ModalartMogakItemEntity
+    var onDelete: (() -> Void)?
+    var onEdit: ((MG2ModalartMogakItemEntity) -> Void)?
+
+    init(mogak: MG2ModalartMogakItemEntity) {
+        selectedMogak = mogak
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var categoryLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 4, bottom: 4, left: 10, right: 10)
@@ -29,11 +36,11 @@ class MogakMainBottomModalViewController: UIViewController {
         let label = UILabel()
         label.textColor = .black
         label.numberOfLines = 1
-        label.font = DesignSystemFont.medium18140.value
+        label.font = DesignSystemFont.medium18L140.value
         return label
     }()
     
-    lazy var deleteBtn: UIButton = {
+    private lazy var deleteBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("삭제", for: .normal)
         btn.backgroundColor = DesignSystemColor.signatureBag.value
@@ -44,7 +51,7 @@ class MogakMainBottomModalViewController: UIViewController {
         return btn
     }()
     
-    lazy var editBtn: UIButton = {
+    private lazy var editBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("수정", for: .normal)
         btn.backgroundColor = DesignSystemColor.signature.value
@@ -55,7 +62,7 @@ class MogakMainBottomModalViewController: UIViewController {
         return btn
     }()
     
-    lazy var btnstk: UIStackView = {
+    private lazy var btnstk: UIStackView = {
         let stk = UIStackView()
         stk.axis = .horizontal
         stk.alignment = .fill
@@ -73,8 +80,8 @@ class MogakMainBottomModalViewController: UIViewController {
         self.view.backgroundColor = .white
     }
     
-    func labelSetting() {
-        categoryLabel.text = selectedMogak.bigCategory.name
+    private func labelSetting() {
+        categoryLabel.text = selectedMogak.bigCategoryName
         categoryLabel.textColor = UIColor(hex: selectedMogak.color ?? "#475FFD")
         categoryLabel.backgroundColor = UIColor(hex: selectedMogak.color ?? "#475FFD").withAlphaComponent(0.1)
         
@@ -82,26 +89,19 @@ class MogakMainBottomModalViewController: UIViewController {
     }
     
     //MARK: - 모각 delete버튼 클릭시
-    @objc func deleteBtnTapped() {
-        self.dismiss(animated: true)
-        guard let startDeleteJogak = self.startDeleteJogak else { return }
-        //이걸 modal을 부르는 곳에서 데이터를 startDeleteJogak을 부른다
-        startDeleteJogak()
+    @objc private func deleteBtnTapped() {
+        onDelete?()
     }
     
     //MARK: - 모각 수정
-    @objc func editBtnTapped() {
-        print(#fileID, #function, #line, "- 네 버튼 클릭")
-        self.dismiss(animated: true)
-        print(#fileID, #function, #line, "- delegate:\(delegate)")
-        delegate?.cellButtonTapped(mogakData: self.selectedMogak)
-        
+    @objc private func editBtnTapped() {
+        onEdit?(selectedMogak)
     }
     
 }
 
 extension MogakMainBottomModalViewController {
-    func configureLayout() {
+    private func configureLayout() {
         self.view.addSubviews(categoryLabel, mogakTitleLabel, btnstk)
         
         categoryLabel.snp.makeConstraints { make in

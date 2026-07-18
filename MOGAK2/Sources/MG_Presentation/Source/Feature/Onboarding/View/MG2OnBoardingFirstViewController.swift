@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import Then
 
 final class MG2OnBoardingFirstViewController: UIViewController {
 

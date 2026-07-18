@@ -8,48 +8,25 @@ final class DefaultAuthRepository: AuthRepository {
         self.networkProvider = networkProvider
     }
 
-    func login(idToken: String) async throws -> MG2AuthSession {
-        try await login(provider: .apple, token: idToken)
-    }
-
     func login(provider: MG2SocialLoginProvider, token: String) async throws -> MG2AuthSession {
         let response: MG2AuthLoginResponseDTO = try await networkProvider.request(
             target: AuthRouter.socialLogin(provider: provider.rawValue, token: token)
         )
-        guard let session = response.result?.toDomain() else {
-            throw NSError(domain: "AuthRepository", code: -1)
-        }
-        return session
+        return response.result.toDomain()
     }
 
     func refresh(refreshToken: String) async throws -> MG2TokenPair {
         let response: MG2RefreshResponseDTO = try await networkProvider.request(target: AuthRouter.refresh(refreshToken: refreshToken))
-        guard let token = response.result?.toDomain() else {
-            throw NSError(domain: "AuthRepository", code: -2)
-        }
-        return token
+        return response.result.toDomain()
     }
 
-    func logout(accessToken: String?) async throws {
-        try await networkProvider.requestEmpty(target: AuthRouter.logout(accessToken: accessToken))
+    func logout() async throws {
+        try await networkProvider.requestEmpty(target: AuthRouter.logout)
     }
 
-    func withdraw(accessToken: String?) async throws -> Bool {
-        let response: MG2WithdrawResponseDTO = try await networkProvider.request(target: AuthRouter.withdraw(accessToken: accessToken))
-        return response.result.deleted
+    func withdraw() async throws -> Bool {
+        let response: MG2WithdrawResponseDTO = try await networkProvider.request(target: AuthRouter.withdraw)
+        return response.result.isDeleted
     }
 
-    func revokeAppleToken(refreshToken: String) async throws {
-        var components = URLComponents(string: APIConfig.appleRevokeURL)
-        components?.queryItems = [URLQueryItem(name: "refresh_token", value: refreshToken)]
-
-        guard let url = components?.url else {
-            throw NSError(domain: "AuthRepository", code: -3)
-        }
-
-        let (_, response) = try await URLSession.shared.data(from: url)
-        guard let httpResponse = response as? HTTPURLResponse, (200..<500).contains(httpResponse.statusCode) else {
-            throw NSError(domain: "AuthRepository", code: -4)
-        }
-    }
 }

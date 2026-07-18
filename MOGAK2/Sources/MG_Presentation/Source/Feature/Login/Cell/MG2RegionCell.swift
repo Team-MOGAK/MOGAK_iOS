@@ -7,8 +7,9 @@
 
 import UIKit
 import SnapKit
+import Then
 
-class MG2RegionCell: UITableViewCell {
+final class MG2RegionCell: UITableViewCell {
     
     let name = UILabel().then {
         $0.text = ""
@@ -18,17 +19,6 @@ class MG2RegionCell: UITableViewCell {
     
     private let checkButton = UIButton().then {
         $0.setImage(UIImage(named: "checkOff"), for: .normal)
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -41,20 +31,13 @@ class MG2RegionCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setName(item: String) {
-        self.name.text = item
-    }
-    
-    func setCheckOn() {
-        self.checkButton.setImage(UIImage(named: "checkOn"), for: .normal)
-    }
-    
-    func setCheckOff() {
-        self.checkButton.setImage(UIImage(named: "checkOff"), for: .normal)
+    func configure(name: String, isChecked: Bool) {
+        self.name.text = name
+        checkButton.setImage(UIImage(named: isChecked ? "checkOn" : "checkOff"), for: .normal)
     }
     
     private func configure() {
-        [name, checkButton].forEach({self.addSubview($0)})
+        [name, checkButton].forEach(contentView.addSubview)
         
         name.snp.makeConstraints({
             $0.centerY.equalToSuperview()

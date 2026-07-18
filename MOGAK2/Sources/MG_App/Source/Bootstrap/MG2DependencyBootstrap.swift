@@ -1,103 +1,85 @@
 import Foundation
-import Alamofire
 
 enum MG2DependencyBootstrap {
-    static func registerDefault(container: DIContainer = .shared) {
-        registerNetwork(container: container)
+    static func registerDefault(
+        container: DIContainer = .shared,
+        appDependencies: MG2AppDependencies
+    ) {
+        container.register(MG2AppDependencies.self) { _ in appDependencies }
+        registerNetwork(container: container, appDependencies: appDependencies)
         registerScheduleStart(container: container)
         registerAuth(container: container)
         registerModalart(container: container)
-        registerNetworking(container: container)
-        registerHistory(container: container)
+        registerMogakEditing(container: container)
         registerUser(container: container)
-        registerViewModels(container: container)
+        registerViewModels(container: container, appDependencies: appDependencies)
     }
 
-    private static func registerNetwork(container: DIContainer) {
+    private static func registerNetwork(
+        container: DIContainer,
+        appDependencies: MG2AppDependencies
+    ) {
         container.register(NetworkProvider.self) { _ in
-            DefaultNetworkProvider(session: .default)
+            DefaultNetworkProvider {
+                appDependencies.sessionStore.accessToken
+            }
         }
     }
 
     private static func registerScheduleStart(container: DIContainer) {
         container.register(ScheduleStartRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultScheduleStartRepository(networkProvider: networkProvider)
+            DefaultScheduleStartRepository(networkProvider: resolver.resolveRequired(NetworkProvider.self))
         }
 
         container.register(ScheduleStartUseCase.self) { resolver in
-            let repository = resolver.resolve(ScheduleStartRepository.self)
-                ?? DefaultScheduleStartRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultScheduleStartUseCase(repository: repository)
+            DefaultScheduleStartUseCase(repository: resolver.resolveRequired(ScheduleStartRepository.self))
         }
     }
 
     private static func registerAuth(container: DIContainer) {
         container.register(AuthRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultAuthRepository(networkProvider: networkProvider)
+            DefaultAuthRepository(networkProvider: resolver.resolveRequired(NetworkProvider.self))
         }
 
         container.register(AuthUseCase.self) { resolver in
-            let repository = resolver.resolve(AuthRepository.self)
-                ?? DefaultAuthRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultAuthUseCase(repository: repository)
+            DefaultAuthUseCase(repository: resolver.resolveRequired(AuthRepository.self))
         }
     }
 
     private static func registerModalart(container: DIContainer) {
         container.register(ModalartRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultModalartRepository(networkProvider: networkProvider)
+            DefaultModalartRepository(networkProvider: resolver.resolveRequired(NetworkProvider.self))
         }
 
         container.register(ModalartUseCase.self) { resolver in
-            let repository = resolver.resolve(ModalartRepository.self)
-                ?? DefaultModalartRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultModalartUseCase(repository: repository)
+            DefaultModalartUseCase(repository: resolver.resolveRequired(ModalartRepository.self))
         }
     }
 
-    private static func registerNetworking(container: DIContainer) {
-        container.register(NetworkingRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultNetworkingRepository(networkProvider: networkProvider)
+    private static func registerMogakEditing(container: DIContainer) {
+        container.register(MogakEditingRepository.self) { resolver in
+            DefaultMogakEditingRepository(networkProvider: resolver.resolveRequired(NetworkProvider.self))
         }
 
-        container.register(NetworkingUseCase.self) { resolver in
-            let repository = resolver.resolve(NetworkingRepository.self)
-                ?? DefaultNetworkingRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultNetworkingUseCase(repository: repository)
-        }
-    }
-
-    private static func registerHistory(container: DIContainer) {
-        container.register(HistoryRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultHistoryRepository(networkProvider: networkProvider)
-        }
-
-        container.register(HistoryUseCase.self) { resolver in
-            let repository = resolver.resolve(HistoryRepository.self)
-                ?? DefaultHistoryRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultHistoryUseCase(repository: repository)
+        container.register(MogakEditingUseCase.self) { resolver in
+            DefaultMogakEditingUseCase(repository: resolver.resolveRequired(MogakEditingRepository.self))
         }
     }
 
     private static func registerUser(container: DIContainer) {
         container.register(UserRepository.self) { resolver in
-            let networkProvider = resolver.resolve(NetworkProvider.self) ?? DefaultNetworkProvider(session: .default)
-            return DefaultUserRepository(networkProvider: networkProvider)
+            DefaultUserRepository(networkProvider: resolver.resolveRequired(NetworkProvider.self))
         }
 
         container.register(UserUseCase.self) { resolver in
-            let repository = resolver.resolve(UserRepository.self)
-                ?? DefaultUserRepository(networkProvider: DefaultNetworkProvider(session: .default))
-            return DefaultUserUseCase(repository: repository)
+            DefaultUserUseCase(repository: resolver.resolveRequired(UserRepository.self))
         }
     }
 
-    private static func registerViewModels(container: DIContainer) {
+    private static func registerViewModels(
+        container: DIContainer,
+        appDependencies: MG2AppDependencies
+    ) {
         container.register(MG2OnboardingViewModel.self) { _ in
             MG2OnboardingViewModel()
         }
@@ -106,51 +88,75 @@ enum MG2DependencyBootstrap {
             MG2MainTabBarViewModel()
         }
 
-        container.registerMainActor(MG2NetworkingViewModel.self) { resolver in
-            MG2NetworkingViewModel(useCase: resolver.resolveRequired(NetworkingUseCase.self))
-        }
-
         container.register(MG2AppLaunchViewModel.self) { resolver in
-            MG2AppLaunchViewModel(authUseCase: resolver.resolveRequired(AuthUseCase.self))
+            MG2AppLaunchViewModel(
+                authUseCase: resolver.resolveRequired(AuthUseCase.self),
+                userState: appDependencies.userState,
+                sessionStore: appDependencies.sessionStore
+            )
         }
 
         container.registerMainActor(MG2ScheduleStartViewModel.self) { resolver in
-            MG2ScheduleStartViewModel(useCase: resolver.resolveRequired(ScheduleStartUseCase.self))
+            MG2ScheduleStartViewModel(
+                useCase: resolver.resolveRequired(ScheduleStartUseCase.self),
+                userState: appDependencies.userState
+            )
         }
 
-        container.registerMainActor(MG2AppScheduleStartViewModel.self) { resolver in
-            MG2AppScheduleStartViewModel(useCase: resolver.resolveRequired(ScheduleStartUseCase.self))
+        container.registerMainActor(MG2JogakSelectionViewModel.self) { resolver in
+            MG2JogakSelectionViewModel(
+                modalartUseCase: resolver.resolveRequired(ModalartUseCase.self),
+                scheduleUseCase: resolver.resolveRequired(ScheduleStartUseCase.self)
+            )
         }
 
         container.registerMainActor(MG2ModalartViewModel.self) { resolver in
-            MG2ModalartViewModel(useCase: resolver.resolveRequired(ModalartUseCase.self))
+            MG2ModalartViewModel(
+                useCase: resolver.resolveRequired(ModalartUseCase.self),
+                userState: appDependencies.userState
+            )
         }
 
-        container.registerMainActor(MG2MyHistoryViewModel.self) { resolver in
-            MG2MyHistoryViewModel(useCase: resolver.resolveRequired(ModalartUseCase.self))
+        container.registerMainActor(MG2MogakFormViewModel.self) { resolver in
+            MG2MogakFormViewModel(useCase: resolver.resolveRequired(MogakEditingUseCase.self))
         }
 
-        container.registerMainActor(MG2InitEditMogakJogakViewModel.self) { resolver in
-            MG2InitEditMogakJogakViewModel(useCase: resolver.resolveRequired(HistoryUseCase.self))
+        container.registerMainActor(MG2JogakFormViewModel.self) { resolver in
+            MG2JogakFormViewModel(useCase: resolver.resolveRequired(MogakEditingUseCase.self))
         }
 
         container.registerMainActor(MG2ProfileSetupViewModel.self) { resolver in
-            MG2ProfileSetupViewModel(userUseCase: resolver.resolveRequired(UserUseCase.self))
+            MG2ProfileSetupViewModel(
+                userUseCase: resolver.resolveRequired(UserUseCase.self),
+                userState: appDependencies.userState,
+                sessionStore: appDependencies.sessionStore
+            )
         }
 
         container.registerMainActor(MG2MyPageViewModel.self) { resolver in
             MG2MyPageViewModel(
                 userUseCase: resolver.resolveRequired(UserUseCase.self),
-                authUseCase: resolver.resolveRequired(AuthUseCase.self)
+                authUseCase: resolver.resolveRequired(AuthUseCase.self),
+                userState: appDependencies.userState,
+                sessionStore: appDependencies.sessionStore
             )
         }
 
         container.registerMainActor(MG2SocialLoginUseCase.self) { resolver in
-            DefaultMG2SocialLoginUseCase(authUseCase: resolver.resolveRequired(AuthUseCase.self))
+            DefaultMG2SocialLoginUseCase(
+                authUseCase: resolver.resolveRequired(AuthUseCase.self),
+                appleTokenProvider: MG2AppleLoginManager(),
+                googleTokenProvider: MG2GoogleLoginManager(),
+                kakaoTokenProvider: MG2KakaoLoginManager()
+            )
         }
 
         container.registerMainActor(MG2LoginViewModel.self) { resolver in
-            MG2LoginViewModel(useCase: resolver.resolveRequired(MG2SocialLoginUseCase.self))
+            MG2LoginViewModel(
+                useCase: resolver.resolveRequired(MG2SocialLoginUseCase.self),
+                userState: appDependencies.userState,
+                sessionStore: appDependencies.sessionStore
+            )
         }
     }
 }

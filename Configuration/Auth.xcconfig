@@ -1,0 +1,2 @@
+#include "../MOGAK2/Sources/MG_Data/Source/Constant/BASE_URL.xcconfig"
+#include? "Secrets.xcconfig"

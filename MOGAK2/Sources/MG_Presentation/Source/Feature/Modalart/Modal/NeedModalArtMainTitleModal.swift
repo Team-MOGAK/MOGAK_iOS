@@ -4,13 +4,14 @@
 //
 //  Created by 김라영 on 2023/10/20.
 //
-import Foundation
 import UIKit
 import SnapKit
 
 ///큰 목표가 없이 작은 목표 추가버튼을 눌렀을 때의 모달
-class NeedModalArtMainTitleModal: UIViewController {
-    let titleLabel: UILabel = {
+final class NeedModalArtMainTitleModal: UIViewController {
+    var onConfirm: (() -> Void)?
+
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "작은 목표를 설정하기 전에\n큰 목표를 추가해주세요."
         label.textColor = DesignSystemColor.black.value
@@ -19,7 +20,7 @@ class NeedModalArtMainTitleModal: UIViewController {
         return label
     }()
 
-    lazy var subTitleLabel: UILabel = {
+    private lazy var subTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "내가 가장 원하는 목표를 적어주세요."
         label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
@@ -28,7 +29,7 @@ class NeedModalArtMainTitleModal: UIViewController {
         return label
     }()
 
-    lazy var okayBtn: UIButton = {
+    private lazy var okayBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("확인", for: .normal)
         btn.backgroundColor = DesignSystemColor.signature.value
@@ -39,8 +40,8 @@ class NeedModalArtMainTitleModal: UIViewController {
     }()
 
     //MARK: - 확인 버튼 눌렀을떄
-    @objc func okayBtnTapped() {
-        self.dismiss(animated: true)
+    @objc private func okayBtnTapped() {
+        onConfirm?()
     }
     override func viewDidLoad() {
         super.viewDidLoad()

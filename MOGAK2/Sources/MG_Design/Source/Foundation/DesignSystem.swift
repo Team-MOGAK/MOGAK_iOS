@@ -33,6 +33,19 @@ enum DesignSystemColor {
     case black //7
 }
 
+enum DesignSystemPalette {
+    static let signatureHex = "475FFD"
+    static let neutralGrayHex = "BFC3D4"
+    static let modalartColors = [
+        "475FFD", "11D796", "009967", "FF2323",
+        "F98A08", "FF6827", "9C31FF", "21CAFF"
+    ]
+    static let mogakColors = [
+        "475FFD", "FF4C77", "F98A08", "11D796",
+        "FF6827", "9C31FF", "21CAFF", "FF2F2F"
+    ]
+}
+
 extension DesignSystemColor {
     var value: UIColor {
         switch self {
@@ -91,7 +104,7 @@ enum DesignSystemFont {
     case semibold18L100
     case medium16L100
     case medium16L150
-    case medium18140
+    case medium18L140
     case semibold14L150
     case regular14L150
     case regular16L150
@@ -105,14 +118,14 @@ extension DesignSystemFont {
         case .bold22L100:
             return UIFont.pretendard(.bold, size: 22)
         case .semibold20L140:
-            return UIFont.pretendard(.semiBold, size: 22)
+            return UIFont.pretendard(.semiBold, size: 20)
         case .semibold18L100:
             return UIFont.pretendard(.semiBold, size: 18)
         case .medium16L100:
             return UIFont.pretendard(.medium, size: 16)
         case .medium16L150:
             return UIFont.pretendard(.medium, size: 16)
-        case .medium18140:
+        case .medium18L140:
             return UIFont.pretendard(.medium, size: 18)
         case .semibold14L150:
             return UIFont.pretendard(.semiBold, size: 14)
@@ -121,7 +134,7 @@ extension DesignSystemFont {
         case .regular16L150:
             return UIFont.pretendard(.regular, size: 16)
         case .medium12L150:
-            return UIFont.pretendard(.regular, size: 14)
+            return UIFont.pretendard(.medium, size: 12)
         }
     }
     
@@ -143,7 +156,7 @@ extension DesignSystemFont {
             return 1.26
         case .medium12L150:
             return 1.26
-        case .medium18140:
+        case .medium18L140:
             return 1.26
         case .regular16L150:
             return 1.26

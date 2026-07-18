@@ -18,6 +18,7 @@ struct MG2ModalartDetailEntity {
 struct MG2ModalartListItemEntity {
     let id: Int
     let title: String
+    let color: String
 }
 
 struct MG2ModalartMogakItemEntity {

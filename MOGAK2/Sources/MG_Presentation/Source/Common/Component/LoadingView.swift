@@ -5,14 +5,12 @@
 //  Created by 김라영 on 2024/03/20.
 //
 
-import Foundation
 import UIKit
 import Lottie
 
 final class LoadingView: UIView {
-    let loadingView: LottieAnimationView = {
+    private let animationView: LottieAnimationView = {
         let view = LottieAnimationView(name: "mogakLoading")
-//        let view = LottieAnimationView(name: "loading")
         view.loopMode = .loop
         return view
     }()
@@ -20,9 +18,10 @@ final class LoadingView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.addSubviews(self.loadingView)
+        backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        addSubview(animationView)
         
-        self.loadingView.snp.makeConstraints { make in
+        animationView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.size.equalTo(300)
         }
@@ -31,36 +30,29 @@ final class LoadingView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    func startAnimating() {
+        animationView.play()
+    }
 }
 
-
-class LoadingIndicator {
-    static func showLoading() {
-        DispatchQueue.main.async {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first(where: { $0.isKeyWindow }) else { return }
-
-            let loadingIndicatorView: LoadingView
-            if let existedView = window.subviews.first(where: { $0 is LoadingView }) as? LoadingView {
-                loadingIndicatorView = existedView
-            } else {
-                loadingIndicatorView = LoadingView()
-                loadingIndicatorView.frame = window.frame
-                loadingIndicatorView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-                window.addSubview(loadingIndicatorView)
-            }
-            
-            loadingIndicatorView.loadingView.play()
+extension UIViewController {
+    func showLoading() {
+        let loadingView: LoadingView
+        if let existingView = view.subviews.first(where: { $0 is LoadingView }) as? LoadingView {
+            loadingView = existingView
+        } else {
+            loadingView = LoadingView()
+            view.addSubview(loadingView)
+            loadingView.snp.makeConstraints { $0.edges.equalToSuperview() }
         }
+        view.bringSubviewToFront(loadingView)
+        loadingView.startAnimating()
     }
 
-    static func hideLoading() {
-        DispatchQueue.main.async {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first(where: { $0.isKeyWindow }) else { return }
-            window.subviews.filter({ $0 is LoadingView }).forEach {
-                $0.removeFromSuperview()
-            }
-        }
+    func hideLoading() {
+        view.subviews
+            .filter { $0 is LoadingView }
+            .forEach { $0.removeFromSuperview() }
     }
 }

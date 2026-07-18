@@ -91,6 +91,6 @@ fastlane/test_output
 iOSInjectionProject/
 
 # Local secrets
-MOGAK/Secrets.xcconfig
+Configuration/Secrets.xcconfig
 
 # End of https://www.toptal.com/developers/gitignore/api/swift

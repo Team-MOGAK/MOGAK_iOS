@@ -3,10 +3,12 @@ import UIKit
 final class MG2OnboardingContainerViewController: UIViewController, UIScrollViewDelegate {
 
     private let viewModel: MG2OnboardingViewModel
+    private let pages: [UIViewController]
     var onFinish: (() -> Void)?
 
-    init(viewModel: MG2OnboardingViewModel) {
+    init(viewModel: MG2OnboardingViewModel, pages: [UIViewController]) {
         self.viewModel = viewModel
+        self.pages = pages
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -17,7 +19,6 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
     private let scrollView = UIScrollView()
     private let pageControl = UIPageControl()
     private let startButton = MG2PrimaryActionButton()
-    private var viewControllers: [UIViewController] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +37,7 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
         pageControl.addTarget(self, action: #selector(pageControlChanged(_:)), for: .valueChanged)
 
         startButton.setTitle("시작하기", for: .normal)
-        startButton.backgroundColor = DesignSystemColor.gray3.value
+        startButton.isEnabled = false
         startButton.addTarget(self, action: #selector(startTapped), for: .touchUpInside)
 
         [scrollView, pageControl, startButton].forEach {
@@ -59,23 +60,13 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
             startButton.heightAnchor.constraint(equalToConstant: 52)
         ])
 
-        setupViewControllers()
         layoutPages()
-    }
-
-    private func setupViewControllers() {
-        viewControllers = [
-            MG2OnBoardingFirstViewController(),
-            MG2OnBoardingSecondViewController(),
-            MG2OnBoardingThirdViewController(),
-            MG2OnBoardingForthViewController()
-        ]
     }
 
     private func layoutPages() {
         var previous: UIView?
 
-        for viewController in viewControllers {
+        for viewController in pages {
             addChild(viewController)
             viewController.view.translatesAutoresizingMaskIntoConstraints = false
             scrollView.addSubview(viewController.view)
@@ -113,6 +104,6 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
     }
 
     private func updateButtonState(page: Int) {
-        startButton.backgroundColor = page >= viewModel.startEnabledFromPage ? DesignSystemColor.signature.value : DesignSystemColor.gray3.value
+        startButton.isEnabled = page >= viewModel.startEnabledFromPage
     }
 }

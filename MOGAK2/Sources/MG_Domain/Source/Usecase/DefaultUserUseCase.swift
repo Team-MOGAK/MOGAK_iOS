@@ -8,15 +8,15 @@ final class DefaultUserUseCase: UserUseCase {
         self.repository = repository
     }
 
-    func verifyNickname(_ nickname: String) async throws -> NicknameVerify {
+    func verifyNickname(_ nickname: String) async throws {
         try await repository.verifyNickname(nickname)
     }
 
-    func changeNickname(_ nickname: String) async throws -> ChangeSuccessResponse {
+    func changeNickname(_ nickname: String) async throws {
         try await repository.changeNickname(nickname)
     }
 
-    func changeJob(_ job: String) async throws -> UserInfoChangeResponse {
+    func changeJob(_ job: String) async throws {
         try await repository.changeJob(job)
     }
 
@@ -24,11 +24,11 @@ final class DefaultUserUseCase: UserUseCase {
         try await repository.getUserProfile()
     }
 
-    func userJoin(userData: UserInfoData, profileImageData: Data?) async throws -> Bool {
-        try await repository.userJoin(userData: userData, profileImageData: profileImageData)
+    func userJoin(registration: MG2UserRegistration, profileImageData: Data?) async throws -> MG2UserRegistrationResult {
+        try await repository.userJoin(registration: registration, profileImageData: profileImageData)
     }
 
-    func userImageChange(imageData: Data, userNickname: String) async throws -> Bool {
+    func userImageChange(imageData: Data, userNickname: String) async throws {
         try await repository.userImageChange(imageData: imageData, userNickname: userNickname)
     }
 }

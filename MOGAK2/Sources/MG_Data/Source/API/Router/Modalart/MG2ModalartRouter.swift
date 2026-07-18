@@ -28,8 +28,8 @@ extension MG2ModalartRouter: RequestTarget {
             return "/api/modarats/\(id)"
         case .modalartDelete(let id):
             return "/api/modarats/\(id)"
-        case .mogakDetailJogaks(let mogakId, let date):
-            return "/api/modarats/mogaks/\(mogakId)/jogaks?date=\(date)"
+        case .mogakDetailJogaks(let mogakId, _):
+            return "/api/modarats/mogaks/\(mogakId)/jogaks"
         case .mogakDelete(let id):
             return "/api/modarats/mogaks/\(id)"
         case .jogakDelete(let id):
@@ -50,14 +50,6 @@ extension MG2ModalartRouter: RequestTarget {
         }
     }
 
-    var headers: [String: String]? {
-        var header = ["accept": "application/json", "Content-Type": "application/json"]
-        if let token = MG2TokenStore.accessToken, !token.isEmpty {
-            header["Authorization"] = "Bearer \(token)"
-        }
-        return header
-    }
-
     var body: [String: Any]? {
         switch self {
         case .modalartCreate(let title, let color), .modalartEdit(_, let title, let color):
@@ -65,5 +57,10 @@ extension MG2ModalartRouter: RequestTarget {
         case .modalartList, .modalartDetail, .modalartMogaks, .modalartDelete, .mogakDetailJogaks, .mogakDelete, .jogakDelete:
             return nil
         }
+    }
+
+    var query: [String: Any]? {
+        guard case .mogakDetailJogaks(_, let date) = self else { return nil }
+        return ["date": date]
     }
 }
