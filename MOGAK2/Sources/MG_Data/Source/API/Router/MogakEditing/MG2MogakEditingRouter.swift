@@ -11,12 +11,14 @@ enum MG2MogakEditingRouter {
 extension MG2MogakEditingRouter: RequestTarget {
     var path: String {
         switch self {
-        case .createMogak, .editMogak:
-            return "/api/modarats/mogaks"
+        case .createMogak:
+            return "/api/mogaks"
+        case .editMogak(let mogakId, _, _, _, _):
+            return "/api/mogaks/\(mogakId)"
         case .createJogak:
-            return "/api/modarats/mogaks/jogaks"
+            return "/api/jogaks"
         case .editJogak(let jogakId, _, _, _, _):
-            return "/api/modarats/mogaks/jogaks/\(jogakId)"
+            return "/api/jogaks/\(jogakId)"
         }
     }
 
@@ -35,8 +37,8 @@ extension MG2MogakEditingRouter: RequestTarget {
             var payload: [String: Any] = ["modaratId": modaratId, "title": title, "bigCategory": bigCategory, "color": color]
             if let smallCategory { payload["smallCategory"] = smallCategory }
             return payload
-        case .editMogak(let mogakId, let title, let bigCategory, let smallCategory, let color):
-            var payload: [String: Any] = ["mogakId": mogakId, "title": title, "bigCategory": bigCategory, "color": color]
+        case .editMogak(_, let title, let bigCategory, let smallCategory, let color):
+            var payload: [String: Any] = ["title": title, "bigCategory": bigCategory, "color": color]
             if let smallCategory { payload["smallCategory"] = smallCategory }
             return payload
         case .createJogak(let mogakId, let title, let isRoutine, let days, let today, let endDate):

@@ -1,3 +1,4 @@
+import SnapKit
 import UIKit
 
 final class MG2OnboardingContainerViewController: UIViewController, UIScrollViewDelegate {
@@ -40,25 +41,22 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
         startButton.isEnabled = false
         startButton.addTarget(self, action: #selector(startTapped), for: .touchUpInside)
 
-        [scrollView, pageControl, startButton].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
+        view.addSubviews(scrollView, pageControl, startButton)
+
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(pageControl.snp.top).offset(-10)
         }
-
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: pageControl.topAnchor, constant: -10),
-
-            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: startButton.topAnchor, constant: -18),
-
-            startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            startButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
-            startButton.heightAnchor.constraint(equalToConstant: 52)
-        ])
+        pageControl.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(startButton.snp.top).offset(-18)
+        }
+        startButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            $0.height.equalTo(52)
+        }
 
         layoutPages()
     }
@@ -68,21 +66,24 @@ final class MG2OnboardingContainerViewController: UIViewController, UIScrollView
 
         for viewController in pages {
             addChild(viewController)
-            viewController.view.translatesAutoresizingMaskIntoConstraints = false
             scrollView.addSubview(viewController.view)
             viewController.didMove(toParent: self)
 
-            NSLayoutConstraint.activate([
-                viewController.view.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                viewController.view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-                viewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
-                viewController.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
-                viewController.view.leadingAnchor.constraint(equalTo: previous?.trailingAnchor ?? scrollView.leadingAnchor)
-            ])
+            viewController.view.snp.makeConstraints {
+                $0.top.bottom.equalTo(scrollView.contentLayoutGuide)
+                $0.width.height.equalTo(scrollView.frameLayoutGuide)
+                if let previous {
+                    $0.leading.equalTo(previous.snp.trailing)
+                } else {
+                    $0.leading.equalTo(scrollView.contentLayoutGuide)
+                }
+            }
             previous = viewController.view
         }
 
-        previous?.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        previous?.snp.makeConstraints {
+            $0.trailing.equalTo(scrollView.contentLayoutGuide)
+        }
     }
 
     @objc private func pageControlChanged(_ sender: UIPageControl) {

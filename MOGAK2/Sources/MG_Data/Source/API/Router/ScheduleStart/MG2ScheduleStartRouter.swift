@@ -14,15 +14,15 @@ extension MG2ScheduleStartRouter: RequestTarget {
     var path: String {
         switch self {
         case .jogakDailyCheck:
-            return "/api/modarats/mogaks/jogaks"
+            return "/api/jogaks"
         case .addJogakToday(let jogakId):
-            return "/api/modarats/mogaks/jogaks/\(jogakId)/start"
+            return "/api/jogaks/\(jogakId)/start"
         case .dailyJogakDetail(let jogakId):
-            return "/api/modarats/mogaks/jogaks/\(jogakId)/detail"
+            return "/api/jogaks/\(jogakId)"
         case .jogakFail(let dailyJogakId):
-            return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/fail"
+            return "/api/daily-jogaks/\(dailyJogakId)/fail"
         case .jogakSuccess(let dailyJogakId):
-            return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/success"
+            return "/api/daily-jogaks/\(dailyJogakId)/success"
         }
     }
 

@@ -29,11 +29,11 @@ extension MG2ModalartRouter: RequestTarget {
         case .modalartDelete(let id):
             return "/api/modarats/\(id)"
         case .mogakDetailJogaks(let mogakId, _):
-            return "/api/modarats/mogaks/\(mogakId)/jogaks"
+            return "/api/mogaks/\(mogakId)/jogaks"
         case .mogakDelete(let id):
-            return "/api/modarats/mogaks/\(id)"
+            return "/api/mogaks/\(id)"
         case .jogakDelete(let id):
-            return "/api/modarats/mogaks/jogaks/\(id)"
+            return "/api/jogaks/\(id)"
         }
     }
 

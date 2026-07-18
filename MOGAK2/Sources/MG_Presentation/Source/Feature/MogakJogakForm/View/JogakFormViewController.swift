@@ -20,7 +20,7 @@ final class JogakFormViewController: UIViewController {
         calendar.timeZone = .current
         return calendar
     }()
-    private var routineCollectionHeightConstraint: NSLayoutConstraint?
+    private var routineCollectionHeightConstraint: Constraint?
     private var hasConfiguredInitialState = false
 
     private let scrollView = UIScrollView().then {
@@ -277,9 +277,6 @@ final class JogakFormViewController: UIViewController {
         )
         routineRepeatCollectionView.delegate = self
         routineRepeatCollectionView.dataSource = self
-        routineRepeatCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        routineCollectionHeightConstraint = routineRepeatCollectionView.heightAnchor.constraint(equalToConstant: 0)
-        routineCollectionHeightConstraint?.isActive = true
 
         routineTitleLabel.snp.makeConstraints {
             $0.top.equalTo(jogakDetailUnderLineView.snp.bottom).offset(40)
@@ -299,6 +296,7 @@ final class JogakFormViewController: UIViewController {
             $0.top.equalTo(routineExplanationLabel.snp.bottom).offset(12)
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-80)
+            routineCollectionHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
 
@@ -370,7 +368,7 @@ final class JogakFormViewController: UIViewController {
         endExplanationLabel.isHidden = !isRoutine
         endLabel.isHidden = !isRoutine
         endTextField.isHidden = !isRoutine
-        routineCollectionHeightConstraint?.constant = isRoutine ? 110 : 0
+        routineCollectionHeightConstraint?.update(offset: isRoutine ? 110 : 0)
         if !isRoutine {
             setCalendarVisible(false)
         }
