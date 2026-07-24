@@ -47,8 +47,6 @@ struct MG2ProfileSetupViewState {
     var jobSections = [MG2JobSection]()
     var selectedJob = ""
     var selectedRegion = ""
-    var pendingProfileImageData: Data?
-    var hasProfileImageChange = false
 }
 
 private enum MG2ProfileSetupError: LocalizedError {
@@ -105,11 +103,6 @@ final class MG2ProfileSetupViewModel {
     var nickname: String { userState.nickname }
     var nicknameMaximumLength: Int { Self.nicknameLengthRange.upperBound }
     var availableRegions: [String] { Self.regions }
-    var profileImageData: Data? {
-        state.hasProfileImageChange
-            ? state.pendingProfileImageData
-            : userState.profileImageData
-    }
 
     func resetAgreements() {
         state.agreements = MG2AgreementState()
@@ -135,21 +128,6 @@ final class MG2ProfileSetupViewModel {
             state.agreements.privacy.toggle()
         case .marketing:
             state.agreements.marketing.toggle()
-        }
-    }
-
-    func beginNicknameSetup() {
-        state.pendingProfileImageData = nil
-        state.hasProfileImageChange = false
-    }
-
-    func updateProfileImageData(_ imageData: Data?, mode: MG2ProfileSetupMode) {
-        switch mode {
-        case .registration:
-            userState.profileImageData = imageData
-        case .editing:
-            state.pendingProfileImageData = imageData
-            state.hasProfileImageChange = true
         }
     }
 
@@ -196,7 +174,7 @@ final class MG2ProfileSetupViewModel {
             let hasNicknameChange = !nickname.isEmpty
                 && nickname != userState.nickname
                 && nicknameValidationMessage(nickname) == nil
-            return hasNicknameChange || state.hasProfileImageChange
+            return hasNicknameChange
         }
     }
 
@@ -256,14 +234,6 @@ final class MG2ProfileSetupViewModel {
                         try await userUseCase.changeNickname(nicknameToUpdate)
                         userState.nickname = nicknameToUpdate
                     }
-                    if state.hasProfileImageChange,
-                       let changedProfileImageData = state.pendingProfileImageData {
-                        try await userUseCase.userImageChange(
-                            imageData: changedProfileImageData,
-                            userNickname: userState.nickname
-                        )
-                        userState.profileImageData = changedProfileImageData
-                    }
                     completion(.success(.profileUpdated))
                 }
             } catch {
@@ -306,10 +276,7 @@ final class MG2ProfileSetupViewModel {
         )
         Task {
             do {
-                let result = try await userUseCase.userJoin(
-                    registration: registration,
-                    profileImageData: userState.profileImageData
-                )
+                let result = try await userUseCase.userJoin(registration: registration)
                 sessionStore.saveSession(
                     accessToken: result.tokens.accessToken,
                     refreshToken: result.tokens.refreshToken,

@@ -157,8 +157,6 @@ final class MG2MyPageViewController: UIViewController {
     private func renderProfile(_ state: MG2MyPageProfileState) {
         nameLabel.text = state.name
         jobLabel.text = state.job
-        profileImageView.image = state.imageData.flatMap(UIImage.init(data:))
-            ?? UIImage(named: "setProfile")
     }
 
     @objc private func editProfile() {

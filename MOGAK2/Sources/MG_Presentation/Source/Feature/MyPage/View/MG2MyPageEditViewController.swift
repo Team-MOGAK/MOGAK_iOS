@@ -25,13 +25,13 @@ final class MG2MyPageEditViewController: UIViewController {
         $0.font = UIFont.pretendard(.medium, size: 12)
     }
 
-    private let profileRow = MG2SettingsRowControl(title: "프로필 사진/닉네임 변경")
+    private let nicknameRow = MG2SettingsRowControl(title: "닉네임 변경")
     private let jobRow = MG2SettingsRowControl(title: "직무 변경")
     private let logoutRow = MG2SettingsRowControl(title: "로그아웃")
     private let withdrawalRow = MG2SettingsRowControl(title: "회원탈퇴")
 
     private lazy var settingsStack = UIStackView(arrangedSubviews: [
-        profileRow,
+        nicknameRow,
         jobRow,
         logoutRow,
         withdrawalRow
@@ -93,7 +93,7 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func configureActions() {
-        profileRow.addTarget(self, action: #selector(editProfile), for: .touchUpInside)
+        nicknameRow.addTarget(self, action: #selector(editNickname), for: .touchUpInside)
         jobRow.addTarget(self, action: #selector(editJob), for: .touchUpInside)
         logoutRow.addTarget(self, action: #selector(logout), for: .touchUpInside)
         withdrawalRow.addTarget(self, action: #selector(confirmWithdrawal), for: .touchUpInside)
@@ -110,13 +110,11 @@ final class MG2MyPageEditViewController: UIViewController {
             .sink { [weak self] state in
                 self?.nameLabel.text = state.name
                 self?.jobLabel.text = state.job
-                self?.profileImageView.image = state.imageData.flatMap(UIImage.init(data:))
-                    ?? UIImage(named: "setProfile")
             }
             .store(in: &cancellables)
     }
 
-    @objc private func editProfile() {
+    @objc private func editNickname() {
         coordinator?.routeToNicknameEdit(from: self)
     }
 

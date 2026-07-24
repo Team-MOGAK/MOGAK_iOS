@@ -4,7 +4,6 @@ import Combine
 struct MG2MyPageProfileState {
     let name: String
     let job: String
-    let imageData: Data?
 }
 
 @MainActor
@@ -33,21 +32,18 @@ final class MG2MyPageViewModel {
         userState.$nickname
             .combineLatest(
                 userState.$job,
-                userState.$profileImageData,
                 userState.$loginState
             )
-            .map { nickname, job, imageData, loginState in
+            .map { nickname, job, loginState in
                 guard loginState != .guest else {
                     return MG2MyPageProfileState(
                         name: "로그인이 필요합니다.",
-                        job: "환영합니다!",
-                        imageData: nil
+                        job: "환영합니다!"
                     )
                 }
                 return MG2MyPageProfileState(
                     name: nickname,
-                    job: job,
-                    imageData: imageData
+                    job: job
                 )
             }
             .eraseToAnyPublisher()

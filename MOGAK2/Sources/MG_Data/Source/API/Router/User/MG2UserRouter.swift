@@ -6,8 +6,7 @@ enum MG2UserRouter {
     case nicknameChange(nickname: String)
     case jobChange(job: String)
     case getUserProfile
-    case join
-    case profileImageChange
+    case join(nickname: String, job: String, address: String)
 }
 
 extension MG2UserRouter: RequestTarget {
@@ -23,8 +22,6 @@ extension MG2UserRouter: RequestTarget {
             return "/api/users/profile"
         case .join:
             return "/api/users/join"
-        case .profileImageChange:
-            return "/api/users/profile/image"
         }
     }
 
@@ -34,7 +31,7 @@ extension MG2UserRouter: RequestTarget {
             return .get
         case .nicknameVerify, .join:
             return .post
-        case .nicknameChange, .jobChange, .profileImageChange:
+        case .nicknameChange, .jobChange:
             return .put
         }
     }
@@ -43,16 +40,14 @@ extension MG2UserRouter: RequestTarget {
         switch self {
         case .nicknameVerify:
             return false
-        case .nicknameChange, .jobChange, .getUserProfile, .join, .profileImageChange:
+        case .nicknameChange, .jobChange, .getUserProfile, .join:
             return true
         }
     }
 
     var headers: [String: String]? {
         switch self {
-        case .join, .profileImageChange:
-            return ["Accept": "application/json"]
-        case .nicknameVerify, .nicknameChange, .jobChange, .getUserProfile:
+        case .nicknameVerify, .nicknameChange, .jobChange, .getUserProfile, .join:
             return ["Accept": "application/json", "Content-Type": "application/json"]
         }
     }
@@ -63,7 +58,15 @@ extension MG2UserRouter: RequestTarget {
             return ["nickname": nickname]
         case .jobChange(let job):
             return ["job": job]
-        case .getUserProfile, .join, .profileImageChange:
+        case .join(let nickname, let job, let address):
+            return [
+                "request": [
+                    "nickname": nickname,
+                    "job": job,
+                    "address": address
+                ]
+            ]
+        case .getUserProfile:
             return nil
         }
     }

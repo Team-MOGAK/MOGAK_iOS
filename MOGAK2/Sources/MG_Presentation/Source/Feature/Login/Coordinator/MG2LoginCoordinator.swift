@@ -31,7 +31,6 @@ final class MG2LoginCoordinator: MG2PresentationCoordinator {
     }
 
     func makeNickname(mode: MG2ProfileSetupMode = .registration) -> UIViewController {
-        profileViewModel.beginNicknameSetup()
         let vc = MG2NicknameViewController(mode: mode, profileViewModel: profileViewModel)
         vc.coordinator = self
         return vc

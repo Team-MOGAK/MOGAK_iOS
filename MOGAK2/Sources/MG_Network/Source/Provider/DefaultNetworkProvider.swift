@@ -33,49 +33,9 @@ struct DefaultNetworkProvider: NetworkProvider {
         _ = try await responseData(target: target)
     }
 
-    func upload<T: Decodable>(
-        target: NetworkRequest,
-        parts: [NetworkMultipartPart]
-    ) async throws -> T {
-        let data = try await uploadResponseData(target: target, parts: parts)
-        return try JSONDecoder().decode(T.self, from: data)
-    }
-
-    func uploadEmpty(
-        target: NetworkRequest,
-        parts: [NetworkMultipartPart]
-    ) async throws {
-        _ = try await uploadResponseData(target: target, parts: parts)
-    }
-
     private func responseData(target: NetworkRequest) async throws -> Data {
         let urlRequest = try authenticatedURLRequest(for: target)
         let response = await session.request(urlRequest).serializingData().response
-        return try validatedData(from: response)
-    }
-
-    private func uploadResponseData(
-        target: NetworkRequest,
-        parts: [NetworkMultipartPart]
-    ) async throws -> Data {
-        let urlRequest = try authenticatedURLRequest(for: target)
-        let response = await session.upload(
-            multipartFormData: { multipartFormData in
-                for part in parts {
-                    if let fileName = part.fileName, let mimeType = part.mimeType {
-                        multipartFormData.append(
-                            part.data,
-                            withName: part.name,
-                            fileName: fileName,
-                            mimeType: mimeType
-                        )
-                    } else {
-                        multipartFormData.append(part.data, withName: part.name, mimeType: part.mimeType)
-                    }
-                }
-            },
-            with: urlRequest
-        ).serializingData().response
         return try validatedData(from: response)
     }
 

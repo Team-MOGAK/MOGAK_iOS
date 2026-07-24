@@ -1,5 +1,3 @@
-import Foundation
-
 final class DefaultUserUseCase: UserUseCase {
 
     private let repository: UserRepository
@@ -24,11 +22,7 @@ final class DefaultUserUseCase: UserUseCase {
         try await repository.getUserProfile()
     }
 
-    func userJoin(registration: MG2UserRegistration, profileImageData: Data?) async throws -> MG2UserRegistrationResult {
-        try await repository.userJoin(registration: registration, profileImageData: profileImageData)
-    }
-
-    func userImageChange(imageData: Data, userNickname: String) async throws {
-        try await repository.userImageChange(imageData: imageData, userNickname: userNickname)
+    func userJoin(registration: MG2UserRegistration) async throws -> MG2UserRegistrationResult {
+        try await repository.userJoin(registration: registration)
     }
 }

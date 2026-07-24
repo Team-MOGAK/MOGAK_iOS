@@ -5,9 +5,9 @@
 //  Created by 김강현 on 2023/07/11.
 //
 
-import UIKit
 import SnapKit
 import Then
+import UIKit
 
 final class MG2NicknameViewController: UIViewController {
     private let profileViewModel: MG2ProfileSetupViewModel
@@ -43,19 +43,10 @@ final class MG2NicknameViewController: UIViewController {
         return label
     }()
     
-    private lazy var setProfile = UIButton().then {
-        $0.setImage(UIImage(named: "setProfile"), for: .normal)
+    private let profileImageView = UIImageView().then {
+        $0.image = UIImage(named: "setProfile")
+        $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.addTarget(self, action: #selector(settingProfileImage), for: .touchUpInside)
-    }
-    
-    private lazy var editProfileIcon = UIImageView().then {
-        $0.image = UIImage(named: "editIcon")
-    }
-    
-    private lazy var deleteImageButton = UIButton().then {
-        $0.setImage(UIImage(named: "deleteIcon"), for: .normal)
-        $0.addTarget(self, action: #selector(deleteProfileImage), for: .touchUpInside)
     }
     
     private lazy var nicknameTextField : UITextField = {
@@ -103,17 +94,15 @@ final class MG2NicknameViewController: UIViewController {
         view.backgroundColor = .white
         self.configureNavBar()
         self.configureLabel()
-        self.configureSetProfile()
+        self.configureProfileImage()
         self.configureTextField()
         self.configureButton()
-        self.configureDeleteButton()
-        renderProfileImage()
         renderSubmissionState()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setProfile.layer.cornerRadius = setProfile.frame.height / 2
+        profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
     }
     
     private func configureNavBar() {
@@ -135,25 +124,20 @@ final class MG2NicknameViewController: UIViewController {
         })
     }
     
-    private func configureSetProfile() {
-        self.view.addSubviews(setProfile, editProfileIcon)
-        setProfile.snp.makeConstraints({
+    private func configureProfileImage() {
+        self.view.addSubview(profileImageView)
+        profileImageView.snp.makeConstraints({
             $0.width.height.equalTo(100)
             $0.top.equalTo(self.subLabel.snp.bottom).offset(100)
             $0.centerX.equalToSuperview()
         })
-        
-        editProfileIcon.snp.makeConstraints { make in
-            make.trailing.equalTo(setProfile.snp.trailing)
-            make.bottom.equalTo(setProfile.snp.bottom)
-        }
     }
     
     private func configureTextField() {
         [nicknameTextField, tfSubLabel].forEach({view.addSubview($0)})
         
         nicknameTextField.snp.makeConstraints({
-            $0.top.equalTo(self.setProfile.snp.bottom).offset(52)
+            $0.top.equalTo(self.profileImageView.snp.bottom).offset(52)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalToSuperview().multipliedBy(0.061)
         })
@@ -175,34 +159,8 @@ final class MG2NicknameViewController: UIViewController {
         })
     }
     
-    private func configureDeleteButton() {
-        self.view.addSubview(deleteImageButton)
-        deleteImageButton.snp.makeConstraints { make in
-            make.top.equalTo(self.setProfile.snp.top)
-            make.leading.equalTo(self.setProfile.snp.leading)
-        }
-    }
-    
-    
     // MARK: - objc
-    
-    @objc private func settingProfileImage() {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .photoLibrary
-        present(imagePickerController, animated: true, completion: nil)
-    }
-    
-    @objc private func deleteProfileImage() {
-        let defaultImageData = UIImage(named: "setProfile")?.jpegData(compressionQuality: 1.0)
-        profileViewModel.updateProfileImageData(
-            mode == .editing ? defaultImageData : nil,
-            mode: mode
-        )
-        renderProfileImage()
-        renderSubmissionState()
-    }
-    
+
     @objc private func nextButtonIsClicked() {
         let nickname = nicknameTextField.text ?? ""
         showLoading()
@@ -220,17 +178,6 @@ final class MG2NicknameViewController: UIViewController {
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }
-        }
-    }
-
-    private func renderProfileImage() {
-        if let imageData = profileViewModel.profileImageData,
-           let image = UIImage(data: imageData) {
-            setProfile.setImage(image, for: .normal)
-            deleteImageButton.isHidden = false
-        } else {
-            setProfile.setImage(UIImage(named: "setProfile"), for: .normal)
-            deleteImageButton.isHidden = true
         }
     }
 
@@ -276,22 +223,6 @@ extension MG2NicknameViewController: UITextFieldDelegate {
         guard let textRange = Range(range, in: currentText) else { return false }
         return currentText.replacingCharacters(in: textRange, with: string).count
             <= profileViewModel.nicknameMaximumLength
-    }
-    
-    
-}
-
-extension MG2NicknameViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[.originalImage] as? UIImage {
-            profileViewModel.updateProfileImageData(
-                image.jpegData(compressionQuality: 1.0),
-                mode: mode
-            )
-            renderProfileImage()
-            renderSubmissionState()
-        }
-        picker.dismiss(animated: true, completion: nil)
     }
     
     
