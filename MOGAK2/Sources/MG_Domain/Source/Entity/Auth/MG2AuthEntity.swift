@@ -5,8 +5,25 @@ struct MG2TokenPair {
     let refreshToken: String
 }
 
+enum MG2AuthRegistrationStatus {
+    case registered
+    case signupRequired
+    case signupResumeRequired
+
+    var isRegistered: Bool {
+        switch self {
+        case .registered:
+            return true
+        case .signupRequired, .signupResumeRequired:
+            return false
+        }
+    }
+}
+
 struct MG2AuthSession {
-    let isRegistered: Bool
+    let registrationStatus: MG2AuthRegistrationStatus
     let userId: Int
     let tokens: MG2TokenPair
+
+    var isRegistered: Bool { registrationStatus.isRegistered }
 }

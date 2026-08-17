@@ -157,14 +157,14 @@ final class ScheduleStartViewController: UIViewController {
         headerStackView.distribution = .equalSpacing
 
         view.addSubviews(
-            calendarContainerView,
-            calendarView,
-            calendarScopeButton,
-            headerStackView,
             contentContainerView,
             emptyImageView,
             emptyStateLabel,
-            createModalartButton
+            createModalartButton,
+            calendarContainerView,
+            calendarView,
+            calendarScopeButton,
+            headerStackView
         )
         contentContainerView.addSubviews(motiveLabel, scheduleStackView)
 

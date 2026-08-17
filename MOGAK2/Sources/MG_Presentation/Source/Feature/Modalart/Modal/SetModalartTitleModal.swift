@@ -212,10 +212,11 @@ extension SetModalartTitleModal: UICollectionViewDataSource{
 
     //MARK: - cell 셋팅
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = colorCollectionView.dequeueReusableCell(
+        let reusableCell = colorCollectionView.dequeueReusableCell(
             withReuseIdentifier: MG2ColorSelectionCell.identifier,
             for: indexPath
-        ) as? MG2ColorSelectionCell else { return UICollectionViewCell() }
+        )
+        guard let cell = reusableCell as? MG2ColorSelectionCell else { return reusableCell }
         cell.configure(color: UIColor(hex: viewModel.colors[indexPath.row]))
         return cell
     }

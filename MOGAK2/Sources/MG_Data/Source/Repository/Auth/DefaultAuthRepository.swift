@@ -12,7 +12,7 @@ final class DefaultAuthRepository: AuthRepository {
         let response: MG2AuthLoginResponseDTO = try await networkProvider.request(
             target: AuthRouter.socialLogin(provider: provider.rawValue, token: token)
         )
-        return response.result.toDomain()
+        return response.toDomain()
     }
 
     func refresh(refreshToken: String) async throws -> MG2TokenPair {

@@ -2,7 +2,19 @@ import Foundation
 
 struct MG2AuthLoginResponseDTO: Decodable {
     let status: String
+    let code: String
     let result: MG2AuthLoginResultDTO
+
+    func toDomain() -> MG2AuthSession {
+        let registrationStatus: MG2AuthRegistrationStatus
+        if code == "AUTH_SIGNUP_RESUME_REQUIRED" {
+            registrationStatus = .signupResumeRequired
+        } else {
+            registrationStatus = result.isRegistered ? .registered : .signupRequired
+        }
+
+        return result.toDomain(registrationStatus: registrationStatus)
+    }
 }
 
 struct MG2AuthLoginResultDTO: Decodable {
@@ -10,9 +22,9 @@ struct MG2AuthLoginResultDTO: Decodable {
     let userId: Int
     let tokens: MG2TokenPairDTO
 
-    func toDomain() -> MG2AuthSession {
+    func toDomain(registrationStatus: MG2AuthRegistrationStatus) -> MG2AuthSession {
         return MG2AuthSession(
-            isRegistered: isRegistered,
+            registrationStatus: registrationStatus,
             userId: userId,
             tokens: tokens.toDomain()
         )

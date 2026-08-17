@@ -242,12 +242,11 @@ extension ModalartMainViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         if indexPath.item == MG2MandalaGrid.centerIndex {
-            guard let cell = collectionView.dequeueReusableCell(
+            let reusableCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ModalartMainCell.identifier,
                 for: indexPath
-            ) as? ModalartMainCell else {
-                return UICollectionViewCell()
-            }
+            )
+            guard let cell = reusableCell as? ModalartMainCell else { return reusableCell }
             cell.configure(
                 title: viewModel.state.centerTitle,
                 color: viewModel.state.centerColor
@@ -262,12 +261,11 @@ extension ModalartMainViewController: UICollectionViewDataSource {
                 for: indexPath
             )
         }
-        guard let cell = collectionView.dequeueReusableCell(
+        let reusableCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: MogakCell.identifier,
             for: indexPath
-        ) as? MogakCell else {
-            return UICollectionViewCell()
-        }
+        )
+        guard let cell = reusableCell as? MogakCell else { return reusableCell }
         cell.configure(with: viewModel.state.mogaks[mogakIndex], delegate: self)
         return cell
     }

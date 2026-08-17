@@ -228,9 +228,10 @@ extension MogakMainViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        collectionView == mogakListCollectionView
-            ? viewModel.state.mogaks.count
-            : MG2MandalaGrid.itemCount
+        if collectionView == mogakListCollectionView {
+            return viewModel.state.mogaks.count
+        }
+        return viewModel.state.selectedMogak == nil ? 0 : MG2MandalaGrid.itemCount
     }
 
     func collectionView(
@@ -238,26 +239,30 @@ extension MogakMainViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         if collectionView == mogakListCollectionView {
-            guard let cell = collectionView.dequeueReusableCell(
+            let reusableCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: MogakListCell.identifier,
                 for: indexPath
-            ) as? MogakListCell else {
-                return UICollectionViewCell()
+            )
+            guard let cell = reusableCell as? MogakListCell,
+                  viewModel.state.mogaks.indices.contains(indexPath.item) else {
+                return reusableCell
             }
             cell.configure(title: viewModel.state.mogaks[indexPath.item].category.name)
             return cell
         }
 
         guard let selectedMogak = viewModel.state.selectedMogak else {
-            return UICollectionViewCell()
+            return collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmptyJogakCell.identifier,
+                for: indexPath
+            )
         }
         if indexPath.item == MG2MandalaGrid.centerIndex {
-            guard let cell = collectionView.dequeueReusableCell(
+            let reusableCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ModalartMainCell.identifier,
                 for: indexPath
-            ) as? ModalartMainCell else {
-                return UICollectionViewCell()
-            }
+            )
+            guard let cell = reusableCell as? ModalartMainCell else { return reusableCell }
             cell.configure(
                 title: selectedMogak.title,
                 color: selectedMogak.color ?? DesignSystemPalette.signatureHex
@@ -274,12 +279,11 @@ extension MogakMainViewController: UICollectionViewDataSource {
         }
         let occurrence = viewModel.state.occurrences[jogakIndex]
         if occurrence.isRoutine {
-            guard let cell = collectionView.dequeueReusableCell(
+            let reusableCell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: IsRoutineJogakCell.identifier,
                 for: indexPath
-            ) as? IsRoutineJogakCell else {
-                return UICollectionViewCell()
-            }
+            )
+            guard let cell = reusableCell as? IsRoutineJogakCell else { return reusableCell }
             cell.configure(
                 badgeText: viewModel.routineDaysText(for: occurrence),
                 title: occurrence.title,
@@ -288,12 +292,11 @@ extension MogakMainViewController: UICollectionViewDataSource {
             return cell
         }
 
-        guard let cell = collectionView.dequeueReusableCell(
+        let reusableCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: JogakCell.identifier,
             for: indexPath
-        ) as? JogakCell else {
-            return UICollectionViewCell()
-        }
+        )
+        guard let cell = reusableCell as? JogakCell else { return reusableCell }
         cell.configure(title: occurrence.title)
         return cell
     }

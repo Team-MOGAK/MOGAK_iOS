@@ -340,12 +340,11 @@ extension MogakFormViewController: UICollectionViewDataSource {
             return cell
         }
 
-        guard let cell = collectionView.dequeueReusableCell(
+        let reusableCell = collectionView.dequeueReusableCell(
             withReuseIdentifier: MG2ColorSelectionCell.identifier,
             for: indexPath
-        ) as? MG2ColorSelectionCell else {
-            return UICollectionViewCell()
-        }
+        )
+        guard let cell = reusableCell as? MG2ColorSelectionCell else { return reusableCell }
         cell.configure(color: UIColor(hex: viewModel.colors[indexPath.item]))
         return cell
     }
