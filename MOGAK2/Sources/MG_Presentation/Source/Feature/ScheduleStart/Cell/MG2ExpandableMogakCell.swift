@@ -1,8 +1,7 @@
 import UIKit
 import SnapKit
-import ExpyTableView
 
-final class MG2ExpandableMogakCell: UITableViewCell, ExpyTableViewHeaderCell {
+final class MG2ExpandableMogakCell: UITableViewCell {
     static let reuseIdentifier = "MG2ExpandableMogakCell"
 
     private let titleLabel: CustomPaddingLabel = {
@@ -27,7 +26,8 @@ final class MG2ExpandableMogakCell: UITableViewCell, ExpyTableViewHeaderCell {
 
         titleLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
-            $0.top.bottom.equalToSuperview().inset(12)
+            $0.centerY.equalToSuperview()
+            $0.trailing.lessThanOrEqualTo(chevronImageView.snp.leading).offset(-12)
         }
         chevronImageView.snp.makeConstraints {
             $0.size.equalTo(16)
@@ -40,15 +40,10 @@ final class MG2ExpandableMogakCell: UITableViewCell, ExpyTableViewHeaderCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
-        switch state {
-        case .willExpand:
-            chevronImageView.image = UIImage(systemName: "chevron.up")
-        case .willCollapse:
-            chevronImageView.image = UIImage(systemName: "chevron.down")
-        case .didExpand, .didCollapse:
-            break
-        }
+    func setExpanded(_ isExpanded: Bool) {
+        chevronImageView.image = UIImage(
+            systemName: isExpanded ? "chevron.up" : "chevron.down"
+        )
     }
 
     func configure(with section: MG2MogakJogakSection) {

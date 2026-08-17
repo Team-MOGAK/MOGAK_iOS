@@ -2,16 +2,25 @@ import Foundation
 import Alamofire
 
 enum MG2UserRouter {
+    case jobs
+    case addresses
+    case consents
     case nicknameVerify(nickname: String)
     case nicknameChange(nickname: String)
     case jobChange(job: String)
     case getUserProfile
-    case join(nickname: String, job: String, address: String)
+    case join(nickname: String, job: String, address: String, consents: [MG2ConsentAgreement])
 }
 
 extension MG2UserRouter: RequestTarget {
     var path: String {
         switch self {
+        case .jobs:
+            return "/api/metadata/jobs"
+        case .addresses:
+            return "/api/metadata/addresses"
+        case .consents:
+            return "/api/consents"
         case .nicknameVerify:
             return "/api/users/nickname/verify"
         case .nicknameChange:
@@ -27,7 +36,7 @@ extension MG2UserRouter: RequestTarget {
 
     var method: HTTPMethod {
         switch self {
-        case .getUserProfile:
+        case .jobs, .addresses, .consents, .getUserProfile:
             return .get
         case .nicknameVerify, .join:
             return .post
@@ -38,7 +47,7 @@ extension MG2UserRouter: RequestTarget {
 
     var requiresAuthorization: Bool {
         switch self {
-        case .nicknameVerify:
+        case .jobs, .addresses, .consents, .nicknameVerify:
             return false
         case .nicknameChange, .jobChange, .getUserProfile, .join:
             return true
@@ -47,7 +56,7 @@ extension MG2UserRouter: RequestTarget {
 
     var headers: [String: String]? {
         switch self {
-        case .nicknameVerify, .nicknameChange, .jobChange, .getUserProfile, .join:
+        case .jobs, .addresses, .consents, .nicknameVerify, .nicknameChange, .jobChange, .getUserProfile, .join:
             return ["Accept": "application/json", "Content-Type": "application/json"]
         }
     }
@@ -58,15 +67,16 @@ extension MG2UserRouter: RequestTarget {
             return ["nickname": nickname]
         case .jobChange(let job):
             return ["job": job]
-        case .join(let nickname, let job, let address):
+        case .join(let nickname, let job, let address, let consents):
             return [
-                "request": [
-                    "nickname": nickname,
-                    "job": job,
-                    "address": address
-                ]
+                "nickname": nickname,
+                "job": job,
+                "address": address,
+                "consents": consents.map {
+                    ["consentItemId": $0.consentItemId, "agreed": $0.agreed]
+                }
             ]
-        case .getUserProfile:
+        case .jobs, .addresses, .consents, .getUserProfile:
             return nil
         }
     }

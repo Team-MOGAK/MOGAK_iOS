@@ -12,10 +12,7 @@
 		D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F842F6F8FA60014DA6D /* Kingfisher */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
-		D18C0F8E2F6F902C0014DA6D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8D2F6F902C0014DA6D /* Lottie */; };
 		D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F902F6F90580014DA6D /* FSCalendar */; };
-		D18C0F942F6F90950014DA6D /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F932F6F90950014DA6D /* SwiftyJSON */; };
-		D18C0F972F6F90D30014DA6D /* ExpyTableView in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F962F6F90D30014DA6D /* ExpyTableView */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
 		D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FA32F7A0000014DA6D /* GoogleSignIn */; };
 		D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB52F7A0000014DA6D /* KakaoSDKAuth */; };
@@ -29,8 +26,18 @@
 		D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Auth.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6C0727DA3032E835005BCBB4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Sources/MG_Data/Source/Constant/BASE_URL.xcconfig,
+			);
+			target = 9CFA7D002A458109003E80A7 /* MOGAK */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
+		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6C0727DA3032E835005BCBB4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,9 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D154EF052F6FA04B00A18D99 /* ReusableKit in Frameworks */,
-				D18C0F8E2F6F902C0014DA6D /* Lottie in Frameworks */,
 				D18C0F9A2F6F92830014DA6D /* Then in Frameworks */,
-				D18C0F942F6F90950014DA6D /* SwiftyJSON in Frameworks */,
 				D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */,
 				D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */,
 				D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */,
@@ -50,7 +55,6 @@
 				D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */,
 				D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */,
 				D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */,
-				D18C0F972F6F90D30014DA6D /* ExpyTableView in Frameworks */,
 				4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -115,7 +119,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1410;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					9CFA7D002A458109003E80A7 = {
 						CreatedOnToolsVersion = 14.1;
@@ -135,10 +139,7 @@
 				D18C0F832F6F8FA60014DA6D /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */,
 				D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */,
-				D18C0F8C2F6F902C0014DA6D /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */,
-				D18C0F922F6F90950014DA6D /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
-				D18C0F952F6F90D30014DA6D /* XCRemoteSwiftPackageReference "ExpyTableView" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */,
 				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
@@ -208,8 +209,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5664C7G97A;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -229,6 +232,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -268,8 +272,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5664C7G97A;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -282,6 +288,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -298,8 +305,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5664C7G97A;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
@@ -342,8 +348,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5664C7G97A;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
@@ -432,36 +437,12 @@
 				minimumVersion = 5.11.1;
 			};
 		};
-		D18C0F8C2F6F902C0014DA6D /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-spm";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.6.0;
-			};
-		};
 		D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.8.4;
-			};
-		};
-		D18C0F922F6F90950014DA6D /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.2;
-			};
-		};
-		D18C0F952F6F90D30014DA6D /* XCRemoteSwiftPackageReference "ExpyTableView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/okhanokbay/ExpyTableView";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.2;
 			};
 		};
 		D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */ = {
@@ -511,25 +492,10 @@
 			package = D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
-		D18C0F8D2F6F902C0014DA6D /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F8C2F6F902C0014DA6D /* XCRemoteSwiftPackageReference "lottie-spm" */;
-			productName = Lottie;
-		};
 		D18C0F902F6F90580014DA6D /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */;
 			productName = FSCalendar;
-		};
-		D18C0F932F6F90950014DA6D /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F922F6F90950014DA6D /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
-		};
-		D18C0F962F6F90D30014DA6D /* ExpyTableView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F952F6F90D30014DA6D /* XCRemoteSwiftPackageReference "ExpyTableView" */;
-			productName = ExpyTableView;
 		};
 		D18C0F992F6F92830014DA6D /* Then */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -28,13 +28,14 @@ enum MG2CoordinatorFactory {
         )
         let modalartCoordinator = MG2ModalartCoordinator(
             viewModel: container.resolveRequired(MG2ModalartViewModel.self),
-            makeMogakDetailViewModel: { modalartID, mogaks, selectedMogak, jogaks in
+            makeMogakDetailViewModel: { modalartID, mogaks, selectedMogak, occurrences in
                 MG2MogakDetailViewModel(
                     useCase: container.resolveRequired(ModalartUseCase.self),
+                    scheduleUseCase: container.resolveRequired(ScheduleStartUseCase.self),
                     modalartID: modalartID,
                     mogaks: mogaks,
                     selectedMogak: selectedMogak,
-                    jogaks: jogaks
+                    occurrences: occurrences
                 )
             },
             formCoordinator: formCoordinator,

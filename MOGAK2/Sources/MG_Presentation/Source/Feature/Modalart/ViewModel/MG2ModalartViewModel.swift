@@ -143,17 +143,17 @@ final class MG2ModalartViewModel {
         }
     }
 
-    func loadJogaks(
+    func loadOccurrences(
         for mogak: MG2ModalartMogakItemEntity,
-        completion: @escaping (Result<[MG2JogakDetailEntity], Error>) -> Void
+        completion: @escaping (Result<[MG2JogakOccurrenceEntity], Error>) -> Void
     ) {
         Task {
             do {
-                let jogaks = try await useCase.getMogakDetailJogaks(
+                let occurrences = try await useCase.getMogakOverview(
                     mogakId: mogak.mogakId,
-                    date: Date()
+                    from: Date()
                 )
-                completion(.success(jogaks))
+                completion(.success(occurrences))
             } catch {
                 completion(.failure(error))
             }
@@ -229,9 +229,7 @@ final class MG2ModalartViewModel {
         MG2ModalartMogakItemEntity(
             mogakId: 0,
             title: title,
-            bigCategoryId: 0,
-            bigCategoryName: category,
-            smallCategory: nil,
+            category: MG2MogakCategoryEntity(code: nil, name: category),
             color: color
         )
     }

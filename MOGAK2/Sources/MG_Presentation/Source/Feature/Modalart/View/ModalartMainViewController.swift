@@ -16,12 +16,10 @@ final class ModalartMainViewController: UIViewController {
         $0.setImage(UIImage(named: "downArrow"), for: .normal)
         $0.addTarget(self, action: #selector(showModalartList), for: .touchUpInside)
     }
-    private lazy var deleteModalartButton = UIButton().then {
-        $0.setTitle("삭제", for: .normal)
-        $0.setTitleColor(.systemRed, for: .normal)
-        $0.titleLabel?.font = UIFont.pretendard(.semiBold, size: 16)
-        $0.accessibilityLabel = "현재 모다라트 삭제"
-        $0.addTarget(self, action: #selector(deleteModalart), for: .touchUpInside)
+    private lazy var modalartMenuButton = UIButton().then {
+        $0.setImage(UIImage(named: "VerticalEllipsisBlack"), for: .normal)
+        $0.accessibilityLabel = "모다라트 메뉴"
+        $0.addTarget(self, action: #selector(showModalartActions), for: .touchUpInside)
     }
     private let modalartCollectionView = UICollectionView(
         frame: .zero,
@@ -81,7 +79,7 @@ final class ModalartMainViewController: UIViewController {
         view.addSubviews(
             modalartNameLabel,
             showModalartListButton,
-            deleteModalartButton,
+            modalartMenuButton,
             modalartCollectionView
         )
         modalartNameLabel.snp.makeConstraints {
@@ -93,9 +91,8 @@ final class ModalartMainViewController: UIViewController {
             $0.leading.equalTo(modalartNameLabel.snp.trailing).offset(12)
             $0.centerY.equalTo(modalartNameLabel)
         }
-        deleteModalartButton.snp.makeConstraints {
-            $0.width.equalTo(44)
-            $0.height.equalTo(32)
+        modalartMenuButton.snp.makeConstraints {
+            $0.size.equalTo(24)
             $0.trailing.equalToSuperview().offset(-20)
             $0.centerY.equalTo(modalartNameLabel)
         }
@@ -107,10 +104,17 @@ final class ModalartMainViewController: UIViewController {
     }
 
     private func loadModalart() {
+        guard !viewModel.isGuest else {
+            viewModel.load { [weak self] _ in
+                self?.render()
+            }
+            return
+        }
         performLoading(viewModel.load)
     }
 
     private func selectModalart(at index: Int) {
+        guard viewModel.state.modalarts.indices.contains(index) else { return }
         performLoading { completion in
             self.viewModel.selectModalart(at: index, completion: completion)
         }
@@ -121,6 +125,7 @@ final class ModalartMainViewController: UIViewController {
     }
 
     private func updateModalart(title: String, color: String) {
+        guard viewModel.state.hasModalart else { return }
         performLoading { completion in
             self.viewModel.updateSelectedModalart(
                 title: title,
@@ -131,10 +136,15 @@ final class ModalartMainViewController: UIViewController {
     }
 
     private func removeSelectedModalart() {
+        guard viewModel.state.hasModalart else { return }
         performLoading(viewModel.deleteSelectedModalart)
     }
 
     private func reloadSelectedModalart() {
+        guard viewModel.state.hasModalart else {
+            render()
+            return
+        }
         performLoading(viewModel.reloadSelectedModalart)
     }
 
@@ -166,17 +176,17 @@ final class ModalartMainViewController: UIViewController {
     private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity) {
         showLoading()
         view.isUserInteractionEnabled = false
-        viewModel.loadJogaks(for: mogak) { [weak self] result in
+        viewModel.loadOccurrences(for: mogak) { [weak self] result in
             guard let self else { return }
             hideLoading()
             view.isUserInteractionEnabled = true
             switch result {
-            case .success(let jogaks):
+            case .success(let occurrences):
                 guard let modalartID = viewModel.state.selectedID else { return }
                 coordinator?.routeToMogakDetail(
                     mogaks: viewModel.state.mogaks,
                     selectedMogak: mogak,
-                    jogaks: jogaks,
+                    occurrences: occurrences,
                     modalartID: modalartID,
                     onExit: { [weak self] in self?.reloadSelectedModalart() },
                     from: self
@@ -200,15 +210,21 @@ final class ModalartMainViewController: UIViewController {
         )
     }
 
-    @objc private func deleteModalart() {
+    @objc private func showModalartActions() {
         guard !viewModel.isGuest else {
             coordinator?.presentLoginGate(from: self)
             return
         }
+        coordinator?.presentModalartActions(
+            onAdd: { [weak self] in self?.createModalart() },
+            onDelete: { [weak self] in self?.confirmModalartDeletion() },
+            from: self
+        )
+    }
+
+    private func confirmModalartDeletion() {
         guard viewModel.state.hasModalart else { return }
-        coordinator?.presentDeleteAction(
-            title: viewModel.state.title,
-            message: "현재 모다라트를 삭제할까요?",
+        coordinator?.presentDeleteConfirmation(
             onConfirm: { [weak self] in self?.removeSelectedModalart() },
             from: self
         )

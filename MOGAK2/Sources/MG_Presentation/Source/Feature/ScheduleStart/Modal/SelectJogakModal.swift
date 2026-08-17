@@ -1,6 +1,5 @@
 import UIKit
 import SnapKit
-import ExpyTableView
 
 final class SelectJogakModal: UIViewController {
     weak var coordinator: MG2ScheduleStartCoordinator?
@@ -8,6 +7,7 @@ final class SelectJogakModal: UIViewController {
     private let viewModel: MG2JogakSelectionViewModel
     private let initialModalart: MG2ModalartOption?
     private let onJogaksAdded: () -> Void
+    private var expandedSections = Set<Int>()
 
     init(
         viewModel: MG2JogakSelectionViewModel,
@@ -47,8 +47,8 @@ final class SelectJogakModal: UIViewController {
         return button
     }()
 
-    private lazy var tableView: ExpyTableView = {
-        let tableView = ExpyTableView()
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
         tableView.register(
             MG2ExpandableMogakCell.self,
             forCellReuseIdentifier: MG2ExpandableMogakCell.reuseIdentifier
@@ -75,7 +75,7 @@ final class SelectJogakModal: UIViewController {
 
         modalartButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(12)
+            $0.top.equalToSuperview().offset(36)
         }
 
         chevronImageView.snp.makeConstraints {
@@ -164,6 +164,7 @@ final class SelectJogakModal: UIViewController {
     }
 
     @objc private func addJogaks() {
+        guard viewModel.hasSelectedJogaks else { return }
         showLoading()
         viewModel.addSelectedJogaks { [weak self] result in
             guard let self else { return }
@@ -185,38 +186,68 @@ final class SelectJogakModal: UIViewController {
     private func updateAddButtonState() {
         addButton.isEnabled = viewModel.hasSelectedJogaks
     }
+
+    private func toggleSection(_ section: Int) {
+        guard viewModel.state.sections.indices.contains(section) else { return }
+
+        let isExpanding: Bool
+        if expandedSections.contains(section) {
+            expandedSections.remove(section)
+            isExpanding = false
+        } else {
+            expandedSections.insert(section)
+            isExpanding = true
+        }
+
+        let headerIndexPath = IndexPath(row: 0, section: section)
+        let headerCell = tableView.cellForRow(at: headerIndexPath) as? MG2ExpandableMogakCell
+        headerCell?.setExpanded(isExpanding)
+
+        let jogakIndexPaths = viewModel.state.sections[section].jogaks.indices.map {
+            IndexPath(row: $0 + 1, section: section)
+        }
+        guard !jogakIndexPaths.isEmpty else { return }
+
+        headerCell?.isUserInteractionEnabled = false
+        tableView.performBatchUpdates {
+            if isExpanding {
+                tableView.insertRows(at: jogakIndexPaths, with: .fade)
+            } else {
+                tableView.deleteRows(at: jogakIndexPaths, with: .fade)
+            }
+        } completion: { _ in
+            headerCell?.isUserInteractionEnabled = true
+        }
+    }
 }
 
-extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
-    nonisolated func tableView(
-        _ tableView: ExpyTableView,
-        expyState state: ExpyState,
-        changeForSection section: Int
-    ) {}
-
-    func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
-        !viewModel.state.sections[section].jogaks.isEmpty
-    }
-
-    func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MG2ExpandableMogakCell.reuseIdentifier
-        ) as? MG2ExpandableMogakCell else {
-            return UITableViewCell()
-        }
-        cell.configure(with: viewModel.state.sections[section])
-        return cell
-    }
-
+extension SelectJogakModal: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         viewModel.state.sections.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.state.sections[section].jogaks.count
+        let jogakCount = viewModel.state.sections[section].jogaks.count
+        return expandedSections.contains(section) ? jogakCount + 1 : 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: MG2ExpandableMogakCell.reuseIdentifier,
+                for: indexPath
+            ) as? MG2ExpandableMogakCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: viewModel.state.sections[indexPath.section])
+            cell.setExpanded(expandedSections.contains(indexPath.section))
+            return cell
+        }
+
+        let jogakIndex = indexPath.row - 1
+        guard viewModel.state.sections[indexPath.section].jogaks.indices.contains(jogakIndex) else {
+            return UITableViewCell()
+        }
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: MG2SelectableJogakCell.reuseIdentifier,
             for: indexPath
@@ -224,7 +255,7 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
             return UITableViewCell()
         }
 
-        let item = viewModel.state.sections[indexPath.section].jogaks[indexPath.row]
+        let item = viewModel.state.sections[indexPath.section].jogaks[jogakIndex]
         cell.configure(with: item, isSelected: viewModel.isJogakSelected(item.id))
         cell.onSelection = { [weak self, weak cell] jogakID in
             guard let self else { return }
@@ -234,7 +265,12 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         return cell
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.row == 0 else { return }
+        toggleSection(indexPath.section)
+    }
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        44
+        indexPath.row == 0 ? 60 : 40
     }
 }

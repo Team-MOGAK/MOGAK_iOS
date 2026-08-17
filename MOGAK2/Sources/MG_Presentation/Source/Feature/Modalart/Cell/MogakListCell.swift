@@ -28,15 +28,15 @@ final class MogakListCell: UICollectionViewCell {
     }
 
     private func configureLayout() {
-        self.addSubviews(titleLabel, bottomBar)
+        contentView.addSubviews(titleLabel, bottomBar)
         
         titleLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-2)
         }
         
         bottomBar.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.width.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(3)
         }
     }

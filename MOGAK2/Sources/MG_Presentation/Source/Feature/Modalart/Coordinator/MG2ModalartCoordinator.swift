@@ -5,7 +5,7 @@ final class MG2ModalartCoordinator: MG2PresentationCoordinator {
         Int,
         [MG2ModalartMogakItemEntity],
         MG2ModalartMogakItemEntity,
-        [MG2JogakDetailEntity]
+        [MG2JogakOccurrenceEntity]
     ) -> MG2MogakDetailViewModel
 
     private let viewModel: MG2ModalartViewModel
@@ -35,7 +35,7 @@ final class MG2ModalartCoordinator: MG2PresentationCoordinator {
     func routeToMogakDetail(
         mogaks: [MG2ModalartMogakItemEntity],
         selectedMogak: MG2ModalartMogakItemEntity,
-        jogaks: [MG2JogakDetailEntity],
+        occurrences: [MG2JogakOccurrenceEntity],
         modalartID: Int,
         onExit: @escaping () -> Void,
         from source: UIViewController
@@ -44,7 +44,7 @@ final class MG2ModalartCoordinator: MG2PresentationCoordinator {
             modalartID,
             mogaks,
             selectedMogak,
-            jogaks
+            occurrences
         )
         let viewController = MogakMainViewController(viewModel: detailViewModel)
         viewController.coordinator = self
@@ -124,6 +124,30 @@ final class MG2ModalartCoordinator: MG2PresentationCoordinator {
         viewController.modalPresentationStyle = .overFullScreen
         viewController.modalTransitionStyle = .crossDissolve
         source.present(viewController, animated: false)
+    }
+
+    func presentModalartActions(
+        onAdd: @escaping () -> Void,
+        onDelete: @escaping () -> Void,
+        from source: UIViewController
+    ) {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.view.tintColor = DesignSystemColor.signature.value
+        actionSheet.addAction(UIAlertAction(title: "모다라트 추가", style: .default) { _ in
+            onAdd()
+        })
+        actionSheet.addAction(UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in
+            onDelete()
+        })
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel))
+        actionSheet.popoverPresentationController?.sourceView = source.view
+        actionSheet.popoverPresentationController?.sourceRect = CGRect(
+            x: source.view.bounds.maxX - 32,
+            y: source.view.safeAreaInsets.top + 16,
+            width: 1,
+            height: 1
+        )
+        source.present(actionSheet, animated: true)
     }
 
     func presentModalartTitleEditor(

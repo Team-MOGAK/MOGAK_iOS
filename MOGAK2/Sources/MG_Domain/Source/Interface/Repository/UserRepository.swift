@@ -1,4 +1,7 @@
 protocol UserRepository {
+    func getJobs() async throws -> [String]
+    func getAddresses() async throws -> [String]
+    func getConsentItems() async throws -> [MG2ConsentItemEntity]
     func verifyNickname(_ nickname: String) async throws
     func changeNickname(_ nickname: String) async throws
     func changeJob(_ job: String) async throws

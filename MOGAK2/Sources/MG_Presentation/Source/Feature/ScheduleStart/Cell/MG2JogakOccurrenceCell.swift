@@ -1,8 +1,8 @@
 import UIKit
 import SnapKit
 
-final class MG2DailyJogakCell: UITableViewCell {
-    static let reuseIdentifier = "MG2DailyJogakCell"
+final class MG2JogakOccurrenceCell: UITableViewCell {
+    static let reuseIdentifier = "MG2JogakOccurrenceCell"
 
     private let completionImageView: UIImageView = {
         let imageView = UIImageView()
@@ -42,22 +42,34 @@ final class MG2DailyJogakCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.frame = contentView.frame.inset(
+            by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
+        )
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = nil
         onMoreTapped = nil
     }
 
-    func configure(title: String, isCompleted: Bool, onMoreTapped: @escaping () -> Void) {
+    func configure(
+        title: String,
+        status: MG2JogakOccurrenceStatus,
+        onMoreTapped: @escaping () -> Void
+    ) {
         titleLabel.text = title
-        setCompleted(isCompleted)
+        setStatus(status)
         self.onMoreTapped = onMoreTapped
     }
 
-    func setCompleted(_ isCompleted: Bool) {
+    func setStatus(_ status: MG2JogakOccurrenceStatus) {
         completionImageView.image = UIImage(
-            named: isCompleted ? "squareCheckmark" : "emptySquareCheckmark"
+            named: status == .success ? "squareCheckmark" : "emptySquareCheckmark"
         )
+        completionImageView.tintColor = nil
     }
 
     @objc private func moreButtonTapped() {

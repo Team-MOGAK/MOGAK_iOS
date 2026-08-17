@@ -163,6 +163,7 @@ final class MG2NicknameViewController: UIViewController {
 
     @objc private func nextButtonIsClicked() {
         let nickname = nicknameTextField.text ?? ""
+        guard profileViewModel.canSubmitNickname(nickname, mode: mode) else { return }
         showLoading()
         profileViewModel.submitNickname(
             nickname,

@@ -8,7 +8,7 @@ enum MG2ModalartRouter {
     case modalartCreate(title: String, color: String)
     case modalartEdit(id: Int, title: String, color: String)
     case modalartDelete(id: Int)
-    case mogakDetailJogaks(mogakId: Int, date: String)
+    case mogakOccurrences(mogakId: Int, date: String)
     case mogakDelete(id: Int)
     case jogakDelete(id: Int)
 }
@@ -28,7 +28,7 @@ extension MG2ModalartRouter: RequestTarget {
             return "/api/modarats/\(id)"
         case .modalartDelete(let id):
             return "/api/modarats/\(id)"
-        case .mogakDetailJogaks(let mogakId, _):
+        case .mogakOccurrences(let mogakId, _):
             return "/api/mogaks/\(mogakId)/jogaks"
         case .mogakDelete(let id):
             return "/api/mogaks/\(id)"
@@ -39,7 +39,7 @@ extension MG2ModalartRouter: RequestTarget {
 
     var method: HTTPMethod {
         switch self {
-        case .modalartList, .modalartDetail, .modalartMogaks, .mogakDetailJogaks:
+        case .modalartList, .modalartDetail, .modalartMogaks, .mogakOccurrences:
             return .get
         case .modalartCreate:
             return .post
@@ -54,13 +54,13 @@ extension MG2ModalartRouter: RequestTarget {
         switch self {
         case .modalartCreate(let title, let color), .modalartEdit(_, let title, let color):
             return ["title": title, "color": color]
-        case .modalartList, .modalartDetail, .modalartMogaks, .modalartDelete, .mogakDetailJogaks, .mogakDelete, .jogakDelete:
+        case .modalartList, .modalartDetail, .modalartMogaks, .modalartDelete, .mogakOccurrences, .mogakDelete, .jogakDelete:
             return nil
         }
     }
 
     var query: [String: Any]? {
-        guard case .mogakDetailJogaks(_, let date) = self else { return nil }
+        guard case .mogakOccurrences(_, let date) = self else { return nil }
         return ["date": date]
     }
 }

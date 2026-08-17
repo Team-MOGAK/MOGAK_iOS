@@ -108,6 +108,7 @@ final class MogakFormViewController: UIViewController {
         configureCategory()
         configureColorPicker()
         configureCompleteButton()
+        loadCategories()
         updateButtonState()
     }
 
@@ -121,9 +122,7 @@ final class MogakFormViewController: UIViewController {
         guard !hasConfiguredInitialSelection else { return }
         hasConfiguredInitialSelection = true
 
-        if let categoryIndex = viewModel.categories.firstIndex(
-            of: viewModel.state.bigCategory
-        ) {
+        if let categoryIndex = viewModel.selectedCategoryIndex {
             let indexPath = IndexPath(item: categoryIndex, section: 0)
             categoryCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
         }
@@ -248,6 +247,29 @@ final class MogakFormViewController: UIViewController {
         }
     }
 
+    private func loadCategories() {
+        showLoading()
+        viewModel.loadCategories { [weak self] result in
+            guard let self else { return }
+            hideLoading()
+            switch result {
+            case .success:
+                categoryCollectionView.reloadData()
+                if let index = viewModel.selectedCategoryIndex {
+                    categoryCollectionView.selectItem(
+                        at: IndexPath(item: index, section: 0),
+                        animated: false,
+                        scrollPosition: []
+                    )
+                }
+                updateCustomCategoryVisibility()
+                updateButtonState()
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
+            }
+        }
+    }
+
     private func updateCustomCategoryVisibility() {
         let isCustomCategorySelected = viewModel.isCustomCategorySelected
         customCategoryTextField.isHidden = !isCustomCategorySelected
@@ -268,6 +290,7 @@ final class MogakFormViewController: UIViewController {
     }
 
     @objc private func completeButtonTapped() {
+        guard viewModel.isValid else { return }
         showLoading()
         view.isUserInteractionEnabled = false
         viewModel.submit(
@@ -313,7 +336,7 @@ extension MogakFormViewController: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         if collectionView.tag == 1 {
             let cell = collectionView.dequeue(Reusable.selectionChip, for: indexPath)
-            cell.configure(title: viewModel.categories[indexPath.item], style: .category)
+            cell.configure(title: viewModel.categories[indexPath.item].name, style: .category)
             return cell
         }
 
@@ -349,7 +372,7 @@ extension MogakFormViewController: UICollectionViewDelegateFlowLayout {
         guard collectionView.tag == 1 else {
             return CGSize(width: 40, height: 40)
         }
-        let text = viewModel.categories[indexPath.item] as NSString
+        let text = viewModel.categories[indexPath.item].name as NSString
         let size = text.size(withAttributes: [.font: UIFont.pretendard(.medium, size: 14)])
         return CGSize(width: size.width + 40, height: size.height + 16)
     }

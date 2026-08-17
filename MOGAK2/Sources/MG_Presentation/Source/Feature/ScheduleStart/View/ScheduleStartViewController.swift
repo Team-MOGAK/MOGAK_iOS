@@ -106,7 +106,7 @@ final class ScheduleStartViewController: UIViewController {
         button.backgroundColor = DesignSystemColor.signature.value
         button.titleLabel?.font = DesignSystemFont.semibold18L100.value
         button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(addDailyJogak), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addJogak), for: .touchUpInside)
         return button
     }()
 
@@ -140,7 +140,7 @@ final class ScheduleStartViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
 
         let selectedDate = calendarView.selectedDate ?? viewModel.state.selectedDate
-        loadDailyJogaks(date: selectedDate)
+        loadJogakOccurrences(date: selectedDate)
         updateAddButtonVisibility(for: selectedDate)
     }
 
@@ -250,8 +250,8 @@ final class ScheduleStartViewController: UIViewController {
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.register(
-            MG2DailyJogakCell.self,
-            forCellReuseIdentifier: MG2DailyJogakCell.reuseIdentifier
+            MG2JogakOccurrenceCell.self,
+            forCellReuseIdentifier: MG2JogakOccurrenceCell.reuseIdentifier
         )
     }
 
@@ -262,16 +262,18 @@ final class ScheduleStartViewController: UIViewController {
         toastLabel.font = DesignSystemFont.medium12L150.value
         toastLabel.textAlignment = .center
         toastLabel.text = message
-        toastLabel.numberOfLines = 2
-        toastLabel.layer.cornerRadius = 23
+        toastLabel.numberOfLines = 1
+        toastLabel.adjustsFontSizeToFitWidth = true
+        toastLabel.minimumScaleFactor = 0.7
+        toastLabel.layer.cornerRadius = 18
         toastLabel.clipsToBounds = true
         view.addSubview(toastLabel)
 
         toastLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(70)
-            $0.width.lessThanOrEqualTo(300)
-            $0.height.equalTo(45)
+            $0.top.equalToSuperview().offset(view.bounds.height * 0.75)
+            $0.width.equalTo(min(300, view.bounds.width - 40))
+            $0.height.equalTo(36)
         }
 
         UIView.animate(withDuration: 3, delay: 0.1, options: .curveEaseOut) {
@@ -281,22 +283,29 @@ final class ScheduleStartViewController: UIViewController {
         }
     }
 
-    private func loadDailyJogaks(date: Date) {
+    private func loadJogakOccurrences(date: Date) {
+        guard !viewModel.isGuest else {
+            viewModel.loadJogakOccurrences(date: date) { [weak self] _ in
+                self?.renderOccurrences()
+            }
+            return
+        }
+
         showLoading()
-        viewModel.loadDailyJogaks(date: date) { [weak self] result in
+        viewModel.loadJogakOccurrences(date: date) { [weak self] result in
             guard let self else { return }
             hideLoading()
 
             switch result {
             case .success:
-                renderDailyJogaks()
+                renderOccurrences()
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }
         }
     }
 
-    private func renderDailyJogaks() {
+    private func renderOccurrences() {
         let isEmpty = viewModel.state.isEmpty
         emptyImageView.isHidden = !isEmpty
         emptyStateLabel.isHidden = !isEmpty
@@ -323,13 +332,16 @@ final class ScheduleStartViewController: UIViewController {
         coordinator?.routeToModalartTab(from: self)
     }
 
-    @objc private func addDailyJogak() {
+    @objc private func addJogak() {
         if viewModel.isGuest {
             coordinator?.presentLoginGate(from: self)
             return
         }
-        coordinator?.presentJogakSelection(from: self) { [weak self] in
-            self?.refreshDailyJogaks()
+        coordinator?.presentJogakSelection(
+            scheduledDate: viewModel.state.selectedDate,
+            from: self
+        ) { [weak self] in
+            self?.refreshJogakOccurrences()
         }
     }
 
@@ -352,12 +364,21 @@ final class ScheduleStartViewController: UIViewController {
         headerLabel.text = viewModel.calendarHeader(for: page)
     }
 
-    private func refreshDailyJogaks() {
-        loadDailyJogaks(date: calendarView.selectedDate ?? Date())
+    private func refreshJogakOccurrences() {
+        loadJogakOccurrences(date: calendarView.selectedDate ?? Date())
     }
 
-    private func showJogakOptions(for item: MG2DailyJogakItem) {
-        guard !item.isReadOnly, let jogakID = item.jogakID else { return }
+    private func showJogakOptions(for item: MG2JogakOccurrenceItem) {
+        coordinator?.presentJogakOptions(
+            title: item.title,
+            onEdit: { [weak self] in
+                self?.editJogak(jogakID: item.key.jogakID)
+            },
+            from: self
+        )
+    }
+
+    private func editJogak(jogakID: Int) {
         showLoading()
         viewModel.getJogakForEditing(jogakId: jogakID) { [weak self] result in
             guard let self else { return }
@@ -365,9 +386,7 @@ final class ScheduleStartViewController: UIViewController {
 
             switch result {
             case .success(let detail):
-                guard let detail else { return }
-                coordinator?.presentJogakOptions(
-                    title: item.title,
+                coordinator?.routeToJogakEditing(
                     jogak: detail,
                     from: self
                 )
@@ -399,7 +418,7 @@ extension ScheduleStartViewController: FSCalendarDelegate, FSCalendarDataSource 
         didSelect date: Date,
         at monthPosition: FSCalendarMonthPosition
     ) {
-        loadDailyJogaks(date: date)
+        loadJogakOccurrences(date: date)
         updateAddButtonVisibility(for: date)
     }
 }
@@ -410,7 +429,7 @@ extension ScheduleStartViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.state.dailyJogaks.count
+        viewModel.state.occurrences.count
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -418,14 +437,13 @@ extension ScheduleStartViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard viewModel.state.dailyJogaks.indices.contains(indexPath.row),
-              let cell = tableView.cellForRow(at: indexPath) as? MG2DailyJogakCell else {
+        guard viewModel.state.occurrences.indices.contains(indexPath.row),
+              let cell = tableView.cellForRow(at: indexPath) as? MG2JogakOccurrenceCell else {
             return
         }
 
-        let item = viewModel.state.dailyJogaks[indexPath.row]
-        guard !item.isReadOnly else { return }
-        guard let newValue = viewModel.toggleJogakAchievement(
+        let item = viewModel.state.occurrences[indexPath.row]
+        guard let isCompleted = viewModel.toggleJogakCompletion(
             at: indexPath.row,
             completion: { [weak self] result in
                 guard case .failure(let error) = result, let self else { return }
@@ -434,22 +452,22 @@ extension ScheduleStartViewController: UITableViewDelegate, UITableViewDataSourc
             }
         ) else { return }
 
-        cell.setCompleted(newValue)
-        if newValue {
-            showToast(message: "'\(item.title)' \n오늘 조각을 완료하셨군요!")
+        cell.setStatus(isCompleted ? .success : .fail)
+        if isCompleted {
+            showToast(message: "'\(item.title)' 오늘 조각을 완료하셨군요!")
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MG2DailyJogakCell.reuseIdentifier,
+            withIdentifier: MG2JogakOccurrenceCell.reuseIdentifier,
             for: indexPath
-        ) as? MG2DailyJogakCell else {
+        ) as? MG2JogakOccurrenceCell else {
             return UITableViewCell()
         }
 
-        let item = viewModel.state.dailyJogaks[indexPath.row]
-        cell.configure(title: item.title, isCompleted: item.isAchievement) { [weak self] in
+        let item = viewModel.state.occurrences[indexPath.row]
+        cell.configure(title: item.title, status: item.status) { [weak self] in
             self?.showJogakOptions(for: item)
         }
         return cell

@@ -9,11 +9,11 @@ struct MG2ModalartOption {
 struct MG2JogakSelectionItem {
     let id: Int
     let title: String
-    var isAlreadyAdded: Bool
+    var status: MG2JogakOccurrenceStatus
     let isRoutine: Bool
 
     var isSelectable: Bool {
-        !isAlreadyAdded && !isRoutine
+        status == .pending
     }
 }
 
@@ -24,6 +24,7 @@ struct MG2MogakJogakSection {
 }
 
 struct MG2JogakSelectionViewState {
+    var scheduledDate = Date()
     var modalarts = [MG2ModalartOption]()
     var selectedModalartID: Int?
     var sections = [MG2MogakJogakSection]()
@@ -47,6 +48,11 @@ final class MG2JogakSelectionViewModel {
     }
 
     var hasSelectedJogaks: Bool { !selectedJogakIDs.isEmpty }
+
+    func prepare(scheduledDate: Date) {
+        state.scheduledDate = scheduledDate
+        selectedJogakIDs.removeAll()
+    }
 
     func isJogakSelected(_ jogakID: Int) -> Bool {
         selectedJogakIDs.contains(jogakID)
@@ -76,7 +82,6 @@ final class MG2JogakSelectionViewModel {
 
     func loadMogakSections(
         modalartID: Int,
-        date: Date = Date(),
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         Task {
@@ -88,19 +93,19 @@ final class MG2JogakSelectionViewModel {
                 sections.reserveCapacity(page.items.count)
 
                 for mogak in page.items {
-                    let jogaks = try await modalartUseCase.getMogakDetailJogaks(
+                    let occurrences = try await modalartUseCase.getMogakOccurrences(
                         mogakId: mogak.mogakId,
-                        date: date
+                        date: state.scheduledDate
                     )
                     sections.append(
                         MG2MogakJogakSection(
                             title: mogak.title,
                             color: mogak.color ?? "",
-                            jogaks: jogaks.map {
+                            jogaks: occurrences.map {
                                 MG2JogakSelectionItem(
-                                    id: $0.jogakID,
+                                    id: $0.key.jogakID,
                                     title: $0.title,
-                                    isAlreadyAdded: $0.isAlreadyAdded ?? false,
+                                    status: $0.status,
                                     isRoutine: $0.isRoutine
                                 )
                             }
@@ -122,9 +127,12 @@ final class MG2JogakSelectionViewModel {
         Task {
             do {
                 for jogakID in jogakIDs {
-                    try await scheduleUseCase.addJogakDaily(jogakId: jogakID)
+                    try await scheduleUseCase.startJogak(
+                        jogakId: jogakID,
+                        scheduledDate: state.scheduledDate
+                    )
                     selectedJogakIDs.remove(jogakID)
-                    markJogakAsAdded(jogakID)
+                    markJogakAsStarted(jogakID)
                 }
                 completion(.success(()))
             } catch {
@@ -133,12 +141,12 @@ final class MG2JogakSelectionViewModel {
         }
     }
 
-    private func markJogakAsAdded(_ jogakID: Int) {
+    private func markJogakAsStarted(_ jogakID: Int) {
         for sectionIndex in state.sections.indices {
             guard let itemIndex = state.sections[sectionIndex].jogaks.firstIndex(
                 where: { $0.id == jogakID }
             ) else { continue }
-            state.sections[sectionIndex].jogaks[itemIndex].isAlreadyAdded = true
+            state.sections[sectionIndex].jogaks[itemIndex].status = .inProgress
             return
         }
     }

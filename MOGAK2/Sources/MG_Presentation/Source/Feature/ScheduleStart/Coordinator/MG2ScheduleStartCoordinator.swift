@@ -39,10 +39,12 @@ final class MG2ScheduleStartCoordinator: MG2PresentationCoordinator {
     }
 
     func presentJogakSelection(
+        scheduledDate: Date,
         from source: UIViewController,
         onJogaksAdded: @escaping () -> Void
     ) {
         let selectionViewModel = makeJogakSelectionViewModel()
+        selectionViewModel.prepare(scheduledDate: scheduledDate)
         let viewController = SelectModalartViewController(
             viewModel: selectionViewModel,
             onJogaksAdded: onJogaksAdded
@@ -95,23 +97,20 @@ final class MG2ScheduleStartCoordinator: MG2PresentationCoordinator {
 
     func presentJogakOptions(
         title: String,
-        jogak: MG2JogakDetailEntity,
+        onEdit: @escaping () -> Void,
         from source: UIViewController
     ) {
         let viewController = JogakOptionsModal(title: title)
         viewController.onCancel = { [weak viewController] in
             viewController?.dismiss(animated: true)
         }
-        viewController.onEdit = { [weak self, weak source, weak viewController] in
-            viewController?.dismiss(animated: true) {
-                guard let self, let source else { return }
-                self.routeToJogakEditing(jogak: jogak, from: source)
-            }
+        viewController.onEdit = { [weak viewController] in
+            viewController?.dismiss(animated: true, completion: onEdit)
         }
         viewController.modalPresentationStyle = .pageSheet
 
         if #available(iOS 16.0, *), let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.custom { _ in 200 }]
+            sheet.detents = [.custom { _ in 220 }]
             sheet.prefersGrabberVisible = true
         }
         source.present(viewController, animated: true)

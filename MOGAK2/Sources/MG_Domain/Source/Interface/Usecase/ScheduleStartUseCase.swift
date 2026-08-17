@@ -8,8 +8,8 @@
 import Foundation
 
 protocol ScheduleStartUseCase {
-    func getDailyJogaks(date: Date) async throws -> [MG2ScheduleDailyJogakEntity]
-    func addJogakDaily(jogakId: Int) async throws
-    func getDailyJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity?
-    func setJogakAchievement(dailyJogakId: Int, isAchievement: Bool) async throws
+    func getJogakOccurrences(date: Date) async throws -> [MG2JogakOccurrenceEntity]
+    func startJogak(jogakId: Int, scheduledDate: Date) async throws
+    func getJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity
+    func setJogakCompletion(key: MG2JogakOccurrenceKey, isCompleted: Bool) async throws
 }

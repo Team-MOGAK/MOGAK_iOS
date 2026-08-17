@@ -20,30 +20,28 @@ enum MG2JobSubmissionResult {
     case profileUpdated
 }
 
-enum MG2AgreementItem {
-    case age
-    case service
-    case privacy
-    case marketing
+struct MG2AgreementSelection {
+    let item: MG2ConsentItemEntity
+    var agreed = false
 }
 
 struct MG2AgreementState {
-    var age = false
-    var service = false
-    var privacy = false
-    var marketing = false
+    var selections = [MG2AgreementSelection]()
+    var hasLoaded = false
 
     var hasAcceptedRequiredTerms: Bool {
-        age && service && privacy
+        hasLoaded && selections.allSatisfy { !$0.item.required || $0.agreed }
     }
 
     var hasAcceptedAllTerms: Bool {
-        age && service && privacy && marketing
+        hasLoaded && !selections.isEmpty && selections.allSatisfy(\.agreed)
     }
 }
 
 struct MG2ProfileSetupViewState {
     var agreements = MG2AgreementState()
+    var jobs = [String]()
+    var regions = [String]()
     var jobSections = [MG2JobSection]()
     var selectedJob = ""
     var selectedRegion = ""
@@ -64,25 +62,9 @@ private enum MG2ProfileSetupError: LocalizedError {
 final class MG2ProfileSetupViewModel {
     private static let nicknameLengthRange = 2...10
 
-    private static let jobs = [
-        "기획/전략", "법무,사무,총무", "인사/HR", "회계/세무", "마케팅/광고/MD",
-        "개발/데이터", "디자인", "물류/무역", "운전/운송/배송", "영업", "고객상담/TM",
-        "금융/보험", "식/음료", "고객서비스/리테일", "엔지니어링/설계", "제조/생산",
-        "교육", "건축/시설", "의료/바이오", "미디어/문화", "스포츠", "공공복지",
-        "자영업", "군인", "의료", "회계사", "법무사", "노무사", "세무사", "관세사",
-        "교사", "디지털노마드", "영상제작자", "크리에이터"
-    ]
-
     private static let koreanInitials = [
         "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ",
         "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"
-    ]
-
-    private static let regions = [
-        "서울특별시", "경기도", "세종특별자치시", "대전광역시", "광주광역시",
-        "대구광역시", "부산광역시", "울산광역시", "경상남도", "경상북도",
-        "전라남도", "전라북도", "충청남도", "충청북도", "강원도", "제주도",
-        "독도/울릉도"
     ]
 
     private let userUseCase: UserUseCase
@@ -102,33 +84,40 @@ final class MG2ProfileSetupViewModel {
 
     var nickname: String { userState.nickname }
     var nicknameMaximumLength: Int { Self.nicknameLengthRange.upperBound }
-    var availableRegions: [String] { Self.regions }
+    var availableRegions: [String] { state.regions }
 
     func resetAgreements() {
         state.agreements = MG2AgreementState()
     }
 
-    func toggleAllAgreements() {
-        let newValue = !state.agreements.hasAcceptedAllTerms
-        state.agreements = MG2AgreementState(
-            age: newValue,
-            service: newValue,
-            privacy: newValue,
-            marketing: newValue
-        )
+    func loadConsentItems(completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                state.agreements = MG2AgreementState(
+                    selections: try await userUseCase.getConsentItems().map {
+                        MG2AgreementSelection(item: $0)
+                    },
+                    hasLoaded: true
+                )
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
-    func toggleAgreement(_ item: MG2AgreementItem) {
-        switch item {
-        case .age:
-            state.agreements.age.toggle()
-        case .service:
-            state.agreements.service.toggle()
-        case .privacy:
-            state.agreements.privacy.toggle()
-        case .marketing:
-            state.agreements.marketing.toggle()
+    func toggleAllAgreements() {
+        let newValue = !state.agreements.hasAcceptedAllTerms
+        for index in state.agreements.selections.indices {
+            state.agreements.selections[index].agreed = newValue
         }
+    }
+
+    func toggleAgreement(id: Int) {
+        guard let index = state.agreements.selections.firstIndex(
+            where: { $0.item.id == id }
+        ) else { return }
+        state.agreements.selections[index].agreed.toggle()
     }
 
     func beginJobSelection() {
@@ -138,6 +127,18 @@ final class MG2ProfileSetupViewModel {
 
     func updateJobSections(matching query: String) {
         state.jobSections = makeJobSections(matching: query)
+    }
+
+    func loadJobs(completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                state.jobs = try await userUseCase.getJobs()
+                updateJobSections(matching: "")
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 
     func selectJob(section: Int, row: Int) {
@@ -151,9 +152,20 @@ final class MG2ProfileSetupViewModel {
         state.selectedRegion = ""
     }
 
+    func loadRegions(completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                state.regions = try await userUseCase.getAddresses()
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     func selectRegion(at index: Int) {
-        guard Self.regions.indices.contains(index) else { return }
-        state.selectedRegion = Self.regions[index]
+        guard state.regions.indices.contains(index) else { return }
+        state.selectedRegion = state.regions[index]
     }
 
     func nicknameValidationMessage(_ nickname: String) -> String? {
@@ -180,8 +192,8 @@ final class MG2ProfileSetupViewModel {
 
     private func makeJobSections(matching query: String) -> [MG2JobSection] {
         let jobs = query.isEmpty
-            ? Self.jobs
-            : Self.jobs.filter { $0.range(of: query, options: .caseInsensitive) != nil }
+            ? state.jobs
+            : state.jobs.filter { $0.range(of: query, options: .caseInsensitive) != nil }
 
         let grouped = Dictionary(grouping: jobs, by: Self.sectionTitle)
         return grouped.keys.sorted().map {
@@ -272,7 +284,10 @@ final class MG2ProfileSetupViewModel {
         let registration = MG2UserRegistration(
             nickname: userState.nickname,
             job: userState.job,
-            address: userState.region
+            address: userState.region,
+            consents: state.agreements.selections.map {
+                MG2ConsentAgreement(consentItemId: $0.item.id, agreed: $0.agreed)
+            }
         )
         Task {
             do {

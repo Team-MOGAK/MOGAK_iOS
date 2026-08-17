@@ -46,7 +46,11 @@ final class MogakMainViewController: UIViewController {
         view.backgroundColor = DesignSystemColor.signatureBag.value
         configureLayout()
         configureCollectionViews()
-        render()
+        if viewModel.hasRoutineOccurrences {
+            performLoading(viewModel.loadRoutineDays)
+        } else {
+            render()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -147,6 +151,7 @@ final class MogakMainViewController: UIViewController {
     }
 
     private func removeSelectedMogak() {
+        guard viewModel.state.selectedMogak != nil else { return }
         showLoading()
         view.isUserInteractionEnabled = false
         viewModel.deleteSelectedMogak { [weak self] result in
@@ -168,6 +173,42 @@ final class MogakMainViewController: UIViewController {
     private func removeJogak(id: Int) {
         performLoading { completion in
             self.viewModel.deleteJogak(id: id, completion: completion)
+        }
+    }
+
+    private func showJogakActions(for occurrence: MG2JogakOccurrenceEntity) {
+        showLoading()
+        view.isUserInteractionEnabled = false
+        viewModel.loadJogakActionContext(for: occurrence) { [weak self] result in
+            guard let self else { return }
+            hideLoading()
+            view.isUserInteractionEnabled = true
+            switch result {
+            case .success(let context):
+                coordinator?.presentJogakActions(
+                    viewData: context.summary,
+                    onEdit: { [weak self] in
+                        guard let self else { return }
+                        coordinator?.routeToJogakEditing(
+                            jogak: context.detail,
+                            delegate: self,
+                            from: self
+                        )
+                    },
+                    onDelete: { [weak self] in
+                        guard let self else { return }
+                        coordinator?.presentDeleteConfirmation(
+                            onConfirm: { [weak self] in
+                                self?.removeJogak(id: context.detail.jogakID)
+                            },
+                            from: self
+                        )
+                    },
+                    from: self
+                )
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
+            }
         }
     }
 
@@ -203,7 +244,7 @@ extension MogakMainViewController: UICollectionViewDataSource {
             ) as? MogakListCell else {
                 return UICollectionViewCell()
             }
-            cell.configure(title: viewModel.state.mogaks[indexPath.item].bigCategoryName)
+            cell.configure(title: viewModel.state.mogaks[indexPath.item].category.name)
             return cell
         }
 
@@ -225,14 +266,14 @@ extension MogakMainViewController: UICollectionViewDataSource {
         }
 
         guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item),
-              viewModel.state.jogaks.indices.contains(jogakIndex) else {
+              viewModel.state.occurrences.indices.contains(jogakIndex) else {
             return collectionView.dequeueReusableCell(
                 withReuseIdentifier: EmptyJogakCell.identifier,
                 for: indexPath
             )
         }
-        let jogak = viewModel.state.jogaks[jogakIndex]
-        if jogak.isRoutine {
+        let occurrence = viewModel.state.occurrences[jogakIndex]
+        if occurrence.isRoutine {
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: IsRoutineJogakCell.identifier,
                 for: indexPath
@@ -240,8 +281,8 @@ extension MogakMainViewController: UICollectionViewDataSource {
                 return UICollectionViewCell()
             }
             cell.configure(
-                daysText: viewModel.jogakCellDaysText(for: jogak),
-                title: jogak.title,
+                badgeText: viewModel.routineDaysText(for: occurrence),
+                title: occurrence.title,
                 color: selectedMogak.color ?? DesignSystemPalette.signatureHex
             )
             return cell
@@ -253,7 +294,7 @@ extension MogakMainViewController: UICollectionViewDataSource {
         ) as? JogakCell else {
             return UICollectionViewCell()
         }
-        cell.configure(title: jogak.title)
+        cell.configure(title: occurrence.title)
         return cell
     }
 }
@@ -261,6 +302,7 @@ extension MogakMainViewController: UICollectionViewDataSource {
 extension MogakMainViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == mogakListCollectionView {
+            guard viewModel.state.mogaks.indices.contains(indexPath.item) else { return }
             performLoading { completion in
                 self.viewModel.selectMogak(at: indexPath.item, completion: completion)
             }
@@ -292,7 +334,7 @@ extension MogakMainViewController: UICollectionViewDelegate {
         }
 
         guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item) else { return }
-        guard viewModel.state.jogaks.indices.contains(jogakIndex) else {
+        guard viewModel.state.occurrences.indices.contains(jogakIndex) else {
             coordinator?.routeToJogakCreation(
                 mogak: selectedMogak,
                 delegate: self,
@@ -301,27 +343,7 @@ extension MogakMainViewController: UICollectionViewDelegate {
             return
         }
 
-        let jogak = viewModel.state.jogaks[jogakIndex]
-        guard let viewData = viewModel.makeJogakSummary(for: jogak) else { return }
-        coordinator?.presentJogakActions(
-            viewData: viewData,
-            onEdit: { [weak self] in
-                guard let self else { return }
-                coordinator?.routeToJogakEditing(
-                    jogak: jogak,
-                    delegate: self,
-                    from: self
-                )
-            },
-            onDelete: { [weak self] in
-                guard let self else { return }
-                coordinator?.presentDeleteConfirmation(
-                    onConfirm: { [weak self] in self?.removeJogak(id: jogak.jogakID) },
-                    from: self
-                )
-            },
-            from: self
-        )
+        showJogakActions(for: viewModel.state.occurrences[jogakIndex])
     }
 }
 
@@ -332,7 +354,7 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         if collectionView == mogakListCollectionView {
-            let title = viewModel.state.mogaks[indexPath.item].bigCategoryName as NSString
+            let title = viewModel.state.mogaks[indexPath.item].category.name as NSString
             let size = title.size(withAttributes: [.font: UIFont.systemFont(ofSize: 14)])
             return CGSize(width: size.width + 30, height: 30)
         }
@@ -366,7 +388,11 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
 
 extension MogakMainViewController: MG2JogakFormDelegate {
     func jogakFormDidFinish() {
-        performLoading(viewModel.reloadJogaks)
+        guard viewModel.state.selectedMogak != nil else {
+            render()
+            return
+        }
+        performLoading(viewModel.reloadOccurrences)
     }
 }
 

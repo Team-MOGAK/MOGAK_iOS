@@ -8,39 +8,51 @@ final class DefaultMogakEditingRepository: MogakEditingRepository {
         self.networkProvider = networkProvider
     }
 
-    func createMogak(modaratId: Int, title: String, bigCategory: String, smallCategory: String?, color: String) async throws {
-        try await networkProvider.requestEmpty(
-            target: MG2MogakEditingRouter.createMogak(modaratId: modaratId, title: title, bigCategory: bigCategory, smallCategory: smallCategory, color: color)
+    func getMogakCategories() async throws -> [MG2MogakCategoryEntity] {
+        let response: MG2MogakCategoryListResponseDTO = try await networkProvider.request(
+            target: MG2MogakEditingRouter.categories
         )
+        return response.result.map { $0.toEntity() }
     }
 
-    func editMogak(mogakId: Int, title: String, bigCategory: String, smallCategory: String?, color: String) async throws {
+    func createMogak(modaratId: Int, title: String, category: MG2MogakCategorySelection, color: String) async throws {
         try await networkProvider.requestEmpty(
-            target: MG2MogakEditingRouter.editMogak(mogakId: mogakId, title: title, bigCategory: bigCategory, smallCategory: smallCategory, color: color)
-        )
-    }
-
-    func createJogak(mogakId: Int, title: String, isRoutine: Bool, days: [MG2Weekday]?, today: Date, endDate: Date?) async throws {
-        try await networkProvider.requestEmpty(
-            target: MG2MogakEditingRouter.createJogak(
-                mogakId: mogakId,
+            target: MG2MogakEditingRouter.createMogak(
+                modaratId: modaratId,
                 title: title,
-                isRoutine: isRoutine,
-                days: days.map(MG2APIWeekdayCoding.encode),
-                today: MG2APIDateCoding.encode(today),
-                endDate: endDate.map(MG2APIDateCoding.encode)
+                category: category,
+                color: color
             )
         )
     }
 
-    func editJogak(jogakId: Int, title: String, isRoutine: Bool, days: [MG2Weekday]?, endDate: Date?) async throws {
+    func editMogak(mogakId: Int, title: String, category: MG2MogakCategorySelection, color: String) async throws {
+        try await networkProvider.requestEmpty(
+            target: MG2MogakEditingRouter.editMogak(
+                mogakId: mogakId,
+                title: title,
+                category: category,
+                color: color
+            )
+        )
+    }
+
+    func createJogak(mogakId: Int, title: String, schedule: MG2JogakSchedule) async throws {
+        try await networkProvider.requestEmpty(
+            target: MG2MogakEditingRouter.createJogak(
+                mogakId: mogakId,
+                title: title,
+                schedule: MG2JogakScheduleRequest(schedule: schedule)
+            )
+        )
+    }
+
+    func editJogak(jogakId: Int, title: String, schedule: MG2JogakSchedule?) async throws {
         try await networkProvider.requestEmpty(
             target: MG2MogakEditingRouter.editJogak(
                 jogakId: jogakId,
                 title: title,
-                isRoutine: isRoutine,
-                days: days.map(MG2APIWeekdayCoding.encode),
-                endDate: endDate.map(MG2APIDateCoding.encode)
+                schedule: schedule.map(MG2JogakScheduleRequest.init)
             )
         )
     }

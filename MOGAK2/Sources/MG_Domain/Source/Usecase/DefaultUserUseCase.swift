@@ -6,6 +6,18 @@ final class DefaultUserUseCase: UserUseCase {
         self.repository = repository
     }
 
+    func getJobs() async throws -> [String] {
+        try await repository.getJobs()
+    }
+
+    func getAddresses() async throws -> [String] {
+        try await repository.getAddresses()
+    }
+
+    func getConsentItems() async throws -> [MG2ConsentItemEntity] {
+        try await repository.getConsentItems()
+    }
+
     func verifyNickname(_ nickname: String) async throws {
         try await repository.verifyNickname(nickname)
     }

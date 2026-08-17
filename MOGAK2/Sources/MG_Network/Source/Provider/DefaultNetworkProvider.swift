@@ -10,18 +10,22 @@ import Alamofire
 
 struct DefaultNetworkProvider: NetworkProvider {
     private struct ErrorPayload: Decodable {
+        let code: String?
         let message: String?
     }
 
     private let session: Session
     private let accessTokenProvider: () -> String?
+    private let refreshAccessToken: () async throws -> String?
 
     init(
         session: Session = .default,
-        accessTokenProvider: @escaping () -> String? = { nil }
+        accessTokenProvider: @escaping () -> String? = { nil },
+        refreshAccessToken: @escaping () async throws -> String? = { nil }
     ) {
         self.session = session
         self.accessTokenProvider = accessTokenProvider
+        self.refreshAccessToken = refreshAccessToken
     }
 
     func request<T>(target: NetworkRequest) async throws -> T where T: Decodable {
@@ -36,6 +40,21 @@ struct DefaultNetworkProvider: NetworkProvider {
     private func responseData(target: NetworkRequest) async throws -> Data {
         let urlRequest = try authenticatedURLRequest(for: target)
         let response = await session.request(urlRequest).serializingData().response
+
+        if target.requiresAuthorization,
+           response.error == nil,
+           response.response?.statusCode == 401,
+           let refreshedAccessToken = try await refreshAccessToken(),
+           !refreshedAccessToken.isEmpty {
+            var retryRequest = try target.makeURLRequest()
+            retryRequest.setValue(
+                "Bearer \(refreshedAccessToken)",
+                forHTTPHeaderField: "Authorization"
+            )
+            let retryResponse = await session.request(retryRequest).serializingData().response
+            return try validatedData(from: retryResponse)
+        }
+
         return try validatedData(from: response)
     }
 
@@ -63,13 +82,22 @@ struct DefaultNetworkProvider: NetworkProvider {
 
         guard (200..<300).contains(statusCode) else {
             logFailure(kind: "Non2xx", url: url, statusCode: statusCode, responseBody: responseBody)
-            let serverMessage = try? JSONDecoder().decode(ErrorPayload.self, from: data).message
+            let payload = try? JSONDecoder().decode(ErrorPayload.self, from: data)
             let fallbackMessage = responseBody.isEmpty
                 ? HTTPURLResponse.localizedString(forStatusCode: statusCode)
                 : responseBody
+            let message = payload?.message ?? fallbackMessage
+
+            if statusCode == 429 {
+                throw MG2NetworkError.rateLimited(message: message)
+            }
+            if statusCode == 503, payload?.code == "Z006" {
+                throw MG2NetworkError.storageUnavailable(message: message)
+            }
             throw MG2NetworkError.httpFailure(
                 statusCode: statusCode,
-                message: serverMessage ?? fallbackMessage
+                code: payload?.code,
+                message: message
             )
         }
 

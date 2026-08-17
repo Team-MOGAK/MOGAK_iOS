@@ -11,8 +11,7 @@ import UIKit
 final class IsRoutineJogakCell: UICollectionViewCell {
     static let identifier: String = "IsRoutineJogakCell"
     
-    /// 반복 요일 label
-    private lazy var goalRepeatDayLabel: CustomPaddingLabel = {
+    private lazy var badgeLabel: CustomPaddingLabel = {
         let label = CustomPaddingLabel(top: 6, bottom: 6, left: 12, right: 12)
         label.sizeToFit()
         label.text = "0회"
@@ -44,10 +43,10 @@ final class IsRoutineJogakCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(daysText: String, title: String, color: String) {
-        goalRepeatDayLabel.text = daysText
-        goalRepeatDayLabel.backgroundColor = UIColor(hex: color).withAlphaComponent(0.1)
-        goalRepeatDayLabel.textColor = UIColor(hex: color)
+    func configure(badgeText: String, title: String, color: String) {
+        badgeLabel.text = badgeText
+        badgeLabel.backgroundColor = UIColor(hex: color).withAlphaComponent(0.1)
+        badgeLabel.textColor = UIColor(hex: color)
         goalContentLabel.text = title
     }
     
@@ -56,15 +55,15 @@ final class IsRoutineJogakCell: UICollectionViewCell {
 extension IsRoutineJogakCell {
     /// 레이아웃 잡기
     private func configureLayout() {
-        self.addSubviews(goalRepeatDayLabel, goalContentLabel)
+        self.addSubviews(badgeLabel, goalContentLabel)
 
         goalContentLabel.snp.makeConstraints {
-            $0.top.equalTo(goalRepeatDayLabel.snp.bottom).offset(18)
+            $0.top.equalTo(badgeLabel.snp.bottom).offset(18)
             $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
         }
         
-        goalRepeatDayLabel.snp.makeConstraints {
+        badgeLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(40)
             $0.centerX.equalToSuperview()
             $0.leading.greaterThanOrEqualToSuperview().offset(10)

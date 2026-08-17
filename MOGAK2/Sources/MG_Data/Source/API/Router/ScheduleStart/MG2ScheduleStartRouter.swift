@@ -2,46 +2,44 @@ import Foundation
 import Alamofire
 
 enum MG2ScheduleStartRouter {
-    case jogakDailyCheck(date: String)
-    case addJogakToday(jogakId: Int)
-    case dailyJogakDetail(jogakId: Int)
-    case jogakFail(dailyJogakId: Int)
-    case jogakSuccess(dailyJogakId: Int)
+    case jogakOccurrences(date: String)
+    case startJogak(jogakId: Int, scheduledDate: String)
+    case jogakDetail(jogakId: Int)
+    case failJogak(jogakId: Int, scheduledDate: String)
+    case succeedJogak(jogakId: Int, scheduledDate: String)
 }
 
 extension MG2ScheduleStartRouter: RequestTarget {
 
     var path: String {
         switch self {
-        case .jogakDailyCheck:
+        case .jogakOccurrences:
             return "/api/jogaks"
-        case .addJogakToday(let jogakId):
-            return "/api/jogaks/\(jogakId)/start"
-        case .dailyJogakDetail(let jogakId):
+        case .startJogak(let jogakId, let scheduledDate):
+            return "/api/jogaks/\(jogakId)/executions/\(scheduledDate)/start"
+        case .jogakDetail(let jogakId):
             return "/api/jogaks/\(jogakId)"
-        case .jogakFail(let dailyJogakId):
-            return "/api/daily-jogaks/\(dailyJogakId)/fail"
-        case .jogakSuccess(let dailyJogakId):
-            return "/api/daily-jogaks/\(dailyJogakId)/success"
+        case .failJogak(let jogakId, let scheduledDate):
+            return "/api/jogaks/\(jogakId)/executions/\(scheduledDate)/fail"
+        case .succeedJogak(let jogakId, let scheduledDate):
+            return "/api/jogaks/\(jogakId)/executions/\(scheduledDate)/success"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .jogakDailyCheck, .dailyJogakDetail:
+        case .jogakOccurrences, .jogakDetail:
             return .get
-        case .addJogakToday:
+        case .startJogak, .failJogak, .succeedJogak:
             return .post
-        case .jogakFail, .jogakSuccess:
-            return .put
         }
     }
 
     var query: [String: Any]? {
         switch self {
-        case .jogakDailyCheck(let date):
+        case .jogakOccurrences(let date):
             return ["date": date]
-        case .addJogakToday, .dailyJogakDetail, .jogakFail, .jogakSuccess:
+        case .startJogak, .jogakDetail, .failJogak, .succeedJogak:
             return nil
         }
     }

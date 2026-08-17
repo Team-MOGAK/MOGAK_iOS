@@ -57,7 +57,7 @@ final class MogakCell: UICollectionViewCell {
         self.mogak = mogak
         self.delegate = delegate
         //카테고리
-        self.goalCategoryLabel.text = mogak.bigCategoryName
+        self.goalCategoryLabel.text = mogak.category.name
         //카테고리의 배경색
         self.goalCategoryLabel.backgroundColor = UIColor(
             hex: mogak.color ?? DesignSystemPalette.signatureHex

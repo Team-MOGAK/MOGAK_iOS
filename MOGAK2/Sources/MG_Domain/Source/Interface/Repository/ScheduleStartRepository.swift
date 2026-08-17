@@ -8,9 +8,9 @@
 import Foundation
 
 protocol ScheduleStartRepository {
-    func getDailyJogaks(date: Date) async throws -> [MG2ScheduleDailyJogakEntity]
-    func addJogakDaily(jogakId: Int) async throws
-    func getDailyJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity?
-    func markJogakFailed(dailyJogakId: Int) async throws
-    func markJogakSucceeded(dailyJogakId: Int) async throws
+    func getJogakOccurrences(date: Date) async throws -> [MG2JogakOccurrenceEntity]
+    func startJogak(jogakId: Int, scheduledDate: Date) async throws
+    func getJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity
+    func markJogakFailed(key: MG2JogakOccurrenceKey) async throws
+    func markJogakSucceeded(key: MG2JogakOccurrenceKey) async throws
 }

@@ -42,45 +42,14 @@ final class MG2TermsAgreeViewController: UIViewController {
         return view
     }()
 
-    private lazy var ageAgreementRow = makeAgreementRow(
-        title: "(필수) 만 14세입니다.",
-        item: .age
-    )
-
-    private lazy var serviceAgreementRow = makeAgreementRow(
-        title: "(필수) 서비스 이용약관",
-        item: .service,
-        onDetail: { [weak self] in
-            guard let self else { return }
-            coordinator?.routeToTerms(from: self)
-        }
-    )
-
-    private lazy var privacyAgreementRow = makeAgreementRow(
-        title: "(필수) 개인정보 처리방침",
-        item: .privacy,
-        onDetail: { [weak self] in
-            guard let self else { return }
-            coordinator?.routeToPrivacy(from: self)
-        }
-    )
-
-    private lazy var marketingAgreementRow = makeAgreementRow(
-        title: "(선택) 마케팅 정보 수신동의",
-        item: .marketing
-    )
-
     private lazy var agreementStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            ageAgreementRow,
-            serviceAgreementRow,
-            privacyAgreementRow,
-            marketingAgreementRow
-        ])
+        let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 28
         return stackView
     }()
+
+    private var agreementRows = [Int: MG2AgreementRowView]()
 
     private lazy var nextButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton()
@@ -104,7 +73,7 @@ final class MG2TermsAgreeViewController: UIViewController {
         view.backgroundColor = .white
         configureNavigationBar()
         configureLayout()
-        renderAgreements()
+        loadConsentItems()
     }
 
     private func configureNavigationBar() {
@@ -157,18 +126,42 @@ final class MG2TermsAgreeViewController: UIViewController {
         }
     }
 
-    private func makeAgreementRow(
-        title: String,
-        item: MG2AgreementItem,
-        onDetail: (() -> Void)? = nil
-    ) -> MG2AgreementRowView {
-        let row = MG2AgreementRowView(title: title, showsDetail: onDetail != nil)
-        row.onToggle = { [weak self] in
-            self?.profileViewModel.toggleAgreement(item)
-            self?.renderAgreements()
+    private func loadConsentItems() {
+        showLoading()
+        profileViewModel.loadConsentItems { [weak self] result in
+            guard let self else { return }
+            hideLoading()
+            switch result {
+            case .success:
+                configureAgreementRows()
+                renderAgreements()
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
+            }
         }
-        row.onDetail = onDetail
-        return row
+    }
+
+    private func configureAgreementRows() {
+        agreementStackView.arrangedSubviews.forEach {
+            agreementStackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        agreementRows.removeAll()
+
+        for selection in profileViewModel.state.agreements.selections {
+            let item = selection.item
+            let requirement = item.required ? "필수" : "선택"
+            let row = MG2AgreementRowView(
+                title: "(\(requirement)) \(item.name)",
+                showsDetail: false
+            )
+            row.onToggle = { [weak self] in
+                self?.profileViewModel.toggleAgreement(id: item.id)
+                self?.renderAgreements()
+            }
+            agreementRows[item.id] = row
+            agreementStackView.addArrangedSubview(row)
+        }
     }
 
     private func renderAgreements() {
@@ -177,10 +170,9 @@ final class MG2TermsAgreeViewController: UIViewController {
             UIImage(named: agreements.hasAcceptedAllTerms ? "checkOn" : "checkOff"),
             for: .normal
         )
-        ageAgreementRow.setChecked(agreements.age)
-        serviceAgreementRow.setChecked(agreements.service)
-        privacyAgreementRow.setChecked(agreements.privacy)
-        marketingAgreementRow.setChecked(agreements.marketing)
+        for selection in agreements.selections {
+            agreementRows[selection.item.id]?.setChecked(selection.agreed)
+        }
         nextButton.isEnabled = agreements.hasAcceptedRequiredTerms
     }
 

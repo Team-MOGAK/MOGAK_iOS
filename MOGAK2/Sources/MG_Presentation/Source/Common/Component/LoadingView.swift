@@ -6,24 +6,23 @@
 //
 
 import UIKit
-import Lottie
 
 final class LoadingView: UIView {
-    private let animationView: LottieAnimationView = {
-        let view = LottieAnimationView(name: "mogakLoading")
-        view.loopMode = .loop
-        return view
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.color = DesignSystemColor.signature.value
+        indicator.hidesWhenStopped = true
+        return indicator
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        addSubview(animationView)
+        addSubview(activityIndicator)
         
-        animationView.snp.makeConstraints { make in
+        activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.size.equalTo(300)
         }
     }
     
@@ -32,7 +31,7 @@ final class LoadingView: UIView {
     }
 
     func startAnimating() {
-        animationView.play()
+        activityIndicator.startAnimating()
     }
 }
 

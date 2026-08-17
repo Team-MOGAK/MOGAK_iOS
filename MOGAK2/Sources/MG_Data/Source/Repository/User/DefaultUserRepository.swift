@@ -7,6 +7,27 @@ final class DefaultUserRepository: UserRepository {
         self.networkProvider = networkProvider
     }
 
+    func getJobs() async throws -> [String] {
+        let response: MG2MetadataListResponseDTO = try await networkProvider.request(
+            target: MG2UserRouter.jobs
+        )
+        return response.result.map(\.name)
+    }
+
+    func getAddresses() async throws -> [String] {
+        let response: MG2MetadataListResponseDTO = try await networkProvider.request(
+            target: MG2UserRouter.addresses
+        )
+        return response.result.map(\.name)
+    }
+
+    func getConsentItems() async throws -> [MG2ConsentItemEntity] {
+        let response: MG2ConsentListResponseDTO = try await networkProvider.request(
+            target: MG2UserRouter.consents
+        )
+        return response.result.map { $0.toEntity() }
+    }
+
     func verifyNickname(_ nickname: String) async throws {
         try await networkProvider.requestEmpty(target: MG2UserRouter.nicknameVerify(nickname: nickname))
     }
@@ -29,7 +50,8 @@ final class DefaultUserRepository: UserRepository {
             target: MG2UserRouter.join(
                 nickname: registration.nickname,
                 job: registration.job,
-                address: registration.address
+                address: registration.address,
+                consents: registration.consents
             )
         )
         return response.result.toEntity()

@@ -7,21 +7,18 @@ enum MG2MogakFormMode {
 
 struct MG2MogakFormState {
     var title = ""
-    var bigCategory = ""
+    var selectedCategoryCode: String?
     var customCategory: String?
+    var isCustomCategorySelected = false
     var color = DesignSystemPalette.signatureHex
 }
 
 @MainActor
 final class MG2MogakFormViewModel {
-    private static let customCategoryTitle = "기타"
+    private static let customCategoryCode = "OTHER"
 
     let colors = DesignSystemPalette.mogakColors
-    let categories = [
-        "자격증", "대외활동", "운동", "인사이트",
-        "공모전", "직무공부", "산업분석", "어학",
-        "강연,강의", "프로젝트", "스터디", "기타"
-    ]
+    private(set) var categories = [MG2MogakCategoryEntity]()
 
     private let useCase: MogakEditingUseCase
     private(set) var state = MG2MogakFormState()
@@ -37,10 +34,22 @@ final class MG2MogakFormViewModel {
         case .edit(let mogak):
             state = MG2MogakFormState(
                 title: mogak.title,
-                bigCategory: mogak.bigCategoryName,
-                customCategory: mogak.smallCategory,
+                selectedCategoryCode: mogak.category.code,
+                customCategory: mogak.category.code == nil ? mogak.category.name : nil,
+                isCustomCategorySelected: mogak.category.code == nil,
                 color: String((mogak.color ?? DesignSystemPalette.signatureHex).suffix(6))
             )
+        }
+    }
+
+    func loadCategories(completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                categories = try await useCase.getMogakCategories()
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
         }
     }
 
@@ -54,7 +63,9 @@ final class MG2MogakFormViewModel {
 
     func selectCategory(at index: Int) {
         guard categories.indices.contains(index) else { return }
-        state.bigCategory = categories[index]
+        let category = categories[index]
+        state.isCustomCategorySelected = category.code == Self.customCategoryCode
+        state.selectedCategoryCode = state.isCustomCategorySelected ? nil : category.code
     }
 
     func selectColor(at index: Int) {
@@ -63,14 +74,22 @@ final class MG2MogakFormViewModel {
     }
 
     var isValid: Bool {
-        guard !trimmed(state.title).isEmpty,
-              !state.bigCategory.isEmpty else { return false }
-        return state.bigCategory != Self.customCategoryTitle
-            || !trimmed(state.customCategory ?? "").isEmpty
+        guard !trimmed(state.title).isEmpty else { return false }
+        if state.isCustomCategorySelected {
+            return !trimmed(state.customCategory ?? "").isEmpty
+        }
+        return state.selectedCategoryCode != nil
+    }
+
+    var selectedCategoryIndex: Int? {
+        if state.isCustomCategorySelected {
+            return categories.firstIndex { $0.code == Self.customCategoryCode }
+        }
+        return categories.firstIndex { $0.code == state.selectedCategoryCode }
     }
 
     var isCustomCategorySelected: Bool {
-        state.bigCategory == Self.customCategoryTitle
+        state.isCustomCategorySelected
     }
 
     func submit(
@@ -78,27 +97,30 @@ final class MG2MogakFormViewModel {
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         let input = state
+        let category: MG2MogakCategorySelection
+        if input.isCustomCategorySelected {
+            category = .custom(name: trimmed(input.customCategory ?? ""))
+        } else if let code = input.selectedCategoryCode {
+            category = .official(code: code)
+        } else {
+            return
+        }
+
         Task {
             do {
-                let smallCategory = resolvedSmallCategory(
-                    bigCategory: input.bigCategory,
-                    customCategory: input.customCategory
-                )
                 switch mode {
                 case .create(let modalartID):
                     try await useCase.createMogak(
                         modaratId: modalartID,
                         title: trimmed(input.title),
-                        bigCategory: input.bigCategory,
-                        smallCategory: smallCategory,
+                        category: category,
                         color: "#" + input.color
                     )
                 case .edit(let mogak):
                     try await useCase.editMogak(
                         mogakId: mogak.mogakId,
                         title: trimmed(input.title),
-                        bigCategory: input.bigCategory,
-                        smallCategory: smallCategory,
+                        category: category,
                         color: "#" + input.color
                     )
                 }
@@ -107,15 +129,6 @@ final class MG2MogakFormViewModel {
                 completion(.failure(error))
             }
         }
-    }
-
-    private func resolvedSmallCategory(
-        bigCategory: String,
-        customCategory: String?
-    ) -> String? {
-        guard bigCategory == Self.customCategoryTitle else { return nil }
-        let category = trimmed(customCategory ?? "")
-        return category.isEmpty ? nil : category
     }
 
     private func trimmed(_ value: String) -> String {

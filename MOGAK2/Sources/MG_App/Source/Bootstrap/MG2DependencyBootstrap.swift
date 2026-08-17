@@ -19,10 +19,23 @@ enum MG2DependencyBootstrap {
         container: DIContainer,
         appDependencies: MG2AppDependencies
     ) {
+        let tokenRefreshCoordinator = MG2TokenRefreshCoordinator(
+            sessionStore: appDependencies.sessionStore
+        ) { refreshToken in
+            try await container.resolveRequired(AuthUseCase.self).refresh(
+                refreshToken: refreshToken
+            )
+        }
+
         container.register(NetworkProvider.self) { _ in
-            DefaultNetworkProvider {
-                appDependencies.sessionStore.accessToken
-            }
+            DefaultNetworkProvider(
+                accessTokenProvider: {
+                    appDependencies.sessionStore.accessToken
+                },
+                refreshAccessToken: {
+                    try await tokenRefreshCoordinator.refreshAccessToken()
+                }
+            )
         }
     }
 

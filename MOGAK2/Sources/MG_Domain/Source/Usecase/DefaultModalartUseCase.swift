@@ -20,8 +20,44 @@ final class DefaultModalartUseCase: ModalartUseCase {
         try await repository.getModalartMogakPage(modalartId: modalartId)
     }
 
-    func getMogakDetailJogaks(mogakId: Int, date: Date) async throws -> [MG2JogakDetailEntity] {
-        try await repository.getMogakDetailJogaks(mogakId: mogakId, date: date)
+    func getMogakOccurrences(mogakId: Int, date: Date) async throws -> [MG2JogakOccurrenceEntity] {
+        try await repository.getMogakOccurrences(mogakId: mogakId, date: date)
+    }
+
+    func getMogakOverview(
+        mogakId: Int,
+        from date: Date
+    ) async throws -> [MG2JogakOccurrenceEntity] {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Asia/Seoul")!
+        let dates = (0..<7).compactMap {
+            calendar.date(byAdding: .day, value: $0, to: date)
+        }
+
+        return try await withThrowingTaskGroup(
+            of: [MG2JogakOccurrenceEntity].self
+        ) { group in
+            for date in dates {
+                group.addTask { [repository] in
+                    try await repository.getMogakOccurrences(mogakId: mogakId, date: date)
+                }
+            }
+
+            var occurrenceByJogakID = [Int: MG2JogakOccurrenceEntity]()
+            for try await occurrences in group {
+                for occurrence in occurrences {
+                    let jogakID = occurrence.key.jogakID
+                    if let current = occurrenceByJogakID[jogakID],
+                       current.key.scheduledDate <= occurrence.key.scheduledDate {
+                        continue
+                    }
+                    occurrenceByJogakID[jogakID] = occurrence
+                }
+            }
+            return occurrenceByJogakID.values.sorted {
+                $0.key.jogakID < $1.key.jogakID
+            }
+        }
     }
 
     func createModalart(title: String, color: String) async throws -> MG2ModalartUpsertEntity {

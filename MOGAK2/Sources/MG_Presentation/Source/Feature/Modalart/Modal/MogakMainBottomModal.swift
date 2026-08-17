@@ -81,7 +81,7 @@ final class MogakMainBottomModalViewController: UIViewController {
     }
     
     private func labelSetting() {
-        categoryLabel.text = selectedMogak.bigCategoryName
+        categoryLabel.text = selectedMogak.category.name
         categoryLabel.textColor = UIColor(hex: selectedMogak.color ?? "#475FFD")
         categoryLabel.backgroundColor = UIColor(hex: selectedMogak.color ?? "#475FFD").withAlphaComponent(0.1)
         

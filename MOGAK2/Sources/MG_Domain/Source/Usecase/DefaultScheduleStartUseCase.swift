@@ -18,23 +18,23 @@ final class DefaultScheduleStartUseCase: ScheduleStartUseCase {
 
 extension DefaultScheduleStartUseCase {
 
-    func getDailyJogaks(date: Date) async throws -> [MG2ScheduleDailyJogakEntity] {
-        try await repository.getDailyJogaks(date: date)
+    func getJogakOccurrences(date: Date) async throws -> [MG2JogakOccurrenceEntity] {
+        try await repository.getJogakOccurrences(date: date)
     }
 
-    func addJogakDaily(jogakId: Int) async throws {
-        try await repository.addJogakDaily(jogakId: jogakId)
+    func startJogak(jogakId: Int, scheduledDate: Date) async throws {
+        try await repository.startJogak(jogakId: jogakId, scheduledDate: scheduledDate)
     }
 
-    func getDailyJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity? {
-        try await repository.getDailyJogakDetail(jogakId: jogakId)
+    func getJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity {
+        try await repository.getJogakDetail(jogakId: jogakId)
     }
 
-    func setJogakAchievement(dailyJogakId: Int, isAchievement: Bool) async throws {
-        if isAchievement {
-            try await repository.markJogakSucceeded(dailyJogakId: dailyJogakId)
+    func setJogakCompletion(key: MG2JogakOccurrenceKey, isCompleted: Bool) async throws {
+        if isCompleted {
+            try await repository.markJogakSucceeded(key: key)
         } else {
-            try await repository.markJogakFailed(dailyJogakId: dailyJogakId)
+            try await repository.markJogakFailed(key: key)
         }
     }
 }

@@ -32,7 +32,7 @@ final class MG2SelectableJogakCell: UITableViewCell {
             $0.centerY.equalToSuperview()
         }
         titleLabel.snp.makeConstraints {
-            $0.leading.equalTo(checkImageView.snp.trailing).offset(12)
+            $0.leading.equalTo(checkImageView.snp.trailing).offset(5)
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
         }

@@ -23,14 +23,14 @@ final class DefaultModalartRepository: ModalartRepository {
         return response.result?.toEntity()
     }
 
-    func getMogakDetailJogaks(mogakId: Int, date: Date) async throws -> [MG2JogakDetailEntity] {
-        let response: MG2JogakDetailResponseDTO = try await networkProvider.request(
-            target: MG2ModalartRouter.mogakDetailJogaks(
+    func getMogakOccurrences(mogakId: Int, date: Date) async throws -> [MG2JogakOccurrenceEntity] {
+        let response: MG2JogakOccurrenceListResponseDTO = try await networkProvider.request(
+            target: MG2ModalartRouter.mogakOccurrences(
                 mogakId: mogakId,
                 date: MG2APIDateCoding.encode(date)
             )
         )
-        return response.result?.map { $0.toEntity() } ?? []
+        return response.result.map { $0.toDomain() }
     }
 
     func createModalart(title: String, color: String) async throws -> MG2ModalartUpsertEntity {

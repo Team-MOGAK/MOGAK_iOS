@@ -87,7 +87,7 @@ final class MG2ChooseJobViewController: UIViewController {
         self.configureButton()
         self.configureTableView()
         
-        updateJobSections(query: "")
+        loadJobs()
     }
     
     private func configureNavBar() {
@@ -155,6 +155,21 @@ final class MG2ChooseJobViewController: UIViewController {
         profileViewModel.updateJobSections(matching: query)
         tableView.reloadData()
         renderSelection()
+    }
+
+    private func loadJobs() {
+        showLoading()
+        profileViewModel.loadJobs { [weak self] result in
+            guard let self else { return }
+            hideLoading()
+            switch result {
+            case .success:
+                tableView.reloadData()
+                renderSelection()
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
+            }
+        }
     }
     
     @objc private func nextButtonIsClicked() {

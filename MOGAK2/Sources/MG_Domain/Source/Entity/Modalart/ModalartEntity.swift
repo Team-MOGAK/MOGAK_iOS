@@ -1,10 +1,18 @@
 import Foundation
 
+struct MG2MogakCategoryEntity: Equatable {
+    let code: String?
+    let name: String
+}
+
+enum MG2MogakCategorySelection {
+    case official(code: String)
+    case custom(name: String)
+}
+
 struct MG2ModalartCategoryEntity {
     let title: String
-    let bigCategoryId: Int?
-    let bigCategoryName: String?
-    let smallCategory: String?
+    let category: MG2MogakCategoryEntity
     let color: String?
 }
 
@@ -24,9 +32,7 @@ struct MG2ModalartListItemEntity {
 struct MG2ModalartMogakItemEntity {
     let mogakId: Int
     let title: String
-    let bigCategoryId: Int
-    let bigCategoryName: String
-    let smallCategory: String?
+    let category: MG2MogakCategoryEntity
     let color: String?
 }
 

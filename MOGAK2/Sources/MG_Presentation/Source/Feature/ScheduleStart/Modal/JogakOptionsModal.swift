@@ -9,9 +9,10 @@ final class JogakOptionsModal: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.pretendard(.bold, size: 20)
-        label.textColor = UIColor(hex: "24252E")
+        label.font = DesignSystemFont.semibold20L140.value
+        label.textColor = DesignSystemColor.black.value
         label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
         return label
     }()
 
@@ -19,16 +20,17 @@ final class JogakOptionsModal: UIViewController {
         let label = UILabel()
         label.text = "조각의 내용을 수정하시겠어요?"
         label.textAlignment = .center
-        label.font = UIFont.pretendard(.regular, size: 14)
-        label.textColor = UIColor(hex: "24252E").withAlphaComponent(0.6)
+        label.font = DesignSystemFont.regular14L150.value
+        label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
         return label
     }()
 
     private lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
-        button.setTitleColor(UIColor(hex: "475FFD"), for: .normal)
-        button.backgroundColor = UIColor(hex: "E8EBFE")
+        button.setTitleColor(DesignSystemColor.signature.value, for: .normal)
+        button.backgroundColor = DesignSystemColor.signatureBag.value
+        button.titleLabel?.font = DesignSystemFont.medium16L100.value
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         return button
@@ -37,11 +39,20 @@ final class JogakOptionsModal: UIViewController {
     private lazy var editButton: UIButton = {
         let button = UIButton()
         button.setTitle("수정하기", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(hex: "475FFD")
+        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
+        button.backgroundColor = DesignSystemColor.signature.value
+        button.titleLabel?.font = DesignSystemFont.medium16L100.value
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         return button
+    }()
+
+    private lazy var buttonStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [cancelButton, editButton])
+        stack.axis = .horizontal
+        stack.spacing = 10
+        stack.distribution = .fillEqually
+        return stack
     }()
 
     init(title: String) {
@@ -61,27 +72,21 @@ final class JogakOptionsModal: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(titleLabel, subtitleLabel, cancelButton, editButton)
+        view.addSubviews(titleLabel, subtitleLabel, buttonStack)
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(28)
+            make.top.equalToSuperview().offset(49)
             make.leading.trailing.equalToSuperview().inset(20)
         }
 
         subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
         }
 
-        cancelButton.snp.makeConstraints { make in
-            make.leading.bottom.equalToSuperview().inset(20)
-            make.trailing.equalTo(view.snp.centerX).offset(-5)
-            make.height.equalTo(52)
-        }
-
-        editButton.snp.makeConstraints { make in
-            make.leading.equalTo(view.snp.centerX).offset(5)
-            make.trailing.bottom.equalToSuperview().inset(20)
+        buttonStack.snp.makeConstraints { make in
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(32)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(52)
         }
     }

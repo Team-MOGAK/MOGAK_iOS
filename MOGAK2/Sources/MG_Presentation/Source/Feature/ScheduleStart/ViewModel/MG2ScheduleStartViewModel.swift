@@ -1,22 +1,19 @@
 import Foundation
 
-struct MG2DailyJogakItem {
+struct MG2JogakOccurrenceItem {
+    let key: MG2JogakOccurrenceKey
     let title: String
-    let dailyJogakID: Int
-    let jogakID: Int?
-    var isAchievement: Bool
+    var status: MG2JogakOccurrenceStatus
     let isRoutine: Bool
 
-    var isReadOnly: Bool {
-        dailyJogakID <= 0 || jogakID == nil
-    }
+    var isCompleted: Bool { status == .success }
 }
 
 struct MG2ScheduleStartViewState {
     var selectedDate = Date()
-    var dailyJogaks = [MG2DailyJogakItem]()
+    var occurrences = [MG2JogakOccurrenceItem]()
 
-    var isEmpty: Bool { dailyJogaks.isEmpty }
+    var isEmpty: Bool { occurrences.isEmpty }
 }
 
 @MainActor
@@ -56,25 +53,24 @@ final class MG2ScheduleStartViewModel {
         return Calendar.current.date(byAdding: component, value: offset, to: currentPage)
     }
 
-    func loadDailyJogaks(
+    func loadJogakOccurrences(
         date: Date,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
         state.selectedDate = date
         guard !isGuest else {
-            state.dailyJogaks = []
+            state.occurrences = []
             completion(.success(()))
             return
         }
 
         Task {
             do {
-                state.dailyJogaks = try await useCase.getDailyJogaks(date: date).map {
-                    MG2DailyJogakItem(
+                state.occurrences = try await useCase.getJogakOccurrences(date: date).map {
+                    MG2JogakOccurrenceItem(
+                        key: $0.key,
                         title: $0.title,
-                        dailyJogakID: $0.dailyID,
-                        jogakID: $0.id,
-                        isAchievement: $0.isAchievement,
+                        status: $0.status,
                         isRoutine: $0.isRoutine
                     )
                 }
@@ -86,43 +82,43 @@ final class MG2ScheduleStartViewModel {
     }
 
     @discardableResult
-    func toggleJogakAchievement(
+    func toggleJogakCompletion(
         at index: Int,
         completion: @escaping (Result<Void, Error>) -> Void
     ) -> Bool? {
-        guard state.dailyJogaks.indices.contains(index) else { return nil }
-        let original = state.dailyJogaks[index]
-        guard !original.isReadOnly else { return nil }
+        guard state.occurrences.indices.contains(index) else { return nil }
+        let original = state.occurrences[index]
 
-        let updatedValue = !original.isAchievement
-        state.dailyJogaks[index].isAchievement = updatedValue
+        let isCompleted = !original.isCompleted
+        let updatedStatus: MG2JogakOccurrenceStatus = isCompleted ? .success : .fail
+        state.occurrences[index].status = updatedStatus
 
         Task {
             do {
-                try await useCase.setJogakAchievement(
-                    dailyJogakId: original.dailyJogakID,
-                    isAchievement: updatedValue
+                try await useCase.setJogakCompletion(
+                    key: original.key,
+                    isCompleted: isCompleted
                 )
                 completion(.success(()))
             } catch {
-                if let currentIndex = state.dailyJogaks.firstIndex(where: {
-                    $0.dailyJogakID == original.dailyJogakID
-                }), state.dailyJogaks[currentIndex].isAchievement == updatedValue {
-                    state.dailyJogaks[currentIndex].isAchievement = original.isAchievement
+                if let currentIndex = state.occurrences.firstIndex(where: {
+                    $0.key == original.key
+                }), state.occurrences[currentIndex].status == updatedStatus {
+                    state.occurrences[currentIndex].status = original.status
                 }
                 completion(.failure(error))
             }
         }
-        return updatedValue
+        return isCompleted
     }
 
     func getJogakForEditing(
         jogakId: Int,
-        completion: @escaping (Result<MG2JogakDetailEntity?, Error>) -> Void
+        completion: @escaping (Result<MG2JogakDetailEntity, Error>) -> Void
     ) {
         Task {
             do {
-                completion(.success(try await useCase.getDailyJogakDetail(jogakId: jogakId)))
+                completion(.success(try await useCase.getJogakDetail(jogakId: jogakId)))
             } catch {
                 completion(.failure(error))
             }

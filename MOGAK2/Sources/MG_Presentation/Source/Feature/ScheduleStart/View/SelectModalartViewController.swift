@@ -54,7 +54,7 @@ final class SelectModalartViewController: UIViewController {
 
         titleLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(12)
+            $0.top.equalToSuperview().offset(36)
         }
         tableView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(24)

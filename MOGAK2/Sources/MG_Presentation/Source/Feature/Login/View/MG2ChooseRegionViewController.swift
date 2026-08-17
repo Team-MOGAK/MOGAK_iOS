@@ -63,7 +63,7 @@ final class MG2ChooseRegionViewController: UIViewController {
         self.configureLabel()
         self.configureButton()
         self.configureTableView()
-        
+        loadRegions()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -118,6 +118,21 @@ final class MG2ChooseRegionViewController: UIViewController {
     private func renderSelection() {
         let hasSelection = !profileViewModel.state.selectedRegion.isEmpty
         nextButton.isEnabled = hasSelection
+    }
+
+    private func loadRegions() {
+        showLoading()
+        profileViewModel.loadRegions { [weak self] result in
+            guard let self else { return }
+            hideLoading()
+            switch result {
+            case .success:
+                tableView.reloadData()
+                renderSelection()
+            case .failure(let error):
+                coordinator?.presentError(error, from: self)
+            }
+        }
     }
     
     //MARK: - 유저 등록

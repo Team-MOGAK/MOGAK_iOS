@@ -18,35 +18,44 @@ final class DefaultScheduleStartRepository: ScheduleStartRepository {
 
 extension DefaultScheduleStartRepository {
 
-    func getDailyJogaks(date: Date) async throws -> [MG2ScheduleDailyJogakEntity] {
-        let response: MG2DailyJogakListResponseDTO = try await networkProvider.request(
-            target: MG2ScheduleStartRouter.jogakDailyCheck(date: MG2APIDateCoding.encode(date))
+    func getJogakOccurrences(date: Date) async throws -> [MG2JogakOccurrenceEntity] {
+        let response: MG2JogakOccurrencePageResponseDTO = try await networkProvider.request(
+            target: MG2ScheduleStartRouter.jogakOccurrences(date: MG2APIDateCoding.encode(date))
         )
-        return response.result?.dailyJogaks?.map { $0.toDomain() } ?? []
+        return response.result.jogaks.map { $0.toDomain() }
     }
 
-    func addJogakDaily(jogakId: Int) async throws {
+    func startJogak(jogakId: Int, scheduledDate: Date) async throws {
         try await networkProvider.requestEmpty(
-            target: MG2ScheduleStartRouter.addJogakToday(jogakId: jogakId)
+            target: MG2ScheduleStartRouter.startJogak(
+                jogakId: jogakId,
+                scheduledDate: MG2APIDateCoding.encode(scheduledDate)
+            )
         )
     }
 
-    func getDailyJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity? {
+    func getJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity {
         let response: MG2SingleJogakDetailResponseDTO = try await networkProvider.request(
-            target: MG2ScheduleStartRouter.dailyJogakDetail(jogakId: jogakId)
+            target: MG2ScheduleStartRouter.jogakDetail(jogakId: jogakId)
         )
-        return response.result?.toEntity()
+        return response.result.toEntity()
     }
 
-    func markJogakFailed(dailyJogakId: Int) async throws {
+    func markJogakFailed(key: MG2JogakOccurrenceKey) async throws {
         try await networkProvider.requestEmpty(
-            target: MG2ScheduleStartRouter.jogakFail(dailyJogakId: dailyJogakId)
+            target: MG2ScheduleStartRouter.failJogak(
+                jogakId: key.jogakID,
+                scheduledDate: key.scheduledDate
+            )
         )
     }
 
-    func markJogakSucceeded(dailyJogakId: Int) async throws {
+    func markJogakSucceeded(key: MG2JogakOccurrenceKey) async throws {
         try await networkProvider.requestEmpty(
-            target: MG2ScheduleStartRouter.jogakSuccess(dailyJogakId: dailyJogakId)
+            target: MG2ScheduleStartRouter.succeedJogak(
+                jogakId: key.jogakID,
+                scheduledDate: key.scheduledDate
+            )
         )
     }
 }

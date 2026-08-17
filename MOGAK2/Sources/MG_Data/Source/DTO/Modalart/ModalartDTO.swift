@@ -36,24 +36,29 @@ struct MG2ModalartDetailDTO: Decodable {
 
 struct MG2ModalartCategoryDTO: Decodable {
     let title: String
-    let bigCategory: MG2BigCategoryDTO
-    let smallCategory: String?
+    let category: MG2MogakCategoryDTO
     let color: String?
 
     func toEntity() -> MG2ModalartCategoryEntity {
         MG2ModalartCategoryEntity(
             title: title,
-            bigCategoryId: bigCategory.id,
-            bigCategoryName: bigCategory.name,
-            smallCategory: smallCategory,
+            category: category.toEntity(),
             color: color
         )
     }
 }
 
-struct MG2BigCategoryDTO: Decodable {
-    let id: Int?
-    let name: String?
+struct MG2MogakCategoryDTO: Decodable {
+    let code: String?
+    let name: String
+
+    func toEntity() -> MG2MogakCategoryEntity {
+        MG2MogakCategoryEntity(code: code, name: name)
+    }
+}
+
+struct MG2MogakCategoryListResponseDTO: Decodable {
+    let result: [MG2MogakCategoryDTO]
 }
 
 struct MG2ModalartMogakPageResponseDTO: Decodable {
@@ -72,25 +77,17 @@ struct MG2ModalartMogakPageDTO: Decodable {
 struct MG2ModalartMogakItemDTO: Decodable {
     let id: Int
     let title: String
-    let bigCategory: MG2MainCategoryDTO
-    let smallCategory: String?
+    let category: MG2MogakCategoryDTO
     let color: String?
 
     func toEntity() -> MG2ModalartMogakItemEntity {
         MG2ModalartMogakItemEntity(
             mogakId: id,
             title: title,
-            bigCategoryId: bigCategory.id,
-            bigCategoryName: bigCategory.name,
-            smallCategory: smallCategory,
+            category: category.toEntity(),
             color: color
         )
     }
-}
-
-struct MG2MainCategoryDTO: Decodable {
-    let id: Int
-    let name: String
 }
 
 struct MG2ModalartUpsertResponseDTO: Decodable {
