@@ -1,16 +1,16 @@
 import UIKit
 
-final class MG2LoginCoordinator: MG2PresentationCoordinator {
-    private let loginViewModel: MG2LoginViewModel
-    private let profileViewModel: MG2ProfileSetupViewModel
+@MainActor
+final class MG2LoginCoordinator {
+    private let authUseCase: AuthUseCase
+    private let userUseCase: UserUseCase
+    private let userState: MG2UserState
     private let alertCoordinator = MG2AlertCoordinator()
 
-    init(
-        loginViewModel: MG2LoginViewModel,
-        profileViewModel: MG2ProfileSetupViewModel
-    ) {
-        self.loginViewModel = loginViewModel
-        self.profileViewModel = profileViewModel
+    init(authUseCase: AuthUseCase, userUseCase: UserUseCase, userState: MG2UserState) {
+        self.authUseCase = authUseCase
+        self.userUseCase = userUseCase
+        self.userState = userState
     }
 
     func start() -> UIViewController {
@@ -18,84 +18,56 @@ final class MG2LoginCoordinator: MG2PresentationCoordinator {
     }
 
     func makeLogin() -> MG2LoginViewController {
-        let viewController = MG2LoginViewController(viewModel: loginViewModel)
+        let viewController = MG2LoginViewController(viewModel: MG2LoginViewModel(authUseCase: authUseCase))
         viewController.coordinator = self
         return viewController
     }
 
     func makeTerms() -> UIViewController {
-        profileViewModel.resetAgreements()
-        let vc = MG2TermsAgreeViewController(profileViewModel: profileViewModel)
-        vc.coordinator = self
-        return vc
-    }
-
-    func makeNickname(mode: MG2ProfileSetupMode = .registration) -> UIViewController {
-        let vc = MG2NicknameViewController(mode: mode, profileViewModel: profileViewModel)
-        vc.coordinator = self
-        return vc
-    }
-
-    func makeChooseJob(mode: MG2ProfileSetupMode = .registration) -> UIViewController {
-        profileViewModel.beginJobSelection()
-        let vc = MG2ChooseJobViewController(mode: mode, profileViewModel: profileViewModel)
-        vc.coordinator = self
-        return vc
-    }
-
-    func makeChooseRegion() -> UIViewController {
-        profileViewModel.beginRegionSelection()
-        let viewController = MG2ChooseRegionViewController(profileViewModel: profileViewModel)
+        let viewController = MG2TermsAgreeViewController(viewModel: MG2TermsAgreeViewModel(userUseCase: userUseCase))
         viewController.coordinator = self
         return viewController
     }
 
-    func routeToNickname(from source: UIViewController) {
-        source.navigationController?.pushViewController(makeNickname(), animated: true)
+    func makeNickname(mode: MG2ProfileSetupMode) -> UIViewController {
+        let viewController = MG2NicknameViewController(viewModel: MG2NicknameViewModel(userUseCase: userUseCase, userState: userState, mode: mode))
+        viewController.coordinator = self
+        return viewController
     }
 
-    func routeToChooseJob(from source: UIViewController) {
-        source.navigationController?.pushViewController(makeChooseJob(), animated: true)
+    func makeChooseJob(mode: MG2ProfileSetupMode) -> UIViewController {
+        let viewController = MG2ChooseJobViewController(viewModel: MG2ChooseJobViewModel(userUseCase: userUseCase, mode: mode))
+        viewController.coordinator = self
+        return viewController
     }
 
-    func routeToChooseRegion(from source: UIViewController) {
-        source.navigationController?.pushViewController(makeChooseRegion(), animated: true)
+    func makeChooseRegion(draft: MG2RegistrationDraft) -> UIViewController {
+        let viewController = MG2ChooseRegionViewController(viewModel: MG2ChooseRegionViewModel(userUseCase: userUseCase, draft: draft))
+        viewController.coordinator = self
+        return viewController
     }
 
-    func routeToTerms(from source: UIViewController) {
-        routeToWeb(destination: .terms, from: source)
+    func routeToNickname(draft: MG2RegistrationDraft, from source: UIViewController) {
+        source.navigationController?.pushViewController(makeNickname(mode: .registration(draft)), animated: true)
     }
 
-    func routeToPrivacy(from source: UIViewController) {
-        routeToWeb(destination: .privacy, from: source)
+    func routeToChooseJob(draft: MG2RegistrationDraft, from source: UIViewController) {
+        source.navigationController?.pushViewController(makeChooseJob(mode: .registration(draft)), animated: true)
+    }
+
+    func routeToChooseRegion(draft: MG2RegistrationDraft, from source: UIViewController) {
+        source.navigationController?.pushViewController(makeChooseRegion(draft: draft), animated: true)
     }
 
     func routeBack(from source: UIViewController) {
         source.navigationController?.popViewController(animated: true)
     }
 
-    private func routeToWeb(destination: MG2WebDestination, from source: UIViewController) {
-        source.navigationController?.pushViewController(
-            MG2WebViewController(destination: destination),
-            animated: true
-        )
-    }
-
     func presentError(_ error: Error, from source: UIViewController) {
         alertCoordinator.presentError(error, from: source)
     }
 
-    func presentLoginError(
-        _ message: String,
-        from source: UIViewController,
-        onDismiss: @escaping () -> Void
-    ) {
-        alertCoordinator.presentInfo(
-            title: "로그인 실패",
-            message: message,
-            from: source,
-            onDismiss: onDismiss
-        )
+    func presentLoginError(_ message: String, from source: UIViewController, onDismiss: @escaping () -> Void) {
+        alertCoordinator.presentInfo(title: "로그인 실패", message: message, from: source, onDismiss: onDismiss)
     }
-
 }

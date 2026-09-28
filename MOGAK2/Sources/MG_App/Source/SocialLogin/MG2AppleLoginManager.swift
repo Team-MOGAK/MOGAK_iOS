@@ -4,7 +4,7 @@ import CryptoKit
 import Security
 
 @MainActor
-final class MG2AppleLoginManager: NSObject, MG2SocialTokenProviding {
+final class MG2AppleLoginManager: NSObject {
     private var continuation: CheckedContinuation<String, Error>?
     private var authorizationController: ASAuthorizationController?
 
@@ -14,34 +14,20 @@ final class MG2AppleLoginManager: NSObject, MG2SocialTokenProviding {
         let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
         guard errorCode == errSecSuccess else { return nil }
 
-        let charset: [Character] =
-            Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-
-        let nonce = randomBytes.map { byte in
-            charset[Int(byte) % charset.count]
-        }
+        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        let nonce = randomBytes.map { byte in charset[Int(byte) % charset.count] }
 
         return String(nonce)
     }
 
-    @available(iOS 13, *)
     private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-
-        return hashString
+        let hashedData = SHA256.hash(data: Data(input.utf8))
+        return hashedData.compactMap { String(format: "%02x", $0) }.joined()
     }
 
     func token() async throws -> String {
-        guard continuation == nil else {
-            throw MG2SocialLoginError.loginAlreadyInProgress
-        }
-        guard let nonce = randomNonceString() else {
-            throw MG2SocialLoginError.nonceGenerationFailed
-        }
+        guard continuation == nil else { throw MG2SocialLoginError.loginAlreadyInProgress }
+        guard let nonce = randomNonceString() else { throw MG2SocialLoginError.nonceGenerationFailed }
 
         return try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
@@ -71,8 +57,7 @@ extension MG2AppleLoginManager: ASAuthorizationControllerDelegate {
             complete(.failure(MG2SocialLoginError.unsupportedAppleCredential))
             return
         }
-        guard let tokenData = credential.identityToken,
-              let token = String(data: tokenData, encoding: .utf8) else {
+        guard let tokenData = credential.identityToken, let token = String(data: tokenData, encoding: .utf8) else {
             complete(.failure(MG2SocialLoginError.tokenMissing(provider: "Apple")))
             return
         }
@@ -82,5 +67,4 @@ extension MG2AppleLoginManager: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         complete(.failure(error))
     }
-
 }

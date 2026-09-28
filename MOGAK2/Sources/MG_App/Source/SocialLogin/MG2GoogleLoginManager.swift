@@ -1,15 +1,10 @@
-import Foundation
 import GoogleSignIn
 import UIKit
 
 @MainActor
-final class MG2GoogleLoginManager: MG2SocialTokenProviding {
+final class MG2GoogleLoginManager {
     private static var clientID: String? {
-        guard let value = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String,
-              !value.isEmpty,
-              !value.hasPrefix("$(") else {
-            return nil
-        }
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String, !value.isEmpty, !value.hasPrefix("$(") else { return nil }
         return value
     }
 
@@ -20,18 +15,13 @@ final class MG2GoogleLoginManager: MG2SocialTokenProviding {
         return true
     }
 
-    @discardableResult
     static func handleOpenURL(_ url: URL) -> Bool {
         GIDSignIn.sharedInstance.handle(url)
     }
 
     func token() async throws -> String {
-        guard Self.configureSDK() else {
-            throw MG2SocialLoginError.configurationMissing(provider: "Google")
-        }
-        guard let presentingViewController = UIApplication.shared.mg2TopViewController else {
-            throw MG2SocialLoginError.presentingViewControllerNotFound
-        }
+        guard Self.configureSDK() else { throw MG2SocialLoginError.configurationMissing(provider: "Google") }
+        guard let presentingViewController = UIApplication.shared.mg2TopViewController else { throw MG2SocialLoginError.presentingViewControllerNotFound }
 
         return try await withCheckedThrowingContinuation { continuation in
             GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
@@ -40,9 +30,7 @@ final class MG2GoogleLoginManager: MG2SocialTokenProviding {
                     return
                 }
                 guard let token = result?.user.idToken?.tokenString else {
-                    continuation.resume(
-                        throwing: MG2SocialLoginError.tokenMissing(provider: "Google")
-                    )
+                    continuation.resume(throwing: MG2SocialLoginError.tokenMissing(provider: "Google"))
                     return
                 }
                 continuation.resume(returning: token)
@@ -67,12 +55,10 @@ private extension UIViewController {
         if let presentedViewController {
             return presentedViewController.mg2TopMostViewController
         }
-        if let navigationController = self as? UINavigationController,
-           let visibleViewController = navigationController.visibleViewController {
+        if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
             return visibleViewController.mg2TopMostViewController
         }
-        if let tabBarController = self as? UITabBarController,
-           let selectedViewController = tabBarController.selectedViewController {
+        if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
             return selectedViewController.mg2TopMostViewController
         }
         return self

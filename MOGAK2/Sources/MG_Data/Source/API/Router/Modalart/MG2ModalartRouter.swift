@@ -44,16 +44,24 @@ extension MG2ModalartRouter: RequestTarget {
         case .modalartCreate:
             return .post
         case .modalartEdit:
-            return .put
+            return .patch
         case .modalartDelete, .mogakDelete, .jogakDelete:
             return .delete
         }
     }
 
+    var headers: [String: String]? {
+        guard case .modalartEdit = self else { return Self.jsonHeaders }
+        return Self.mergePatchHeaders
+    }
+
     var body: [String: Any]? {
         switch self {
-        case .modalartCreate(let title, let color), .modalartEdit(_, let title, let color):
+        case .modalartCreate(let title, let color):
+            // 기본 모다라트 생성은 기존처럼 색을 # 없이 보낸다.
             return ["title": title, "color": color]
+        case .modalartEdit(_, let title, let color):
+            return ["title": title, "color": MG2APIColorCoding.encode(color)]
         case .modalartList, .modalartDetail, .modalartMogaks, .modalartDelete, .mogakOccurrences, .mogakDelete, .jogakDelete:
             return nil
         }

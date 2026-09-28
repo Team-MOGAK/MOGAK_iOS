@@ -54,13 +54,6 @@ extension MG2UserRouter: RequestTarget {
         }
     }
 
-    var headers: [String: String]? {
-        switch self {
-        case .jobs, .addresses, .consents, .nicknameVerify, .nicknameChange, .jobChange, .getUserProfile, .join:
-            return ["Accept": "application/json", "Content-Type": "application/json"]
-        }
-    }
-
     var body: [String : Any]? {
         switch self {
         case .nicknameVerify(let nickname), .nicknameChange(let nickname):

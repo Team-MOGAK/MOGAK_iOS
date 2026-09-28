@@ -13,11 +13,7 @@ extension UILabel {
         let attributedText = NSMutableAttributedString(string: text)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = lineSpacing
-        attributedText.addAttribute(
-            .paragraphStyle,
-            value: paragraphStyle,
-            range: NSRange(location: 0, length: attributedText.length)
-        )
+        attributedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedText.length))
         self.attributedText = attributedText
     }
 
@@ -26,14 +22,6 @@ extension UILabel {
         let attributedString = NSMutableAttributedString(string: fullText)
         let range = (fullText as NSString).range(of: targetString)
         attributedString.addAttribute(.font, value: font, range: range)
-        attributedText = attributedString
-    }
-    
-    func asFontColor(targetString: String, font: UIFont?, color: UIColor?) {
-        let fullText = text ?? ""
-        let attributedString = NSMutableAttributedString(string: fullText)
-        let range = (fullText as NSString).range(of: targetString)
-        attributedString.addAttributes([.font: font as Any, .foregroundColor: color as Any], range: range)
         attributedText = attributedString
     }
 }

@@ -4,8 +4,8 @@ import SnapKit
 final class MG2ExpandableMogakCell: UITableViewCell {
     static let reuseIdentifier = "MG2ExpandableMogakCell"
 
-    private let titleLabel: CustomPaddingLabel = {
-        let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
+    private let titleLabel: MG2PaddingLabel = {
+        let label = MG2PaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
         label.font = DesignSystemFont.medium16L150.value
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
@@ -15,7 +15,7 @@ final class MG2ExpandableMogakCell: UITableViewCell {
 
     private let chevronImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "chevron.down"))
-        imageView.tintColor = DesignSystemColor.icongray.value
+        imageView.tintColor = DesignSystemColor.gray5.value
         return imageView
     }()
 
@@ -41,16 +41,12 @@ final class MG2ExpandableMogakCell: UITableViewCell {
     }
 
     func setExpanded(_ isExpanded: Bool) {
-        chevronImageView.image = UIImage(
-            systemName: isExpanded ? "chevron.up" : "chevron.down"
-        )
+        chevronImageView.image = UIImage(systemName: isExpanded ? "chevron.up" : "chevron.down")
     }
 
     func configure(with section: MG2MogakJogakSection) {
         titleLabel.text = section.title
-        let color = section.color.isEmpty
-            ? DesignSystemColor.signature.value
-            : UIColor(hex: section.color)
+        let color = section.color.isEmpty ? DesignSystemColor.signature.value : UIColor(hex: section.color)
         titleLabel.textColor = color
         titleLabel.backgroundColor = color.withAlphaComponent(0.1)
     }

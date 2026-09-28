@@ -20,6 +20,17 @@ enum MG2APIDateCoding {
     }
 }
 
+/// 서버에는 "#RRGGBB"와 "RRGGBB"가 섞여 있다. 앱 안에서는 항상 대문자 "RRGGBB"로 다룬다.
+enum MG2APIColorCoding {
+    static func encode(_ color: String) -> String {
+        "#" + color
+    }
+
+    static func decode(_ value: String) -> String {
+        (value.hasPrefix("#") ? String(value.dropFirst()) : value).uppercased()
+    }
+}
+
 enum MG2APIWeekdayCoding {
     static func encode(_ weekdays: [MG2Weekday]) -> [String] {
         weekdays.map { weekday in

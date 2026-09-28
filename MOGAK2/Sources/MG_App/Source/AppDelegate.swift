@@ -9,50 +9,21 @@ import UIKit
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
-    private let appDependencies = MG2DefaultAppDependencies()
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        MG2DependencyBootstrap.registerDefault(
-            container: .shared,
-            appDependencies: appDependencies
-        )
         MG2GoogleLoginManager.configureSDK()
         MG2KakaoLoginManager.configureSDK()
-        prepareAuthStorage()
+        clearTokensIfReinstalled()
 
         return true
     }
-    
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
 
-    @MainActor
-    func application(_ app: UIApplication,
-                     open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        MG2SocialLoginURLHandler.handle(url)
-    }
-
-    private func prepareAuthStorage() {
+    // 키체인은 앱을 지워도 남기 때문에, 재설치 후 첫 실행이면 이전 설치의 로그인 토큰을 지운다.
+    private func clearTokensIfReinstalled() {
         let installMarkerKey = "MG2HasInstalledBefore"
         let defaults = UserDefaults.standard
-
-        guard defaults.bool(forKey: installMarkerKey) == false else { return }
+        guard !defaults.bool(forKey: installMarkerKey) else { return }
 
         defaults.set(true, forKey: installMarkerKey)
-
-        if hasLegacyToken(in: defaults) {
-            return
-        }
-
         MG2TokenStore.clearTokens()
-        defaults.set(true, forKey: "isFirstTime")
-    }
-
-    private func hasLegacyToken(in defaults: UserDefaults) -> Bool {
-        let accessToken = defaults.string(forKey: "accessToken") ?? ""
-        let refreshToken = defaults.string(forKey: "refreshToken") ?? ""
-        return !accessToken.isEmpty || !refreshToken.isEmpty
     }
 }

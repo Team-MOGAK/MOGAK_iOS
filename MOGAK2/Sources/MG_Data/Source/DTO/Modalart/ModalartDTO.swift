@@ -1,21 +1,13 @@
 import Foundation
 
-struct MG2ModalartListResponseDTO: Decodable {
-    let result: [MG2ModalartListItemDTO]?
-}
-
 struct MG2ModalartListItemDTO: Decodable {
     let id: Int
     let title: String
     let color: String
 
     func toEntity() -> MG2ModalartListItemEntity {
-        MG2ModalartListItemEntity(id: id, title: title, color: color)
+        MG2ModalartListItemEntity(id: id, title: title, color: MG2APIColorCoding.decode(color))
     }
-}
-
-struct MG2ModalartDetailResponseDTO: Decodable {
-    let result: MG2ModalartDetailDTO?
 }
 
 struct MG2ModalartDetailDTO: Decodable {
@@ -25,12 +17,7 @@ struct MG2ModalartDetailDTO: Decodable {
     let mogaks: [MG2ModalartCategoryDTO]?
 
     func toEntity() -> MG2ModalartDetailEntity {
-        MG2ModalartDetailEntity(
-            id: id,
-            title: title,
-            color: color,
-            categories: (mogaks ?? []).map { $0.toEntity() }
-        )
+        MG2ModalartDetailEntity(id: id, title: title, color: MG2APIColorCoding.decode(color), categories: (mogaks ?? []).map { $0.toEntity() })
     }
 }
 
@@ -40,11 +27,7 @@ struct MG2ModalartCategoryDTO: Decodable {
     let color: String?
 
     func toEntity() -> MG2ModalartCategoryEntity {
-        MG2ModalartCategoryEntity(
-            title: title,
-            category: category.toEntity(),
-            color: color
-        )
+        MG2ModalartCategoryEntity(title: title, category: category.toEntity(), color: color.map(MG2APIColorCoding.decode))
     }
 }
 
@@ -57,21 +40,8 @@ struct MG2MogakCategoryDTO: Decodable {
     }
 }
 
-struct MG2MogakCategoryListResponseDTO: Decodable {
-    let result: [MG2MogakCategoryDTO]
-}
-
-struct MG2ModalartMogakPageResponseDTO: Decodable {
-    let result: MG2ModalartMogakPageDTO?
-}
-
 struct MG2ModalartMogakPageDTO: Decodable {
     let mogaks: [MG2ModalartMogakItemDTO]?
-    let size: Int?
-
-    func toEntity() -> MG2ModalartMogakPageEntity {
-        MG2ModalartMogakPageEntity(items: (mogaks ?? []).map { $0.toEntity() }, size: size)
-    }
 }
 
 struct MG2ModalartMogakItemDTO: Decodable {
@@ -81,17 +51,8 @@ struct MG2ModalartMogakItemDTO: Decodable {
     let color: String?
 
     func toEntity() -> MG2ModalartMogakItemEntity {
-        MG2ModalartMogakItemEntity(
-            mogakId: id,
-            title: title,
-            category: category.toEntity(),
-            color: color
-        )
+        MG2ModalartMogakItemEntity(mogakId: id, title: title, category: category.toEntity(), color: color.map(MG2APIColorCoding.decode))
     }
-}
-
-struct MG2ModalartUpsertResponseDTO: Decodable {
-    let result: MG2ModalartUpsertDTO
 }
 
 struct MG2ModalartUpsertDTO: Decodable {
@@ -100,6 +61,6 @@ struct MG2ModalartUpsertDTO: Decodable {
     let color: String
 
     func toEntity() -> MG2ModalartUpsertEntity {
-        MG2ModalartUpsertEntity(id: id, title: title, color: color)
+        MG2ModalartUpsertEntity(id: id, title: title, color: MG2APIColorCoding.decode(color))
     }
 }

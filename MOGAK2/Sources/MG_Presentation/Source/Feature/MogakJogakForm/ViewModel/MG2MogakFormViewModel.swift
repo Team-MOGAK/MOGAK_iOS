@@ -17,28 +17,18 @@ struct MG2MogakFormState {
 final class MG2MogakFormViewModel {
     private static let customCategoryCode = "OTHER"
 
+    let mode: MG2MogakFormMode
     let colors = DesignSystemPalette.mogakColors
     private(set) var categories = [MG2MogakCategoryEntity]()
 
     private let useCase: MogakEditingUseCase
     private(set) var state = MG2MogakFormState()
 
-    init(useCase: MogakEditingUseCase) {
+    init(useCase: MogakEditingUseCase, mode: MG2MogakFormMode) {
         self.useCase = useCase
-    }
-
-    func prepare(mode: MG2MogakFormMode) {
-        switch mode {
-        case .create:
-            state = MG2MogakFormState()
-        case .edit(let mogak):
-            state = MG2MogakFormState(
-                title: mogak.title,
-                selectedCategoryCode: mogak.category.code,
-                customCategory: mogak.category.code == nil ? mogak.category.name : nil,
-                isCustomCategorySelected: mogak.category.code == nil,
-                color: String((mogak.color ?? DesignSystemPalette.signatureHex).suffix(6))
-            )
+        self.mode = mode
+        if case .edit(let mogak) = mode {
+            state = MG2MogakFormState(title: mogak.title, selectedCategoryCode: mogak.category.code, customCategory: mogak.category.code == nil ? mogak.category.name : nil, isCustomCategorySelected: mogak.category.code == nil, color: mogak.color ?? DesignSystemPalette.signatureHex)
         }
     }
 
@@ -92,10 +82,7 @@ final class MG2MogakFormViewModel {
         state.isCustomCategorySelected
     }
 
-    func submit(
-        mode: MG2MogakFormMode,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    func submit(completion: @escaping (Result<Void, Error>) -> Void) {
         let input = state
         let category: MG2MogakCategorySelection
         if input.isCustomCategorySelected {
@@ -110,19 +97,9 @@ final class MG2MogakFormViewModel {
             do {
                 switch mode {
                 case .create(let modalartID):
-                    try await useCase.createMogak(
-                        modaratId: modalartID,
-                        title: trimmed(input.title),
-                        category: category,
-                        color: "#" + input.color
-                    )
+                    try await useCase.createMogak(modalartID: modalartID, title: trimmed(input.title), category: category, color: input.color)
                 case .edit(let mogak):
-                    try await useCase.editMogak(
-                        mogakId: mogak.mogakId,
-                        title: trimmed(input.title),
-                        category: category,
-                        color: "#" + input.color
-                    )
+                    try await useCase.editMogak(mogakId: mogak.mogakId, title: trimmed(input.title), category: category, color: input.color)
                 }
                 completion(.success(()))
             } catch {

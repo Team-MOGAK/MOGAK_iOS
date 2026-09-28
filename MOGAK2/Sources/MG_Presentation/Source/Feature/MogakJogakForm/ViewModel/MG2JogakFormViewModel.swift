@@ -17,11 +17,12 @@ struct MG2JogakFormState {
 
 @MainActor
 final class MG2JogakFormViewModel {
+    let mode: MG2JogakFormMode
     let routineDays = MG2Weekday.allCases.map(\.shortKoreanTitle)
 
     private let useCase: MogakEditingUseCase
-    private(set) var state = MG2JogakFormState()
-    private var originalScheduleState: ScheduleState?
+    private(set) var state: MG2JogakFormState
+    private let originalScheduleState: ScheduleState?
 
     private struct ScheduleState: Equatable {
         let isRoutine: Bool
@@ -37,37 +38,19 @@ final class MG2JogakFormViewModel {
         return formatter
     }()
 
-    init(useCase: MogakEditingUseCase) {
+    init(useCase: MogakEditingUseCase, mode: MG2JogakFormMode) {
         self.useCase = useCase
-    }
-
-    func prepare(mode: MG2JogakFormMode) {
+        self.mode = mode
         let today = Date()
         switch mode {
         case .create(let mogak):
             originalScheduleState = nil
-            state = MG2JogakFormState(
-                category: mogak.category.name,
-                categoryColor: String((mogak.color ?? DesignSystemPalette.signatureHex).suffix(6)),
-                today: today
-            )
+            state = MG2JogakFormState(category: mogak.category.name, categoryColor: mogak.color ?? DesignSystemPalette.signatureHex, today: today)
         case .edit(let jogak):
             let endDate = jogak.endDate
             let selectedDayIndices = Set(jogak.days.map(\.rawValue))
-            state = MG2JogakFormState(
-                title: jogak.title,
-                category: jogak.category.name,
-                categoryColor: String((jogak.color ?? DesignSystemPalette.signatureHex).suffix(6)),
-                isRoutine: jogak.isRoutine,
-                selectedRoutineDayIndices: selectedDayIndices,
-                today: today,
-                endDate: endDate
-            )
-            originalScheduleState = ScheduleState(
-                isRoutine: jogak.isRoutine,
-                selectedDayIndices: selectedDayIndices,
-                endDate: endDate
-            )
+            state = MG2JogakFormState(title: jogak.title, category: jogak.category.name, categoryColor: jogak.color ?? DesignSystemPalette.signatureHex, isRoutine: jogak.isRoutine, selectedRoutineDayIndices: selectedDayIndices, today: today, endDate: endDate)
+            originalScheduleState = ScheduleState(isRoutine: jogak.isRoutine, selectedDayIndices: selectedDayIndices, endDate: endDate)
         }
     }
 
@@ -97,35 +80,18 @@ final class MG2JogakFormViewModel {
         return !state.isRoutine || !state.selectedRoutineDayIndices.isEmpty
     }
 
-    func submit(
-        mode: MG2JogakFormMode,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    func submit(completion: @escaping (Result<Void, Error>) -> Void) {
         let input = state
         Task {
             do {
-                let weekdays = input.isRoutine
-                    ? input.selectedRoutineDayIndices.sorted().compactMap(MG2Weekday.init(rawValue:))
-                    : []
+                let weekdays = input.isRoutine ? input.selectedRoutineDayIndices.sorted().compactMap(MG2Weekday.init(rawValue:)) : []
                 let schedule = makeSchedule(input: input, weekdays: weekdays)
                 switch mode {
                 case .create(let mogak):
-                    try await useCase.createJogak(
-                        mogakId: mogak.mogakId,
-                        title: trimmed(input.title),
-                        schedule: schedule
-                    )
+                    try await useCase.createJogak(mogakId: mogak.mogakId, title: trimmed(input.title), schedule: schedule)
                 case .edit(let jogak):
-                    let currentScheduleState = ScheduleState(
-                        isRoutine: input.isRoutine,
-                        selectedDayIndices: input.selectedRoutineDayIndices,
-                        endDate: input.isRoutine ? input.endDate : nil
-                    )
-                    try await useCase.editJogak(
-                        jogakId: jogak.jogakID,
-                        title: trimmed(input.title),
-                        schedule: currentScheduleState == originalScheduleState ? nil : schedule
-                    )
+                    let currentScheduleState = ScheduleState(isRoutine: input.isRoutine, selectedDayIndices: input.selectedRoutineDayIndices, endDate: input.isRoutine ? input.endDate : nil)
+                    try await useCase.editJogak(jogakId: jogak.jogakID, title: trimmed(input.title), schedule: currentScheduleState == originalScheduleState ? nil : schedule)
                 }
                 completion(.success(()))
             } catch {
@@ -142,16 +108,9 @@ final class MG2JogakFormViewModel {
         value.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private func makeSchedule(
-        input: MG2JogakFormState,
-        weekdays: [MG2Weekday]
-    ) -> MG2JogakSchedule {
+    private func makeSchedule(input: MG2JogakFormState, weekdays: [MG2Weekday]) -> MG2JogakSchedule {
         if input.isRoutine {
-            return .weekly(
-                effectiveFrom: input.today,
-                effectiveTo: input.endDate,
-                weekdays: weekdays
-            )
+            return .weekly(effectiveFrom: input.today, effectiveTo: input.endDate, weekdays: weekdays)
         }
         return .once(effectiveFrom: input.today)
     }

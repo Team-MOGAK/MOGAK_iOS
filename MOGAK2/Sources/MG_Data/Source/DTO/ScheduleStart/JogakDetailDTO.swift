@@ -1,0 +1,30 @@
+//
+//  JogakDetailDTO.swift
+//  MOGAK
+//
+//  Created by 김라영 on 2023/12/22.
+//
+
+import Foundation
+
+struct MG2JogakDetailDTO: Decodable {
+    let jogakID: Int
+    let mogakTitle: String
+    let category: MG2MogakCategoryDTO
+    let title: String
+    let isRoutine: Bool
+    let days: [String]?
+    let startDate, endDate: String?
+    let achievements: Int
+    let color: String?
+
+    enum CodingKeys: String, CodingKey {
+        case jogakID = "jogakId"
+        case mogakTitle, category, title, isRoutine, startDate, endDate, days
+        case achievements, color
+    }
+
+    func toEntity() -> MG2JogakDetailEntity {
+        MG2JogakDetailEntity(jogakID: jogakID, mogakTitle: mogakTitle, category: category.toEntity(), title: title, isRoutine: isRoutine, days: MG2APIWeekdayCoding.decode(days), startDate: MG2APIDateCoding.decode(startDate), endDate: MG2APIDateCoding.decode(endDate), achievements: achievements, color: color.map(MG2APIColorCoding.decode))
+    }
+}

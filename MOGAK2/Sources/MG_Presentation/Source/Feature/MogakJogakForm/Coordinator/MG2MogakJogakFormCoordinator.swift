@@ -2,105 +2,51 @@ import UIKit
 
 @MainActor
 final class MG2MogakJogakFormCoordinator {
-    private let makeMogakViewModel: () -> MG2MogakFormViewModel
-    private let makeJogakViewModel: () -> MG2JogakFormViewModel
+    private let useCase: MogakEditingUseCase
     private let alertCoordinator = MG2AlertCoordinator()
 
-    init(
-        makeMogakViewModel: @escaping () -> MG2MogakFormViewModel,
-        makeJogakViewModel: @escaping () -> MG2JogakFormViewModel
-    ) {
-        self.makeMogakViewModel = makeMogakViewModel
-        self.makeJogakViewModel = makeJogakViewModel
+    init(useCase: MogakEditingUseCase) {
+        self.useCase = useCase
     }
 
-    func routeToMogakCreation(
-        modalartID: Int,
-        delegate: MG2MogakFormDelegate,
-        from source: UIViewController
-    ) {
-        let viewModel = makeMogakViewModel()
-        viewModel.prepare(mode: .create(modalartID: modalartID))
-        let viewController = MogakFormViewController(
-            mode: .create(modalartID: modalartID),
-            viewModel: viewModel
-        )
-        viewController.coordinator = self
-        pushMogakForm(viewController, delegate: delegate, from: source)
+    func routeToMogakCreation(modalartID: Int, from source: UIViewController, onFinish: @escaping () -> Void) {
+        pushMogakForm(mode: .create(modalartID: modalartID), from: source, onFinish: onFinish)
     }
 
-    func routeToMogakEditing(
-        mogak: MG2ModalartMogakItemEntity,
-        delegate: MG2MogakFormDelegate,
-        from source: UIViewController
-    ) {
-        let viewModel = makeMogakViewModel()
-        viewModel.prepare(mode: .edit(mogak))
-        let viewController = MogakFormViewController(
-            mode: .edit(mogak),
-            viewModel: viewModel
-        )
-        viewController.coordinator = self
-        pushMogakForm(viewController, delegate: delegate, from: source)
+    func routeToMogakEditing(mogak: MG2ModalartMogakItemEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
+        pushMogakForm(mode: .edit(mogak), from: source, onFinish: onFinish)
     }
 
-    func routeToJogakCreation(
-        mogak: MG2ModalartMogakItemEntity,
-        delegate: MG2JogakFormDelegate,
-        from source: UIViewController
-    ) {
-        let viewModel = makeJogakViewModel()
-        viewModel.prepare(mode: .create(mogak))
-        let viewController = JogakFormViewController(
-            mode: .create(mogak),
-            viewModel: viewModel
-        )
-        viewController.coordinator = self
-        pushJogakForm(viewController, delegate: delegate, from: source)
+    func routeToJogakCreation(mogak: MG2ModalartMogakItemEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
+        pushJogakForm(mode: .create(mogak), from: source, onFinish: onFinish)
     }
 
-    func routeToJogakEditing(
-        jogak: MG2JogakDetailEntity,
-        delegate: MG2JogakFormDelegate?,
-        from source: UIViewController
-    ) {
-        let viewModel = makeJogakViewModel()
-        viewModel.prepare(mode: .edit(jogak))
-        let viewController = JogakFormViewController(
-            mode: .edit(jogak),
-            viewModel: viewModel
-        )
-        viewController.coordinator = self
-        pushJogakForm(viewController, delegate: delegate, from: source)
-    }
-
-    private func pushMogakForm(
-        _ viewController: MogakFormViewController,
-        delegate: MG2MogakFormDelegate,
-        from source: UIViewController
-    ) {
-        let navigationController = source.navigationController
-        viewController.onFinish = { [weak delegate, weak navigationController] in
-            delegate?.mogakFormDidFinish()
-            navigationController?.popViewController(animated: true)
-        }
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-
-    private func pushJogakForm(
-        _ viewController: JogakFormViewController,
-        delegate: MG2JogakFormDelegate?,
-        from source: UIViewController
-    ) {
-        let navigationController = source.navigationController
-        viewController.onFinish = { [weak delegate, weak navigationController] in
-            delegate?.jogakFormDidFinish()
-            navigationController?.popViewController(animated: true)
-        }
-        navigationController?.pushViewController(viewController, animated: true)
+    func routeToJogakEditing(jogak: MG2JogakDetailEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
+        pushJogakForm(mode: .edit(jogak), from: source, onFinish: onFinish)
     }
 
     func presentError(_ error: Error, from source: UIViewController) {
         alertCoordinator.presentError(error, from: source)
+    }
+
+    private func pushMogakForm(mode: MG2MogakFormMode, from source: UIViewController, onFinish: @escaping () -> Void) {
+        let viewController = MG2MogakFormViewController(viewModel: MG2MogakFormViewModel(useCase: useCase, mode: mode))
+        viewController.coordinator = self
+        viewController.onFinish = popping(from: source, after: onFinish)
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func pushJogakForm(mode: MG2JogakFormMode, from source: UIViewController, onFinish: @escaping () -> Void) {
+        let viewController = MG2JogakFormViewController(viewModel: MG2JogakFormViewModel(useCase: useCase, mode: mode))
+        viewController.coordinator = self
+        viewController.onFinish = popping(from: source, after: onFinish)
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    private func popping(from source: UIViewController, after onFinish: @escaping () -> Void) -> () -> Void {
+        { [weak navigationController = source.navigationController] in
+            onFinish()
+            navigationController?.popViewController(animated: true)
+        }
     }
 }

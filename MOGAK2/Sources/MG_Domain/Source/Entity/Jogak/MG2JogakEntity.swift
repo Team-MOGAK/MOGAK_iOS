@@ -1,16 +1,16 @@
 import Foundation
 
-enum MG2JogakOccurrenceStatus: String {
-    case pending = "PENDING"
-    case missed = "MISSED"
-    case inProgress = "IN_PROGRESS"
-    case success = "SUCCESS"
-    case fail = "FAIL"
+enum MG2JogakOccurrenceStatus {
+    case pending
+    case missed
+    case inProgress
+    case success
+    case fail
 }
 
 struct MG2JogakOccurrenceKey: Hashable {
     let jogakID: Int
-    let scheduledDate: String
+    let scheduledDate: Date
 }
 
 struct MG2JogakOccurrenceEntity {
@@ -24,11 +24,12 @@ struct MG2JogakOccurrenceEntity {
     let achievements: Int
 }
 
+struct MG2MogakOccurrences {
+    let mogak: MG2ModalartMogakItemEntity
+    let occurrences: [MG2JogakOccurrenceEntity]
+}
+
 enum MG2JogakSchedule: Equatable {
     case once(effectiveFrom: Date)
-    case weekly(
-        effectiveFrom: Date,
-        effectiveTo: Date?,
-        weekdays: [MG2Weekday]
-    )
+    case weekly(effectiveFrom: Date, effectiveTo: Date?, weekdays: [MG2Weekday])
 }

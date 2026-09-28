@@ -1,13 +1,5 @@
 import Foundation
 
-struct MG2JogakOccurrencePageResponseDTO: Decodable {
-    let result: MG2JogakOccurrencePageDTO
-}
-
-struct MG2JogakOccurrenceListResponseDTO: Decodable {
-    let result: [MG2JogakOccurrenceDTO]
-}
-
 struct MG2JogakOccurrencePageDTO: Decodable {
     let size: Int
     let jogaks: [MG2JogakOccurrenceDTO]
@@ -29,17 +21,9 @@ struct MG2JogakOccurrenceDTO: Decodable {
         case scheduledDate, mogakTitle, category, title, color, status, isRoutine, achievements
     }
 
-    func toDomain() -> MG2JogakOccurrenceEntity {
-        MG2JogakOccurrenceEntity(
-            key: MG2JogakOccurrenceKey(jogakID: jogakID, scheduledDate: scheduledDate),
-            mogakTitle: mogakTitle,
-            category: category.toEntity(),
-            title: title,
-            color: color,
-            status: status.toDomain(),
-            isRoutine: isRoutine,
-            achievements: achievements
-        )
+    func toDomain() throws -> MG2JogakOccurrenceEntity {
+        guard let date = MG2APIDateCoding.decode(scheduledDate) else { throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [CodingKeys.scheduledDate], debugDescription: "Invalid date: \(scheduledDate)")) }
+        return MG2JogakOccurrenceEntity(key: MG2JogakOccurrenceKey(jogakID: jogakID, scheduledDate: date), mogakTitle: mogakTitle, category: category.toEntity(), title: title, color: color.map(MG2APIColorCoding.decode), status: status.toDomain(), isRoutine: isRoutine, achievements: achievements)
     }
 }
 

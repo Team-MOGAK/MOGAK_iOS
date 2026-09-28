@@ -4,13 +4,9 @@ import KakaoSDKCommon
 import KakaoSDKUser
 
 @MainActor
-final class MG2KakaoLoginManager: MG2SocialTokenProviding {
+final class MG2KakaoLoginManager {
     private static var nativeAppKey: String? {
-        guard let value = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String,
-              !value.isEmpty,
-              !value.hasPrefix("$(") else {
-            return nil
-        }
+        guard let value = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String, !value.isEmpty, !value.hasPrefix("$(") else { return nil }
         return value
     }
 
@@ -21,16 +17,13 @@ final class MG2KakaoLoginManager: MG2SocialTokenProviding {
         return true
     }
 
-    @discardableResult
     static func handleOpenURL(_ url: URL) -> Bool {
         guard AuthApi.isKakaoTalkLoginUrl(url) else { return false }
         return AuthController.handleOpenUrl(url: url)
     }
 
     func token() async throws -> String {
-        guard Self.configureSDK() else {
-            throw MG2SocialLoginError.configurationMissing(provider: "Kakao")
-        }
+        guard Self.configureSDK() else { throw MG2SocialLoginError.configurationMissing(provider: "Kakao") }
 
         return try await withCheckedThrowingContinuation { continuation in
             let completion: (OAuthToken?, Error?) -> Void = { token, error in
@@ -39,9 +32,7 @@ final class MG2KakaoLoginManager: MG2SocialTokenProviding {
                     return
                 }
                 guard let accessToken = token?.accessToken, !accessToken.isEmpty else {
-                    continuation.resume(
-                        throwing: MG2SocialLoginError.tokenMissing(provider: "Kakao")
-                    )
+                    continuation.resume(throwing: MG2SocialLoginError.tokenMissing(provider: "Kakao"))
                     return
                 }
                 continuation.resume(returning: accessToken)

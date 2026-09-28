@@ -4,7 +4,7 @@ import SnapKit
 final class MG2TermsAgreeViewController: UIViewController {
     weak var coordinator: MG2LoginCoordinator?
 
-    private let profileViewModel: MG2ProfileSetupViewModel
+    private let viewModel: MG2TermsAgreeViewModel
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -16,7 +16,7 @@ final class MG2TermsAgreeViewController: UIViewController {
     private lazy var allAgreementButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "checkOff"), for: .normal)
-        button.addTarget(self, action: #selector(allAgreementTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(allAgreementButtonTapped), for: .touchUpInside)
         return button
     }()
 
@@ -59,8 +59,8 @@ final class MG2TermsAgreeViewController: UIViewController {
         return button
     }()
 
-    init(profileViewModel: MG2ProfileSetupViewModel) {
-        self.profileViewModel = profileViewModel
+    init(viewModel: MG2TermsAgreeViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -83,15 +83,7 @@ final class MG2TermsAgreeViewController: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(
-            titleLabel,
-            allAgreementButton,
-            allAgreementTitleLabel,
-            allAgreementDescriptionLabel,
-            separatorView,
-            agreementStackView,
-            nextButton
-        )
+        view.addSubviews(titleLabel, allAgreementButton, allAgreementTitleLabel, allAgreementDescriptionLabel, separatorView, agreementStackView, nextButton)
 
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
@@ -128,7 +120,7 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     private func loadConsentItems() {
         showLoading()
-        profileViewModel.loadConsentItems { [weak self] result in
+        viewModel.loadConsentItems { [weak self] result in
             guard let self else { return }
             hideLoading()
             switch result {
@@ -148,15 +140,12 @@ final class MG2TermsAgreeViewController: UIViewController {
         }
         agreementRows.removeAll()
 
-        for selection in profileViewModel.state.agreements.selections {
+        for selection in viewModel.agreements.selections {
             let item = selection.item
             let requirement = item.required ? "필수" : "선택"
-            let row = MG2AgreementRowView(
-                title: "(\(requirement)) \(item.name)",
-                showsDetail: false
-            )
+            let row = MG2AgreementRowView(title: "(\(requirement)) \(item.name)")
             row.onToggle = { [weak self] in
-                self?.profileViewModel.toggleAgreement(id: item.id)
+                self?.viewModel.toggleAgreement(id: item.id)
                 self?.renderAgreements()
             }
             agreementRows[item.id] = row
@@ -165,11 +154,8 @@ final class MG2TermsAgreeViewController: UIViewController {
     }
 
     private func renderAgreements() {
-        let agreements = profileViewModel.state.agreements
-        allAgreementButton.setImage(
-            UIImage(named: agreements.hasAcceptedAllTerms ? "checkOn" : "checkOff"),
-            for: .normal
-        )
+        let agreements = viewModel.agreements
+        allAgreementButton.setImage(UIImage(named: agreements.hasAcceptedAllTerms ? "checkOn" : "checkOff"), for: .normal)
         for selection in agreements.selections {
             agreementRows[selection.item.id]?.setChecked(selection.agreed)
         }
@@ -177,11 +163,11 @@ final class MG2TermsAgreeViewController: UIViewController {
     }
 
     @objc private func nextButtonTapped() {
-        coordinator?.routeToNickname(from: self)
+        coordinator?.routeToNickname(draft: viewModel.draft, from: self)
     }
 
-    @objc private func allAgreementTapped() {
-        profileViewModel.toggleAllAgreements()
+    @objc private func allAgreementButtonTapped() {
+        viewModel.toggleAllAgreements()
         renderAgreements()
     }
 }

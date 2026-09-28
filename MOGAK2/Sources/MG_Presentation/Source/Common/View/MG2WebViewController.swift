@@ -3,11 +3,11 @@ import WebKit
 import SnapKit
 
 final class MG2WebViewController: UIViewController {
-    private let destination: MG2WebDestination
+    private let viewModel: MG2WebViewModel
     private let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
 
-    init(destination: MG2WebDestination) {
-        self.destination = destination
+    init(viewModel: MG2WebViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -27,7 +27,7 @@ final class MG2WebViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let url = URL(string: destination.rawValue) else { return }
+        guard let url = viewModel.url else { return }
         webView.load(URLRequest(url: url))
     }
 

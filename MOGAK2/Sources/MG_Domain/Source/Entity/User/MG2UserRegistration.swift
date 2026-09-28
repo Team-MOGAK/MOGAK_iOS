@@ -18,6 +18,8 @@ struct MG2UserRegistration {
     let job: String
     let address: String
     let consents: [MG2ConsentAgreement]
+    /// 서버로 보내지 않고 기기에만 저장한다.
+    let profileImageID: Int?
 }
 
 struct MG2UserRegistrationResult {

@@ -1,0 +1,4 @@
+// API 서버 주소. Info.plist의 BASE_URL로 들어가고 APIConfig가 읽는다. 끝에 /를 붙이지 않는다.
+// xcconfig에서는 //가 주석이라 $()로 끊어서 쓴다.
+BASE_URL = https:/$()/mogak-core-back-176213003242.asia-northeast1.run.app
+// 로컬 서버: BASE_URL = http:/$()/localhost:8080

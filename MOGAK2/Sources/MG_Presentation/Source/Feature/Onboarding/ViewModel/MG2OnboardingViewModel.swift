@@ -1,8 +1,20 @@
 import Foundation
 
+@MainActor
 final class MG2OnboardingViewModel {
-    let pageCount: Int = 4
-    let startEnabledFromPage: Int = 2
+    private static let startEnabledFromPage = 2
 
-    var lastPageIndex: Int { pageCount - 1 }
+    private let authUseCase: AuthUseCase
+
+    init(authUseCase: AuthUseCase) {
+        self.authUseCase = authUseCase
+    }
+
+    func canStart(onPage page: Int) -> Bool {
+        page >= Self.startEnabledFromPage
+    }
+
+    func completeOnboarding() {
+        authUseCase.completeOnboarding()
+    }
 }

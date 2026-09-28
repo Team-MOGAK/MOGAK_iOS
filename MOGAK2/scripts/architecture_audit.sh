@@ -76,8 +76,8 @@ check_no_swift_match \
   "$PRESENTATION"
 
 check_no_swift_match \
-  "MG_Presentation does not use the service locator" \
-  '\bDIContainer\b|\bMG2Deps\b' \
+  "MG_Presentation does not reach the app composition root" \
+  '\bMG2AppComposition\b' \
   "$PRESENTATION"
 
 check_no_swift_match \
@@ -86,13 +86,28 @@ check_no_swift_match \
   "$FEATURES"/*/ViewModel
 
 check_no_swift_match \
-  "Domain does not depend on app state, storage, Data, or Network" \
-  '\bAPIConfig\b|\b[A-Za-z_][A-Za-z0-9_]*DTO\b|\b[A-Za-z_][A-Za-z0-9_]*Router\b|\bNetworkProvider\b|\bMG2UserState\b|\bMG2SessionStore\b|\bUserDefaults\b' \
+  "Domain does not depend on storage, Data, or Network" \
+  '\bAPIConfig\b|\b[A-Za-z_][A-Za-z0-9_]*DTO\b|\b[A-Za-z_][A-Za-z0-9_]*Router\b|\bNetworkProvider\b|\bMG2SessionStore\b|\bMG2TokenStore\b|\bMG2Keychain\b|\bUserDefaults\b' \
   "$DOMAIN"
 
 check_no_swift_match \
+  "Domain holds no server wire formats" \
+  'yyyy-MM-dd|modaratId|"(PENDING|MISSED|IN_PROGRESS|SUCCESS|FAIL)"' \
+  "$DOMAIN"
+
+check_no_swift_match \
+  "MG_Presentation does not depend on Core storage" \
+  '\bMG2SessionStore\b|\bSessionStorage\b|\bMG2TokenStore\b|\bMG2LaunchStorage\b|\bMG2Keychain\b' \
+  "$PRESENTATION"
+
+check_no_swift_match \
+  "Only use cases change the user's session state" \
+  'userState\.(loginState|isRegistered|nickname|job|profileImageID)[[:space:]]*=[^=]' \
+  "$PRESENTATION" "$APP"
+
+check_no_swift_match \
   "MG_Data does not access app state or storage globals" \
-  '\bDIContainer\b|\bMG2Deps\b|\bUserDefaults\b|\bMG2TokenStore\b|\bMG2SessionStore\b|\bMG2LaunchStorage\b' \
+  '\bMG2AppComposition\b|\bUserDefaults\b|\bMG2TokenStore\b|\bMG2SessionStore\b|\bMG2LaunchStorage\b' \
   "$DATA"
 
 check_no_swift_match \
@@ -216,6 +231,38 @@ if [[ -s "$disabled_output" ]]; then
   cat "$disabled_output"
 else
   pass "No disabled source files remain"
+fi
+
+check_no_swift_match \
+  "Modalart, mogak, and jogak edits use PATCH instead of PUT" \
+  'return \.put' \
+  "$DATA/API/Router/Modalart" \
+  "$DATA/API/Router/MogakEditing"
+
+check_count=$((check_count + 1))
+patch_output="$TMP_DIR/merge-patch-$check_count.txt"
+: >"$patch_output"
+for router in "$DATA"/API/Router/*/*.swift; do
+  if rg -q 'return \.patch' "$router" && ! rg -q 'mergePatchHeaders' "$router"; then
+    printf '%s\n' "$router" >>"$patch_output"
+  fi
+done
+if [[ -s "$patch_output" ]]; then
+  fail "PATCH routers must send the merge patch media type"
+  cat "$patch_output"
+else
+  pass "PATCH routers send the merge patch media type"
+fi
+
+check_count=$((check_count + 1))
+schedule_output="$TMP_DIR/edit-schedule-$check_count.txt"
+sed -n '/func editSchedulePayload/,/^    }$/p' \
+  "$DATA/API/Router/MogakEditing/MG2MogakEditingRouter.swift" | grep -n 'effectiveFrom' >"$schedule_output" || true
+if [[ -s "$schedule_output" ]]; then
+  fail "Jogak edit schedule must not send effectiveFrom"
+  cat "$schedule_output"
+else
+  pass "Jogak edit schedule does not send effectiveFrom"
 fi
 
 check_no_swift_match \

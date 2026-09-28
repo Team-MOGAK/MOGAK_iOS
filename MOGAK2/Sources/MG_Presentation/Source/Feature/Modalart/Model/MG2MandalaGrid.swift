@@ -13,9 +13,6 @@ enum MG2MandalaGrid {
     }
 
     static func itemSize(in collectionView: UICollectionView) -> CGSize {
-        CGSize(
-            width: collectionView.frame.width / 3 - 10,
-            height: collectionView.frame.height / 3 - 10
-        )
+        CGSize(width: collectionView.frame.width / 3 - 10, height: collectionView.frame.height / 3 - 10)
     }
 }

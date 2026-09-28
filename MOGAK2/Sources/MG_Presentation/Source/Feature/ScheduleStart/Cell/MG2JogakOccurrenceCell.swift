@@ -21,7 +21,7 @@ final class MG2JogakOccurrenceCell: UITableViewCell {
     private lazy var moreButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        button.tintColor = UIColor(hex: "6E707B")
+        button.tintColor = DesignSystemColor.gray5.value
         button.addTarget(self, action: #selector(moreButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -44,9 +44,7 @@ final class MG2JogakOccurrenceCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.frame = contentView.frame.inset(
-            by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
-        )
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0))
     }
 
     override func prepareForReuse() {
@@ -55,21 +53,14 @@ final class MG2JogakOccurrenceCell: UITableViewCell {
         onMoreTapped = nil
     }
 
-    func configure(
-        title: String,
-        status: MG2JogakOccurrenceStatus,
-        onMoreTapped: @escaping () -> Void
-    ) {
+    func configure(title: String, status: MG2JogakOccurrenceStatus, onMoreTapped: @escaping () -> Void) {
         titleLabel.text = title
         setStatus(status)
         self.onMoreTapped = onMoreTapped
     }
 
     func setStatus(_ status: MG2JogakOccurrenceStatus) {
-        completionImageView.image = UIImage(
-            named: status == .success ? "squareCheckmark" : "emptySquareCheckmark"
-        )
-        completionImageView.tintColor = nil
+        completionImageView.image = UIImage(named: status == .success ? "squareCheckmark" : "emptySquareCheckmark")
     }
 
     @objc private func moreButtonTapped() {

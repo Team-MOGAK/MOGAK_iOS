@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  MG2LoginViewController.swift
 //  MOGAK
 //
 //  Created by 김강현 on 2023/07/08.
@@ -23,8 +23,8 @@ final class MG2LoginViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private let mogakLabel : UILabel = {
+
+    private let mogakLabel: UILabel = {
         let label = UILabel()
         label.text = "모두가 각자의 성장을\n응원하기 위한\n여정을 시작해볼까요?"
         label.numberOfLines = 3
@@ -33,119 +33,91 @@ final class MG2LoginViewController: UIViewController {
         label.asFont(targetString: "모두가 각자의 성장을", font: UIFont.pretendard(.bold, size: 30))
         return label
     }()
-    
+
     private let loginImage = UIImageView().then {
         $0.image = UIImage(named: "LoginLogo")
     }
-    
+
     private lazy var appleLoginButton: UIButton = {
-        let button = makeSocialLoginButton(
-            title: "Apple로 로그인",
-            backgroundColor: .black,
-            titleColor: .white,
-            image: UIImage(systemName: "apple.logo"),
-            imageTintColor: .white
-        )
-        button.addTarget(self, action: #selector(appleLoginClicked), for: .touchUpInside)
+        let button = makeSocialLoginButton(title: "Apple로 로그인", backgroundColor: .black, titleColor: .white, image: UIImage(systemName: "apple.logo"), imageTintColor: .white)
+        button.addTarget(self, action: #selector(appleLoginButtonTapped), for: .touchUpInside)
         return button
     }()
 
     private lazy var kakaoLoginButton: UIButton = {
-        let button = makeSocialLoginButton(
-            title: "카카오로 로그인",
-            backgroundColor: UIColor(hex: "FEE500"),
-            titleColor: UIColor(hex: "191919"),
-            image: UIImage(systemName: "message.fill"),
-            imageTintColor: UIColor(hex: "191919")
-        )
-        button.addTarget(self, action: #selector(kakaoLoginClicked), for: .touchUpInside)
+        let button = makeSocialLoginButton(title: "카카오로 로그인", backgroundColor: UIColor(hex: "FEE500"), titleColor: UIColor(hex: "191919"), image: UIImage(systemName: "message.fill"), imageTintColor: UIColor(hex: "191919"))
+        button.addTarget(self, action: #selector(kakaoLoginButtonTapped), for: .touchUpInside)
         return button
     }()
 
     private lazy var googleLoginButton: UIButton = {
-        let button = makeSocialLoginButton(
-            title: "G  Google로 로그인",
-            backgroundColor: .white,
-            titleColor: UIColor(hex: "191919"),
-            image: nil,
-            imageTintColor: nil,
-            borderColor: UIColor(hex: "DADCE0")
-        )
-        button.addTarget(self, action: #selector(googleLoginClicked), for: .touchUpInside)
+        let button = makeSocialLoginButton(title: "G  Google로 로그인", backgroundColor: .white, titleColor: UIColor(hex: "191919"), image: nil, imageTintColor: nil, borderColor: UIColor(hex: "DADCE0"))
+        button.addTarget(self, action: #selector(googleLoginButtonTapped), for: .touchUpInside)
         return button
     }()
-    
+
     private lazy var guestLoginButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = 10
         button.backgroundColor = DesignSystemColor.white.value
         button.setTitle("로그인 없이 계속하기", for: .normal)
-        button.setTitleColor(UIColor(hex: "000000"), for: .normal)
+        button.setTitleColor(DesignSystemColor.black.value, for: .normal)
         button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        button.imageView?.tintColor = .white
         button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(guestLoginClicked), for: .touchUpInside)
+        button.addTarget(self, action: #selector(guestLoginButtonTapped), for: .touchUpInside)
         return button
     }()
 
     private lazy var loginButtonStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            appleLoginButton,
-            kakaoLoginButton,
-            googleLoginButton,
-            guestLoginButton
-        ])
+        let stackView = UIStackView(arrangedSubviews: [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton])
         stackView.axis = .vertical
         stackView.spacing = 12
         stackView.distribution = .fillEqually
         return stackView
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = UIColor(hex: "FFFFFF")
-        self.configureLabel()
-        self.configureButton()
-        self.configureImage()
+        navigationController?.navigationBar.isHidden = true
+        view.backgroundColor = DesignSystemColor.white.value
+        configureLabel()
+        configureButton()
+        configureImage()
         bindViewModel()
         render(viewModel.state)
     }
-    
-    private func configureLabel() {
-        self.view.addSubview(mogakLabel)
-        
-        mogakLabel.snp.makeConstraints({
-            $0.top.equalTo(self.view.safeAreaLayoutGuide).offset(48)
-            $0.centerX.equalToSuperview()
-        })
-        
-    }
-    
-    private func configureImage() {
-        self.view.addSubview(loginImage)
-        
-        loginImage.snp.makeConstraints({
-            $0.top.equalTo(self.mogakLabel.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(6)
-            $0.bottom.equalTo(self.loginButtonStackView.snp.top).offset(-20)
-        })
-    }
-    
-    private func configureButton() {
-        self.view.addSubview(loginButtonStackView)
 
-        loginButtonStackView.snp.makeConstraints { make in
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-26)
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(220)
+    private func configureLabel() {
+        view.addSubview(mogakLabel)
+
+        mogakLabel.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(48)
+            $0.centerX.equalToSuperview()
+        }
+    }
+
+    private func configureImage() {
+        view.addSubview(loginImage)
+
+        loginImage.snp.makeConstraints {
+            $0.top.equalTo(mogakLabel.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(6)
+            $0.bottom.equalTo(loginButtonStackView.snp.top).offset(-20)
+        }
+    }
+
+    private func configureButton() {
+        view.addSubview(loginButtonStackView)
+
+        loginButtonStackView.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-26)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.height.equalTo(220)
         }
     }
 
     private func bindViewModel() {
-        viewModel.onStateChange = { [weak self] state in
-            self?.render(state)
-        }
+        viewModel.onStateChange = { [weak self] state in self?.render(state) }
     }
 
     private func render(_ state: MG2LoginViewState) {
@@ -156,42 +128,32 @@ final class MG2LoginViewController: UIViewController {
         }
         state.isLoading ? showLoading() : hideLoading()
 
-        guard let errorMessage = state.errorMessage,
-              presentedViewController == nil else { return }
-        coordinator?.presentLoginError(errorMessage, from: self) { [weak self] in
-            self?.viewModel.clearError()
-        }
+        guard let errorMessage = state.errorMessage, presentedViewController == nil else { return }
+        coordinator?.presentLoginError(errorMessage, from: self) { [weak self] in self?.viewModel.clearError() }
     }
 
-    @objc private func appleLoginClicked() {
-        viewModel.startAppleLogin { [weak self] in
-            self?.onAuthenticationCompleted?()
-        }
+    @objc private func appleLoginButtonTapped() {
+        login(with: .apple)
     }
 
-    @objc private func kakaoLoginClicked() {
-        viewModel.startKakaoLogin { [weak self] in
-            self?.onAuthenticationCompleted?()
-        }
+    @objc private func kakaoLoginButtonTapped() {
+        login(with: .kakao)
     }
 
-    @objc private func googleLoginClicked() {
-        viewModel.startGoogleLogin { [weak self] in
-            self?.onAuthenticationCompleted?()
-        }
+    @objc private func googleLoginButtonTapped() {
+        login(with: .google)
     }
-    
-    @objc private func guestLoginClicked() {
+
+    private func login(with provider: MG2SocialLoginProvider) {
+        viewModel.login(provider: provider) { [weak self] in self?.onAuthenticationCompleted?() }
+    }
+
+    @objc private func guestLoginButtonTapped() {
         viewModel.continueAsGuest()
         onGuestContinue?()
     }
 
-    private func makeSocialLoginButton(title: String,
-                                       backgroundColor: UIColor,
-                                       titleColor: UIColor,
-                                       image: UIImage?,
-                                       imageTintColor: UIColor?,
-                                       borderColor: UIColor? = nil) -> UIButton {
+    private func makeSocialLoginButton(title: String, backgroundColor: UIColor, titleColor: UIColor, image: UIImage?, imageTintColor: UIColor?, borderColor: UIColor? = nil) -> UIButton {
         let button = UIButton(type: .system)
         button.layer.cornerRadius = 10
         button.backgroundColor = backgroundColor

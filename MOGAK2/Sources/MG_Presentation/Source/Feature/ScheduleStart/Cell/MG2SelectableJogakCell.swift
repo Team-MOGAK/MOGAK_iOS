@@ -37,9 +37,7 @@ final class MG2SelectableJogakCell: UITableViewCell {
             $0.centerY.equalToSuperview()
         }
 
-        contentView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(didTap))
-        )
+        contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(contentViewTapped)))
     }
 
     required init?(coder: NSCoder) {
@@ -63,12 +61,10 @@ final class MG2SelectableJogakCell: UITableViewCell {
 
     func setSelectedAppearance(_ isSelected: Bool) {
         checkImageView.image = UIImage(systemName: isSelected ? "checkmark.square.fill" : "square")
-        checkImageView.tintColor = isSelected
-            ? DesignSystemColor.lightGreen.value
-            : UIColor(hex: DesignSystemPalette.neutralGrayHex)
+        checkImageView.tintColor = isSelected ? DesignSystemColor.lightGreen.value : UIColor(hex: DesignSystemPalette.neutralGrayHex)
     }
 
-    @objc private func didTap() {
+    @objc private func contentViewTapped() {
         guard !isLocked else { return }
         onSelection?(jogakID)
     }

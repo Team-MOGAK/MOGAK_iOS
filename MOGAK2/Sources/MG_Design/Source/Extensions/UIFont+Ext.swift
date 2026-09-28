@@ -1,5 +1,5 @@
 //
-//  Font+Ext.swift
+//  UIFont+Ext.swift
 //  MOGAK
 //
 //  Created by 김강현 on 2023/06/23.
@@ -8,15 +8,12 @@
 import UIKit
 
 extension UIFont {
-    
     enum Pretendard {
-        
         case bold
-        case extraBold
         case medium
         case semiBold
         case regular
-        
+
         var value: String {
             switch self {
             case .bold:
@@ -25,16 +22,13 @@ extension UIFont {
                 return "Pretendard-Medium"
             case .semiBold:
                 return "Pretendard-SemiBold"
-            case .extraBold:
-                return "Pretendard-ExtraBold"
             case .regular:
                 return "Pretendard-Regular"
             }
         }
     }
-    
+
     static func pretendard(_ type: Pretendard, size: CGFloat) -> UIFont {
         return UIFont(name: type.value, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
-

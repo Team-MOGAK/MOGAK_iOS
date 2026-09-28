@@ -1,5 +1,5 @@
 //
-//  NameCell.swift
+//  MG2NameCell.swift
 //  MOGAK
 //
 //  Created by 김강현 on 2023/07/12.
@@ -14,12 +14,12 @@ final class MG2NameCell: UITableViewCell {
         button.setImage(UIImage(named: "checkOff"), for: .normal)
         return button
     }()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configure()
+        configureLayout()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -29,13 +29,13 @@ final class MG2NameCell: UITableViewCell {
         checkButton.setImage(UIImage(named: isChecked ? "checkOn" : "checkOff"), for: .normal)
     }
 
-    private func configure() {
+    private func configureLayout() {
         contentView.addSubview(checkButton)
-        
-        checkButton.snp.makeConstraints({
+
+        checkButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().offset(-8)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(25)
-        })
+        }
     }
 }

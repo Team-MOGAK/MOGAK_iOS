@@ -1,26 +1,15 @@
 import UIKit
-final class MG2OnboardingCoordinator: MG2PresentationCoordinator {
-    private let viewModel: MG2OnboardingViewModel
 
-    init(viewModel: MG2OnboardingViewModel) {
-        self.viewModel = viewModel
+@MainActor
+final class MG2OnboardingCoordinator {
+    private let authUseCase: AuthUseCase
+
+    init(authUseCase: AuthUseCase) {
+        self.authUseCase = authUseCase
     }
 
-    func start() -> UIViewController {
-        makeContainer()
-    }
-
-    func makeContainer(onFinish: (() -> Void)? = nil) -> UIViewController {
-        let pages = [
-            MG2OnBoardingFirstViewController(),
-            MG2OnBoardingSecondViewController(),
-            MG2OnBoardingThirdViewController(),
-            MG2OnBoardingForthViewController()
-        ]
-        let viewController = MG2OnboardingContainerViewController(
-            viewModel: viewModel,
-            pages: pages
-        )
+    func start(onFinish: @escaping () -> Void) -> UIViewController {
+        let viewController = MG2OnboardingViewController(viewModel: MG2OnboardingViewModel(authUseCase: authUseCase))
         viewController.onFinish = onFinish
         return viewController
     }

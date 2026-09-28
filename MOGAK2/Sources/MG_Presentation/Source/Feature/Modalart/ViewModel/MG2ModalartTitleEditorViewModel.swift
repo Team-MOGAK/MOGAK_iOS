@@ -18,11 +18,7 @@ final class MG2ModalartTitleEditorViewModel {
     private(set) var state: MG2ModalartTitleEditorState
 
     init(title: String?, color: String) {
-        let normalizedColor = String(color.suffix(6)).uppercased()
-        state = MG2ModalartTitleEditorState(
-            title: title ?? "",
-            selectedColor: colors.contains(normalizedColor) ? normalizedColor : nil
-        )
+        state = MG2ModalartTitleEditorState(title: title ?? "", selectedColor: colors.contains(color) ? color : nil)
     }
 
     var selectedColorIndex: Int? {
@@ -45,6 +41,6 @@ final class MG2ModalartTitleEditorViewModel {
 
     func submission() -> (title: String, color: String)? {
         guard state.canSubmit, let selectedColor = state.selectedColor else { return nil }
-        return (state.title, "#" + selectedColor)
+        return (state.title, selectedColor)
     }
 }

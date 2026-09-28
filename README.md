@@ -12,7 +12,7 @@ MOGAK의 iOS 클라이언트입니다. 현재 실행 대상은 `MOGAK2/Sources`�
 
 1. `Configuration/Secrets.example.xcconfig`를 참고해 로컬 전용 `Configuration/Secrets.xcconfig`를 만듭니다.
 2. Google과 Kakao 콘솔의 iOS 앱 설정이 Xcode의 Bundle ID 및 URL Scheme과 일치하는지 확인합니다.
-3. API URL은 기존 xcconfig와 `Configuration/Info.plist`의 빌드 설정 치환을 통해 주입됩니다. URL을 Swift 코드에 중복 선언하지 않습니다.
+3. API URL은 `Configuration/BASE_URL.xcconfig` 한 곳에서 정하고, `Configuration/Info.plist`의 `BASE_URL` 치환을 거쳐 `APIConfig`가 읽습니다. 타깃 빌드 설정이나 Swift 코드에 URL을 중복 선언하지 않습니다.
 
 `Secrets.xcconfig`는 Git에 포함되지 않습니다.
 
@@ -60,16 +60,16 @@ xcodebuild -project MOGAK.xcodeproj \
 
 ```text
 MOGAK2/Sources/
-├── MG_App          # 앱 시작, DI, 소셜 SDK 통합
-├── MG_Core         # 공용 상태와 기반 인터페이스
-├── MG_Domain       # Entity, UseCase, Repository 인터페이스
+├── MG_App          # 앱 시작, 의존성 조립(MG2AppComposition), 소셜 SDK 연동
+├── MG_Core         # 기기 저장소 구현(키체인·UserDefaults)
+├── MG_Domain       # Entity, UseCase, Repository·저장소 인터페이스, 현재 사용자 상태
 ├── MG_Data         # DTO, Router, Repository 구현
 ├── MG_Network      # 공용 네트워크 제공자
 ├── MG_Presentation # View, ViewModel, Coordinator
 └── MG_Design       # 디자인 시스템과 리소스
 ```
 
-ViewController는 네트워크나 Repository를 직접 호출하지 않습니다. 화면 입력과 표시는 View가, 상태와 기능 실행은 ViewModel/UseCase가 담당합니다.
+ViewController는 네트워크나 Repository를 직접 호출하지 않습니다. 화면 입력과 표시는 View가, 화면 상태는 ViewModel이, 비즈니스 규칙과 세션(로그인 상태·토큰) 관리는 UseCase가 담당합니다. 서버 형식(코드 값, 날짜 문자열, `#` 색상)은 DTO에서 변환하고 Domain으로 넘기지 않습니다.
 
 ## Audit
 

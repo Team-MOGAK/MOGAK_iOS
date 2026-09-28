@@ -2,6 +2,8 @@ import SnapKit
 import UIKit
 
 final class MG2SelectionChipCell: UICollectionViewCell {
+    static let identifier = String(describing: MG2SelectionChipCell.self)
+
     enum Style {
         case category
         case weekday
@@ -27,9 +29,9 @@ final class MG2SelectionChipCell: UICollectionViewCell {
         var normalBackgroundColor: UIColor {
             switch self {
             case .category:
-                return UIColor(hex: "F1F3FA")
+                return DesignSystemColor.signatureBag.value
             case .weekday:
-                return UIColor(hex: "EEF0F8")
+                return DesignSystemColor.gray2.value
             }
         }
     }
@@ -68,11 +70,7 @@ final class MG2SelectionChipCell: UICollectionViewCell {
     }
 
     private func updateAppearance() {
-        contentView.backgroundColor = isSelected
-            ? UIColor(hex: "475FFD")
-            : style.normalBackgroundColor
-        titleLabel.textColor = isSelected
-            ? .white
-            : UIColor(hex: "24252E")
+        contentView.backgroundColor = isSelected ? DesignSystemColor.signature.value : style.normalBackgroundColor
+        titleLabel.textColor = isSelected ? .white : DesignSystemColor.gray6.value
     }
 }

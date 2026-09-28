@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
-		D154EF052F6FA04B00A18D99 /* ReusableKit in Frameworks */ = {isa = PBXBuildFile; productRef = D154EF042F6FA04B00A18D99 /* ReusableKit */; };
-		D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F842F6F8FA60014DA6D /* Kingfisher */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
 		D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F902F6F90580014DA6D /* FSCalendar */; };
@@ -26,18 +24,8 @@
 		D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Auth.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		6C0727DA3032E835005BCBB4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Sources/MG_Data/Source/Constant/BASE_URL.xcconfig,
-			);
-			target = 9CFA7D002A458109003E80A7 /* MOGAK */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (6C0727DA3032E835005BCBB4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
+		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +33,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D154EF052F6FA04B00A18D99 /* ReusableKit in Frameworks */,
 				D18C0F9A2F6F92830014DA6D /* Then in Frameworks */,
 				D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */,
 				D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */,
@@ -54,7 +41,6 @@
 				D18C0FB62F7A0000014DA6D /* KakaoSDKCommon in Frameworks */,
 				D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */,
 				D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */,
-				D18C0F852F6F8FA60014DA6D /* Kingfisher in Frameworks */,
 				4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,12 +122,10 @@
 			);
 			mainGroup = 9CFA7CF82A458109003E80A7;
 			packageReferences = (
-				D18C0F832F6F8FA60014DA6D /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */,
 				D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */,
 				D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
-				D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */,
 				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
@@ -301,18 +285,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BASE_URL = "http://mogak.shop:8080";
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
-				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 요청";
-				INFOPLIST_KEY_TEST_URL = "$(TEST_URL)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -334,7 +314,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_URL = "http://localhost:8080";
 			};
 			name = Debug;
 		};
@@ -344,18 +323,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BASE_URL = "http://mogak.shop:8080";
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
-				INFOPLIST_KEY_BASE_URL = "$(BASE_URL)";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSCameraUsageDescription = "카메라 접근 권한 요청";
-				INFOPLIST_KEY_TEST_URL = "$(TEST_URL)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -377,7 +352,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_URL = "http://localhost:8080";
 			};
 			name = Release;
 		};
@@ -405,22 +379,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/devxoul/ReusableKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
-			};
-		};
-		D18C0F832F6F8FA60014DA6D /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.8.0;
-			};
-		};
 		D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -472,16 +430,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D154EF042F6FA04B00A18D99 /* ReusableKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D154EF032F6FA04B00A18D99 /* XCRemoteSwiftPackageReference "ReusableKit" */;
-			productName = ReusableKit;
-		};
-		D18C0F842F6F8FA60014DA6D /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F832F6F8FA60014DA6D /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
 		D18C0F872F6F8FB30014DA6D /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */;

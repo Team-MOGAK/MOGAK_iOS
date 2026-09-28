@@ -30,10 +30,7 @@ final class MG2ScheduleStartViewModel {
     private let userState: MG2UserState
     private(set) var state = MG2ScheduleStartViewState()
 
-    init(
-        useCase: ScheduleStartUseCase,
-        userState: MG2UserState
-    ) {
+    init(useCase: ScheduleStartUseCase, userState: MG2UserState) {
         self.useCase = useCase
         self.userState = userState
     }
@@ -53,10 +50,7 @@ final class MG2ScheduleStartViewModel {
         return Calendar.current.date(byAdding: component, value: offset, to: currentPage)
     }
 
-    func loadJogakOccurrences(
-        date: Date,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) {
+    func loadJogakOccurrences(date: Date, completion: @escaping (Result<Void, Error>) -> Void) {
         state.selectedDate = date
         guard !isGuest else {
             state.occurrences = []
@@ -67,12 +61,7 @@ final class MG2ScheduleStartViewModel {
         Task {
             do {
                 state.occurrences = try await useCase.getJogakOccurrences(date: date).map {
-                    MG2JogakOccurrenceItem(
-                        key: $0.key,
-                        title: $0.title,
-                        status: $0.status,
-                        isRoutine: $0.isRoutine
-                    )
+                    MG2JogakOccurrenceItem(key: $0.key, title: $0.title, status: $0.status, isRoutine: $0.isRoutine)
                 }
                 completion(.success(()))
             } catch {
@@ -82,10 +71,7 @@ final class MG2ScheduleStartViewModel {
     }
 
     @discardableResult
-    func toggleJogakCompletion(
-        at index: Int,
-        completion: @escaping (Result<Void, Error>) -> Void
-    ) -> Bool? {
+    func toggleJogakCompletion(at index: Int, completion: @escaping (Result<Void, Error>) -> Void) -> Bool? {
         guard state.occurrences.indices.contains(index) else { return nil }
         let original = state.occurrences[index]
 
@@ -95,15 +81,10 @@ final class MG2ScheduleStartViewModel {
 
         Task {
             do {
-                try await useCase.setJogakCompletion(
-                    key: original.key,
-                    isCompleted: isCompleted
-                )
+                try await useCase.setJogakCompletion(key: original.key, isCompleted: isCompleted)
                 completion(.success(()))
             } catch {
-                if let currentIndex = state.occurrences.firstIndex(where: {
-                    $0.key == original.key
-                }), state.occurrences[currentIndex].status == updatedStatus {
+                if let currentIndex = state.occurrences.firstIndex(where: { $0.key == original.key }), state.occurrences[currentIndex].status == updatedStatus {
                     state.occurrences[currentIndex].status = original.status
                 }
                 completion(.failure(error))
@@ -112,10 +93,7 @@ final class MG2ScheduleStartViewModel {
         return isCompleted
     }
 
-    func getJogakForEditing(
-        jogakId: Int,
-        completion: @escaping (Result<MG2JogakDetailEntity, Error>) -> Void
-    ) {
+    func getJogakForEditing(jogakId: Int, completion: @escaping (Result<MG2JogakDetailEntity, Error>) -> Void) {
         Task {
             do {
                 completion(.success(try await useCase.getJogakDetail(jogakId: jogakId)))
@@ -124,5 +102,4 @@ final class MG2ScheduleStartViewModel {
             }
         }
     }
-
 }

@@ -23,11 +23,7 @@ struct MG2AuthLoginResultDTO: Decodable {
     let tokens: MG2TokenPairDTO
 
     func toDomain(registrationStatus: MG2AuthRegistrationStatus) -> MG2AuthSession {
-        return MG2AuthSession(
-            registrationStatus: registrationStatus,
-            userId: userId,
-            tokens: tokens.toDomain()
-        )
+        return MG2AuthSession(registrationStatus: registrationStatus, userId: userId, tokens: tokens.toDomain())
     }
 }
 
@@ -40,15 +36,3 @@ struct MG2TokenPairDTO: Decodable {
     }
 }
 
-struct MG2RefreshResponseDTO: Decodable {
-    let status: String
-    let result: MG2TokenPairDTO
-}
-
-struct MG2WithdrawResponseDTO: Decodable {
-    let result: MG2WithdrawResultDTO
-}
-
-struct MG2WithdrawResultDTO: Decodable {
-    let isDeleted: Bool
-}

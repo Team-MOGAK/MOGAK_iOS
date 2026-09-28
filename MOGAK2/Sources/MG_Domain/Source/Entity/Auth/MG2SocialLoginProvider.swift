@@ -1,6 +1,6 @@
 import Foundation
 
-enum MG2SocialLoginProvider: String {
+enum MG2SocialLoginProvider {
     case apple
     case google
     case kakao

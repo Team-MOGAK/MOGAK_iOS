@@ -10,7 +10,6 @@ enum MG2ScheduleStartRouter {
 }
 
 extension MG2ScheduleStartRouter: RequestTarget {
-
     var path: String {
         switch self {
         case .jogakOccurrences:

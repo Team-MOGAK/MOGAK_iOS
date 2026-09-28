@@ -3,12 +3,11 @@ import SnapKit
 
 final class MG2AgreementRowView: UIView {
     var onToggle: (() -> Void)?
-    var onDetail: (() -> Void)?
 
     private lazy var checkButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "checkOff"), for: .normal)
-        button.addTarget(self, action: #selector(toggleTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(checkButtonTapped), for: .touchUpInside)
         return button
     }()
 
@@ -19,18 +18,9 @@ final class MG2AgreementRowView: UIView {
         return label
     }()
 
-    private lazy var detailButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        button.tintColor = DesignSystemColor.gray4.value
-        button.addTarget(self, action: #selector(detailTapped), for: .touchUpInside)
-        return button
-    }()
-
-    init(title: String, showsDetail: Bool) {
+    init(title: String) {
         super.init(frame: .zero)
         titleLabel.text = title
-        detailButton.isHidden = !showsDetail
         configureLayout()
     }
 
@@ -39,14 +29,11 @@ final class MG2AgreementRowView: UIView {
     }
 
     func setChecked(_ isChecked: Bool) {
-        checkButton.setImage(
-            UIImage(named: isChecked ? "checkOn" : "checkOff"),
-            for: .normal
-        )
+        checkButton.setImage(UIImage(named: isChecked ? "checkOn" : "checkOff"), for: .normal)
     }
 
     private func configureLayout() {
-        addSubviews(checkButton, titleLabel, detailButton)
+        addSubviews(checkButton, titleLabel)
 
         checkButton.snp.makeConstraints {
             $0.leading.centerY.equalToSuperview()
@@ -55,22 +42,14 @@ final class MG2AgreementRowView: UIView {
         titleLabel.snp.makeConstraints {
             $0.leading.equalTo(checkButton.snp.trailing).offset(12)
             $0.centerY.equalToSuperview()
-            $0.trailing.lessThanOrEqualTo(detailButton.snp.leading).offset(-8)
-        }
-        detailButton.snp.makeConstraints {
-            $0.trailing.centerY.equalToSuperview()
-            $0.size.equalTo(24)
+            $0.trailing.lessThanOrEqualToSuperview()
         }
         snp.makeConstraints {
             $0.height.equalTo(24)
         }
     }
 
-    @objc private func toggleTapped() {
+    @objc private func checkButtonTapped() {
         onToggle?()
-    }
-
-    @objc private func detailTapped() {
-        onDetail?()
     }
 }

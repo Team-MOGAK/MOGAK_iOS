@@ -4,8 +4,8 @@ import SnapKit
 final class MG2ModalartOptionCell: UITableViewCell {
     static let reuseIdentifier = "MG2ModalartOptionCell"
 
-    private let modalartLabel: CustomPaddingLabel = {
-        let label = CustomPaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
+    private let modalartLabel: MG2PaddingLabel = {
+        let label = MG2PaddingLabel(top: 12, bottom: 12, left: 20, right: 20)
         label.font = DesignSystemFont.medium16L150.value
         label.layer.cornerRadius = 8
         label.clipsToBounds = true
@@ -29,9 +29,7 @@ final class MG2ModalartOptionCell: UITableViewCell {
 
     func configure(with modalart: MG2ModalartOption) {
         modalartLabel.text = modalart.title
-        let color = modalart.color.isEmpty
-            ? DesignSystemColor.signature.value
-            : UIColor(hex: modalart.color)
+        let color = modalart.color.isEmpty ? DesignSystemColor.signature.value : UIColor(hex: modalart.color)
         modalartLabel.textColor = color
         modalartLabel.backgroundColor = color.withAlphaComponent(0.1)
     }

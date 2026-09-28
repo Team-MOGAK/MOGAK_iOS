@@ -7,9 +7,7 @@ enum MG2NetworkError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .rateLimited(let message),
-             .storageUnavailable(let message),
-             .httpFailure(_, _, let message):
+        case .rateLimited(let message), .storageUnavailable(let message), .httpFailure(_, _, let message):
             return message
         }
     }

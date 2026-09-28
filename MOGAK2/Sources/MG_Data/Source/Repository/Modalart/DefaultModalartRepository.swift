@@ -1,7 +1,6 @@
 import Foundation
 
 final class DefaultModalartRepository: ModalartRepository {
-
     private let networkProvider: NetworkProvider
 
     init(networkProvider: NetworkProvider) {
@@ -9,37 +8,32 @@ final class DefaultModalartRepository: ModalartRepository {
     }
 
     func getModalartList() async throws -> [MG2ModalartListItemEntity] {
-        let response: MG2ModalartListResponseDTO = try await networkProvider.request(target: MG2ModalartRouter.modalartList)
+        let response: MG2OptionalResponseDTO<[MG2ModalartListItemDTO]> = try await networkProvider.request(target: MG2ModalartRouter.modalartList)
         return (response.result ?? []).map { $0.toEntity() }
     }
 
     func getModalartDetail(modalartId: Int) async throws -> MG2ModalartDetailEntity? {
-        let response: MG2ModalartDetailResponseDTO = try await networkProvider.request(target: MG2ModalartRouter.modalartDetail(modalartId: modalartId))
+        let response: MG2OptionalResponseDTO<MG2ModalartDetailDTO> = try await networkProvider.request(target: MG2ModalartRouter.modalartDetail(modalartId: modalartId))
         return response.result?.toEntity()
     }
 
-    func getModalartMogakPage(modalartId: Int) async throws -> MG2ModalartMogakPageEntity? {
-        let response: MG2ModalartMogakPageResponseDTO = try await networkProvider.request(target: MG2ModalartRouter.modalartMogaks(modalartId: modalartId))
-        return response.result?.toEntity()
+    func getModalartMogaks(modalartId: Int) async throws -> [MG2ModalartMogakItemEntity] {
+        let response: MG2OptionalResponseDTO<MG2ModalartMogakPageDTO> = try await networkProvider.request(target: MG2ModalartRouter.modalartMogaks(modalartId: modalartId))
+        return (response.result?.mogaks ?? []).map { $0.toEntity() }
     }
 
     func getMogakOccurrences(mogakId: Int, date: Date) async throws -> [MG2JogakOccurrenceEntity] {
-        let response: MG2JogakOccurrenceListResponseDTO = try await networkProvider.request(
-            target: MG2ModalartRouter.mogakOccurrences(
-                mogakId: mogakId,
-                date: MG2APIDateCoding.encode(date)
-            )
-        )
-        return response.result.map { $0.toDomain() }
+        let response: MG2ResponseDTO<[MG2JogakOccurrenceDTO]> = try await networkProvider.request(target: MG2ModalartRouter.mogakOccurrences(mogakId: mogakId, date: MG2APIDateCoding.encode(date)))
+        return try response.result.map { try $0.toDomain() }
     }
 
     func createModalart(title: String, color: String) async throws -> MG2ModalartUpsertEntity {
-        let response: MG2ModalartUpsertResponseDTO = try await networkProvider.request(target: MG2ModalartRouter.modalartCreate(title: title, color: color))
+        let response: MG2ResponseDTO<MG2ModalartUpsertDTO> = try await networkProvider.request(target: MG2ModalartRouter.modalartCreate(title: title, color: color))
         return response.result.toEntity()
     }
 
     func editModalart(id: Int, title: String, color: String) async throws -> MG2ModalartUpsertEntity {
-        let response: MG2ModalartUpsertResponseDTO = try await networkProvider.request(target: MG2ModalartRouter.modalartEdit(id: id, title: title, color: color))
+        let response: MG2ResponseDTO<MG2ModalartUpsertDTO> = try await networkProvider.request(target: MG2ModalartRouter.modalartEdit(id: id, title: title, color: color))
         return response.result.toEntity()
     }
 

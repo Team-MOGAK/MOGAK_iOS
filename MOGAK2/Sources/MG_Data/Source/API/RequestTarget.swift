@@ -11,10 +11,17 @@ protocol RequestTarget: NetworkRequest, URLRequestConvertible {
 }
 
 extension RequestTarget {
-    var baseURL: String { APIConfig.BaseURL }
-    var headers: [String: String]? {
+    static var jsonHeaders: [String: String] {
         ["accept": "application/json", "Content-Type": "application/json"]
     }
+
+    /// 수정 API는 바뀐 필드만 담은 merge patch만 받는다.
+    static var mergePatchHeaders: [String: String] {
+        ["accept": "application/json", "Content-Type": "application/merge-patch+json"]
+    }
+
+    var baseURL: String { APIConfig.baseURL }
+    var headers: [String: String]? { Self.jsonHeaders }
     var query: [String: Any]? { nil }
     var body: [String: Any]? { nil }
     var requiresAuthorization: Bool { true }

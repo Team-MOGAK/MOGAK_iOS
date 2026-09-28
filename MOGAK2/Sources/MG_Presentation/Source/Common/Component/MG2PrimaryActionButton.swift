@@ -7,15 +7,15 @@ final class MG2PrimaryActionButton: UIButton {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        configure()
+        configureLayout()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        configure()
+        configureLayout()
     }
 
-    private func configure() {
+    private func configureLayout() {
         layer.cornerRadius = 10
         titleLabel?.font = UIFont.pretendard(.medium, size: 18)
         setTitleColor(.white, for: .normal)
@@ -23,8 +23,6 @@ final class MG2PrimaryActionButton: UIButton {
     }
 
     private func updateAppearance() {
-        backgroundColor = isEnabled
-            ? DesignSystemColor.signature.value
-            : DesignSystemColor.gray3.value
+        backgroundColor = isEnabled ? DesignSystemColor.signature.value : DesignSystemColor.gray3.value
     }
 }

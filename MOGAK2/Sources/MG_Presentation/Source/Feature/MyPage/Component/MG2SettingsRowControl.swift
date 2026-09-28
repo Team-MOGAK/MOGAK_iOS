@@ -5,18 +5,18 @@ import UIKit
 final class MG2SettingsRowControl: UIControl {
     private let titleLabel = UILabel().then {
         $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = UIColor(hex: "24252E")
+        $0.textColor = DesignSystemColor.gray6.value
     }
 
     private let detailLabel = UILabel().then {
         $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = UIColor(hex: "BFC3D4")
+        $0.textColor = DesignSystemColor.gray3.value
     }
 
     private let chevronImageView = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
         $0.contentMode = .scaleAspectFit
-        $0.tintColor = UIColor(hex: "24252E")
+        $0.tintColor = DesignSystemColor.gray6.value
     }
 
     init(title: String, detail: String? = nil) {
