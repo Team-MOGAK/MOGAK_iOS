@@ -16,8 +16,6 @@ final class MG2MyPageEditViewController: UIViewController {
         $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
     }
 
-    private lazy var profileImagePicker = MG2ProfileImagePickerView(imageIDs: viewModel.profileImageIDs)
-
     private let nameLabel = UILabel().then {
         $0.textColor = DesignSystemColor.black.value
         $0.font = UIFont.pretendard(.bold, size: 22)
@@ -28,12 +26,13 @@ final class MG2MyPageEditViewController: UIViewController {
         $0.font = UIFont.pretendard(.medium, size: 12)
     }
 
+    private let profileImageRow = MG2SettingsRowControl(title: "프로필 이미지 변경")
     private let nicknameRow = MG2SettingsRowControl(title: "닉네임 변경")
     private let jobRow = MG2SettingsRowControl(title: "직무 변경")
     private let logoutRow = MG2SettingsRowControl(title: "로그아웃")
     private let withdrawalRow = MG2SettingsRowControl(title: "회원탈퇴")
 
-    private lazy var settingsStack = UIStackView(arrangedSubviews: [nicknameRow, jobRow, logoutRow, withdrawalRow]).then {
+    private lazy var settingsStack = UIStackView(arrangedSubviews: [profileImageRow, nicknameRow, jobRow, logoutRow, withdrawalRow]).then {
         $0.axis = .vertical
         $0.spacing = 32
     }
@@ -67,20 +66,15 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(profileImageView, profileImagePicker, nameLabel, jobLabel, settingsStack)
+        view.addSubviews(profileImageView, nameLabel, jobLabel, settingsStack)
 
         profileImageView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(100)
         }
-        profileImagePicker.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(MG2ProfileImagePickerView.height)
-        }
         nameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImagePicker.snp.bottom).offset(24)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(24)
             $0.centerX.equalToSuperview()
             $0.leading.greaterThanOrEqualToSuperview().inset(20)
         }
@@ -96,10 +90,7 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func configureActions() {
-        profileImagePicker.onSelection = { [weak self] index in self?.selectProfileImage(at: index) }
-        if let index = viewModel.selectedProfileImageIndex {
-            profileImagePicker.selectImage(at: index)
-        }
+        profileImageRow.addTarget(self, action: #selector(profileImageRowTapped), for: .touchUpInside)
         nicknameRow.addTarget(self, action: #selector(nicknameRowTapped), for: .touchUpInside)
         jobRow.addTarget(self, action: #selector(jobRowTapped), for: .touchUpInside)
         logoutRow.addTarget(self, action: #selector(logoutRowTapped), for: .touchUpInside)
@@ -122,11 +113,8 @@ final class MG2MyPageEditViewController: UIViewController {
             .store(in: &cancellables)
     }
 
-    private func selectProfileImage(at index: Int) {
-        viewModel.selectProfileImage(at: index) { [weak self] result in
-            guard let self, case .failure(let error) = result else { return }
-            coordinator?.presentError(error, from: self)
-        }
+    @objc private func profileImageRowTapped() {
+        coordinator?.routeToProfileImageEdit(from: self)
     }
 
     @objc private func nicknameRowTapped() {

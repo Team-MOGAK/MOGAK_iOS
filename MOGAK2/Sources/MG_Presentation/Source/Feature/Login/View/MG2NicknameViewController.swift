@@ -38,14 +38,7 @@ final class MG2NicknameViewController: UIViewController {
         return label
     }()
 
-    private let profileImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
-    }
-
-    private lazy var profileImagePicker = MG2ProfileImagePickerView(imageIDs: viewModel.profileImageIDs)
+    private let profileImageView = MG2ProfileImageView()
 
     private lazy var nicknameTextField: UITextField = {
         let textField = UITextField()
@@ -98,11 +91,6 @@ final class MG2NicknameViewController: UIViewController {
         renderSubmissionState()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
-    }
-
     private func configureNavigationBar() {
         navigationController?.navigationBar.topItem?.title = ""
         navigationController?.navigationBar.tintColor = .gray
@@ -123,33 +111,22 @@ final class MG2NicknameViewController: UIViewController {
     }
 
     private func configureProfileImage() {
-        view.addSubviews(profileImageView, profileImagePicker)
+        view.addSubview(profileImageView)
         profileImageView.snp.makeConstraints {
             $0.width.height.equalTo(100)
-            $0.top.equalTo(subLabel.snp.bottom).offset(40)
+            $0.top.equalTo(subLabel.snp.bottom).offset(100)
             $0.centerX.equalToSuperview()
         }
-        profileImagePicker.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(MG2ProfileImagePickerView.height)
-        }
-        profileImagePicker.onSelection = { [weak self] index in
-            guard let self else { return }
-            viewModel.selectProfileImage(at: index)
-            renderProfileImage()
-            renderSubmissionState()
-        }
-        if let index = viewModel.selectedProfileImageIndex {
-            profileImagePicker.selectImage(at: index)
-        }
+        // 프로필 수정에서는 "프로필 이미지 변경" 화면에서 바꾼다.
+        profileImageView.isEditable = !viewModel.isEditing
+        profileImageView.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)
     }
 
     private func configureTextField() {
         [nicknameTextField, guideLabel].forEach({view.addSubview($0)})
 
         nicknameTextField.snp.makeConstraints {
-            $0.top.equalTo(profileImagePicker.snp.bottom).offset(32)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(52)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalToSuperview().multipliedBy(0.061)
         }
@@ -172,6 +149,14 @@ final class MG2NicknameViewController: UIViewController {
     }
 
     // MARK: - objc
+
+    @objc private func profileImageTapped() {
+        coordinator?.presentProfileImageSelection(imageIDs: viewModel.profileImageIDs, selectedIndex: viewModel.selectedProfileImageIndex, onSelection: { [weak self] index in
+            self?.viewModel.selectProfileImage(at: index)
+            self?.renderProfileImage()
+            self?.renderSubmissionState()
+        }, from: self)
+    }
 
     @objc private func nextButtonTapped() {
         let nickname = nicknameTextField.text ?? ""

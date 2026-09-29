@@ -24,7 +24,7 @@ final class MG2MyPageCoordinator {
     }
 
     func routeToEdit(from source: UIViewController) {
-        let viewController = MG2MyPageEditViewController(viewModel: MG2MyPageEditViewModel(authUseCase: authUseCase, userUseCase: userUseCase, userState: userState))
+        let viewController = MG2MyPageEditViewController(viewModel: MG2MyPageEditViewModel(authUseCase: authUseCase, userState: userState))
         viewController.coordinator = self
         source.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -34,12 +34,26 @@ final class MG2MyPageCoordinator {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
+    func routeToProfileImageEdit(from source: UIViewController) {
+        let viewController = MG2ProfileImageEditViewController(viewModel: MG2ProfileImageEditViewModel(userUseCase: userUseCase, userState: userState))
+        viewController.coordinator = self
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+
     func routeToNicknameEdit(from source: UIViewController) {
         source.navigationController?.pushViewController(loginCoordinator.makeNickname(mode: .editing), animated: true)
     }
 
     func routeToJobEdit(from source: UIViewController) {
         source.navigationController?.pushViewController(loginCoordinator.makeChooseJob(mode: .editing), animated: true)
+    }
+
+    func presentProfileImageSelection(imageIDs: [Int], selectedIndex: Int?, onSelection: @escaping (Int) -> Void, from source: UIViewController) {
+        loginCoordinator.presentProfileImageSelection(imageIDs: imageIDs, selectedIndex: selectedIndex, onSelection: onSelection, from: source)
+    }
+
+    func routeBack(from source: UIViewController) {
+        source.navigationController?.popViewController(animated: true)
     }
 
     func presentLoginGate(from source: UIViewController) {

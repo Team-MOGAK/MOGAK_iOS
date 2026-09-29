@@ -46,10 +46,6 @@ final class MG2NicknameViewModel {
         selectedProfileImageID.flatMap(profileImageIDs.firstIndex(of:))
     }
 
-    private var hasProfileImageChange: Bool {
-        selectedProfileImageID != nil && selectedProfileImageID != userState.profileImageID
-    }
-
     func selectProfileImage(at index: Int) {
         guard profileImageIDs.indices.contains(index) else { return }
         selectedProfileImageID = profileImageIDs[index]
@@ -66,8 +62,7 @@ final class MG2NicknameViewModel {
         case .registration:
             return nicknameValidationMessage(nickname) == nil
         case .editing:
-            let hasNicknameChange = !nickname.isEmpty && nickname != userState.nickname && nicknameValidationMessage(nickname) == nil
-            return hasNicknameChange || hasProfileImageChange
+            return !nickname.isEmpty && nickname != userState.nickname && nicknameValidationMessage(nickname) == nil
         }
     }
 
@@ -89,20 +84,13 @@ final class MG2NicknameViewModel {
                 }
             }
         case .editing:
-            let nicknameToUpdate = nickname.isEmpty || nickname == userState.nickname ? nil : nickname
-            if let nicknameToUpdate, let message = nicknameValidationMessage(nicknameToUpdate) {
+            if let message = nicknameValidationMessage(nickname) {
                 completion(.failure(MG2NicknameError.invalidNickname(message)))
                 return
             }
-            let profileImageToUpdate = hasProfileImageChange ? selectedProfileImageID : nil
             Task {
                 do {
-                    if let nicknameToUpdate {
-                        try await userUseCase.changeNickname(nicknameToUpdate)
-                    }
-                    if let profileImageToUpdate {
-                        try await userUseCase.changeProfileImage(profileImageToUpdate)
-                    }
+                    try await userUseCase.changeNickname(nickname)
                     completion(.success(.profileUpdated))
                 } catch {
                     completion(.failure(error))

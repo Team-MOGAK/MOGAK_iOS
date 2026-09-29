@@ -59,6 +59,18 @@ final class MG2LoginCoordinator {
         source.navigationController?.pushViewController(makeChooseRegion(draft: draft), animated: true)
     }
 
+    func presentProfileImageSelection(imageIDs: [Int], selectedIndex: Int?, onSelection: @escaping (Int) -> Void, from source: UIViewController) {
+        let viewController = MG2ProfileImageSelectModal(imageIDs: imageIDs, selectedIndex: selectedIndex)
+        viewController.onSelection = { [weak viewController] index in viewController?.dismiss(animated: true) { onSelection(index) } }
+        viewController.modalPresentationStyle = .pageSheet
+        if let sheet = viewController.sheetPresentationController {
+            let height = viewController.preferredHeight
+            sheet.detents = [.custom { _ in height }]
+            sheet.prefersGrabberVisible = true
+        }
+        source.present(viewController, animated: true)
+    }
+
     func routeBack(from source: UIViewController) {
         source.navigationController?.popViewController(animated: true)
     }
