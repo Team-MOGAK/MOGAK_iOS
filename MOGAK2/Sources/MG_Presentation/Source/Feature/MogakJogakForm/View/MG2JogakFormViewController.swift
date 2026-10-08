@@ -91,6 +91,7 @@ final class MG2JogakFormViewController: UIViewController {
         $0.calendar = Calendar(identifier: .gregorian)
         $0.locale = Locale(identifier: "ko_KR")
         $0.timeZone = .current
+        $0.minimumDate = viewModel.minimumEndDate
         $0.tintColor = DesignSystemColor.signature.value
         $0.isHidden = true
         $0.addTarget(self, action: #selector(endDateChanged(_:)), for: .valueChanged)

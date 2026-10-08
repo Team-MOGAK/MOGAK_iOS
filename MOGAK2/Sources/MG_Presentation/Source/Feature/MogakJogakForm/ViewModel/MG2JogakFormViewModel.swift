@@ -24,10 +24,17 @@ final class MG2JogakFormViewModel {
     private(set) var state: MG2JogakFormState
     private let originalScheduleState: ScheduleState?
 
+    /// 수정할 때 일정이 바뀌었는지 비교한다. 루틴이 아니면 요일·종료일은 보내지 않으니 빼고, 종료일은 날짜만 본다.
     private struct ScheduleState: Equatable {
         let isRoutine: Bool
         let selectedDayIndices: Set<Int>
-        let endDate: Date?
+        let endDay: DateComponents?
+
+        init(isRoutine: Bool, selectedDayIndices: Set<Int>, endDate: Date?) {
+            self.isRoutine = isRoutine
+            self.selectedDayIndices = isRoutine ? selectedDayIndices : []
+            endDay = isRoutine ? endDate.map { Calendar.current.dateComponents([.year, .month, .day], from: $0) } : nil
+        }
     }
 
     private static let displayDateFormatter: DateFormatter = {
@@ -75,6 +82,9 @@ final class MG2JogakFormViewModel {
         state.endDate = date
     }
 
+    /// 종료일은 시작일(오늘)보다 앞설 수 없다. 앞서면 서버가 400으로 거절한다.
+    var minimumEndDate: Date { state.today }
+
     var isValid: Bool {
         guard !trimmed(state.title).isEmpty else { return false }
         return !state.isRoutine || !state.selectedRoutineDayIndices.isEmpty
@@ -90,7 +100,7 @@ final class MG2JogakFormViewModel {
                 case .create(let mogak):
                     try await useCase.createJogak(mogakId: mogak.mogakId, title: trimmed(input.title), schedule: schedule)
                 case .edit(let jogak):
-                    let currentScheduleState = ScheduleState(isRoutine: input.isRoutine, selectedDayIndices: input.selectedRoutineDayIndices, endDate: input.isRoutine ? input.endDate : nil)
+                    let currentScheduleState = ScheduleState(isRoutine: input.isRoutine, selectedDayIndices: input.selectedRoutineDayIndices, endDate: input.endDate)
                     try await useCase.editJogak(jogakId: jogak.jogakID, title: trimmed(input.title), schedule: currentScheduleState == originalScheduleState ? nil : schedule)
                 }
                 completion(.success(()))

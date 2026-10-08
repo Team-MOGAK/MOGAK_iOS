@@ -166,7 +166,7 @@ final class MG2MogakDetailViewModel {
 
     private func makeActionContext(detail: MG2JogakDetailEntity) -> MG2JogakActionContext {
         let days = localizedDays(from: detail.days)
-        let summary = MG2JogakSummaryViewData(category: detail.category.name, categoryColor: detail.color ?? DesignSystemPalette.signatureHex, title: detail.title, isRoutine: detail.isRoutine, routineDaysText: days.isEmpty ? "미지정" : days.joined(separator: ","), periodText: periodText(startDate: detail.startDate, endDate: detail.endDate))
+        let summary = MG2JogakSummaryViewData(category: detail.category.name, categoryColor: detail.color ?? DesignSystemPalette.signatureHex, title: detail.title, isRoutine: detail.isRoutine, routineDaysText: days.isEmpty ? "미지정" : days.joined(separator: ","), periodText: periodText(for: detail))
         return MG2JogakActionContext(detail: detail, summary: summary)
     }
 
@@ -174,10 +174,12 @@ final class MG2MogakDetailViewModel {
         days.sorted { $0.rawValue < $1.rawValue }.map(\.shortKoreanTitle)
     }
 
-    private func periodText(startDate: Date?, endDate: Date?) -> String {
-        guard let startDate else { return "미지정" }
+    /// 단발 조각은 그날 하루, 루틴은 시작일 ~ 종료일. 종료일을 안 정한 루틴은 "시작일 ~ 미지정".
+    private func periodText(for detail: MG2JogakDetailEntity) -> String {
+        guard let startDate = detail.startDate else { return "미지정" }
         let startText = Self.displayDateFormatter.string(from: startDate)
-        guard let endDate else { return startText }
+        guard detail.isRoutine else { return startText }
+        guard let endDate = detail.endDate else { return "\(startText) ~ 미지정" }
         return "\(startText) ~ \(Self.displayDateFormatter.string(from: endDate))"
     }
 }
