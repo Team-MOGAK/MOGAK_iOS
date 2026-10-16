@@ -1,0 +1,94 @@
+import SnapKit
+import Then
+import UIKit
+
+/// 런치 스크린과 같은 로고를 띄워 두고 서버가 깨어나길 기다린다.
+final class MG2LaunchViewController: UIViewController {
+    weak var coordinator: MG2AppFlowCoordinator?
+
+    private let viewModel: MG2LaunchViewModel
+
+    private let logoImageView = UIImageView(image: UIImage(named: "Logo")).then {
+        $0.contentMode = .scaleAspectFit
+    }
+
+    private let activityIndicator = UIActivityIndicatorView(style: .medium).then {
+        $0.color = DesignSystemColor.signature.value
+        $0.hidesWhenStopped = true
+    }
+
+    private let statusLabel = UILabel().then {
+        $0.font = UIFont.pretendard(.medium, size: 16)
+        $0.textColor = DesignSystemColor.gray4.value
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
+    }
+
+    private lazy var retryButton = MG2PrimaryActionButton().then {
+        $0.setTitle("다시 시도", for: .normal)
+        $0.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
+    }
+
+    init(viewModel: MG2LaunchViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        configureLayout()
+        viewModel.onStateChange = { [weak self] in self?.handle($0) }
+        viewModel.start()
+    }
+
+    private func configureLayout() {
+        view.addSubviews(logoImageView, activityIndicator, statusLabel, retryButton)
+
+        logoImageView.snp.makeConstraints {
+            $0.width.equalTo(179)
+            $0.height.equalTo(109)
+            $0.center.equalToSuperview()
+        }
+        activityIndicator.snp.makeConstraints {
+            $0.top.equalTo(logoImageView.snp.bottom).offset(40)
+            $0.centerX.equalToSuperview()
+        }
+        statusLabel.snp.makeConstraints {
+            $0.top.equalTo(activityIndicator.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        retryButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalToSuperview().multipliedBy(0.06)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+        }
+    }
+
+    private func handle(_ state: MG2LaunchViewModel.State) {
+        switch state {
+        case .waiting:
+            statusLabel.text = nil
+            retryButton.isHidden = true
+        case .preparing:
+            activityIndicator.startAnimating()
+            statusLabel.text = "서버를 준비하고 있어요.\n잠시만 기다려주세요."
+        case .failed:
+            activityIndicator.stopAnimating()
+            statusLabel.text = "서버에 연결하지 못했어요.\n잠시 후 다시 시도해주세요."
+            retryButton.isHidden = false
+        case .ready:
+            activityIndicator.stopAnimating()
+            statusLabel.text = nil
+            coordinator?.finishLaunch()
+        }
+    }
+
+    @objc private func retryButtonTapped() {
+        viewModel.start()
+    }
+}

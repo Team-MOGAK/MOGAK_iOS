@@ -81,7 +81,8 @@ struct DefaultNetworkProvider: NetworkProvider {
             let message = payload?.message ?? fallbackMessage
 
             if statusCode == 429 {
-                throw MG2NetworkError.rateLimited(message: message)
+                let retryAfter = response.response?.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init)
+                throw MG2NetworkError.rateLimited(message: message, retryAfter: retryAfter)
             }
             if statusCode == 503, payload?.code == "Z006" {
                 throw MG2NetworkError.storageUnavailable(message: message)

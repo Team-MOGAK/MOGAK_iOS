@@ -15,9 +15,11 @@ final class MG2AppComposition {
     private lazy var modalartRepository: ModalartRepository = DefaultModalartRepository(networkProvider: networkProvider)
     private lazy var mogakEditingRepository: MogakEditingRepository = DefaultMogakEditingRepository(networkProvider: networkProvider)
     private lazy var scheduleStartRepository: ScheduleStartRepository = DefaultScheduleStartRepository(networkProvider: networkProvider)
+    private lazy var serverHealthRepository: ServerHealthRepository = DefaultServerHealthRepository(networkProvider: networkProvider)
     private lazy var userRepository: UserRepository = DefaultUserRepository(networkProvider: networkProvider, loadProfileImageID: { [sessionStore] in sessionStore.profileImageID }, saveProfileImageID: { [sessionStore] in sessionStore.saveProfileImageID($0) })
 
     private lazy var authUseCase = AuthUseCase(repository: authRepository, storage: sessionStore, socialTokenProvider: MG2SocialTokenProvider(), userState: userState)
+    private lazy var serverReadinessUseCase = ServerReadinessUseCase(repository: serverHealthRepository)
     private lazy var userUseCase = UserUseCase(repository: userRepository, storage: sessionStore, userState: userState)
     private lazy var modalartUseCase = ModalartUseCase(repository: modalartRepository, jogakRepository: scheduleStartRepository)
     private lazy var mogakEditingUseCase = MogakEditingUseCase(repository: mogakEditingRepository)
@@ -35,6 +37,6 @@ final class MG2AppComposition {
         let tabBarCoordinator = MG2TabBarCoordinator(scheduleStartCoordinator: scheduleStartCoordinator, modalartCoordinator: modalartCoordinator, myPageCoordinator: myPageCoordinator)
         let onboardingCoordinator = MG2OnboardingCoordinator(authUseCase: authUseCase)
 
-        return MG2AppFlowCoordinator(authUseCase: authUseCase, userState: userState, loginCoordinator: loginCoordinator, tabBarCoordinator: tabBarCoordinator, onboardingCoordinator: onboardingCoordinator)
+        return MG2AppFlowCoordinator(authUseCase: authUseCase, serverReadinessUseCase: serverReadinessUseCase, userState: userState, loginCoordinator: loginCoordinator, tabBarCoordinator: tabBarCoordinator, onboardingCoordinator: onboardingCoordinator)
     }
 }

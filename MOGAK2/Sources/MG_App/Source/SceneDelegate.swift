@@ -21,25 +21,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         return coordinator
     }()
-    private var didResolveInitialRoute = false
     private var currentRoute: MG2AppLaunchRoute?
     private var currentLoginState: MG2LoginStatus?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
-
-        Task { [weak self, weak windowScene] in
-            guard let self else { return }
-            let route = await appFlowCoordinator.resolveInitialRoute()
-            guard let windowScene else { return }
-            didResolveInitialRoute = true
-            applyRoute(windowScene, route: route)
-        }
+        applyRoute(windowScene, route: .launch)
 
         Publishers.CombineLatest(composition.userState.$loginState.removeDuplicates(), composition.userState.$isRegistered.removeDuplicates())
             .receive(on: DispatchQueue.main)
             .sink { [weak self] loginState, _ in
-                guard let self, didResolveInitialRoute else { return }
+                // 첫 화면은 서버 확인이 끝난 뒤 finishLaunch가 정한다.
+                guard let self, currentRoute != .launch else { return }
                 let route = appFlowCoordinator.resolveRoute(loginState: loginState)
                 // 게스트→로그인처럼 화면은 같아도 로그인 상태가 바뀌면 새 세션으로 다시 그린다.
                 let requiresSessionRefresh = currentLoginState != loginState && currentRoute == route
