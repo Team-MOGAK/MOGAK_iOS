@@ -65,6 +65,7 @@ extension MG2AppleLoginManager: ASAuthorizationControllerDelegate {
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        complete(.failure(error))
+        let isCancelled = (error as? ASAuthorizationError)?.code == .canceled
+        complete(.failure(isCancelled ? MG2SocialLoginError.cancelled : error))
     }
 }

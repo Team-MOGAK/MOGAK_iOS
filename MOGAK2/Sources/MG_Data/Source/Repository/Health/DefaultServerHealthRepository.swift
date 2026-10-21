@@ -12,16 +12,10 @@ final class DefaultServerHealthRepository: ServerHealthRepository {
         do {
             try await networkProvider.requestEmpty(target: MG2HealthRouter.ready(timeout: timeout))
             return .ready
-        } catch let error as MG2NetworkError {
-            switch error {
-            case .rateLimited(_, let retryAfter):
-                return .unavailable(retryAfter: retryAfter)
-            case .storageUnavailable:
-                return .unavailable(retryAfter: nil)
-            case .httpFailure(let statusCode, _, _):
-                guard [502, 503, 504].contains(statusCode) else { throw error }
-                return .unavailable(retryAfter: nil)
-            }
+        } catch MG2NetworkError.rateLimited(let retryAfter) {
+            return .unavailable(retryAfter: retryAfter)
+        } catch MG2NetworkError.httpFailure(let statusCode) where ![502, 503, 504].contains(statusCode) {
+            throw MG2NetworkError.httpFailure(statusCode: statusCode)
         } catch {
             return .unavailable(retryAfter: nil)
         }

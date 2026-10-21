@@ -28,11 +28,11 @@ final class DefaultUserRepository: UserRepository {
     }
 
     func verifyNickname(_ nickname: String) async throws {
-        try await networkProvider.requestEmpty(target: MG2UserRouter.nicknameVerify(nickname: nickname))
+        try await requestNickname(MG2UserRouter.nicknameVerify(nickname: nickname))
     }
 
     func changeNickname(_ nickname: String) async throws {
-        try await networkProvider.requestEmpty(target: MG2UserRouter.nicknameChange(nickname: nickname))
+        try await requestNickname(MG2UserRouter.nicknameChange(nickname: nickname))
     }
 
     func changeJob(_ job: String) async throws {
@@ -51,5 +51,14 @@ final class DefaultUserRepository: UserRepository {
     func userJoin(registration: MG2UserRegistration) async throws -> MG2UserRegistrationResult {
         let response: MG2ResponseDTO<MG2UserRegistrationResultDTO> = try await networkProvider.request(target: MG2UserRouter.join(nickname: registration.nickname, job: registration.job, address: registration.address, consents: registration.consents))
         return response.result.toEntity()
+    }
+
+    /// 409는 이미 다른 사람이 쓰는 닉네임이다.
+    private func requestNickname(_ target: MG2UserRouter) async throws {
+        do {
+            try await networkProvider.requestEmpty(target: target)
+        } catch MG2NetworkError.httpFailure(statusCode: 409) {
+            throw MG2UserError.nicknameTaken
+        }
     }
 }

@@ -67,6 +67,7 @@ Important constraints:
 - Server formats (raw codes, `yyyy-MM-dd` strings, `#RRGGBB` colors, typos like `modaratId`) are converted in DTOs/Routers and never reach Domain or Presentation.
 - API contract (2026-09 handoff): modalart/mogak/jogak edits use `PATCH` with `application/merge-patch+json`; mogak edit sends `category` as a `SYSTEM`/`CUSTOM` tagged union while create keeps the flat fields; jogak edit schedules omit `effectiveFrom` and send `weekdays: []` for `ONCE`; withdraw returns `204` with no body; `401` and `403 / T006` both trigger one token refresh and one retry.
 - Server bootstrap: the launch screen waits for `GET /health/ready` (`ServerReadinessUseCase`: 15s per request, 30s total, at most 3 attempts with full-jitter backoff, shared in-flight ping) before `restoreSession` or any other business API. Mutation APIs are never retried automatically.
+- User-facing errors: `DefaultNetworkProvider` only throws `MG2NetworkError`, whose `errorDescription` is Korean copy chosen by status/kind; server `message` text and SDK errors are never shown. Login failures show only "로그인 실패", and a user-cancelled social login (`MG2SocialLoginError.cancelled`) shows nothing.
 
 ## Migration Guidelines
 

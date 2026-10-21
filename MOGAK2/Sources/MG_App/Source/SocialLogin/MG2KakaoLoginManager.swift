@@ -22,13 +22,21 @@ final class MG2KakaoLoginManager {
         return AuthController.handleOpenUrl(url: url)
     }
 
+    /// 로그인 창을 닫았거나(Cancelled) 동의 화면에서 취소한(AccessDenied) 경우
+    private static func isCancelled(_ error: Error) -> Bool {
+        guard let error = error as? SdkError else { return false }
+        if error.isClientFailed { return error.getClientError().reason == .Cancelled }
+        if error.isAuthFailed { return error.getAuthError().reason == .AccessDenied }
+        return false
+    }
+
     func token() async throws -> String {
         guard Self.configureSDK() else { throw MG2SocialLoginError.configurationMissing(provider: "Kakao") }
 
         return try await withCheckedThrowingContinuation { continuation in
             let completion: (OAuthToken?, Error?) -> Void = { token, error in
                 if let error {
-                    continuation.resume(throwing: error)
+                    continuation.resume(throwing: Self.isCancelled(error) ? MG2SocialLoginError.cancelled : error)
                     return
                 }
                 guard let accessToken = token?.accessToken, !accessToken.isEmpty else {

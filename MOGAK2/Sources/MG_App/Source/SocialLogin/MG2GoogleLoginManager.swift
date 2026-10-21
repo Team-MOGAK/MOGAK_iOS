@@ -26,7 +26,8 @@ final class MG2GoogleLoginManager {
         return try await withCheckedThrowingContinuation { continuation in
             GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
                 if let error {
-                    continuation.resume(throwing: error)
+                    let isCancelled = (error as? GIDSignInError)?.code == .canceled
+                    continuation.resume(throwing: isCancelled ? MG2SocialLoginError.cancelled : error)
                     return
                 }
                 guard let token = result?.user.idToken?.tokenString else {

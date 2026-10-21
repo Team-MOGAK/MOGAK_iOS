@@ -11,7 +11,6 @@ import Alamofire
 struct DefaultNetworkProvider: NetworkProvider {
     private struct ErrorPayload: Decodable {
         let code: String?
-        let message: String?
     }
 
     private let session: Session
@@ -26,7 +25,12 @@ struct DefaultNetworkProvider: NetworkProvider {
 
     func request<T>(target: NetworkRequest) async throws -> T where T: Decodable {
         let data = try await responseData(target: target)
-        return try JSONDecoder().decode(T.self, from: data)
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            logFailure(kind: "Decoding", url: "\(T.self)", statusCode: 200, responseBody: "\(error)")
+            throw MG2NetworkError.requestFailed
+        }
     }
 
     func requestEmpty(target: NetworkRequest) async throws {
@@ -38,7 +42,7 @@ struct DefaultNetworkProvider: NetworkProvider {
         let response = await session.request(urlRequest).serializingData().response
 
         if target.requiresAuthorization, requiresTokenRefresh(response), let refreshedAccessToken = try await tokenRefresh.refreshAccessToken(), !refreshedAccessToken.isEmpty {
-            var retryRequest = try target.makeURLRequest()
+            guard var retryRequest = try? target.makeURLRequest() else { throw MG2NetworkError.requestFailed }
             retryRequest.setValue("Bearer \(refreshedAccessToken)", forHTTPHeaderField: "Authorization")
             let retryResponse = await session.request(retryRequest).serializingData().response
             return try validatedData(from: retryResponse)
@@ -56,7 +60,7 @@ struct DefaultNetworkProvider: NetworkProvider {
     }
 
     private func authenticatedURLRequest(for target: NetworkRequest) throws -> URLRequest {
-        var urlRequest = try target.makeURLRequest()
+        guard var urlRequest = try? target.makeURLRequest() else { throw MG2NetworkError.requestFailed }
         if target.requiresAuthorization, urlRequest.value(forHTTPHeaderField: "Authorization") == nil, let accessToken = accessTokenProvider(), !accessToken.isEmpty {
             urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         }
@@ -71,26 +75,30 @@ struct DefaultNetworkProvider: NetworkProvider {
 
         if let error = response.error {
             logFailure(kind: "Error", url: url, statusCode: statusCode, responseBody: responseBody)
-            throw error
+            throw Self.networkError(from: error)
         }
 
         guard (200..<300).contains(statusCode) else {
             logFailure(kind: "Non2xx", url: url, statusCode: statusCode, responseBody: responseBody)
-            let payload = try? JSONDecoder().decode(ErrorPayload.self, from: data)
-            let fallbackMessage = responseBody.isEmpty ? HTTPURLResponse.localizedString(forStatusCode: statusCode) : responseBody
-            let message = payload?.message ?? fallbackMessage
-
             if statusCode == 429 {
                 let retryAfter = response.response?.value(forHTTPHeaderField: "Retry-After").flatMap(TimeInterval.init)
-                throw MG2NetworkError.rateLimited(message: message, retryAfter: retryAfter)
+                throw MG2NetworkError.rateLimited(retryAfter: retryAfter)
             }
-            if statusCode == 503, payload?.code == "Z006" {
-                throw MG2NetworkError.storageUnavailable(message: message)
-            }
-            throw MG2NetworkError.httpFailure(statusCode: statusCode, code: payload?.code, message: message)
+            throw MG2NetworkError.httpFailure(statusCode: statusCode)
         }
 
         return data
+    }
+
+    private static func networkError(from error: AFError) -> MG2NetworkError {
+        switch (error.underlyingError as? URLError)?.code {
+        case .timedOut?:
+            return .timeout
+        case .notConnectedToInternet?, .networkConnectionLost?, .cannotFindHost?, .cannotConnectToHost?, .dataNotAllowed?, .internationalRoamingOff?:
+            return .offline
+        default:
+            return .requestFailed
+        }
     }
 
     private func logFailure(kind: String, url: String, statusCode: Int, responseBody: String) {

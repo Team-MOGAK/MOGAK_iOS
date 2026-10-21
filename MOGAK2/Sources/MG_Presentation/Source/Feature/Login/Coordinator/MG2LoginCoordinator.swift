@@ -79,7 +79,8 @@ final class MG2LoginCoordinator {
         alertCoordinator.presentError(error, from: source)
     }
 
-    func presentLoginError(_ message: String, from source: UIViewController, onDismiss: @escaping () -> Void) {
-        alertCoordinator.presentInfo(title: "로그인 실패", message: message, from: source, onDismiss: onDismiss)
+    /// 실패 사유(SDK·서버 원문)는 보여주지 않는다.
+    func presentLoginFailure(from source: UIViewController, onDismiss: @escaping () -> Void) {
+        alertCoordinator.presentInfo(title: "로그인 실패", message: nil, from: source, onDismiss: onDismiss)
     }
 }

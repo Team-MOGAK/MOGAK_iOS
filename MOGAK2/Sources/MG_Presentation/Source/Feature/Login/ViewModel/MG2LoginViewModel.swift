@@ -2,7 +2,7 @@ import Foundation
 
 struct MG2LoginViewState {
     var isLoading = false
-    var errorMessage: String?
+    var isLoginFailed = false
 }
 
 @MainActor
@@ -23,7 +23,7 @@ final class MG2LoginViewModel {
     func login(provider: MG2SocialLoginProvider, completion: @escaping () -> Void) {
         guard !state.isLoading else { return }
         state.isLoading = true
-        state.errorMessage = nil
+        state.isLoginFailed = false
         notifyStateChange()
 
         Task {
@@ -34,14 +34,15 @@ final class MG2LoginViewModel {
                 completion()
             } catch {
                 state.isLoading = false
-                state.errorMessage = error.localizedDescription
+                // 사용자가 직접 취소했으면 실패 얼럿을 띄우지 않는다.
+                state.isLoginFailed = (error as? MG2SocialLoginError) != .cancelled
                 notifyStateChange()
             }
         }
     }
 
     func clearError() {
-        state.errorMessage = nil
+        state.isLoginFailed = false
         notifyStateChange()
     }
 

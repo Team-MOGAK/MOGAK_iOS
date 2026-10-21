@@ -128,8 +128,8 @@ final class MG2LoginViewController: UIViewController {
         }
         state.isLoading ? showLoading() : hideLoading()
 
-        guard let errorMessage = state.errorMessage, presentedViewController == nil else { return }
-        coordinator?.presentLoginError(errorMessage, from: self) { [weak self] in self?.viewModel.clearError() }
+        guard state.isLoginFailed, presentedViewController == nil else { return }
+        coordinator?.presentLoginFailure(from: self) { [weak self] in self?.viewModel.clearError() }
     }
 
     @objc private func appleLoginButtonTapped() {
