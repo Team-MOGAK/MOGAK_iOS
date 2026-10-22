@@ -76,10 +76,10 @@ final class MG2LaunchViewController: UIViewController {
             retryButton.isHidden = true
         case .preparing:
             activityIndicator.startAnimating()
-            statusLabel.text = "서버를 준비하고 있어요.\n잠시만 기다려주세요."
+            statusLabel.text = "잠시만 기다려주세요."
         case .failed:
             activityIndicator.stopAnimating()
-            statusLabel.text = "서버에 연결하지 못했어요.\n잠시 후 다시 시도해주세요."
+            statusLabel.text = "연결이 원활하지 않아요.\n잠시 후 다시 시도해주세요."
             retryButton.isHidden = false
         case .ready:
             activityIndicator.stopAnimating()

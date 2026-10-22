@@ -38,35 +38,21 @@ final class MG2LoginViewController: UIViewController {
         $0.image = UIImage(named: "LoginLogo")
     }
 
-    private lazy var appleLoginButton: UIButton = {
-        let button = makeSocialLoginButton(title: "Apple로 로그인", backgroundColor: .black, titleColor: .white, image: UIImage(systemName: "apple.logo"), imageTintColor: .white)
-        button.addTarget(self, action: #selector(appleLoginButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    private lazy var appleLoginButton = makeLoginButton(title: "Apple로 로그인", image: UIImage(systemName: "apple.logo"), backgroundColor: .black, titleColor: .white).then {
+        $0.addTarget(self, action: #selector(appleLoginButtonTapped), for: .touchUpInside)
+    }
 
-    private lazy var kakaoLoginButton: UIButton = {
-        let button = makeSocialLoginButton(title: "카카오로 로그인", backgroundColor: UIColor(hex: "FEE500"), titleColor: UIColor(hex: "191919"), image: UIImage(systemName: "message.fill"), imageTintColor: UIColor(hex: "191919"))
-        button.addTarget(self, action: #selector(kakaoLoginButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    private lazy var kakaoLoginButton = makeLoginButton(title: "카카오로 로그인", image: UIImage(systemName: "message.fill"), backgroundColor: UIColor(hex: "FEE500"), titleColor: UIColor(hex: "191919")).then {
+        $0.addTarget(self, action: #selector(kakaoLoginButtonTapped), for: .touchUpInside)
+    }
 
-    private lazy var googleLoginButton: UIButton = {
-        let button = makeSocialLoginButton(title: "G  Google로 로그인", backgroundColor: .white, titleColor: UIColor(hex: "191919"), image: nil, imageTintColor: nil, borderColor: UIColor(hex: "DADCE0"))
-        button.addTarget(self, action: #selector(googleLoginButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    private lazy var googleLoginButton = makeLoginButton(title: "Google로 로그인", image: UIImage(named: "GoogleLogo"), backgroundColor: .white, titleColor: UIColor(hex: "191919"), borderColor: UIColor(hex: "DADCE0")).then {
+        $0.addTarget(self, action: #selector(googleLoginButtonTapped), for: .touchUpInside)
+    }
 
-    private lazy var guestLoginButton: UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 10
-        button.backgroundColor = DesignSystemColor.white.value
-        button.setTitle("로그인 없이 계속하기", for: .normal)
-        button.setTitleColor(DesignSystemColor.black.value, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(guestLoginButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    private lazy var guestLoginButton = makeLoginButton(title: "로그인 없이 계속하기", image: UIImage(systemName: "person.fill"), backgroundColor: DesignSystemColor.white.value, titleColor: DesignSystemColor.black.value, borderColor: DesignSystemColor.black.value).then {
+        $0.addTarget(self, action: #selector(guestLoginButtonTapped), for: .touchUpInside)
+    }
 
     private lazy var loginButtonStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton])
@@ -153,20 +139,18 @@ final class MG2LoginViewController: UIViewController {
         onGuestContinue?()
     }
 
-    private func makeSocialLoginButton(title: String, backgroundColor: UIColor, titleColor: UIColor, image: UIImage?, imageTintColor: UIColor?, borderColor: UIColor? = nil) -> UIButton {
-        let button = UIButton(type: .system)
-        button.layer.cornerRadius = 10
-        button.backgroundColor = backgroundColor
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(titleColor, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        button.setImage(image, for: .normal)
-        button.tintColor = imageTintColor ?? titleColor
-        button.semanticContentAttribute = .forceLeftToRight
-        if let borderColor {
-            button.layer.borderWidth = 1
-            button.layer.borderColor = borderColor.cgColor
-        }
-        return button
+    /// 아이콘과 글자를 가운데에 모으고 사이를 10pt 띄운다. 아이콘은 모두 18pt.
+    private func makeLoginButton(title: String, image: UIImage?, backgroundColor: UIColor, titleColor: UIColor, borderColor: UIColor? = nil) -> UIButton {
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = image
+        configuration.imagePadding = 10
+        configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([.font: UIFont.pretendard(.medium, size: 18)]))
+        configuration.baseForegroundColor = titleColor
+        configuration.background.backgroundColor = backgroundColor
+        configuration.background.cornerRadius = 10
+        configuration.background.strokeColor = borderColor
+        configuration.background.strokeWidth = borderColor == nil ? 0 : 1
+        return UIButton(configuration: configuration)
     }
 }
