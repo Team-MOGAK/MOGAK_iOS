@@ -22,7 +22,7 @@ final class MG2OnboardingViewController: UIViewController, UIScrollViewDelegate 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = DesignSystemColor.gray2.value
+        view.backgroundColor = DS.Color.canvas
 
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
@@ -32,8 +32,8 @@ final class MG2OnboardingViewController: UIViewController, UIScrollViewDelegate 
 
         pageControl.numberOfPages = pageViews.count
         pageControl.currentPage = 0
-        pageControl.pageIndicatorTintColor = DesignSystemColor.gray3.value
-        pageControl.currentPageIndicatorTintColor = DesignSystemColor.signature.value
+        pageControl.pageIndicatorTintColor = DS.Color.disabled
+        pageControl.currentPageIndicatorTintColor = DS.Color.accent
         pageControl.addTarget(self, action: #selector(pageControlChanged(_:)), for: .valueChanged)
 
         startButton.setTitle("시작하기", for: .normal)
@@ -52,9 +52,9 @@ final class MG2OnboardingViewController: UIViewController, UIScrollViewDelegate 
             $0.bottom.equalTo(startButton.snp.top).offset(-18)
         }
         startButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
-            $0.height.equalTo(52)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
+            $0.height.equalTo(DS.Size.button)
         }
 
         configurePages()

@@ -2,75 +2,50 @@
 //  MG2NeedModalartTitleModal.swift
 //  MOGAK
 //
-//  Created by 김라영 on 2023/10/20.
-//
+
 import UIKit
 import SnapKit
 
-///큰 목표가 없이 작은 목표 추가버튼을 눌렀을 때의 모달
+/// 최종 목표 없이 모각을 만들려 할 때의 안내 시트.
 final class MG2NeedModalartTitleModal: UIViewController {
     var onConfirm: (() -> Void)?
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "작은 목표를 설정하기 전에\n큰 목표를 추가해주세요."
-        label.textColor = DesignSystemColor.black.value
-        label.numberOfLines = 2
-        label.font = DesignSystemFont.semibold20L140.value
-        return label
-    }()
-
-    private lazy var subTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "내가 가장 원하는 목표를 적어주세요."
-        label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
-        label.numberOfLines = 1
-        label.font = DesignSystemFont.regular14L150.value
-        return label
-    }()
-
-    private lazy var okayButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("확인", for: .normal)
-        button.backgroundColor = DesignSystemColor.signature.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        return button
-    }()
-
-    // MARK: - 확인 버튼 눌렀을떄
-    @objc private func okayButtonTapped() {
-        onConfirm?()
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureLayout()
-        view.backgroundColor = .white
-        okayButton.addTarget(self, action: #selector(okayButtonTapped), for: .touchUpInside)
-    }
-}
+        view.backgroundColor = DS.Color.surface
 
-// MARK: - 오토레이아웃 설정
-extension MG2NeedModalartTitleModal {
-    private func configureLayout() {
-        view.addSubviews(titleLabel, subTitleLabel, okayButton)
+        let mascot = MG2MascotView(size: 72)
+        mascot.pose = .think
+        mascot.isInteractive = false
+        let titleLabel = UILabel()
+        titleLabel.apply(.title2)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
+        titleLabel.text = "모각을 만들기 전에\n최종 목표를 먼저 정해 주세요"
+        titleLabel.accessibilityTraits = .header
+        let subTitleLabel = UILabel()
+        subTitleLabel.apply(.paragraph, color: DS.Color.sub)
+        subTitleLabel.numberOfLines = 0
+        subTitleLabel.textAlignment = .center
+        subTitleLabel.text = "가운데 칸에 들어갈 최종 목표 하나면 시작할 수 있어요"
 
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(49)
-            $0.centerX.equalToSuperview()
+        let closeButton = MG2PrimaryActionButton()
+        closeButton.setTitle("닫기", for: .normal)
+        closeButton.addAction(UIAction { [weak self] _ in self?.onConfirm?() }, for: .touchUpInside)
+
+        let stack = UIStackView(arrangedSubviews: [mascot, titleLabel, subTitleLabel, closeButton])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.setCustomSpacing(20, after: subTitleLabel)
+        view.addSubview(stack)
+        stack.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
-        subTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.centerX.equalToSuperview()
-        }
-
-        okayButton.snp.makeConstraints {
-            $0.height.equalTo(52)
-            $0.centerX.equalToSuperview()
-            $0.left.equalToSuperview().offset(30)
-            $0.top.equalTo(subTitleLabel.snp.bottom).offset(25)
+        closeButton.snp.makeConstraints {
+            $0.width.equalTo(stack)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 }

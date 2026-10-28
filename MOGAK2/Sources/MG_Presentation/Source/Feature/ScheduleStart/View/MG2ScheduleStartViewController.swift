@@ -1,121 +1,98 @@
-import UIKit
-import SnapKit
+import Combine
 import FSCalendar
+import SnapKit
+import UIKit
 
+/// 조각시작(홈): 주간 달력 · 진척 카드 · 오늘의 조각 · 조각 더 가져오기 · 목록 끝 네이티브 광고.
 final class MG2ScheduleStartViewController: UIViewController {
     weak var coordinator: MG2ScheduleStartCoordinator?
 
     private let viewModel: MG2ScheduleStartViewModel
+    private var cancellables = Set<AnyCancellable>()
 
     private let calendarView: FSCalendar = {
         let calendar = FSCalendar(frame: .zero)
-        calendar.backgroundColor = .white
+        calendar.backgroundColor = .clear
         return calendar
     }()
 
     private lazy var calendarScopeButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "week"), for: .normal)
-        button.backgroundColor = .clear
-        button.layer.cornerRadius = 8
+        button.accessibilityLabel = "달력 펼치기"
         button.addTarget(self, action: #selector(calendarScopeButtonTapped), for: .touchUpInside)
         return button
     }()
 
-    private lazy var previousPageButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        button.addTarget(self, action: #selector(previousPageButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var nextPageButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        button.addTarget(self, action: #selector(nextPageButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    private lazy var previousPageButton = makeChevronButton(symbol: "chevron.left", label: "이전", action: #selector(previousPageButtonTapped))
+    private lazy var nextPageButton = makeChevronButton(symbol: "chevron.right", label: "다음", action: #selector(nextPageButtonTapped))
 
     private lazy var headerLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 18)
-        label.textColor = .label
+        label.apply(.title2)
+        label.font = T.title2.font.withMonospacedDigits()
         label.text = viewModel.calendarHeader(for: Date())
-        label.textAlignment = .center
+        label.accessibilityTraits = .header
         return label
     }()
 
     private let calendarContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        view.roundCorners(DS.Radius.card)
         return view
     }()
 
-    private let motiveLabel: UILabel = {
-        let label = UILabel()
-        label.text = "오늘도 조금씩 더 나은 내일을 위해, 조각을 시작해 볼까요?"
-        label.textColor = DesignSystemColor.gray5.value
-        label.font = UIFont.pretendard(.regular, size: 14)
-        return label
+    private let progressCardView = MG2ProgressCardView(isCompact: false)
+
+    private let emptyView: UIStackView = {
+        let mascot = MG2MascotView(size: 88)
+        mascot.pose = .wave
+        let title = UILabel()
+        title.apply(.title2)
+        title.text = "오늘의 조각이 없어요"
+        let sub = UILabel()
+        sub.apply(.paragraph, color: DS.Color.sub)
+        sub.text = "모다라트에서 오늘 할 조각을 가져와 볼까요?"
+        sub.numberOfLines = 0
+        sub.textAlignment = .center
+        let stack = UIStackView(arrangedSubviews: [mascot, title, sub])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        return stack
     }()
 
-    private let emptyImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "blankImage"))
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-
-    private let emptyStateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "내 조각이 없어요...\n모다라트를 먼저 생성해 볼까요?"
-        label.font = UIFont.pretendard(.regular, size: 16)
-        label.textColor = DesignSystemColor.gray4.value
-        label.numberOfLines = 2
-        label.setLineSpacing(lineSpacing: 4)
-        label.textAlignment = .center
-        return label
-    }()
-
-    private lazy var createModalartButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = UIColor(red: 0.883, green: 0.899, blue: 1, alpha: 1)
-        button.layer.cornerRadius = 15
-        button.setTitle("모다라트 만들러가기", for: .normal)
-        button.setTitleColor(DesignSystemColor.signature.value, for: .normal)
-        button.titleLabel?.font = DesignSystemFont.medium12L150.value
+    private lazy var openModalartButton: MG2PrimaryActionButton = {
+        let button = MG2PrimaryActionButton(style: .soft)
+        button.setTitle("모다라트로 가기", for: .normal)
         button.addTarget(self, action: #selector(createModalartButtonTapped), for: .touchUpInside)
         return button
     }()
 
-    private let contentContainerView = UIView()
-
     private let scheduleTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.layer.cornerRadius = 10
+        let tableView = UITableView(frame: .zero, style: .plain)
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 72
         return tableView
     }()
 
-    private lazy var addJogakButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("오늘 할 조각 추가하기", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = DesignSystemColor.signature.value
-        button.titleLabel?.font = DesignSystemFont.semibold18L100.value
-        button.layer.cornerRadius = 10
+    private lazy var addJogakButton: MG2PrimaryActionButton = {
+        let button = MG2PrimaryActionButton(style: .dashed)
+        button.setTitle("+ 모다라트에서 조각 더 가져오기", for: .normal)
         button.addTarget(self, action: #selector(addJogakButtonTapped), for: .touchUpInside)
         return button
     }()
 
-    private lazy var scheduleStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [scheduleTableView, addJogakButton])
-        stackView.axis = .vertical
-        stackView.spacing = 12
-        return stackView
-    }()
+    private let nativeAdContainer = UIView()
+    /// 네이티브 광고 60초 새로 고침. 화면이 보일 때만 돈다.
+    private static let nativeAdRefreshInterval: TimeInterval = 60
+    private var nativeAdRefreshTimer: Timer?
+    private let headerContainer = UIView()
+    private let footerContainer = UIView()
 
     init(viewModel: MG2ScheduleStartViewModel) {
         self.viewModel = viewModel
@@ -128,11 +105,14 @@ final class MG2ScheduleStartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = DesignSystemColor.signatureBag.value
-        motiveLabel.isHidden = true
+        view.backgroundColor = DS.Color.canvas
         configureLayout()
         configureCalendar()
         configureTableView()
+        progressCardView.onOpenBoard = { [weak self] in self?.createModalartButtonTapped() }
+        viewModel.externalChanges
+            .sink { [weak self] in self?.refreshJogakOccurrences() }
+            .store(in: &cancellables)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -141,76 +121,74 @@ final class MG2ScheduleStartViewController: UIViewController {
 
         let selectedDate = calendarView.selectedDate ?? viewModel.state.selectedDate
         loadJogakOccurrences(date: selectedDate)
-        updateAddButtonVisibility(for: selectedDate)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        tabBarController?.tabBar.isHidden = false
+        nativeAdRefreshTimer?.invalidate()
+        nativeAdRefreshTimer = Timer.scheduledTimer(withTimeInterval: Self.nativeAdRefreshInterval, repeats: true) { [weak self] _ in
+            self?.refreshNativeAd()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        nativeAdRefreshTimer?.invalidate()
+        nativeAdRefreshTimer = nil
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        sizeTableAccessory(headerContainer) { scheduleTableView.tableHeaderView = $0 }
+        sizeTableAccessory(footerContainer) { scheduleTableView.tableFooterView = $0 }
     }
 
     private func configureLayout() {
-        let headerStackView = UIStackView(arrangedSubviews: [previousPageButton, headerLabel, nextPageButton])
-        headerStackView.axis = .horizontal
-        headerStackView.distribution = .equalSpacing
+        let headerStackView = UIStackView(arrangedSubviews: [previousPageButton, headerLabel, nextPageButton, UIView(), calendarScopeButton])
+        headerStackView.alignment = .center
+        headerStackView.spacing = 4
 
-        view.addSubviews(contentContainerView, emptyImageView, emptyStateLabel, createModalartButton, calendarContainerView, calendarView, calendarScopeButton, headerStackView)
-        contentContainerView.addSubviews(motiveLabel, scheduleStackView)
+        view.addSubviews(headerStackView, calendarContainerView, scheduleTableView, emptyView)
+        calendarContainerView.addSubview(calendarView)
+        headerContainer.addSubview(progressCardView)
 
-        headerLabel.snp.makeConstraints {
-            $0.width.equalTo(110)
-            $0.height.equalTo(28)
-        }
+        let footerStack = UIStackView(arrangedSubviews: [addJogakButton, openModalartButton, nativeAdContainer])
+        footerStack.axis = .vertical
+        footerStack.spacing = DS.Space.stack
+        footerStack.setCustomSpacing(24, after: addJogakButton)
+        footerContainer.addSubview(footerStack)
+
         headerStackView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(26)
-            $0.leading.equalTo(calendarView.collectionView)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(12)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+            $0.height.equalTo(DS.Size.touch)
         }
-        calendarView.snp.makeConstraints {
-            $0.top.equalTo(headerStackView.snp.bottom).offset(5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(250)
-        }
+        [previousPageButton, nextPageButton].forEach { $0.snp.makeConstraints { $0.size.equalTo(DS.Size.touch) } }
         calendarScopeButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(headerStackView)
             $0.width.equalTo(49)
-            $0.height.equalTo(30)
+            $0.height.equalTo(DS.Size.touch)
         }
         calendarContainerView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(calendarView.snp.bottom).offset(8)
+            $0.top.equalTo(headerStackView.snp.bottom).offset(4)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
         }
-        contentContainerView.snp.makeConstraints {
-            $0.top.equalTo(calendarView.snp.bottom).offset(20)
-            $0.leading.trailing.bottom.equalToSuperview()
+        calendarView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 4, left: 8, bottom: 8, right: 8))
+            $0.height.equalTo(90)
         }
-        motiveLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalTo(calendarView.collectionView)
+        scheduleTableView.snp.makeConstraints {
+            $0.top.equalTo(calendarContainerView.snp.bottom).offset(DS.Space.stack)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-        scheduleStackView.snp.makeConstraints {
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(12)
+        emptyView.snp.makeConstraints {
+            $0.top.equalTo(scheduleTableView).offset(32)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter * 2)
         }
-        addJogakButton.snp.makeConstraints {
-            $0.height.equalTo(48)
-        }
-        emptyImageView.snp.makeConstraints {
-            $0.bottom.equalTo(emptyStateLabel.snp.top).offset(-20)
-            $0.centerX.equalToSuperview()
-            $0.size.equalTo(88)
-        }
-        emptyStateLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(30)
-        }
-        createModalartButton.snp.makeConstraints {
-            $0.top.equalTo(emptyStateLabel.snp.bottom).offset(20)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(153)
-            $0.height.equalTo(30)
-        }
+        progressCardView.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: DS.Space.stack, right: 0)) }
+        footerStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)) }
+        addJogakButton.snp.makeConstraints { $0.height.equalTo(DS.Size.button) }
+        openModalartButton.snp.makeConstraints { $0.height.equalTo(DS.Size.chip) }
     }
 
     private func configureCalendar() {
@@ -220,16 +198,17 @@ final class MG2ScheduleStartViewController: UIViewController {
         calendarView.locale = Locale(identifier: "ko_KR")
         calendarView.scope = .week
         calendarView.appearance.headerMinimumDissolvedAlpha = 0
-        calendarView.appearance.selectionColor = DesignSystemColor.signature.value
+        calendarView.appearance.selectionColor = DS.Color.accent
+        calendarView.appearance.titleSelectionColor = DS.Color.surface
         calendarView.appearance.borderRadius = 0.4
-        calendarView.weekdayHeight = 33
+        calendarView.weekdayHeight = 28
         calendarView.headerHeight = 0
-        calendarView.appearance.weekdayFont = UIFont.pretendard(.regular, size: 12)
-        calendarView.appearance.titleDefaultColor = UIColor(hex: "200E04")
-        calendarView.appearance.titleFont = UIFont.pretendard(.regular, size: 16)
-        calendarView.appearance.titleTodayColor = UIColor(hex: "200E04")
-        calendarView.appearance.todayColor = .white
-        calendarView.appearance.weekdayTextColor = UIColor(hex: "808080")
+        calendarView.appearance.weekdayFont = T.caption1.font
+        calendarView.appearance.weekdayTextColor = DS.Color.muted
+        calendarView.appearance.titleFont = T.subhead.font
+        calendarView.appearance.titleDefaultColor = DS.Color.ink
+        calendarView.appearance.titleTodayColor = DS.Color.accentDeep
+        calendarView.appearance.todayColor = DS.Color.accentSoft
         calendarView.placeholderType = .none
         calendarView.scrollEnabled = true
         calendarView.scrollDirection = .horizontal
@@ -239,32 +218,6 @@ final class MG2ScheduleStartViewController: UIViewController {
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.register(MG2JogakOccurrenceCell.self, forCellReuseIdentifier: MG2JogakOccurrenceCell.reuseIdentifier)
-    }
-
-    private func showToast(message: String) {
-        let toastLabel = UILabel()
-        toastLabel.backgroundColor = DesignSystemColor.gray6.value.withAlphaComponent(0.7)
-        toastLabel.textColor = .white
-        toastLabel.font = DesignSystemFont.medium12L150.value
-        toastLabel.textAlignment = .center
-        toastLabel.text = message
-        toastLabel.numberOfLines = 1
-        toastLabel.adjustsFontSizeToFitWidth = true
-        toastLabel.minimumScaleFactor = 0.7
-        toastLabel.layer.cornerRadius = 18
-        toastLabel.clipsToBounds = true
-        view.addSubview(toastLabel)
-
-        toastLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(view.bounds.height * 0.75)
-            $0.width.equalTo(min(300, view.bounds.width - 40))
-            $0.height.equalTo(36)
-        }
-
-        UIView.animate(withDuration: 3, delay: 0.1, options: .curveEaseOut) {
-            toastLabel.alpha = 0
-        } completion: { _ in toastLabel.removeFromSuperview() }
     }
 
     private func loadJogakOccurrences(date: Date) {
@@ -283,22 +236,80 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 
     private func renderOccurrences() {
-        let isEmpty = viewModel.state.isEmpty
-        emptyImageView.isHidden = !isEmpty
-        emptyStateLabel.isHidden = !isEmpty
-        createModalartButton.isHidden = !isEmpty
-        motiveLabel.isHidden = isEmpty
+        let state = viewModel.state
+        let isToday = viewModel.isSelectedDateToday
+        emptyView.isHidden = !state.isEmpty
+        openModalartButton.isHidden = !state.isEmpty
+        addJogakButton.isHidden = !isToday
+        renderProgress()
         scheduleTableView.reloadData()
+        loadNativeAdIfNeeded()
+        view.setNeedsLayout()
     }
 
-    private func updateAddButtonVisibility(for date: Date) {
-        addJogakButton.isHidden = !viewModel.isToday(date)
+    private func renderProgress() {
+        if let progress = viewModel.state.progress, progress.total > 0 {
+            progressCardView.render(progress, modalartTitle: nil)
+            progressCardView.isHidden = false
+        } else {
+            progressCardView.isHidden = true
+        }
+        view.setNeedsLayout()
+    }
+
+    /// 네이티브 광고는 홈 목록 맨 끝 1개. 못 불러오면 자리째 숨긴다.
+    private func loadNativeAdIfNeeded() {
+        guard viewModel.canShowNativeAd else {
+            nativeAdContainer.isHidden = true
+            return
+        }
+        nativeAdContainer.isHidden = false
+        guard nativeAdContainer.subviews.isEmpty else { return }
+        refreshNativeAd()
+    }
+
+    /// 새 광고로 바꾼다. 처음에 못 불러오면 자리째 숨기고, 새로 고침이 실패하면 지금 광고를 그대로 둔다.
+    private func refreshNativeAd() {
+        guard viewModel.canShowNativeAd else { return }
+        coordinator?.loadNativeAd(from: self) { [weak self] adView in
+            guard let self else { return }
+            guard let adView else {
+                if nativeAdContainer.subviews.isEmpty { nativeAdContainer.isHidden = true }
+                return
+            }
+            nativeAdContainer.subviews.forEach { $0.removeFromSuperview() }
+            nativeAdContainer.isHidden = false
+            nativeAdContainer.addSubview(adView)
+            adView.snp.makeConstraints { $0.edges.equalToSuperview() }
+            view.setNeedsLayout()
+        }
+    }
+
+    /// 테이블 머리 · 꼬리 뷰는 오토레이아웃 높이로 다시 맞춰 넣어야 한다.
+    private func sizeTableAccessory(_ accessory: UIView, assign: (UIView) -> Void) {
+        let width = scheduleTableView.bounds.width
+        guard width > 0 else { return }
+        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden
+        let height = isHeaderHidden ? 0 : accessory.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+        guard accessory.frame.size != CGSize(width: width, height: height) else { return }
+        accessory.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        assign(accessory)
+    }
+
+    private func makeChevronButton(symbol: String, label: String, action: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)), for: .normal)
+        button.tintColor = DS.Color.ink
+        button.accessibilityLabel = label
+        button.addTarget(self, action: action, for: .touchUpInside)
+        return button
     }
 
     @objc private func calendarScopeButtonTapped() {
         let isShowingMonth = calendarView.scope == .month
         calendarView.setScope(isShowingMonth ? .week : .month, animated: true)
         calendarScopeButton.setImage(UIImage(named: isShowingMonth ? "week" : "month"), for: .normal)
+        calendarScopeButton.accessibilityLabel = isShowingMonth ? "달력 펼치기" : "달력 접기"
         headerLabel.text = viewModel.calendarHeader(for: calendarView.currentPage)
     }
 
@@ -333,7 +344,50 @@ final class MG2ScheduleStartViewController: UIViewController {
         loadJogakOccurrences(date: calendarView.selectedDate ?? Date())
     }
 
+    private func toggleJogak(at indexPath: IndexPath) {
+        guard viewModel.state.occurrences.indices.contains(indexPath.row) else { return }
+        let item = viewModel.state.occurrences[indexPath.row]
+        let outcome = viewModel.toggleJogakCompletion(at: indexPath.row) { [weak self] result in self?.handleJogakCompletionResult(result) }
+        let cell = scheduleTableView.cellForRow(at: indexPath) as? MG2JogakOccurrenceCell
+
+        switch outcome {
+        case .toggled(let isCompleted, let remaining):
+            cell?.setCompleted(isCompleted, animated: true)
+            if isCompleted {
+                progressCardView.mascotView.hop()
+                MG2ToastView.show(in: view, title: "‘\(item.title)’ 완료", subtitle: remaining > 0 ? "한 걸음 더 · 남은 \(remaining)개" : nil)
+            }
+        case .completedAll:
+            cell?.setCompleted(true, animated: true)
+            progressCardView.mascotView.hop()
+            presentCelebration()
+        case .readOnly:
+            MG2ToastView.show(in: view, title: "지난 날 기록은 볼 수만 있어요")
+        case .rewardRequired:
+            coordinator?.presentRewardedUnlock(from: self) { [weak self] in
+                self?.viewModel.unlockSelectedDay()
+                self?.toggleJogak(at: indexPath)
+            }
+        case nil:
+            break
+        }
+    }
+
+    /// 확인 → 처음 한 번은 알림 권유, 그 뒤로는 전면 광고 규칙 확인.
+    private func presentCelebration() {
+        let done = viewModel.state.occurrences.count
+        coordinator?.presentCelebration(done: done, completedCount: viewModel.completedPieceCount, from: self) { [weak self] in
+            guard let self else { return }
+            if viewModel.shouldOfferReminder {
+                coordinator?.presentReminderOffer(from: self, onAccept: { [weak self] in self?.viewModel.enableReminder() }, onDecline: { [weak self] in self?.viewModel.declineReminder() })
+            } else if viewModel.canShowInterstitial {
+                coordinator?.presentInterstitial(from: self) { [weak self] shown in if shown { self?.viewModel.didShowInterstitial() } }
+            }
+        }
+    }
+
     private func handleJogakCompletionResult(_ result: Result<Void, Error>) {
+        renderProgress()
         guard case .failure(let error) = result else { return }
         scheduleTableView.reloadData()
         coordinator?.presentError(error, from: self)
@@ -373,40 +427,23 @@ extension MG2ScheduleStartViewController: FSCalendarDelegate, FSCalendarDataSour
 
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         loadJogakOccurrences(date: date)
-        updateAddButtonVisibility(for: date)
     }
 }
 
 extension MG2ScheduleStartViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        1
-    }
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.state.occurrences.count
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        80
-    }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard viewModel.state.occurrences.indices.contains(indexPath.row), let cell = tableView.cellForRow(at: indexPath) as? MG2JogakOccurrenceCell else { return }
-
-        let item = viewModel.state.occurrences[indexPath.row]
-        guard let isCompleted = viewModel.toggleJogakCompletion(at: indexPath.row, completion: { [weak self] result in self?.handleJogakCompletionResult(result) }) else { return }
-
-        cell.setStatus(isCompleted ? .success : .fail)
-        if isCompleted {
-            showToast(message: "'\(item.title)' 오늘 조각을 완료하셨군요!")
-        }
+        toggleJogak(at: indexPath)
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2JogakOccurrenceCell.reuseIdentifier, for: indexPath) as? MG2JogakOccurrenceCell else { return UITableViewCell() }
 
         let item = viewModel.state.occurrences[indexPath.row]
-        cell.configure(title: item.title, status: item.status) { [weak self] in self?.showJogakOptions(for: item) }
+        cell.configure(item: item) { [weak self] in self?.showJogakOptions(for: item) }
         return cell
     }
 }

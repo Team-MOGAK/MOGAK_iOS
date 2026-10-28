@@ -8,18 +8,24 @@ final class MG2MogakDetailViewController: UIViewController {
 
     private let viewModel: MG2MogakDetailViewModel
 
-    private lazy var deleteButton = UIBarButtonItem(title: "삭제", style: .plain, target: self, action: #selector(deleteButtonTapped)).then {
-        $0.tintColor = .systemRed
-        $0.accessibilityLabel = "선택한 세부목표 삭제"
+    private lazy var deleteButton = UIBarButtonItem(title: "모각 삭제", style: .plain, target: self, action: #selector(deleteButtonTapped)).then {
+        $0.tintColor = DS.Color.danger
+        $0.setTitleTextAttributes([.font: T.footnoteBold.font], for: .normal)
     }
     private let mogakListCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
-        ($0.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = .horizontal
-        $0.backgroundColor = DesignSystemColor.signatureBag.value
+        let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout
+        layout?.scrollDirection = .horizontal
+        layout?.minimumLineSpacing = 8
+        layout?.sectionInset = UIEdgeInsets(top: 0, left: DS.Space.gutter, bottom: 0, right: DS.Space.gutter)
+        $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
     }
     private let jogakCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
-        $0.backgroundColor = DesignSystemColor.signatureBag.value
+        $0.backgroundColor = .clear
+        $0.clipsToBounds = false
+        $0.isScrollEnabled = false
     }
+    private var cellSize = CGSize(width: 100, height: 120)
 
     init(viewModel: MG2MogakDetailViewModel) {
         self.viewModel = viewModel
@@ -32,7 +38,7 @@ final class MG2MogakDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = DesignSystemColor.signatureBag.value
+        view.backgroundColor = DS.Color.canvas
         configureLayout()
         configureCollectionViews()
         if viewModel.hasRoutineOccurrences {
@@ -44,9 +50,8 @@ final class MG2MogakDetailViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.tintColor = .black
-        navigationItem.title = "세부목표"
+        applyStepNavigationBar()
+        navigationItem.title = "모각"
         updateDeleteButton()
     }
 
@@ -60,16 +65,31 @@ final class MG2MogakDetailViewController: UIViewController {
     private func configureLayout() {
         view.addSubviews(mogakListCollectionView, jogakCollectionView)
         mogakListCollectionView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(10)
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview()
-            $0.height.equalTo(50)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(8)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.height.equalTo(DS.Size.touch)
         }
         jogakCollectionView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.height.equalTo(520)
-            $0.centerX.centerY.equalToSuperview()
+            $0.centerX.equalTo(view.safeAreaLayoutGuide)
+            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(20).priority(.high)
+            $0.top.greaterThanOrEqualTo(mogakListCollectionView.snp.bottom).offset(16)
+            $0.width.height.equalTo(0)
         }
+    }
+
+    /// 판 화면과 같은 칸 크기 공식 · 560pt 가운데 열.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+        let boardWidth = min(safeFrame.width - DS.Space.gutter * 2, MG2MandalaGrid.maxBoardWidth)
+        let size = MG2MandalaGrid.boardCellSize(boardWidth: boardWidth, availableHeight: safeFrame.maxY - mogakListCollectionView.frame.maxY - 16)
+        guard size != cellSize || jogakCollectionView.bounds.width == 0 else { return }
+        cellSize = size
+        jogakCollectionView.snp.updateConstraints {
+            $0.width.equalTo(size.width * 3 + DS.Space.cellGap * 2)
+            $0.height.equalTo(size.height * 3 + DS.Space.cellGap * 2)
+        }
+        jogakCollectionView.collectionViewLayout.invalidateLayout()
     }
 
     private func configureCollectionViews() {
@@ -77,10 +97,10 @@ final class MG2MogakDetailViewController: UIViewController {
         mogakListCollectionView.dataSource = self
         mogakListCollectionView.delegate = self
 
-        jogakCollectionView.register(MG2EmptyJogakCell.self, forCellWithReuseIdentifier: MG2EmptyJogakCell.identifier)
+        jogakCollectionView.register(MG2EmptyMogakCell.self, forCellWithReuseIdentifier: MG2EmptyMogakCell.identifier)
         jogakCollectionView.register(MG2ModalartMainCell.self, forCellWithReuseIdentifier: MG2ModalartMainCell.identifier)
         jogakCollectionView.register(MG2JogakCell.self, forCellWithReuseIdentifier: MG2JogakCell.identifier)
-        jogakCollectionView.register(MG2RoutineJogakCell.self, forCellWithReuseIdentifier: MG2RoutineJogakCell.identifier)
+        jogakCollectionView.register(MG2RoutineJogakCell.self, forCellWithReuseIdentifier: MG2RoutineJogakCell.routineIdentifier)
         jogakCollectionView.dataSource = self
         jogakCollectionView.delegate = self
     }
@@ -179,7 +199,7 @@ final class MG2MogakDetailViewController: UIViewController {
 
     @objc private func deleteButtonTapped() {
         guard let selectedMogak = viewModel.state.selectedMogak else { return }
-        coordinator?.presentDeleteAction(title: selectedMogak.title, message: "선택한 세부목표를 삭제할까요?", onConfirm: { [weak self] in self?.removeSelectedMogak() }, from: self)
+        coordinator?.presentDeleteAction(title: selectedMogak.title, message: "선택한 조각을 삭제할까요?", onConfirm: { [weak self] in self?.removeSelectedMogak() }, from: self)
     }
 }
 
@@ -195,22 +215,23 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
         if collectionView == mogakListCollectionView {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2MogakListCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2MogakListCell, viewModel.state.mogaks.indices.contains(indexPath.item) else { return reusableCell }
-            cell.configure(title: viewModel.state.mogaks[indexPath.item].category.name)
+            let mogak = viewModel.state.mogaks[indexPath.item]
+            cell.configure(title: mogak.title, color: mogak.color)
             return cell
         }
 
-        guard let selectedMogak = viewModel.state.selectedMogak else { return collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyJogakCell.identifier, for: indexPath) }
+        guard let selectedMogak = viewModel.state.selectedMogak else { return emptyCell(collectionView, at: indexPath) }
         if indexPath.item == MG2MandalaGrid.centerIndex {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ModalartMainCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2ModalartMainCell else { return reusableCell }
-            cell.configure(title: selectedMogak.title, color: selectedMogak.color ?? DesignSystemPalette.signatureHex)
+            cell.configure(title: selectedMogak.title, color: selectedMogak.color ?? DesignSystemPalette.signatureHex, caption: selectedMogak.category.name)
             return cell
         }
 
-        guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.occurrences.indices.contains(jogakIndex) else { return collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyJogakCell.identifier, for: indexPath) }
+        guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.occurrences.indices.contains(jogakIndex) else { return emptyCell(collectionView, at: indexPath) }
         let occurrence = viewModel.state.occurrences[jogakIndex]
         if occurrence.isRoutine {
-            let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2RoutineJogakCell.identifier, for: indexPath)
+            let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2RoutineJogakCell.routineIdentifier, for: indexPath)
             guard let cell = reusableCell as? MG2RoutineJogakCell else { return reusableCell }
             cell.configure(badgeText: viewModel.routineDaysText(for: occurrence), title: occurrence.title, color: selectedMogak.color ?? DesignSystemPalette.signatureHex)
             return cell
@@ -220,6 +241,14 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
         guard let cell = reusableCell as? MG2JogakCell else { return reusableCell }
         cell.configure(title: occurrence.title)
         return cell
+    }
+
+    /// 빈 칸: 다음에 채울 칸 하나만 "조각 추가"로 강조.
+    private func emptyCell(_ collectionView: UICollectionView, at indexPath: IndexPath) -> UICollectionViewCell {
+        let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath)
+        let isNext = MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.occurrences.count && viewModel.state.selectedMogak != nil
+        (reusableCell as? MG2EmptyMogakCell)?.configure(isSuggested: isNext, label: "조각 추가")
+        return reusableCell
     }
 }
 
@@ -249,22 +278,20 @@ extension MG2MogakDetailViewController: UICollectionViewDelegate {
 extension MG2MogakDetailViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == mogakListCollectionView {
-            let title = viewModel.state.mogaks[indexPath.item].category.name as NSString
-            let size = title.size(withAttributes: [.font: UIFont.systemFont(ofSize: 14)])
-            return CGSize(width: size.width + 30, height: 30)
+            return MG2MogakListCell.size(for: viewModel.state.mogaks[indexPath.item].title)
         }
-        return MG2MandalaGrid.itemSize(in: jogakCollectionView)
+        return cellSize
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        MG2MandalaGrid.sectionInsets
+        collectionView == mogakListCollectionView ? UIEdgeInsets(top: 0, left: DS.Space.gutter, bottom: 0, right: DS.Space.gutter) : .zero
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        MG2MandalaGrid.minimumLineSpacing
+        collectionView == mogakListCollectionView ? 8 : DS.Space.cellGap
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        MG2MandalaGrid.minimumInteritemSpacing
+        collectionView == mogakListCollectionView ? 8 : DS.Space.cellGap
     }
 }

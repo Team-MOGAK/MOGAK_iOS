@@ -13,58 +13,37 @@ final class MG2ModalartTitleEditorModal: UIViewController {
     var onCancel: (() -> Void)?
     var onSubmit: ((String, String) -> Void)?
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "나의 가장 큰 목표는?"
-        label.numberOfLines = 1
-        label.font = DesignSystemFont.semibold14L150.value
-        return label
-    }()
+    private let headerView = MG2SheetHeaderView(title: "최종 목표")
+    private let titleLabel = MG2FieldLabel("나의 최종 목표는?")
 
-    private let titleSetTextField: UITextField = {
-        let textField = UITextField()
-
-        textField.placeholder = "이루고픈 목표를 입력해 주세요."
-        textField.setPlaceholderColor(DesignSystemColor.gray3.value)
-        textField.textColor = .black
+    private let titleSetTextField: MG2TextField = {
+        let textField = MG2TextField()
+        textField.placeholder = "이루고 싶은 최종 목표를 적어 주세요"
         textField.autocorrectionType = .no
+        textField.accessibilityLabel = "최종 목표"
         return textField
     }()
 
-    private let cancelButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("취소", for: .normal)
-        button.backgroundColor = DesignSystemColor.gray2.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.black.value, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        return button
+    private let hintLabel: MG2HintLabel = {
+        let label = MG2HintLabel()
+        label.show("최대 20자까지 적을 수 있어요")
+        return label
     }()
 
-    private let completeButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("완료", for: .normal)
-        button.backgroundColor = DesignSystemColor.gray3.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
-        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
-        return button
-    }()
+    private let colorLabel = MG2FieldLabel("판 색")
 
-    private let buttonStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.alignment = .fill
-        stackView.spacing = 10
-        stackView.distribution = .fillEqually
-        return stackView
+    private let completeButton: MG2PrimaryActionButton = {
+        let button = MG2PrimaryActionButton()
+        button.setTitle("최종 목표 저장", for: .normal)
+        return button
     }()
 
     // MARK: - 컬러 차트
     private let colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 40, height: 40)
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+        layout.itemSize = CGSize(width: DS.Size.touch, height: DS.Size.touch)
+        layout.minimumLineSpacing = 8
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: DS.Space.sheet)
         layout.scrollDirection = .horizontal
 
         let collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: layout)
@@ -95,23 +74,18 @@ final class MG2ModalartTitleEditorModal: UIViewController {
 
     // MARK: - 뷰컨 셋팅(textField에 텍스트 넣어주기, addTarget달아주기)
     private func configureView() {
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        headerView.onClose = { [weak self] in self?.onCancel?() }
 
         titleSetTextField.delegate = self
         titleSetTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 
-        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
 
     // MARK: - 터치됐을 때 설정
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
-    }
-
-    // MARK: - 취소버튼 눌렀을 때
-    @objc private func cancelButtonTapped() {
-        onCancel?()
     }
 
     // MARK: - 완료버튼 눌렀을 때
@@ -137,41 +111,44 @@ final class MG2ModalartTitleEditorModal: UIViewController {
     // MARK: - 완료 버튼 backgroundColor & isEnabled변경
     private func renderSubmitState() {
         completeButton.isEnabled = viewModel.state.canSubmit
-        completeButton.backgroundColor = viewModel.state.canSubmit ? DesignSystemColor.signature.value : DesignSystemColor.gray3.value
     }
 }
 
 extension MG2ModalartTitleEditorModal {
     // MARK: - 뷰들 레이아웃 잡기
     private func configureLayout() {
-        view.addSubviews(titleLabel, titleSetTextField, colorCollectionView, buttonStackView)
-        buttonStackView.addArrangedSubview(cancelButton)
-        buttonStackView.addArrangedSubview(completeButton)
+        view.addSubviews(headerView, titleLabel, titleSetTextField, hintLabel, colorLabel, colorCollectionView, completeButton)
 
+        headerView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(headerView.snp.bottom).offset(14)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
         titleSetTextField.snp.makeConstraints {
-            $0.height.equalTo(30)
-            $0.leading.equalToSuperview().offset(20)
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.centerX.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
+        hintLabel.snp.makeConstraints {
+            $0.top.equalTo(titleSetTextField.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
+        colorLabel.snp.makeConstraints {
+            $0.top.equalTo(hintLabel.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
         colorCollectionView.snp.makeConstraints {
-            $0.top.equalTo(titleSetTextField.snp.bottom).offset(26)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(colorLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview().offset(DS.Space.sheet)
             $0.trailing.equalToSuperview()
-            $0.height.equalTo(40)
+            $0.height.equalTo(DS.Size.touch)
         }
-
-        buttonStackView.snp.makeConstraints {
-            $0.height.equalTo(52)
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(titleSetTextField.snp.bottom).offset(99)
-            $0.leading.equalToSuperview().offset(20)
+        completeButton.snp.makeConstraints {
+            $0.top.equalTo(colorCollectionView.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 }
@@ -203,7 +180,7 @@ extension MG2ModalartTitleEditorModal: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let reusableCell = colorCollectionView.dequeueReusableCell(withReuseIdentifier: MG2ColorSelectionCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2ColorSelectionCell else { return reusableCell }
-        cell.configure(color: UIColor(hex: viewModel.colors[indexPath.row]))
+        cell.configure(serverHex: viewModel.colors[indexPath.row], accessibilityName: "판 색 \(indexPath.row + 1)")
         return cell
     }
 }

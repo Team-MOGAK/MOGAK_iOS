@@ -4,26 +4,21 @@ import UIKit
 /// 기본 프로필 이미지 중 하나를 고르는 바텀 시트. 고른 순서를 onSelection으로 알려준다.
 final class MG2ProfileImageSelectModal: UIViewController {
     private static let columnCount = 4
-    private static let itemSide: CGFloat = 64
-    private static let lineSpacing: CGFloat = 20
-    private static let titleTop: CGFloat = 49
-    private static let titleHeight: CGFloat = 28
-    private static let gridTop: CGFloat = 24
-    private static let bottomInset: CGFloat = 24
+    /// 시트 그리드 아바타 72.
+    private static let itemSide: CGFloat = 72
+    private static let lineSpacing: CGFloat = 16
+    private static let titleTop: CGFloat = 16
+    private static let titleHeight: CGFloat = DS.Size.touch
+    private static let gridTop: CGFloat = 14
+    private static let bottomInset: CGFloat = 32
 
     var onSelection: ((Int) -> Void)?
+    var onClose: (() -> Void)?
 
     private let imageIDs: [Int]
     private let selectedIndex: Int?
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "프로필 이미지 선택"
-        label.font = DesignSystemFont.semibold20L140.value
-        label.textColor = DesignSystemColor.black.value
-        label.textAlignment = .center
-        return label
-    }()
+    private let titleLabel = MG2SheetHeaderView(title: "프로필 이미지")
 
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -59,7 +54,8 @@ final class MG2ProfileImageSelectModal: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        titleLabel.onClose = { [weak self] in self?.onClose?() }
         configureLayout()
         if let selectedIndex {
             collectionView.selectItem(at: IndexPath(item: selectedIndex, section: 0), animated: false, scrollPosition: [])
@@ -79,12 +75,11 @@ final class MG2ProfileImageSelectModal: UIViewController {
 
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(Self.titleTop)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(Self.titleHeight)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         collectionView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(Self.gridTop)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(gridHeight)
         }
     }
@@ -99,6 +94,7 @@ extension MG2ProfileImageSelectModal: UICollectionViewDataSource, UICollectionVi
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ProfileImageCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2ProfileImageCell else { return reusableCell }
         cell.configure(imageName: MG2ProfileImage.assetName(for: imageIDs[indexPath.item]))
+        cell.accessibilityLabel = "프로필 캐릭터 \(indexPath.item + 1)"
         return cell
     }
 

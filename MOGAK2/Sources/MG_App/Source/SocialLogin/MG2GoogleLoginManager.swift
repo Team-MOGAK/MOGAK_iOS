@@ -51,7 +51,7 @@ private extension UIApplication {
     }
 }
 
-private extension UIViewController {
+extension UIViewController {
     var mg2TopMostViewController: UIViewController {
         if let presentedViewController {
             return presentedViewController.mg2TopMostViewController
@@ -59,7 +59,7 @@ private extension UIViewController {
         if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
             return visibleViewController.mg2TopMostViewController
         }
-        if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
+        if let mainTabController = self as? MG2MainTabViewController, let selectedViewController = mainTabController.selectedViewController {
             return selectedViewController.mg2TopMostViewController
         }
         return self

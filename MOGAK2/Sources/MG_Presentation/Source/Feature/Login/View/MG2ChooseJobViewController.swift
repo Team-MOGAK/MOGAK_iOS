@@ -21,46 +21,38 @@ final class MG2ChooseJobViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "희망/현직 직무 선택"
-        label.textColor = .black
-        label.font = UIFont.pretendard(.bold, size: 24)
-        return label
-    }()
-
-    private let subLabel: UILabel = {
-        let label = UILabel()
-        label.text = "어떤 목표를 가진 모각러들과 함께 성장하고 싶으신가요?"
-        label.textColor = DesignSystemColor.gray4.value
-        label.font = UIFont.pretendard(.medium, size: 16)
-        return label
-    }()
+    private let headerView = MG2ScreenHeaderView(title: "희망 · 현직 직무", subtitle: "어떤 모각러들과 함께 성장하고 싶나요?")
 
     private lazy var searchBar: UISearchBar = {
         let search = UISearchBar()
-        let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.bold, size: 16), NSAttributedString.Key.foregroundColor : DesignSystemColor.gray3.value]
-        let placeholderText = "직무를 입력해주세요."
         search.delegate = self
         search.searchBarStyle = .minimal
         search.showsCancelButton = true
-        search.searchTextField.backgroundColor = DesignSystemColor.gray2.value
-        search.searchTextField.layer.cornerRadius = 10
+        search.tintColor = DS.Color.accentDeep
+        search.searchTextField.backgroundColor = DS.Color.fill
+        search.searchTextField.roundCorners(DS.Radius.field)
+        search.searchTextField.clipsToBounds = true
         search.searchTextField.borderStyle = .none
-        search.searchTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: placeholderAttributes)
+        search.searchTextField.font = T.body.font
+        search.searchTextField.textColor = DS.Color.ink
+        search.searchTextField.attributedPlaceholder = NSAttributedString(string: "직무를 검색해 보세요", attributes: [.font: T.body.font, .foregroundColor: DS.Color.placeholder])
         search.searchTextField.textAlignment = .left
         return search
     }()
 
     private let tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.sectionHeaderTopPadding = 8
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 64
         return tableView
     }()
 
     private lazy var nextButton: UIButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle("다음", for: .normal)
-        button.titleLabel?.textAlignment = .center
+        button.setTitle(viewModel.isEditingMode ? "직무 저장" : "다음", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
@@ -73,8 +65,7 @@ final class MG2ChooseJobViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = false
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
 
         configureNavigationBar()
         configureLabel()
@@ -86,21 +77,15 @@ final class MG2ChooseJobViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = .gray
+        applyStepNavigationBar()
     }
 
     private func configureLabel() {
-        view.addSubviews(titleLabel, subLabel)
+        view.addSubview(headerView)
 
-        titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(24)
-            $0.leading.equalToSuperview().offset(20)
-        }
-
-        subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -108,9 +93,9 @@ final class MG2ChooseJobViewController: UIViewController {
         view.addSubview(searchBar)
 
         searchBar.snp.makeConstraints {
-            $0.top.equalTo(subLabel.snp.bottom).offset(48)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.061)
+            $0.top.equalTo(headerView.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet - 8)
+            $0.height.equalTo(DS.Size.button + 8)
         }
     }
 
@@ -123,8 +108,8 @@ final class MG2ChooseJobViewController: UIViewController {
         view.addSubview(tableView)
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom)
-            $0.leading.trailing.equalToSuperview().inset(21)
+            $0.top.equalTo(searchBar.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.bottom.equalTo(nextButton.snp.top).offset(-12)
         }
     }
@@ -133,9 +118,9 @@ final class MG2ChooseJobViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.061)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-23)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
     }
 
@@ -222,5 +207,19 @@ extension MG2ChooseJobViewController: UITableViewDelegate, UITableViewDataSource
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         viewModel.sections[section].title
+    }
+
+    /// 목록 제목 (13 · 700 `ink-3`).
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+        var content = header.defaultContentConfiguration()
+        content.text = viewModel.sections[section].title
+        content.textProperties.font = T.footnoteBold.font
+        content.textProperties.color = DS.Color.ink3
+        content.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
+        header.contentConfiguration = content
+        var background = UIBackgroundConfiguration.clear()
+        background.backgroundColor = DS.Color.surface
+        header.backgroundConfiguration = background
     }
 }

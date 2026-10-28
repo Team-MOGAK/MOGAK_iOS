@@ -18,6 +18,11 @@ struct MG2JogakFormState {
 @MainActor
 final class MG2JogakFormViewModel {
     let mode: MG2JogakFormMode
+
+    var isCreating: Bool {
+        if case .create = mode { return true }
+        return false
+    }
     let routineDays = MG2Weekday.allCases.map(\.shortKoreanTitle)
 
     private let useCase: MogakEditingUseCase

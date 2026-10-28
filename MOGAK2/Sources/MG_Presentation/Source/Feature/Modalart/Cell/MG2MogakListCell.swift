@@ -2,48 +2,50 @@
 //  MG2MogakListCell.swift
 //  MOGAK
 //
-//  Created by 김라영 on 2023/12/07.
-//
 
 import UIKit
 import SnapKit
 
-/// 모각 리스트(세부목표 화면에서 상단에 있는 모각 리스트)
+/// 모각 상세 위쪽 모각 고르기 칩 (`.md-chip`). 켜짐은 그 모각 색 deep.
 final class MG2MogakListCell: UICollectionViewCell {
     static let identifier = "MG2MogakListCell"
+    static let font = T.footnoteBold.font
+
     private let titleLabel = UILabel()
-    private let bottomBar = UIView()
+    private var moak = DS.Moak.blue
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        configureLayout()
+        titleLabel.font = Self.font
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { $0.center.equalToSuperview() }
+        contentView.layer.cornerRadius = DS.Size.chip / 2
+        isAccessibilityElement = true
+        updateAppearance()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(title: String) {
+    func configure(title: String, color: String?) {
         titleLabel.text = title
+        moak = DS.Moak.from(hex: color)
+        accessibilityLabel = title
+        updateAppearance()
     }
 
-    private func configureLayout() {
-        contentView.addSubviews(titleLabel, bottomBar)
-
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-2)
-        }
-
-        bottomBar.snp.makeConstraints {
-            $0.leading.trailing.bottom.equalToSuperview()
-            $0.height.equalTo(3)
-        }
+    static func size(for title: String) -> CGSize {
+        CGSize(width: ceil((title as NSString).size(withAttributes: [.font: font]).width) + 28, height: DS.Size.chip)
     }
 
     override var isSelected: Bool {
-        didSet {
-            bottomBar.backgroundColor = isSelected ? DesignSystemColor.signature.value : .clear
-        }
+        didSet { updateAppearance() }
+    }
+
+    private func updateAppearance() {
+        contentView.backgroundColor = isSelected ? moak.deep : DS.Color.fill
+        titleLabel.textColor = isSelected ? DS.Color.surface : DS.Color.ink2
+        accessibilityTraits = isSelected ? [.button, .selected] : .button
     }
 }

@@ -18,7 +18,7 @@ final class MG2LoadingView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        backgroundColor = DS.Color.scrim
         addSubview(activityIndicator)
 
         activityIndicator.snp.makeConstraints {

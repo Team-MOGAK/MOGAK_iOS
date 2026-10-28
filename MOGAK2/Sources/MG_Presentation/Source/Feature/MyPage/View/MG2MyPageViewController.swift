@@ -9,25 +9,39 @@ final class MG2MyPageViewController: UIViewController {
     private let viewModel: MG2MyPageViewModel
     private var cancellables = Set<AnyCancellable>()
 
+    private let scrollView = UIScrollView().then {
+        $0.alwaysBounceVertical = true
+        $0.showsVerticalScrollIndicator = false
+    }
+
+    private let contentView = UIView()
+
     private let profileView = UIView().then {
-        $0.backgroundColor = DesignSystemColor.signature.value
+        $0.backgroundColor = DS.Color.surface
+        $0.roundCorners(DS.Radius.card)
     }
 
     private let profileImageView = UIImageView().then {
-        $0.layer.cornerRadius = 35
+        $0.layer.cornerRadius = 38
         $0.clipsToBounds = true
         $0.contentMode = .scaleAspectFill
+        $0.backgroundColor = DS.Color.avatarBg
     }
 
     private let nameLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.bold, size: 22)
-        $0.textColor = .white
+        $0.apply(.title2)
     }
 
     private let jobLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.medium, size: 12)
-        $0.textColor = .white
+        $0.apply(.footnote, color: DS.Color.sub)
     }
+
+    private let settingsCard = UIView().then {
+        $0.backgroundColor = DS.Color.surface
+        $0.roundCorners(DS.Radius.card)
+    }
+
+    private let bannerContainer = UIView()
 
     private lazy var editButton = Self.makeProfileActionButton(title: "프로필 수정")
     private lazy var shareButton = Self.makeProfileActionButton(title: "프로필 공유")
@@ -48,7 +62,7 @@ final class MG2MyPageViewController: UIViewController {
 
     private lazy var settingsStack = UIStackView(arrangedSubviews: [pushRow, noticeRow, inquiryRow, termsRow, privacyRow, locationRow, versionRow]).then {
         $0.axis = .vertical
-        $0.spacing = 32
+        $0.spacing = 8
     }
 
     init(viewModel: MG2MyPageViewModel) {
@@ -62,7 +76,7 @@ final class MG2MyPageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = DesignSystemColor.signatureBag.value
+        view.backgroundColor = DS.Color.canvas
         configureLayout()
         configureActions()
         bindProfile()
@@ -76,22 +90,32 @@ final class MG2MyPageViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        tabBarController?.tabBar.isHidden = false
+        loadBannerIfNeeded()
     }
 
+
     private func configureLayout() {
-        view.addSubviews(profileView, settingsStack)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(profileView, settingsCard, bannerContainer)
+        settingsCard.addSubview(settingsStack)
         profileView.addSubviews(profileImageView, nameLabel, jobLabel, profileButtonStack)
         profileButtonStack.addArrangedSubview(editButton)
         profileButtonStack.addArrangedSubview(shareButton)
 
+        scrollView.snp.makeConstraints { $0.edges.equalTo(view.safeAreaLayoutGuide) }
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
         profileView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.equalToSuperview().offset(12)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         profileImageView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
-            $0.leading.equalToSuperview().offset(20)
-            $0.size.equalTo(73)
+            $0.top.equalToSuperview().offset(20)
+            $0.leading.equalToSuperview().offset(DS.Space.cardX)
+            $0.size.equalTo(76)
         }
         nameLabel.snp.makeConstraints {
             $0.top.equalTo(profileImageView).offset(10)
@@ -105,13 +129,19 @@ final class MG2MyPageViewController: UIViewController {
         }
         profileButtonStack.snp.makeConstraints {
             $0.top.equalTo(profileImageView.snp.bottom).offset(24)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(40)
-            $0.bottom.equalToSuperview().inset(30)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.cardX)
+            $0.height.equalTo(DS.Size.chip)
+            $0.bottom.equalToSuperview().inset(20)
         }
-        settingsStack.snp.makeConstraints {
-            $0.top.equalTo(profileView.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(20)
+        settingsCard.snp.makeConstraints {
+            $0.top.equalTo(profileView.snp.bottom).offset(DS.Space.stack)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
+        }
+        settingsStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: DS.Space.cardX, bottom: 8, right: DS.Space.cardX)) }
+        bannerContainer.snp.makeConstraints {
+            $0.top.equalTo(settingsCard.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
+            $0.bottom.equalToSuperview().inset(24)
         }
     }
 
@@ -183,12 +213,16 @@ final class MG2MyPageViewController: UIViewController {
     }
 
     private static func makeProfileActionButton(title: String) -> UIButton {
-        UIButton().then {
+        MG2PrimaryActionButton(style: .soft).then {
             $0.setTitle(title, for: .normal)
-            $0.setTitleColor(.white, for: .normal)
-            $0.backgroundColor = UIColor(hex: "6C7FFD")
-            $0.titleLabel?.font = UIFont.pretendard(.medium, size: 16)
-            $0.layer.cornerRadius = 10
         }
+    }
+
+    /// 배너는 마이페이지 맨 아래(스크롤 안). 탭 바 옆 고정 배너는 두지 않는다.
+    private func loadBannerIfNeeded() {
+        guard bannerContainer.subviews.isEmpty, view.bounds.width > 0 else { return }
+        guard let banner = coordinator?.makeBanner(width: view.bounds.width - DS.Space.gutter * 2, from: self) else { return }
+        bannerContainer.addSubview(banner)
+        banner.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 }

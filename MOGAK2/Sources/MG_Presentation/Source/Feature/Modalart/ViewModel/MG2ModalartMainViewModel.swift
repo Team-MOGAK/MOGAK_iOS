@@ -10,7 +10,7 @@ struct MG2ModalartMainViewState {
 
     var hasModalart: Bool { selectedID != nil }
     var needsTitle: Bool { MG2ModalartDefaultTitle.isDefault(title) }
-    var centerTitle: String { needsTitle ? "큰 목표 \n추가" : title }
+    var centerTitle: String { needsTitle ? "최종 목표\n정하기" : title }
     var centerColor: String {
         needsTitle ? DesignSystemPalette.neutralGrayHex : color
     }

@@ -10,47 +10,26 @@ final class MG2JogakFormViewController: UIViewController {
     private var routineCollectionHeightConstraint: Constraint?
 
     private let scrollView = UIScrollView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
+        $0.keyboardDismissMode = .interactive
     }
     private let contentView = MG2DismissKeyboardView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
     }
-    private let mogakCategoryTitleLabel = UILabel().then {
-        $0.text = "모각 카테고리"
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
+    private let mogakCategoryTitleLabel = MG2FieldLabel("모각")
+    private let mogakCategoryLabel = MG2TagLabel()
+    private let jogakDetailTitleLabel = MG2FieldLabel("조각 이름")
+    private let jogakDetailTextField = MG2TextField().then {
+        $0.placeholder = "오늘 할 조각을 적어 주세요"
+        $0.accessibilityLabel = "조각 이름"
     }
-    private let mogakCategoryView = UIView().then {
-        $0.layer.cornerRadius = 8
-    }
-    private let mogakCategoryLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
-    }
-    private let jogakDetailTitleLabel = UILabel().then {
-        $0.text = "조각 세부 제목"
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
-    }
-    private let jogakDetailTextField = UITextField().then {
-        $0.placeholder = "세부 제목을 적어주세요"
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.borderStyle = .none
-        $0.leftViewMode = .unlessEditing
-    }
-    private let jogakDetailUnderLineView = UIView().then {
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
-        $0.layer.borderWidth = 1
-    }
-    private let routineTitleLabel = UILabel().then {
-        $0.text = "루틴 설정"
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
-        $0.textColor = DesignSystemColor.gray6.value
-    }
-    private let routineExplanationLabel = UILabel().then {
-        $0.text = "일주일에 며칠 반복하는지 선택해 주세요."
-        $0.font = UIFont.pretendard(.regular, size: 14)
-        $0.textColor = DesignSystemColor.gray5.value
-    }
-    private lazy var toggleButton = UISwitch().then {
+    private let routineTitleLabel = MG2FieldLabel("반복")
+    private lazy var toggleButton = MG2SegmentedControl(options: ["오늘만", "루틴"]).then {
+        $0.accessibilityLabel = "반복"
         $0.addTarget(self, action: #selector(toggleSwitchChanged(_:)), for: .valueChanged)
+    }
+    private let routineExplanationLabel = MG2HintLabel().then {
+        $0.show("루틴은 고른 요일마다 오늘의 조각으로 올라와요")
     }
     private let routineRepeatCollectionView = UICollectionView(frame: .zero, collectionViewLayout: MG2LeftAlignedCollectionViewFlowLayout()).then {
         guard let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout else { return }
@@ -58,31 +37,21 @@ final class MG2JogakFormViewController: UIViewController {
         layout.minimumInteritemSpacing = 8
         $0.isScrollEnabled = false
         $0.allowsMultipleSelection = true
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
         $0.isHidden = true
         $0.register(MG2SelectionChipCell.self, forCellWithReuseIdentifier: MG2SelectionChipCell.identifier)
     }
-    private let endExplanationLabel = UILabel().then {
-        $0.text = "언제까지 반복할까요?"
-        $0.font = UIFont.pretendard(.regular, size: 14)
-        $0.textColor = DesignSystemColor.gray5.value
+    private let endExplanationLabel = MG2HintLabel().then {
+        $0.show("언제까지 반복할까요?")
         $0.isHidden = true
     }
-    private let endLabel = UILabel().then {
-        $0.text = "종료"
-        $0.textColor = DesignSystemColor.black.value
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
+    private let endLabel = MG2FieldLabel("끝나는 날").then {
         $0.isHidden = true
     }
-    private let endTextField = UITextField().then {
-        $0.borderStyle = .line
-        $0.layer.borderWidth = 1
-        $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
-        $0.leftViewMode = .unlessEditing
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
-        $0.textColor = DesignSystemColor.signature.value
-        $0.attributedPlaceholder = NSAttributedString(string: "yyyy/mm/dd(요일)", attributes: [.foregroundColor: DesignSystemColor.gray3.value, .font: UIFont.pretendard(.medium, size: 16)])
+    private let endTextField = MG2TextField().then {
+        $0.placeholder = "날짜를 골라 주세요"
+        $0.rightViewMode = .never
+        $0.accessibilityLabel = "끝나는 날"
         $0.isHidden = true
     }
     private lazy var endDatePicker = UIDatePicker().then {
@@ -92,12 +61,11 @@ final class MG2JogakFormViewController: UIViewController {
         $0.locale = Locale(identifier: "ko_KR")
         $0.timeZone = .current
         $0.minimumDate = viewModel.minimumEndDate
-        $0.tintColor = DesignSystemColor.signature.value
+        $0.tintColor = DS.Color.accent
         $0.isHidden = true
         $0.addTarget(self, action: #selector(endDateChanged(_:)), for: .valueChanged)
     }
     private lazy var completeButton = MG2PrimaryActionButton().then {
-        $0.setTitle("완료", for: .normal)
         $0.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
 
@@ -112,7 +80,8 @@ final class MG2JogakFormViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        completeButton.setTitle(viewModel.isCreating ? "조각 만들기" : "조각 저장", for: .normal)
         configureInitialValues()
         configureView()
         configureNavigationBar()
@@ -131,7 +100,7 @@ final class MG2JogakFormViewController: UIViewController {
 
     private func applyInitialState() {
         let state = viewModel.state
-        toggleButton.isOn = state.isRoutine
+        toggleButton.select(state.isRoutine ? 1 : 0)
         endDatePicker.setDate(state.endDate ?? state.today, animated: false)
         if let endDate = state.endDate {
             endTextField.text = viewModel.displayDate(endDate)
@@ -146,9 +115,7 @@ final class MG2JogakFormViewController: UIViewController {
     private func configureInitialValues() {
         let state = viewModel.state
         jogakDetailTextField.text = viewModel.state.title
-        mogakCategoryView.backgroundColor = UIColor(hex: state.categoryColor).withAlphaComponent(0.1)
-        mogakCategoryLabel.text = state.category
-        mogakCategoryLabel.textColor = UIColor(hex: state.categoryColor)
+        mogakCategoryLabel.configure(text: state.category, moak: DS.Moak.from(hex: state.categoryColor))
     }
 
     private func configureView() {
@@ -163,54 +130,32 @@ final class MG2JogakFormViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        switch viewModel.mode {
-        case .create:
-            title = "조각 생성"
-        case .edit:
-            title = "조각 수정"
-        }
-        navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.pretendard(.semiBold, size: 18)
-        ]
-        navigationController?.navigationBar.backIndicatorImage = UIImage(systemName: "chevron.left")
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(systemName: "chevron.left")
-        navigationController?.navigationBar.tintColor = DesignSystemColor.gray6.value
+        title = viewModel.isCreating ? "조각 만들기" : "조각 수정"
+        applyStepNavigationBar()
     }
 
     private func configureCategory() {
-        contentView.addSubviews(mogakCategoryTitleLabel, mogakCategoryView, mogakCategoryLabel)
+        contentView.addSubviews(mogakCategoryTitleLabel, mogakCategoryLabel)
         mogakCategoryTitleLabel.snp.makeConstraints {
             $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
-            $0.leading.equalToSuperview().offset(20)
-        }
-        mogakCategoryView.snp.makeConstraints {
-            $0.top.equalTo(mogakCategoryTitleLabel.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().offset(20)
-            $0.height.equalTo(30)
-            $0.width.greaterThanOrEqualTo(57)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         mogakCategoryLabel.snp.makeConstraints {
-            $0.centerY.equalTo(mogakCategoryView)
-            $0.leading.trailing.equalTo(mogakCategoryView).inset(12)
+            $0.top.equalTo(mogakCategoryTitleLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
     private func configureJogakTitle() {
-        contentView.addSubviews(jogakDetailTitleLabel, jogakDetailTextField, jogakDetailUnderLineView)
+        contentView.addSubviews(jogakDetailTitleLabel, jogakDetailTextField)
         jogakDetailTextField.delegate = self
         jogakDetailTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(mogakCategoryView.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(mogakCategoryLabel.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         jogakDetailTextField.snp.makeConstraints {
-            $0.top.equalTo(jogakDetailTitleLabel.snp.bottom).offset(5)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        jogakDetailUnderLineView.snp.makeConstraints {
-            $0.top.equalTo(jogakDetailTextField.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(2)
+            $0.top.equalTo(jogakDetailTitleLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -220,23 +165,20 @@ final class MG2JogakFormViewController: UIViewController {
         routineRepeatCollectionView.dataSource = self
 
         routineTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(jogakDetailUnderLineView.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(jogakDetailTextField.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         toggleButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.centerY.equalTo(routineTitleLabel)
-            $0.width.equalTo(60)
-            $0.height.equalTo(26)
+            $0.top.equalTo(routineTitleLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         routineExplanationLabel.snp.makeConstraints {
-            $0.top.equalTo(routineTitleLabel.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(toggleButton.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         routineRepeatCollectionView.snp.makeConstraints {
             $0.top.equalTo(routineExplanationLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview().offset(-80)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             routineCollectionHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
@@ -247,22 +189,20 @@ final class MG2JogakFormViewController: UIViewController {
         endTextField.delegate = self
 
         endExplanationLabel.snp.makeConstraints {
-            $0.top.equalTo(routineRepeatCollectionView.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(endLabel.snp.bottom).offset(4)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         endLabel.snp.makeConstraints {
-            $0.top.equalTo(endExplanationLabel.snp.bottom).offset(26)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(routineRepeatCollectionView.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         endTextField.snp.makeConstraints {
-            $0.centerY.equalTo(endLabel)
-            $0.leading.equalTo(endLabel.snp.trailing).offset(19)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.height.equalTo(52)
+            $0.top.equalTo(endExplanationLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         endDatePicker.snp.makeConstraints {
             $0.top.equalTo(endTextField.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(216)
         }
     }
@@ -271,9 +211,10 @@ final class MG2JogakFormViewController: UIViewController {
         contentView.addSubview(completeButton)
         completeButton.snp.makeConstraints {
             $0.top.greaterThanOrEqualTo(endTextField.snp.bottom).offset(40)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().offset(-15)
-            $0.height.equalTo(50)
+            $0.top.greaterThanOrEqualTo(routineExplanationLabel.snp.bottom).offset(40)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalToSuperview().offset(-16)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 
@@ -283,7 +224,7 @@ final class MG2JogakFormViewController: UIViewController {
         endExplanationLabel.isHidden = !isRoutine
         endLabel.isHidden = !isRoutine
         endTextField.isHidden = !isRoutine
-        routineCollectionHeightConstraint?.update(offset: isRoutine ? 110 : 0)
+        routineCollectionHeightConstraint?.update(offset: isRoutine ? DS.Size.touch : 0)
         if !isRoutine {
             setEndDatePickerVisible(false)
         }
@@ -297,10 +238,11 @@ final class MG2JogakFormViewController: UIViewController {
                 $0.top.equalTo(endDatePicker.snp.bottom).offset(24)
             } else {
                 $0.top.greaterThanOrEqualTo(endTextField.snp.bottom).offset(40)
+                $0.top.greaterThanOrEqualTo(routineExplanationLabel.snp.bottom).offset(40)
             }
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().offset(-15)
-            $0.height.equalTo(50)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalToSuperview().offset(-16)
+            $0.height.equalTo(DS.Size.button)
         }
         view.layoutIfNeeded()
     }
@@ -309,8 +251,8 @@ final class MG2JogakFormViewController: UIViewController {
         completeButton.isEnabled = viewModel.isValid
     }
 
-    @objc private func toggleSwitchChanged(_ sender: UISwitch) {
-        viewModel.setRoutine(sender.isOn)
+    @objc private func toggleSwitchChanged(_ sender: MG2SegmentedControl) {
+        viewModel.setRoutine(sender.selectedIndex == 1)
         updateRoutineVisibility()
         updateButtonState()
     }
@@ -367,7 +309,7 @@ extension MG2JogakFormViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2SelectionChipCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2SelectionChipCell else { return reusableCell }
-        cell.configure(title: viewModel.routineDays[indexPath.item], style: .weekday)
+        cell.configure(title: viewModel.routineDays[indexPath.item], style: .weekday, selectedColor: DS.Moak.from(hex: viewModel.state.categoryColor).deep)
         return cell
     }
 }
@@ -386,8 +328,8 @@ extension MG2JogakFormViewController: UICollectionViewDelegate {
 
 extension MG2JogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let text = viewModel.routineDays[indexPath.item] as NSString
-        let size = text.size(withAttributes: [.font: UIFont.pretendard(.medium, size: 16)])
-        return CGSize(width: size.width + 37, height: size.height + 30)
+        // 루틴 요일은 원형 칩 44 (터치 영역 최소 크기). 7개가 한 줄에 들어가게 줄인다.
+        let side = min(DS.Size.touch, floor((collectionView.bounds.width - 8 * 6) / 7))
+        return CGSize(width: side, height: side)
     }
 }

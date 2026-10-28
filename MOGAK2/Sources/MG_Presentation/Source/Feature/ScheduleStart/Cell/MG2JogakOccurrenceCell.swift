@@ -1,66 +1,73 @@
-import UIKit
 import SnapKit
+import UIKit
 
+/// 오늘의 조각 한 줄 (PieceRow). 행 전체가 체크 영역이고 ⋯는 별도 메뉴.
+/// 완료하면 `done-row` 바탕 · `faint` 취소선 (일부러 흐리게).
 final class MG2JogakOccurrenceCell: UITableViewCell {
     static let reuseIdentifier = "MG2JogakOccurrenceCell"
+    static let rowSpacing: CGFloat = 8
 
-    private let completionImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = .clear
-        imageView.layer.cornerRadius = 5
-        return imageView
-    }()
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 2
-        label.textAlignment = .left
-        return label
-    }()
+    private let cardView = UIView()
+    private let checkView = MG2CheckCircleView()
+    private let titleLabel = UILabel()
+    private let tagLabel = MG2TagLabel()
+    private let detailLabel = UILabel()
 
     private lazy var moreButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        button.tintColor = DesignSystemColor.gray5.value
+        button.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 17, weight: .bold)), for: .normal)
+        button.tintColor = DS.Color.faint
         button.addTarget(self, action: #selector(moreButtonTapped), for: .touchUpInside)
         return button
     }()
 
     private var onMoreTapped: (() -> Void)?
+    private var title = ""
+    private var moak = DS.Moak.blue
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         backgroundColor = .clear
-        contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 10
-        contentView.layer.masksToBounds = true
+        contentView.backgroundColor = .clear
+        cardView.roundCorners(DS.Radius.row)
+        titleLabel.numberOfLines = 1
+        titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.adjustsFontForContentSizeCategory = true
+        detailLabel.apply(.caption1Semi, color: DS.Color.sub)
         configureLayout()
+        isAccessibilityElement = true
+        accessibilityTraits = .button
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0))
-    }
-
     override func prepareForReuse() {
         super.prepareForReuse()
-        titleLabel.text = nil
         onMoreTapped = nil
     }
 
-    func configure(title: String, status: MG2JogakOccurrenceStatus, onMoreTapped: @escaping () -> Void) {
-        titleLabel.text = title
-        setStatus(status)
+    func configure(item: MG2JogakOccurrenceItem, onMoreTapped: @escaping () -> Void) {
+        title = item.title
+        moak = DS.Moak.from(hex: item.color)
+        tagLabel.configure(text: item.mogakTitle, moak: moak)
+        detailLabel.text = item.detail
         self.onMoreTapped = onMoreTapped
+        accessibilityCustomActions = [UIAccessibilityCustomAction(name: "더보기") { [weak self] _ in self?.onMoreTapped?(); return true }]
+        setCompleted(item.isCompleted, animated: false)
     }
 
-    func setStatus(_ status: MG2JogakOccurrenceStatus) {
-        completionImageView.image = UIImage(named: status == .success ? "squareCheckmark" : "emptySquareCheckmark")
+    func setCompleted(_ isCompleted: Bool, animated: Bool) {
+        checkView.setDone(isCompleted, color: moak.deep, animated: animated)
+        cardView.backgroundColor = isCompleted ? DS.Color.doneRow : DS.Color.surface
+        var attributes = T.callout.attributes(color: isCompleted ? DS.Color.faint : DS.Color.ink)
+        if isCompleted { attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue }
+        titleLabel.attributedText = NSAttributedString(string: title, attributes: attributes)
+        accessibilityLabel = "\(title), \(tagLabel.text ?? ""), \(detailLabel.text ?? "")"
+        accessibilityValue = isCompleted ? "완료" : "미완료"
+        accessibilityHint = isCompleted ? "두 번 탭하면 완료를 취소해요" : "두 번 탭하면 완료해요"
     }
 
     @objc private func moreButtonTapped() {
@@ -68,27 +75,41 @@ final class MG2JogakOccurrenceCell: UITableViewCell {
     }
 
     private func configureLayout() {
-        contentView.addSubviews(completionImageView, titleLabel, moreButton)
+        let metaStack = UIStackView(arrangedSubviews: [tagLabel, detailLabel])
+        metaStack.spacing = 6
+        metaStack.alignment = .center
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, metaStack])
+        textStack.axis = .vertical
+        textStack.spacing = 5
+        textStack.alignment = .leading
 
-        completionImageView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(10)
-            $0.centerY.equalToSuperview()
-            $0.size.equalTo(20)
+        contentView.addSubview(cardView)
+        cardView.addSubviews(checkView, textStack, moreButton)
+
+        let checkArea = UIView()
+        checkArea.isUserInteractionEnabled = false
+        cardView.addSubview(checkArea)
+        checkArea.addSubview(checkView)
+        cardView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(Self.rowSpacing)
+            $0.height.greaterThanOrEqualTo(DS.Size.row + 12)
         }
-        titleLabel.snp.makeConstraints {
-            $0.leading.equalTo(completionImageView.snp.trailing).offset(10)
+        checkArea.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(4)
             $0.centerY.equalToSuperview()
-            $0.trailing.lessThanOrEqualTo(moreButton.snp.leading).offset(-8)
+            $0.size.equalTo(48)
+        }
+        checkView.snp.makeConstraints { $0.center.equalToSuperview() }
+        textStack.snp.makeConstraints {
+            $0.leading.equalTo(checkArea.snp.trailing).offset(2)
+            $0.top.bottom.equalToSuperview().inset(14)
+            $0.trailing.lessThanOrEqualTo(moreButton.snp.leading).offset(-2)
         }
         moreButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(4)
             $0.centerY.equalToSuperview()
-            $0.size.equalTo(30)
+            $0.size.equalTo(DS.Size.touch)
         }
-
-        layer.shadowColor = UIColor.darkGray.cgColor
-        layer.shadowOffset = CGSize(width: 10, height: 10)
-        layer.shadowOpacity = 0.06
-        layer.shadowRadius = 10
     }
 }

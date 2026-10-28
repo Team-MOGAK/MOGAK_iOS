@@ -6,46 +6,14 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     private let viewModel: MG2TermsAgreeViewModel
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "서비스 이용 동의"
-        label.font = UIFont.pretendard(.bold, size: 24)
-        return label
-    }()
+    private let headerView = MG2ScreenHeaderView(title: "서비스 이용 동의")
 
-    private lazy var allAgreementButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "checkOff"), for: .normal)
-        button.addTarget(self, action: #selector(allAgreementButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private let allAgreementTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "약관 전체 동의"
-        label.textColor = DesignSystemColor.black.value
-        label.font = UIFont.pretendard(.semiBold, size: 18)
-        return label
-    }()
-
-    private let allAgreementDescriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "서비스 이용을 위해 약관에 모두 동의합니다."
-        label.textColor = DesignSystemColor.gray3.value
-        label.font = UIFont.pretendard(.medium, size: 14)
-        return label
-    }()
-
-    private let separatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = DesignSystemColor.gray2.value
-        return view
-    }()
+    private lazy var allAgreementRow = MG2AgreementRowView(title: "약관 전체 동의", subtitle: "서비스 이용을 위해 약관에 모두 동의해요", isEmphasized: true)
 
     private lazy var agreementStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 28
+        stackView.spacing = 4
         return stackView
     }()
 
@@ -53,7 +21,7 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     private lazy var nextButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle("다음", for: .normal)
+        button.setTitle("동의하고 계속하기", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
@@ -70,51 +38,36 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
         configureNavigationBar()
         configureLayout()
         loadConsentItems()
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = .gray
+        applyStepNavigationBar()
+        allAgreementRow.onToggle = { [weak self] in self?.allAgreementButtonTapped() }
     }
 
     private func configureLayout() {
-        view.addSubviews(titleLabel, allAgreementButton, allAgreementTitleLabel, allAgreementDescriptionLabel, separatorView, agreementStackView, nextButton)
+        view.addSubviews(headerView, allAgreementRow, agreementStackView, nextButton)
 
-        titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
-            $0.leading.equalToSuperview().offset(20)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-        allAgreementButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(44)
-            $0.leading.equalToSuperview().offset(20)
-            $0.size.equalTo(20)
-        }
-        allAgreementTitleLabel.snp.makeConstraints {
-            $0.centerY.equalTo(allAgreementButton)
-            $0.leading.equalTo(allAgreementButton.snp.trailing).offset(12)
-        }
-        allAgreementDescriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(allAgreementTitleLabel.snp.bottom).offset(9)
-            $0.leading.equalTo(allAgreementTitleLabel)
-        }
-        separatorView.snp.makeConstraints {
-            $0.top.equalTo(allAgreementDescriptionLabel.snp.bottom).offset(24)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(1)
+        allAgreementRow.snp.makeConstraints {
+            $0.top.equalTo(headerView.snp.bottom).offset(32)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         agreementStackView.snp.makeConstraints {
-            $0.top.equalTo(separatorView.snp.bottom).offset(26)
-            $0.leading.trailing.equalToSuperview().inset(30)
+            $0.top.equalTo(allAgreementRow.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet + 16)
         }
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
-            $0.height.equalTo(48)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 
@@ -155,7 +108,7 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     private func renderAgreements() {
         let agreements = viewModel.agreements
-        allAgreementButton.setImage(UIImage(named: agreements.hasAcceptedAllTerms ? "checkOn" : "checkOff"), for: .normal)
+        allAgreementRow.setChecked(agreements.hasAcceptedAllTerms)
         for selection in agreements.selections {
             agreementRows[selection.item.id]?.setChecked(selection.agreed)
         }
@@ -166,7 +119,7 @@ final class MG2TermsAgreeViewController: UIViewController {
         coordinator?.routeToNickname(draft: viewModel.draft, from: self)
     }
 
-    @objc private func allAgreementButtonTapped() {
+    private func allAgreementButtonTapped() {
         viewModel.toggleAllAgreements()
         renderAgreements()
     }

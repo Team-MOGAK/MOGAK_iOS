@@ -14,6 +14,7 @@ final class MG2ProfileImageCell: UICollectionViewCell {
         super.init(frame: frame)
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.backgroundColor = DS.Color.avatarBg
         contentView.addSubview(imageView)
         imageView.snp.makeConstraints { $0.edges.equalToSuperview() }
         updateBorder()
@@ -33,7 +34,8 @@ final class MG2ProfileImageCell: UICollectionViewCell {
     }
 
     private func updateBorder() {
-        imageView.layer.borderWidth = isSelected ? 3 : 1
-        imageView.layer.borderColor = (isSelected ? DesignSystemColor.signature.value : DesignSystemColor.gray2.value).cgColor
+        imageView.layer.borderWidth = isSelected ? 3 : 0
+        imageView.layer.borderColor = DS.Color.accent.cgColor
+        accessibilityTraits = isSelected ? [.button, .selected] : .button
     }
 }

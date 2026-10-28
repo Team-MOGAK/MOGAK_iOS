@@ -8,22 +8,32 @@ final class MG2ModalartMainViewController: UIViewController {
     private let viewModel: MG2ModalartMainViewModel
 
     private let modalartNameLabel = UILabel().then {
-        $0.font = DesignSystemFont.semibold20L140.value
-        $0.textColor = DesignSystemColor.black.value
+        $0.apply(.title1)
         $0.isUserInteractionEnabled = true
+        $0.accessibilityTraits = .header
     }
-    private lazy var showModalartListButton = UIButton().then {
-        $0.setImage(UIImage(named: "downArrow"), for: .normal)
+    private lazy var showModalartListButton = UIButton(type: .system).then {
+        $0.setImage(UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)), for: .normal)
+        $0.tintColor = DS.Color.ink
+        $0.accessibilityLabel = "모다라트 목록"
         $0.addTarget(self, action: #selector(modalartListButtonTapped), for: .touchUpInside)
     }
-    private lazy var modalartMenuButton = UIButton().then {
-        $0.setImage(UIImage(named: "VerticalEllipsisBlack"), for: .normal)
+    private lazy var modalartMenuButton = UIButton(type: .system).then {
+        $0.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 17, weight: .bold)), for: .normal)
+        $0.tintColor = DS.Color.ink
+        $0.backgroundColor = DS.Color.surface
+        $0.layer.cornerRadius = DS.Size.touch / 2
+        $0.layer.apply(.card)
         $0.accessibilityLabel = "모다라트 메뉴"
         $0.addTarget(self, action: #selector(modalartMenuButtonTapped), for: .touchUpInside)
     }
     private let modalartCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
-        $0.backgroundColor = DesignSystemColor.signatureBag.value
+        $0.backgroundColor = .clear
+        $0.clipsToBounds = false
+        $0.isScrollEnabled = false
     }
+    private var cellSize = CGSize(width: 100, height: 120)
+    private var nameTopConstraint: Constraint?
 
     init(viewModel: MG2ModalartMainViewModel) {
         self.viewModel = viewModel
@@ -36,7 +46,7 @@ final class MG2ModalartMainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = DesignSystemColor.signatureBag.value
+        view.backgroundColor = DS.Color.canvas
         configureCollectionView()
         configureLayout()
         modalartNameLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(modalartListButtonTapped)))
@@ -48,10 +58,6 @@ final class MG2ModalartMainViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        tabBarController?.tabBar.isHidden = false
-    }
 
     private func configureCollectionView() {
         modalartCollectionView.register(MG2EmptyMogakCell.self, forCellWithReuseIdentifier: MG2EmptyMogakCell.identifier)
@@ -64,24 +70,44 @@ final class MG2ModalartMainViewController: UIViewController {
     private func configureLayout() {
         view.addSubviews(modalartNameLabel, showModalartListButton, modalartMenuButton, modalartCollectionView)
         modalartNameLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(10)
+            $0.leading.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.gutter)
+            nameTopConstraint = $0.top.equalTo(view.safeAreaLayoutGuide).inset(12).constraint
+            $0.trailing.lessThanOrEqualTo(showModalartListButton.snp.leading)
         }
         showModalartListButton.snp.makeConstraints {
-            $0.size.equalTo(16)
-            $0.leading.equalTo(modalartNameLabel.snp.trailing).offset(12)
+            $0.size.equalTo(DS.Size.touch)
+            $0.leading.equalTo(modalartNameLabel.snp.trailing)
             $0.centerY.equalTo(modalartNameLabel)
+            $0.trailing.lessThanOrEqualTo(modalartMenuButton.snp.leading).offset(-8)
         }
         modalartMenuButton.snp.makeConstraints {
-            $0.size.equalTo(24)
-            $0.trailing.equalToSuperview().offset(-20)
+            $0.size.equalTo(DS.Size.touch)
+            $0.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
             $0.centerY.equalTo(modalartNameLabel)
         }
         modalartCollectionView.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.height.equalTo(520)
-            $0.centerX.centerY.equalToSuperview()
+            $0.centerX.equalTo(view.safeAreaLayoutGuide)
+            $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(20).priority(.high)
+            $0.top.greaterThanOrEqualTo(modalartNameLabel.snp.bottom).offset(20)
+            $0.width.height.equalTo(0)
         }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // iPhone SE(높이 667 이하)는 상단 여백 20.
+        nameTopConstraint?.update(inset: view.bounds.height <= 667 ? 20 : 12)
+        let safeFrame = view.safeAreaLayoutGuide.layoutFrame
+        let boardWidth = min(safeFrame.width - DS.Space.gutter * 2, MG2MandalaGrid.maxBoardWidth)
+        let availableHeight = safeFrame.maxY - modalartNameLabel.frame.maxY - 20
+        let size = MG2MandalaGrid.boardCellSize(boardWidth: boardWidth, availableHeight: availableHeight)
+        guard size != cellSize || modalartCollectionView.bounds.width == 0 else { return }
+        cellSize = size
+        modalartCollectionView.snp.updateConstraints {
+            $0.width.equalTo(size.width * 3 + DS.Space.cellGap * 2)
+            $0.height.equalTo(size.height * 3 + DS.Space.cellGap * 2)
+        }
+        modalartCollectionView.collectionViewLayout.invalidateLayout()
     }
 
     private func loadModalart() {
@@ -131,7 +157,8 @@ final class MG2ModalartMainViewController: UIViewController {
         modalartCollectionView.reloadData()
     }
 
-    private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity) {
+    private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity, from indexPath: IndexPath) {
+        let originFrame = modalartCollectionView.cellForItem(at: indexPath).map { $0.convert($0.bounds, to: nil) }
         showLoading()
         view.isUserInteractionEnabled = false
         viewModel.loadOccurrences(for: mogak) { [weak self] result in
@@ -141,7 +168,7 @@ final class MG2ModalartMainViewController: UIViewController {
             switch result {
             case .success(let occurrences):
                 guard let modalartID = viewModel.state.selectedID else { return }
-                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
+                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, originFrame: originFrame, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }
@@ -187,11 +214,16 @@ extension MG2ModalartMainViewController: UICollectionViewDataSource {
         if indexPath.item == MG2MandalaGrid.centerIndex {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ModalartMainCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2ModalartMainCell else { return reusableCell }
-            cell.configure(title: viewModel.state.centerTitle, color: viewModel.state.centerColor)
+            cell.configure(title: viewModel.state.centerTitle, color: viewModel.state.centerColor, caption: viewModel.state.needsTitle ? nil : "최종 목표")
             return cell
         }
 
-        guard let mogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.mogaks.indices.contains(mogakIndex) else { return collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath) }
+        guard let mogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.mogaks.indices.contains(mogakIndex) else {
+            let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath)
+            // 다음에 채울 칸 하나만 강조.
+            (reusableCell as? MG2EmptyMogakCell)?.configure(isSuggested: MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.mogaks.count && !viewModel.isGuest)
+            return reusableCell
+        }
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2MogakCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2MogakCell else { return reusableCell }
         let mogak = viewModel.state.mogaks[mogakIndex]
@@ -214,7 +246,7 @@ extension MG2ModalartMainViewController: UICollectionViewDelegate {
 
         guard let mogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item) else { return }
         if viewModel.state.mogaks.indices.contains(mogakIndex) {
-            openMogakDetail(viewModel.state.mogaks[mogakIndex])
+            openMogakDetail(viewModel.state.mogaks[mogakIndex], from: indexPath)
         } else if viewModel.state.needsTitle {
             coordinator?.presentMissingTitleNotice(from: self)
         } else if let modalartID = viewModel.state.selectedID {
@@ -225,18 +257,18 @@ extension MG2ModalartMainViewController: UICollectionViewDelegate {
 
 extension MG2ModalartMainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        MG2MandalaGrid.sectionInsets
+        .zero
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        MG2MandalaGrid.minimumLineSpacing
+        DS.Space.cellGap
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        MG2MandalaGrid.minimumInteritemSpacing
+        DS.Space.cellGap
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        MG2MandalaGrid.itemSize(in: modalartCollectionView)
+        cellSize
     }
 }

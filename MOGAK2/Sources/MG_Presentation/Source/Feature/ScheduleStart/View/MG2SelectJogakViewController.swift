@@ -21,21 +21,23 @@ final class MG2SelectJogakViewController: UIViewController {
     private lazy var modalartButton: UIButton = {
         let button = UIButton()
         button.setTitle("내 모다라트", for: .normal)
-        button.titleLabel?.font = DesignSystemFont.semibold20L140.value
-        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = T.headline.font
+        button.setTitleColor(DS.Color.ink, for: .normal)
+        button.accessibilityHint = "다른 모다라트를 고를 수 있어요"
         button.showsMenuAsPrimaryAction = true
         return button
     }()
 
     private let chevronImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "chevron.down"))
-        imageView.tintColor = DesignSystemColor.gray5.value
+        imageView.tintColor = DS.Color.ghost
+        imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
         return imageView
     }()
 
     private lazy var addButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle("추가하기", for: .normal)
+        button.setTitle("오늘의 조각에 추가", for: .normal)
         button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
@@ -48,12 +50,14 @@ final class MG2SelectJogakViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
         return tableView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        applyStepNavigationBar()
         configureLayout()
         configureModalarts()
     }
@@ -63,25 +67,25 @@ final class MG2SelectJogakViewController: UIViewController {
 
         modalartButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(36)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+            $0.height.equalTo(DS.Size.touch)
         }
 
         chevronImageView.snp.makeConstraints {
-            $0.size.equalTo(16)
             $0.centerY.equalTo(modalartButton)
-            $0.leading.equalTo(modalartButton.snp.trailing).offset(12)
+            $0.leading.equalTo(modalartButton.snp.trailing).offset(6)
         }
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(modalartButton.snp.bottom).offset(24)
+            $0.top.equalTo(modalartButton.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(addButton.snp.top).offset(-10)
         }
 
         addButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
-            $0.height.equalTo(48)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 
@@ -210,6 +214,6 @@ extension MG2SelectJogakViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        indexPath.row == 0 ? 60 : 40
+        indexPath.row == 0 ? DS.Size.row : DS.Size.row - 4
     }
 }

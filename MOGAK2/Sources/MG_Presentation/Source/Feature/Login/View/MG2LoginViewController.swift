@@ -26,11 +26,10 @@ final class MG2LoginViewController: UIViewController {
 
     private let mogakLabel: UILabel = {
         let label = UILabel()
-        label.text = "모두가 각자의 성장을\n응원하기 위한\n여정을 시작해볼까요?"
-        label.numberOfLines = 3
-        label.textAlignment = .center
-        label.font = UIFont.pretendard(.regular, size: 30)
-        label.asFont(targetString: "모두가 각자의 성장을", font: UIFont.pretendard(.bold, size: 30))
+        label.attributedText = NSAttributedString(string: "모두가 각자의 성장을\n응원하는 여정,\n시작해 볼까요?", attributes: T.onboardingTitle.attributes(alignment: .center))
+        label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
+        label.accessibilityTraits = .header
         return label
     }()
 
@@ -50,22 +49,32 @@ final class MG2LoginViewController: UIViewController {
         $0.addTarget(self, action: #selector(googleLoginButtonTapped), for: .touchUpInside)
     }
 
-    private lazy var guestLoginButton = makeLoginButton(title: "로그인 없이 계속하기", image: UIImage(systemName: "person.fill"), backgroundColor: DesignSystemColor.white.value, titleColor: DesignSystemColor.black.value, borderColor: DesignSystemColor.black.value).then {
+    private lazy var guestLoginButton = MG2PrimaryActionButton(style: .ghost).then {
+        $0.setTitle("로그인 없이 둘러보기", for: .normal)
+        $0.accessibilityHint = "둘러보기에서는 기록이 남지 않아요"
         $0.addTarget(self, action: #selector(guestLoginButtonTapped), for: .touchUpInside)
     }
 
+    private let guestHintLabel = UILabel().then {
+        $0.apply(.footnote, color: DS.Color.muted)
+        $0.text = "둘러보기에서는 기록이 남지 않아요"
+        $0.textAlignment = .center
+        $0.isAccessibilityElement = false
+    }
+
     private lazy var loginButtonStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton])
+        let stackView = UIStackView(arrangedSubviews: [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton, guestHintLabel])
         stackView.axis = .vertical
-        stackView.spacing = 12
-        stackView.distribution = .fillEqually
+        stackView.spacing = DS.Space.stack
+        stackView.setCustomSpacing(4, after: googleLoginButton)
+        stackView.setCustomSpacing(0, after: guestLoginButton)
         return stackView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = DesignSystemColor.white.value
+        view.backgroundColor = DS.Color.surface
         configureLabel()
         configureButton()
         configureImage()
@@ -78,7 +87,7 @@ final class MG2LoginViewController: UIViewController {
 
         mogakLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(48)
-            $0.centerX.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -87,7 +96,7 @@ final class MG2LoginViewController: UIViewController {
 
         loginImage.snp.makeConstraints {
             $0.top.equalTo(mogakLabel.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(6)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.bottom.equalTo(loginButtonStackView.snp.top).offset(-20)
         }
     }
@@ -96,10 +105,10 @@ final class MG2LoginViewController: UIViewController {
         view.addSubview(loginButtonStackView)
 
         loginButtonStackView.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-26)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(220)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
+        [appleLoginButton, kakaoLoginButton, googleLoginButton].forEach { button in button.snp.makeConstraints { $0.height.equalTo(DS.Size.button) } }
     }
 
     private func bindViewModel() {
@@ -139,18 +148,20 @@ final class MG2LoginViewController: UIViewController {
         onGuestContinue?()
     }
 
-    /// 아이콘과 글자를 가운데에 모으고 사이를 10pt 띄운다. 아이콘은 모두 18pt.
+    /// 소셜 로그인 버튼은 각 회사 브랜드 색을 지키고, 크기 · 모서리 · 글자만 디자인 시스템(primary 52 · 16 · button)에 맞춘다.
     private func makeLoginButton(title: String, image: UIImage?, backgroundColor: UIColor, titleColor: UIColor, borderColor: UIColor? = nil) -> UIButton {
         var configuration = UIButton.Configuration.plain()
         configuration.image = image
         configuration.imagePadding = 10
         configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
-        configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([.font: UIFont.pretendard(.medium, size: 18)]))
+        configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([.font: T.button.font]))
         configuration.baseForegroundColor = titleColor
         configuration.background.backgroundColor = backgroundColor
-        configuration.background.cornerRadius = 10
+        configuration.background.cornerRadius = DS.Radius.button
         configuration.background.strokeColor = borderColor
         configuration.background.strokeWidth = borderColor == nil ? 0 : 1
-        return UIButton(configuration: configuration)
+        let button = UIButton(configuration: configuration)
+        button.enablePressFeedback()
+        return button
     }
 }

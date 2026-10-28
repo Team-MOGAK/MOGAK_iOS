@@ -7,9 +7,11 @@ final class MG2MyPageCoordinator {
     private let userState: MG2UserState
     private let loginCoordinator: MG2LoginCoordinator
     private let loginGateCoordinator: MG2LoginGateCoordinator
+    private let adProvider: MG2AdProviding
     private let alertCoordinator = MG2AlertCoordinator()
 
-    init(userUseCase: UserUseCase, authUseCase: AuthUseCase, userState: MG2UserState, loginCoordinator: MG2LoginCoordinator) {
+    init(userUseCase: UserUseCase, authUseCase: AuthUseCase, userState: MG2UserState, loginCoordinator: MG2LoginCoordinator, adProvider: MG2AdProviding) {
+        self.adProvider = adProvider
         self.userUseCase = userUseCase
         self.authUseCase = authUseCase
         self.userState = userState
@@ -61,9 +63,9 @@ final class MG2MyPageCoordinator {
     }
 
     func presentWithdrawalConfirmation(onConfirm: @escaping () -> Void, from source: UIViewController) {
-        let alert = UIAlertController(title: "정말 회원탈퇴를 하시겠습니까?", message: "회원탈퇴를 하시면 데이터를 복원할 수 없습니다!", preferredStyle: .alert)
+        let alert = UIAlertController(title: "정말 회원탈퇴를 하시겠습니까?", message: "탈퇴하면 모다라트와 조각 기록을 되살릴 수 없어요", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "취소", style: .cancel))
-        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { _ in onConfirm() })
+        alert.addAction(UIAlertAction(title: "탈퇴하기", style: .destructive) { _ in onConfirm() })
         source.present(alert, animated: true)
     }
 
@@ -73,5 +75,9 @@ final class MG2MyPageCoordinator {
 
     func presentUnavailableFeature(_ message: String, from source: UIViewController) {
         alertCoordinator.presentInfo(title: "준비중", message: message, from: source)
+    }
+
+    func makeBanner(width: CGFloat, from source: UIViewController) -> UIView {
+        adProvider.makeBanner(width: width, rootViewController: source)
     }
 }

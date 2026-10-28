@@ -8,22 +8,30 @@
 import UIKit
 import SnapKit
 
-/// 모다라트 정중앙에 들어가는 Cell
+/// 판 가운데 칸 (GoalCell). 판에서는 최종 목표, 모각 화면에서는 모각 이름. 흰 글자 · `shadow-goal`.
 final class MG2ModalartMainCell: UICollectionViewCell {
     static let identifier = "MG2ModalartMainCell"
 
-    private lazy var goalLabel: UILabel = {
+    private let captionLabel: UILabel = {
+        let label = UILabel()
+        label.apply(.caption1, color: DS.Color.surface.withAlphaComponent(0.85))
+        label.textAlignment = .center
+        return label
+    }()
+
+    private let goalLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.textColor = DesignSystemColor.white.value
-        label.font = UIFont.pretendard(.semiBold, size: 16)
+        label.textColor = DS.Color.surface
         label.textAlignment = .center
+        label.adjustsFontForContentSizeCategory = true
         return label
     }()
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        layer.cornerRadius = 15
+        contentView.roundCorners(DS.Radius.cell)
+        layer.apply(.goal)
         configureLayout()
     }
 
@@ -31,21 +39,27 @@ final class MG2ModalartMainCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(title: String, color: String) {
+    /// 이름이 6자를 넘으면 16pt, 아니면 19pt.
+    func configure(title: String, color: String, caption: String? = nil) {
         goalLabel.text = title
-        backgroundColor = UIColor(hex: color)
+        goalLabel.font = UIFontMetrics(forTextStyle: .headline).scaledFont(for: .pretendard(.extraBold, size: title.count > 6 ? 16 : 19), maximumPointSize: 26)
+        captionLabel.text = caption
+        captionLabel.isHidden = caption == nil
+        contentView.backgroundColor = DS.Moak.displayColor(forServerHex: color)
+        contentView.isAccessibilityElement = true
+        contentView.accessibilityLabel = [caption, title.replacingOccurrences(of: "\n", with: " ")].compactMap { $0 }.joined(separator: ", ")
+        contentView.accessibilityTraits = .button
     }
-}
 
-// MARK: - 오토레이아웃 잡기
-extension MG2ModalartMainCell {
     private func configureLayout() {
-        contentView.addSubview(goalLabel)
+        let stack = UIStackView(arrangedSubviews: [captionLabel, goalLabel])
+        stack.axis = .vertical
+        stack.spacing = 4
+        contentView.addSubview(stack)
 
-        goalLabel.snp.makeConstraints{
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
-            $0.leading.equalToSuperview().offset(20)
+        stack.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(12)
         }
     }
 }

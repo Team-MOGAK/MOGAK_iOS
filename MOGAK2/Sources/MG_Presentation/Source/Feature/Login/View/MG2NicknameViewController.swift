@@ -22,51 +22,30 @@ final class MG2NicknameViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let setNicknameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "프로필 설정"
-        label.font = UIFont.pretendard(.bold, size: 24)
-        label.textColor = .black
-        return label
-    }()
-
-    private let subLabel: UILabel = {
-        let label = UILabel()
-        label.text = "어떤 이름으로 모각러들과 교류해볼까요?"
-        label.font = UIFont.pretendard(.medium, size: 16)
-        label.textColor = DesignSystemColor.gray4.value
-        return label
-    }()
+    private lazy var headerView = MG2ScreenHeaderView(title: viewModel.isEditing ? "닉네임 변경" : "프로필 설정", subtitle: "어떤 이름으로 모각러들과 만나 볼까요?")
 
     private let profileImageView = MG2ProfileImageView()
 
-    private lazy var nicknameTextField: UITextField = {
-        let textField = UITextField()
-        let placeholderAttributes = [NSAttributedString.Key.font: UIFont.pretendard(.medium, size: 16), NSAttributedString.Key.foregroundColor : DesignSystemColor.gray3.value]
-        let placeholderText = viewModel.currentNickname.isEmpty ? "닉네임을 입력해주세요." : viewModel.currentNickname
-        textField.textAlignment = .left
+    private let nicknameLabel = MG2FieldLabel("닉네임")
+
+    private lazy var nicknameTextField: MG2TextField = {
+        let textField = MG2TextField()
+        textField.placeholder = viewModel.currentNickname.isEmpty ? "닉네임을 적어 주세요" : viewModel.currentNickname
         textField.delegate = self
-        textField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 20.0, height: 0.0))
-        textField.leftViewMode = .always
-        textField.borderStyle = .none
-        textField.backgroundColor = DesignSystemColor.gray2.value
-        textField.layer.cornerRadius = 10
-        textField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: placeholderAttributes)
+        textField.returnKeyType = .done
+        textField.accessibilityLabel = "닉네임"
         return textField
     }()
 
-    private let guideLabel: UILabel = {
-        let label = UILabel()
-        label.text = "최대 10자까지 입력할 수 있습니다."
-        label.font = UIFont.pretendard(.medium, size: 14)
-        label.textColor = DesignSystemColor.gray4.value
+    private let guideLabel: MG2HintLabel = {
+        let label = MG2HintLabel()
+        label.show("최대 10자까지 적을 수 있어요")
         return label
     }()
 
     private lazy var nextButton: UIButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle("다음", for: .normal)
-        button.titleLabel?.textAlignment = .center
+        button.setTitle(viewModel.isEditing ? "닉네임 저장" : "다음", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
@@ -79,9 +58,7 @@ final class MG2NicknameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.shadowImage = UIImage()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
         configureNavigationBar()
         configureLabel()
         configureProfileImage()
@@ -92,29 +69,24 @@ final class MG2NicknameViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = .gray
+        applyStepNavigationBar()
     }
 
     private func configureLabel() {
-        [setNicknameLabel, subLabel].forEach({view.addSubview($0)})
+        view.addSubview(headerView)
 
-        setNicknameLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(24)
-            $0.leading.equalToSuperview().offset(20)
-        }
-
-        subLabel.snp.makeConstraints {
-            $0.top.equalTo(setNicknameLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
     private func configureProfileImage() {
         view.addSubview(profileImageView)
         profileImageView.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.top.equalTo(subLabel.snp.bottom).offset(100)
+            // 가입 완료 아바타 120.
+            $0.width.height.equalTo(120)
+            $0.top.equalTo(headerView.snp.bottom).offset(40)
             $0.centerX.equalToSuperview()
         }
         // 프로필 수정에서는 "프로필 이미지 변경" 화면에서 바꾼다.
@@ -123,17 +95,19 @@ final class MG2NicknameViewController: UIViewController {
     }
 
     private func configureTextField() {
-        [nicknameTextField, guideLabel].forEach({view.addSubview($0)})
+        view.addSubviews(nicknameLabel, nicknameTextField, guideLabel)
 
-        nicknameTextField.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(52)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.061)
+        nicknameLabel.snp.makeConstraints {
+            $0.top.equalTo(profileImageView.snp.bottom).offset(40)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
+        nicknameTextField.snp.makeConstraints {
+            $0.top.equalTo(nicknameLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
         guideLabel.snp.makeConstraints {
-            $0.top.equalTo(nicknameTextField.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(nicknameTextField.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -141,10 +115,9 @@ final class MG2NicknameViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            //            $0.height.equalTo(53)
-            $0.height.equalToSuperview().multipliedBy(0.06)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
         }
     }
 
@@ -197,16 +170,21 @@ extension MG2NicknameViewController: UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        guideLabel.text = "최대 10글자까지 입력가능합니다."
-        guideLabel.textColor = DesignSystemColor.gray4.value
+        nicknameTextField.isInvalid = false
+        guideLabel.show("최대 10자까지 적을 수 있어요")
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text else { return }
         let validationMessage = viewModel.isEditing && text.isEmpty ? nil : viewModel.nicknameValidationMessage(text)
         renderSubmissionState()
-        guideLabel.text = validationMessage ?? "최대 10글자까지 입력가능합니다."
-        guideLabel.textColor = validationMessage == nil ? DesignSystemColor.gray4.value : DesignSystemColor.red.value
+        nicknameTextField.isInvalid = validationMessage != nil
+        if let validationMessage {
+            guideLabel.show(validationMessage, state: .bad)
+        } else {
+            // 중복 여부는 제출할 때 서버가 알려 주므로 여기서는 통과(초록)로 보이지 않는다.
+            guideLabel.show("최대 10자까지 적을 수 있어요")
+        }
     }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""

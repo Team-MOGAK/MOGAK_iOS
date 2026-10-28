@@ -20,31 +20,20 @@ final class MG2ChooseRegionViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    private let mogakLabel: UILabel = {
-        let label = UILabel()
-        label.text = "거주지 선택"
-        label.font = UIFont.pretendard(.bold, size: 24)
-        label.textColor = .black
-        return label
-    }()
-
-    private let subLabel: UILabel = {
-        let label = UILabel()
-        label.text = "나와 가장 가까운 모각러들과 함께 성장해봐요.\n현재는 시/도까지만 선택 가능해요."
-        label.font = UIFont.pretendard(.medium, size: 16)
-        label.numberOfLines = 2
-        label.textColor = DesignSystemColor.gray4.value
-        return label
-    }()
+    private let headerView = MG2ScreenHeaderView(title: "사는 곳", subtitle: "가까운 모각러들과 함께 성장해요. 지금은 시 · 도까지만 고를 수 있어요")
 
     private let tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 64
         return tableView
     }()
 
     private lazy var nextButton: UIButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle("완료", for: .normal)
+        button.setTitle("모각 시작하기", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
@@ -57,8 +46,7 @@ final class MG2ChooseRegionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = false
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
 
         configureNavigationBar()
         configureLabel()
@@ -73,21 +61,15 @@ final class MG2ChooseRegionViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = .gray
+        applyStepNavigationBar()
     }
 
     private func configureLabel() {
-        view.addSubviews(mogakLabel, subLabel)
+        view.addSubview(headerView)
 
-        mogakLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(24)
-            $0.leading.equalToSuperview().offset(20)
-        }
-
-        subLabel.snp.makeConstraints {
-            $0.top.equalTo(mogakLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -98,8 +80,8 @@ final class MG2ChooseRegionViewController: UIViewController {
         tableView.register(MG2RegionCell.self, forCellReuseIdentifier: "MG2RegionCell")
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(subLabel.snp.bottom).offset(24)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.top.equalTo(headerView.snp.bottom).offset(24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.bottom.equalTo(nextButton.snp.top).offset(-8)
         }
     }
@@ -108,9 +90,9 @@ final class MG2ChooseRegionViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.061)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
     }
 
@@ -167,7 +149,4 @@ extension MG2ChooseRegionViewController: UITableViewDelegate, UITableViewDataSou
         tableView.reloadData()
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return view.bounds.height / 20
-    }
 }

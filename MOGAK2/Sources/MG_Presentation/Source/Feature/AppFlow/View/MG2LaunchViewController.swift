@@ -13,13 +13,12 @@ final class MG2LaunchViewController: UIViewController {
     }
 
     private let activityIndicator = UIActivityIndicatorView(style: .medium).then {
-        $0.color = DesignSystemColor.signature.value
+        $0.color = DS.Color.accent
         $0.hidesWhenStopped = true
     }
 
     private let statusLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = DesignSystemColor.gray4.value
+        $0.apply(.paragraph, color: DS.Color.sub)
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }
@@ -40,7 +39,7 @@ final class MG2LaunchViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
         configureLayout()
         viewModel.onStateChange = { [weak self] in self?.handle($0) }
         viewModel.start()
@@ -60,12 +59,12 @@ final class MG2LaunchViewController: UIViewController {
         }
         statusLabel.snp.makeConstraints {
             $0.top.equalTo(activityIndicator.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         retryButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.06)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
     }
 
@@ -76,10 +75,10 @@ final class MG2LaunchViewController: UIViewController {
             retryButton.isHidden = true
         case .preparing:
             activityIndicator.startAnimating()
-            statusLabel.text = "잠시만 기다려주세요."
+            statusLabel.text = "서버를 깨우는 중이에요. 잠시만 기다려 주세요"
         case .failed:
             activityIndicator.stopAnimating()
-            statusLabel.text = "연결이 원활하지 않아요.\n잠시 후 다시 시도해주세요."
+            statusLabel.text = "연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요"
             retryButton.isHidden = false
         case .ready:
             activityIndicator.stopAnimating()

@@ -10,7 +10,7 @@ struct MG2MyPageProfileState {
         userState.$nickname
             .combineLatest(userState.$job, userState.$loginState, userState.$profileImageID)
             .map { nickname, job, loginState, profileImageID in
-                guard loginState != .guest else { return MG2MyPageProfileState(name: "로그인이 필요합니다.", job: "환영합니다!", profileImageName: MG2ProfileImage.assetName(for: nil)) }
+                guard loginState != .guest else { return MG2MyPageProfileState(name: "로그인이 필요해요", job: "모각러님, 반가워요!", profileImageName: MG2ProfileImage.assetName(for: nil)) }
                 return MG2MyPageProfileState(name: nickname, job: job, profileImageName: MG2ProfileImage.assetName(for: profileImageID))
             }
             .eraseToAnyPublisher()

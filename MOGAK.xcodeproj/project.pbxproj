@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D1AD0000000000000000000C /* MOGAKWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D1AD00000000000000000011 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000010 /* GoogleMobileAds */; };
+		D1AD00000000000000000014 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000013 /* GoogleUserMessagingPlatform */; };
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
@@ -18,13 +21,40 @@
 		D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB92F7A0000014DA6D /* KakaoSDKUser */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D1AD0000000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9CFA7CF92A458109003E80A7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D1AD00000000000000000004;
+			remoteInfo = MOGAKWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D1AD0000000000000000000B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D1AD0000000000000000000C /* MOGAKWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MOGAKWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Auth.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		D1AD00000000000000000002 /* Shared */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Shared; sourceTree = "<group>"; };
+		D1AD00000000000000000003 /* MOGAKWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAKWidget; sourceTree = "<group>"; };
 		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -42,6 +72,15 @@
 				D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */,
 				D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */,
 				4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */,
+				D1AD00000000000000000011 /* GoogleMobileAds in Frameworks */,
+				D1AD00000000000000000014 /* GoogleUserMessagingPlatform in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1AD00000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +102,8 @@
 				9CFA7D022A458109003E80A7 /* Products */,
 				49735387F313C5F5C869DD30 /* Frameworks */,
 				D1090C862F6FC92A001FFF4E /* MOGAK2 */,
+				D1AD00000000000000000002 /* Shared */,
+				D1AD00000000000000000003 /* MOGAKWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -70,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				9CFA7D012A458109003E80A7 /* MOGAK.app */,
+				D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,18 +126,42 @@
 				9CFA7CFD2A458109003E80A7 /* Sources */,
 				9CFA7CFE2A458109003E80A7 /* Frameworks */,
 				9CFA7CFF2A458109003E80A7 /* Resources */,
+				D1AD0000000000000000000B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D1AD0000000000000000000E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D1090C862F6FC92A001FFF4E /* MOGAK2 */,
+				D1AD00000000000000000002 /* Shared */,
+			);
+			name = MOGAK;
+			productName = MOGAK;
+			productReference = 9CFA7D012A458109003E80A7 /* MOGAK.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D1AD00000000000000000004 /* MOGAKWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1AD00000000000000000008 /* Build configuration list for PBXNativeTarget "MOGAKWidgetExtension" */;
+			buildPhases = (
+				D1AD00000000000000000005 /* Sources */,
+				D1AD00000000000000000006 /* Frameworks */,
+				D1AD00000000000000000007 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D1090C862F6FC92A001FFF4E /* MOGAK2 */,
+				D1AD00000000000000000002 /* Shared */,
+				D1AD00000000000000000003 /* MOGAKWidget */,
 			);
-			name = MOGAK;
-			productName = MOGAK;
-			productReference = 9CFA7D012A458109003E80A7 /* MOGAK.app */;
-			productType = "com.apple.product-type.application";
+			name = MOGAKWidgetExtension;
+			productName = MOGAKWidgetExtension;
+			productReference = D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -109,6 +175,9 @@
 				TargetAttributes = {
 					9CFA7D002A458109003E80A7 = {
 						CreatedOnToolsVersion = 14.1;
+					};
+					D1AD00000000000000000004 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -128,18 +197,28 @@
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				D1AD0000000000000000000F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				D1AD00000000000000000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
 			);
 			productRefGroup = 9CFA7D022A458109003E80A7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				9CFA7D002A458109003E80A7 /* MOGAK */,
+				D1AD00000000000000000004 /* MOGAKWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9CFA7CFF2A458109003E80A7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1AD00000000000000000007 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -156,7 +235,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D1AD00000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D1AD0000000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D1AD00000000000000000004 /* MOGAKWidgetExtension */;
+			targetProxy = D1AD0000000000000000000D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9CFA7D132A45810B003E80A7 /* Debug */ = {
@@ -211,7 +305,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -268,7 +362,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -299,7 +393,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -338,7 +432,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -351,6 +445,60 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D1AD00000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAKWidget.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/MOGAKWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "모각";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogaks.MOGAKWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		D1AD0000000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAKWidget.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Configuration/MOGAKWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "모각";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.team.mogaks.MOGAKWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -374,6 +522,15 @@
 			buildConfigurations = (
 				9CFA7D162A45810B003E80A7 /* Debug */,
 				9CFA7D172A45810B003E80A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D1AD00000000000000000008 /* Build configuration list for PBXNativeTarget "MOGAKWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1AD00000000000000000009 /* Debug */,
+				D1AD0000000000000000000A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -429,6 +586,22 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		D1AD0000000000000000000F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
+		D1AD00000000000000000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -471,6 +644,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKUser;
+		};
+		D1AD00000000000000000010 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1AD0000000000000000000F /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		D1AD00000000000000000013 /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1AD00000000000000000012 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

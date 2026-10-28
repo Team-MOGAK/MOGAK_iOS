@@ -20,8 +20,7 @@ final class MG2ProfileImageView: UIControl {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = DesignSystemColor.gray2.value.cgColor
+        imageView.backgroundColor = DS.Color.avatarBg
         return imageView
     }()
 

@@ -13,17 +13,7 @@ final class MG2TabBarCoordinator {
     }
 
     func start() -> UIViewController {
-        let tabs = [
-            (scheduleStartCoordinator.start(), "조각시작", "start", "selectedStart"),
-            (modalartCoordinator.start(), "모다라트", "modalArt", "selectedModalArt"),
-            (myPageCoordinator.start(), "마이페이지", "mypage", "selectedMypage")
-        ]
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = tabs.map { root, title, imageName, selectedImageName in
-            let navigationController = UINavigationController(rootViewController: root)
-            navigationController.tabBarItem = UITabBarItem(title: title, image: UIImage(named: imageName), selectedImage: UIImage(named: selectedImageName))
-            return navigationController
-        }
-        return tabBarController
+        let roots = [scheduleStartCoordinator.start(), modalartCoordinator.start(), myPageCoordinator.start()]
+        return MG2MainTabViewController(navigationControllers: roots.map(UINavigationController.init(rootViewController:)))
     }
 }

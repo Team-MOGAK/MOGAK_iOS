@@ -24,16 +24,27 @@ final class MG2AppComposition {
     private lazy var modalartUseCase = ModalartUseCase(repository: modalartRepository, jogakRepository: scheduleStartRepository)
     private lazy var mogakEditingUseCase = MogakEditingUseCase(repository: mogakEditingRepository)
     private lazy var scheduleStartUseCase = ScheduleStartUseCase(repository: scheduleStartRepository, modalartRepository: modalartRepository)
+    private lazy var todayUseCase = TodayUseCase(repository: scheduleStartRepository, snapshotStorage: MG2TodaySnapshotStore(), surfaces: MG2TodaySurfaceRefresher(), reminder: MG2ReminderScheduler())
+
+    /// 광고 노출 규칙과 AdMob 어댑터. SceneDelegate가 앱 열기 광고에 같이 쓴다.
+    lazy var adPolicyUseCase = AdPolicyUseCase(storage: MG2AdPolicyStore())
+    let adProvider = MG2AdMobProvider()
 
     private init() {}
+
+    /// 위젯 · 라이브 액티비티 버튼(LiveActivityIntent)이 앱 프로세스에서 오늘 조각을 바꾸게 연결한다.
+    func connectPieceIntents() {
+        MG2PieceIntentBridge.completeNext = { [todayUseCase] in try await todayUseCase.completeNextPiece() }
+        MG2PieceIntentBridge.toggle = { [todayUseCase] in try await todayUseCase.togglePiece(jogakID: $0) }
+    }
 
     /// 첫 화면을 정하고 루트 화면을 만드는 Coordinator. 앱 실행마다 한 번 만든다.
     func makeAppFlowCoordinator() -> MG2AppFlowCoordinator {
         let loginCoordinator = MG2LoginCoordinator(authUseCase: authUseCase, userUseCase: userUseCase, userState: userState)
         let formCoordinator = MG2MogakJogakFormCoordinator(useCase: mogakEditingUseCase)
-        let scheduleStartCoordinator = MG2ScheduleStartCoordinator(useCase: scheduleStartUseCase, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
+        let scheduleStartCoordinator = MG2ScheduleStartCoordinator(useCase: scheduleStartUseCase, todayUseCase: todayUseCase, adPolicyUseCase: adPolicyUseCase, adProvider: adProvider, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
         let modalartCoordinator = MG2ModalartCoordinator(useCase: modalartUseCase, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
-        let myPageCoordinator = MG2MyPageCoordinator(userUseCase: userUseCase, authUseCase: authUseCase, userState: userState, loginCoordinator: loginCoordinator)
+        let myPageCoordinator = MG2MyPageCoordinator(userUseCase: userUseCase, authUseCase: authUseCase, userState: userState, loginCoordinator: loginCoordinator, adProvider: adProvider)
         let tabBarCoordinator = MG2TabBarCoordinator(scheduleStartCoordinator: scheduleStartCoordinator, modalartCoordinator: modalartCoordinator, myPageCoordinator: myPageCoordinator)
         let onboardingCoordinator = MG2OnboardingCoordinator(authUseCase: authUseCase)
 

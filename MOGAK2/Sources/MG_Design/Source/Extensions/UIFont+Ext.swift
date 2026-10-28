@@ -13,6 +13,7 @@ extension UIFont {
         case medium
         case semiBold
         case regular
+        case extraBold
 
         var value: String {
             switch self {
@@ -24,6 +25,8 @@ extension UIFont {
                 return "Pretendard-SemiBold"
             case .regular:
                 return "Pretendard-Regular"
+            case .extraBold:
+                return "Pretendard-ExtraBold"
             }
         }
     }

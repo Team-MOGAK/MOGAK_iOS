@@ -7,24 +7,14 @@ final class MG2ProfileImageEditViewController: UIViewController {
 
     private let viewModel: MG2ProfileImageEditViewModel
 
-    private let titleLabel = UILabel().then {
-        $0.text = "프로필 이미지 변경"
-        $0.font = UIFont.pretendard(.bold, size: 24)
-        $0.textColor = .black
-    }
-
-    private let subtitleLabel = UILabel().then {
-        $0.text = "모각러들에게 보여줄 이미지를 골라주세요."
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = DesignSystemColor.gray4.value
-    }
+    private let headerView = MG2ScreenHeaderView(title: "프로필 이미지 변경", subtitle: "모각러들에게 보여줄 캐릭터를 골라 주세요")
 
     private let profileImageView = MG2ProfileImageView().then {
         $0.isEditable = true
     }
 
     private lazy var completeButton = MG2PrimaryActionButton().then {
-        $0.setTitle("완료", for: .normal)
+        $0.setTitle("프로필 이미지 저장", for: .normal)
         $0.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
 
@@ -44,38 +34,32 @@ final class MG2ProfileImageEditViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.shadowImage = UIImage()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
         configureNavigationBar()
         configureLayout()
         render()
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = .gray
+        applyStepNavigationBar()
     }
 
     private func configureLayout() {
-        view.addSubviews(titleLabel, subtitleLabel, profileImageView, completeButton)
+        view.addSubviews(headerView, profileImageView, completeButton)
 
-        titleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(24)
-            $0.leading.equalToSuperview().offset(20)
-        }
-        subtitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         profileImageView.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.top.equalTo(subtitleLabel.snp.bottom).offset(100)
+            $0.width.height.equalTo(120)
+            $0.top.equalTo(headerView.snp.bottom).offset(56)
             $0.centerX.equalToSuperview()
         }
         completeButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalToSuperview().multipliedBy(0.06)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
 
         profileImageView.addTarget(self, action: #selector(profileImageTapped), for: .touchUpInside)

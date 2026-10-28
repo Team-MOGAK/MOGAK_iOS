@@ -1,6 +1,7 @@
 import UIKit
 import SnapKit
 
+/// 조각 가져오기: 고를 수 있는 조각 한 줄. 행 전체가 체크 영역, 이미 오늘의 조각이면 완료 모양으로 잠근다.
 final class MG2SelectableJogakCell: UITableViewCell {
     static let reuseIdentifier = "MG2SelectableJogakCell"
 
@@ -9,35 +10,32 @@ final class MG2SelectableJogakCell: UITableViewCell {
     private var jogakID = 0
     private var isLocked = false
 
+    private let checkView = MG2CheckCircleView()
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = DesignSystemFont.medium16L150.value
+        label.apply(.callout)
         return label
-    }()
-
-    private let checkImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = UIColor(hex: DesignSystemPalette.neutralGrayHex)
-        return imageView
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        contentView.addSubviews(checkImageView, titleLabel)
+        backgroundColor = .clear
+        contentView.addSubviews(checkView, titleLabel)
 
-        checkImageView.snp.makeConstraints {
-            $0.size.equalTo(20)
-            $0.leading.equalToSuperview().inset(40)
+        checkView.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(DS.Space.sheet + 8)
             $0.centerY.equalToSuperview()
         }
         titleLabel.snp.makeConstraints {
-            $0.leading.equalTo(checkImageView.snp.trailing).offset(5)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.leading.equalTo(checkView.snp.trailing).offset(12)
+            $0.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.centerY.equalToSuperview()
         }
 
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(contentViewTapped)))
+        isAccessibilityElement = true
+        accessibilityTraits = .button
     }
 
     required init?(coder: NSCoder) {
@@ -55,13 +53,23 @@ final class MG2SelectableJogakCell: UITableViewCell {
         titleLabel.text = item.title
         jogakID = item.id
         isLocked = !item.isSelectable
-        setSelectedAppearance(isLocked || isSelected)
-        contentView.alpha = isLocked ? 0.6 : 1
+        titleLabel.textColor = isLocked ? DS.Color.faint : DS.Color.ink
+        accessibilityLabel = item.title + (isLocked ? ", 이미 오늘의 조각" : "")
+        setSelectedAppearance(isLocked || isSelected, animated: false)
     }
 
     func setSelectedAppearance(_ isSelected: Bool) {
-        checkImageView.image = UIImage(systemName: isSelected ? "checkmark.square.fill" : "square")
-        checkImageView.tintColor = isSelected ? DesignSystemColor.lightGreen.value : UIColor(hex: DesignSystemPalette.neutralGrayHex)
+        setSelectedAppearance(isSelected, animated: true)
+    }
+
+    override func accessibilityActivate() -> Bool {
+        contentViewTapped()
+        return true
+    }
+
+    private func setSelectedAppearance(_ isSelected: Bool, animated: Bool) {
+        checkView.setDone(isSelected, color: isLocked ? DS.Color.disabled : DS.Color.accent, animated: animated)
+        accessibilityValue = isSelected ? "선택됨" : nil
     }
 
     @objc private func contentViewTapped() {

@@ -12,29 +12,41 @@ final class MG2MyPageEditViewController: UIViewController {
     private let profileImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
+        $0.backgroundColor = DS.Color.avatarBg
     }
 
     private let nameLabel = UILabel().then {
-        $0.textColor = DesignSystemColor.black.value
-        $0.font = UIFont.pretendard(.bold, size: 22)
+        $0.apply(.title2)
     }
 
     private let jobLabel = UILabel().then {
-        $0.textColor = DesignSystemColor.black.value
-        $0.font = UIFont.pretendard(.medium, size: 12)
+        $0.apply(.footnote, color: DS.Color.sub)
+    }
+
+    private let accountCard = UIView().then {
+        $0.backgroundColor = DS.Color.surface
+        $0.roundCorners(DS.Radius.card)
     }
 
     private let profileImageRow = MG2SettingsRowControl(title: "프로필 이미지 변경")
     private let nicknameRow = MG2SettingsRowControl(title: "닉네임 변경")
     private let jobRow = MG2SettingsRowControl(title: "직무 변경")
     private let logoutRow = MG2SettingsRowControl(title: "로그아웃")
-    private let withdrawalRow = MG2SettingsRowControl(title: "회원탈퇴")
+    private let withdrawalRow = MG2SettingsRowControl(title: "회원탈퇴", isDestructive: true)
 
-    private lazy var settingsStack = UIStackView(arrangedSubviews: [profileImageRow, nicknameRow, jobRow, logoutRow, withdrawalRow]).then {
+    private lazy var settingsStack = UIStackView(arrangedSubviews: [profileImageRow, nicknameRow, jobRow]).then {
         $0.axis = .vertical
-        $0.spacing = 32
+        $0.spacing = 8
+    }
+
+    private lazy var accountStack = UIStackView(arrangedSubviews: [logoutRow, withdrawalRow]).then {
+        $0.axis = .vertical
+        $0.spacing = 8
+    }
+
+    private let settingsCard = UIView().then {
+        $0.backgroundColor = DS.Color.surface
+        $0.roundCorners(DS.Radius.card)
     }
 
     init(viewModel: MG2MyPageEditViewModel) {
@@ -48,7 +60,7 @@ final class MG2MyPageEditViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.canvas
         configureLayout()
         configureActions()
         bindProfile()
@@ -66,15 +78,17 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(profileImageView, nameLabel, jobLabel, settingsStack)
+        view.addSubviews(profileImageView, nameLabel, jobLabel, settingsCard, accountCard)
+        settingsCard.addSubview(settingsStack)
+        accountCard.addSubview(accountStack)
 
         profileImageView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
             $0.centerX.equalToSuperview()
-            $0.size.equalTo(100)
+            $0.size.equalTo(76)
         }
         nameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(24)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(14)
             $0.centerX.equalToSuperview()
             $0.leading.greaterThanOrEqualToSuperview().inset(20)
         }
@@ -83,9 +97,16 @@ final class MG2MyPageEditViewController: UIViewController {
             $0.centerX.equalToSuperview()
             $0.leading.greaterThanOrEqualToSuperview().inset(20)
         }
-        settingsStack.snp.makeConstraints {
-            $0.top.equalTo(jobLabel.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(30)
+        settingsCard.snp.makeConstraints {
+            $0.top.equalTo(jobLabel.snp.bottom).offset(24)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+        }
+        accountCard.snp.makeConstraints {
+            $0.top.equalTo(settingsCard.snp.bottom).offset(DS.Space.stack)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+        }
+        [settingsStack, accountStack].forEach { stack in
+            stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: DS.Space.cardX, bottom: 8, right: DS.Space.cardX)) }
         }
     }
 
@@ -98,9 +119,8 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        navigationController?.navigationBar.tintColor = DesignSystemColor.gray6.value
         title = "프로필 수정"
+        applyStepNavigationBar()
     }
 
     private func bindProfile() {

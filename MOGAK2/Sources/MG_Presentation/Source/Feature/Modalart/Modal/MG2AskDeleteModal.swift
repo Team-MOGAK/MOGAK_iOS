@@ -2,104 +2,53 @@
 //  MG2AskDeleteModal.swift
 //  MOGAK
 //
-//  Created by 김라영 on 2023/11/14.
-//
 
 import UIKit
 import SnapKit
 
-///진짜 삭제할건지 물어보는 모달
+/// 삭제 확인 시트. 삭제만 `danger`, 거절은 ghost.
 final class MG2AskDeleteModal: UIViewController {
     var onCancel: (() -> Void)?
     var onConfirm: (() -> Void)?
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "정말 삭제하시겠어요?"
-        label.textColor = DesignSystemColor.black.value
-        label.numberOfLines = 1
-        label.font = DesignSystemFont.semibold20L140.value
-        return label
-    }()
-
-    private let subTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "다시 복원할 수 없어요 :(\n신중하게 선택해주세요"
-        label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
-        label.numberOfLines = 2
-        label.font = DesignSystemFont.regular14L150.value
-        return label
-    }()
-
-    private lazy var noButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("아니요", for: .normal)
-        button.backgroundColor = DesignSystemColor.signatureBag.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.signature.value, for: .normal)
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.addTarget(self, action: #selector(noButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var yesButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("네", for: .normal)
-        button.backgroundColor = DesignSystemColor.signature.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.addTarget(self, action: #selector(yesButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var buttonStackView: UIStackView = {
-        let buttonStackView = UIStackView()
-        buttonStackView.axis = .horizontal
-        buttonStackView.alignment = .fill
-        buttonStackView.spacing = 10
-        buttonStackView.distribution = .fillEqually
-        buttonStackView.addArrangedSubview(noButton)
-        buttonStackView.addArrangedSubview(yesButton)
-        return buttonStackView
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureLayout()
-        view.backgroundColor = .white
-    }
+        view.backgroundColor = DS.Color.surface
 
-    @objc private func noButtonTapped() {
-        onCancel?()
-    }
+        let mascot = MG2MascotView(size: 72)
+        mascot.pose = .sweat
+        mascot.isInteractive = false
+        let titleLabel = UILabel()
+        titleLabel.apply(.title2)
+        titleLabel.text = "정말 삭제할까요?"
+        titleLabel.textAlignment = .center
+        titleLabel.accessibilityTraits = .header
+        let subTitleLabel = UILabel()
+        subTitleLabel.apply(.paragraph, color: DS.Color.sub)
+        subTitleLabel.text = "삭제하면 다시 되살릴 수 없어요"
+        subTitleLabel.textAlignment = .center
 
-    @objc private func yesButtonTapped() {
-        onConfirm?()
-    }
-}
+        let deleteButton = MG2PrimaryActionButton()
+        deleteButton.setTitle("삭제하기", for: .normal)
+        deleteButton.backgroundColor = DS.Color.danger
+        deleteButton.addAction(UIAction { [weak self] _ in self?.onConfirm?() }, for: .touchUpInside)
+        let cancelButton = MG2PrimaryActionButton(style: .ghost)
+        cancelButton.setTitle("그대로 둘게요", for: .normal)
+        cancelButton.addAction(UIAction { [weak self] _ in self?.onCancel?() }, for: .touchUpInside)
 
-// MARK: - 오토레이아웃 설정
-extension MG2AskDeleteModal {
-    private func configureLayout() {
-        view.addSubviews(titleLabel, subTitleLabel, buttonStackView)
-
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(49)
-            $0.centerX.equalToSuperview()
+        let stack = UIStackView(arrangedSubviews: [mascot, titleLabel, subTitleLabel, deleteButton, cancelButton])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.setCustomSpacing(20, after: subTitleLabel)
+        view.addSubview(stack)
+        stack.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
-        subTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.centerX.equalToSuperview()
-        }
-
-        buttonStackView.snp.makeConstraints {
-            $0.height.equalTo(52)
-            $0.leading.equalToSuperview().offset(20)
-            $0.top.equalTo(subTitleLabel.snp.bottom)
-                .offset(32)
-            $0.centerX.equalToSuperview()
+        deleteButton.snp.makeConstraints {
+            $0.width.equalTo(stack)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 }

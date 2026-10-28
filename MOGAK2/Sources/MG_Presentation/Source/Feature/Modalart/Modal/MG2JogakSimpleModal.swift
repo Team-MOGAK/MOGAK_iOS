@@ -1,91 +1,13 @@
 import SnapKit
 import UIKit
 
+/// 조각 시트: 태그 · 이름 · 반복 · 기간, 주 버튼 "조각 수정", 아래 `danger` "조각 삭제".
 final class MG2JogakSimpleModal: UIViewController {
     var onDelete: (() -> Void)?
     var onEdit: (() -> Void)?
+    var onClose: (() -> Void)?
 
     private let viewData: MG2JogakSummaryViewData
-
-    private lazy var categoryLabel: MG2PaddingLabel = {
-        let label = MG2PaddingLabel(top: 4, bottom: 4, left: 10, right: 10)
-        label.font = DesignSystemFont.semibold14L150.value
-        label.layer.cornerRadius = 8
-        label.clipsToBounds = true
-        return label
-    }()
-
-    private let jogakTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = DesignSystemFont.medium18L140.value
-        return label
-    }()
-
-    private lazy var routineStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [routineLabel, routineDayLabel])
-        stack.axis = .horizontal
-        return stack
-    }()
-
-    private let routineLabel: UILabel = {
-        let label = UILabel()
-        label.text = "루틴지정"
-        label.font = DesignSystemFont.semibold14L150.value
-        return label
-    }()
-
-    private let routineDayLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = DesignSystemColor.gray5.value
-        label.font = DesignSystemFont.regular16L150.value
-        return label
-    }()
-
-    private let termLabel: UILabel = {
-        let label = UILabel()
-        label.text = "기간"
-        label.textColor = DesignSystemColor.gray5.value
-        label.font = DesignSystemFont.semibold14L150.value
-        return label
-    }()
-
-    private let termTimeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = DesignSystemColor.gray5.value
-        label.font = DesignSystemFont.regular16L150.value
-        return label
-    }()
-
-    private lazy var deleteButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("삭제", for: .normal)
-        button.backgroundColor = DesignSystemColor.signatureBag.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.signature.value, for: .normal)
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var editButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("수정", for: .normal)
-        button.backgroundColor = DesignSystemColor.signature.value
-        button.layer.cornerRadius = 10
-        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var buttonStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [deleteButton, editButton])
-        stack.axis = .horizontal
-        stack.spacing = 10
-        stack.distribution = .fillEqually
-        return stack
-    }()
 
     init(viewData: MG2JogakSummaryViewData) {
         self.viewData = viewData
@@ -98,66 +20,79 @@ final class MG2JogakSimpleModal: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        configureContent()
-        configureLayout()
-    }
+        view.backgroundColor = DS.Color.surface
 
-    private func configureContent() {
-        let categoryColor = UIColor(hex: viewData.categoryColor)
-        categoryLabel.text = viewData.category
-        categoryLabel.textColor = categoryColor
-        categoryLabel.backgroundColor = categoryColor.withAlphaComponent(0.1)
-        jogakTitleLabel.text = viewData.title
-        routineStack.isHidden = !viewData.isRoutine
-        routineDayLabel.text = viewData.routineDaysText
-        termTimeLabel.text = viewData.periodText
-    }
+        let header = MG2SheetHeaderView(title: "조각")
+        header.onClose = { [weak self] in self?.onClose?() }
+        let tag = MG2TagLabel()
+        tag.configure(text: viewData.category, moak: DS.Moak.from(hex: viewData.categoryColor))
+        let titleLabel = UILabel()
+        titleLabel.apply(.title2)
+        titleLabel.numberOfLines = 0
+        titleLabel.text = viewData.title
 
-    private func configureLayout() {
-        view.addSubviews(categoryLabel, jogakTitleLabel, routineStack, termLabel, termTimeLabel, buttonStack)
+        let info = UIStackView(arrangedSubviews: [
+            infoRow(label: "반복", value: viewData.isRoutine ? "루틴 · \(viewData.routineDaysText)" : "오늘만"),
+            infoRow(label: "기간", value: viewData.periodText)
+        ])
+        info.axis = .vertical
+        info.spacing = 0
+        info.backgroundColor = DS.Color.listTile
+        info.roundCorners(DS.Radius.field)
+        info.isLayoutMarginsRelativeArrangement = true
+        info.layoutMargins = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
 
-        categoryLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(44)
-            $0.leading.equalToSuperview().offset(20)
+        let editButton = MG2PrimaryActionButton()
+        editButton.setTitle("조각 수정", for: .normal)
+        editButton.addAction(UIAction { [weak self] _ in self?.onEdit?() }, for: .touchUpInside)
+        let deleteButton = MG2PrimaryActionButton(style: .danger)
+        deleteButton.setTitle("조각 삭제", for: .normal)
+        deleteButton.addAction(UIAction { [weak self] _ in self?.onDelete?() }, for: .touchUpInside)
+
+        view.addSubviews(header, tag, titleLabel, info, editButton, deleteButton)
+        header.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
-        jogakTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(categoryLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+        tag.snp.makeConstraints {
+            $0.top.equalTo(header.snp.bottom).offset(14)
+            $0.leading.equalToSuperview().inset(DS.Space.sheet)
         }
-
-        routineStack.snp.makeConstraints {
-            $0.height.equalTo(viewData.isRoutine ? 24 : 0)
-            $0.top.equalTo(jogakTitleLabel.snp.bottom).offset(13)
-            $0.leading.equalToSuperview().offset(20)
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(tag.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
+        info.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(14)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
+        editButton.snp.makeConstraints {
+            $0.top.equalTo(info.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
+        }
+        deleteButton.snp.makeConstraints {
+            $0.top.equalTo(editButton.snp.bottom).offset(4)
             $0.centerX.equalToSuperview()
-        }
-
-        termLabel.snp.makeConstraints {
-            let anchor = viewData.isRoutine ? routineStack.snp.bottom : jogakTitleLabel.snp.bottom
-            $0.top.equalTo(anchor).offset(13)
-            $0.leading.equalToSuperview().offset(20)
-        }
-
-        termTimeLabel.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.centerY.equalTo(termLabel)
-        }
-
-        buttonStack.snp.makeConstraints {
-            $0.top.equalTo(termTimeLabel.snp.bottom).offset(viewData.isRoutine ? 6 : 15)
-            $0.height.equalTo(52)
-            $0.leading.equalToSuperview().offset(20)
-            $0.centerX.equalToSuperview()
+            $0.height.equalTo(DS.Size.touch)
         }
     }
 
-    @objc private func deleteButtonTapped() {
-        onDelete?()
-    }
-
-    @objc private func editButtonTapped() {
-        onEdit?()
+    private func infoRow(label: String, value: String) -> UIView {
+        let name = UILabel()
+        name.apply(.footnoteBold, color: DS.Color.ink3)
+        name.text = label
+        let detail = UILabel()
+        detail.apply(.footnote, color: DS.Color.sub)
+        detail.text = value
+        detail.textAlignment = .right
+        detail.numberOfLines = 0
+        let row = UIStackView(arrangedSubviews: [name, detail])
+        row.spacing = 12
+        row.snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.touch) }
+        name.setContentHuggingPriority(.required, for: .horizontal)
+        row.isAccessibilityElement = true
+        row.accessibilityLabel = "\(label), \(value)"
+        return row
     }
 }

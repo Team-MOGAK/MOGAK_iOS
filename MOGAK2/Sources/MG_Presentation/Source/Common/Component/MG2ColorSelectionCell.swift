@@ -18,12 +18,16 @@ final class MG2ColorSelectionCell: UICollectionViewCell {
 
     override var isSelected: Bool {
         didSet {
-            innerView.backgroundColor = isSelected ? DesignSystemColor.white.value : .clear
+            innerView.backgroundColor = isSelected ? DS.Color.surface : .clear
+            accessibilityTraits = isSelected ? [.button, .selected] : .button
         }
     }
 
-    func configure(color: UIColor) {
-        colorView.backgroundColor = color
+    /// 서버 색 값을 화면 색(모각 팔레트)으로 그린다.
+    func configure(serverHex: String, accessibilityName: String) {
+        colorView.backgroundColor = DS.Moak.displayColor(forServerHex: serverHex)
+        isAccessibilityElement = true
+        accessibilityLabel = accessibilityName
     }
 
     private func configureLayout() {

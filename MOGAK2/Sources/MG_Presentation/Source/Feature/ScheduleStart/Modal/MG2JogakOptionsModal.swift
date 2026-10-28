@@ -1,59 +1,12 @@
 import SnapKit
 import UIKit
 
+/// 오늘의 조각 ⋯ 메뉴 시트.
 final class MG2JogakOptionsModal: UIViewController {
     var onCancel: (() -> Void)?
     var onEdit: (() -> Void)?
 
     private let jogakTitle: String
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = DesignSystemFont.semibold20L140.value
-        label.textColor = DesignSystemColor.black.value
-        label.textAlignment = .center
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
-
-    private let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "조각의 내용을 수정하시겠어요?"
-        label.textAlignment = .center
-        label.font = DesignSystemFont.regular14L150.value
-        label.textColor = DesignSystemColor.black.value.withAlphaComponent(0.6)
-        return label
-    }()
-
-    private lazy var cancelButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("취소", for: .normal)
-        button.setTitleColor(DesignSystemColor.signature.value, for: .normal)
-        button.backgroundColor = DesignSystemColor.signatureBag.value
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var editButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("수정하기", for: .normal)
-        button.setTitleColor(DesignSystemColor.white.value, for: .normal)
-        button.backgroundColor = DesignSystemColor.signature.value
-        button.titleLabel?.font = DesignSystemFont.medium16L100.value
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-        return button
-    }()
-
-    private lazy var buttonStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [cancelButton, editButton])
-        stack.axis = .horizontal
-        stack.spacing = 10
-        stack.distribution = .fillEqually
-        return stack
-    }()
 
     init(title: String) {
         jogakTitle = title
@@ -66,36 +19,31 @@ final class MG2JogakOptionsModal: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        titleLabel.text = jogakTitle
-        configureLayout()
-    }
+        view.backgroundColor = DS.Color.surface
 
-    private func configureLayout() {
-        view.addSubviews(titleLabel, subtitleLabel, buttonStack)
+        let header = MG2SheetHeaderView(title: "‘\(jogakTitle)’")
+        header.onClose = { [weak self] in self?.onCancel?() }
+        let subtitleLabel = UILabel()
+        subtitleLabel.apply(.paragraph, color: DS.Color.sub)
+        subtitleLabel.text = "조각 이름이나 반복을 바꿀 수 있어요"
+        subtitleLabel.textAlignment = .center
+        let editButton = MG2PrimaryActionButton()
+        editButton.setTitle("조각 수정", for: .normal)
+        editButton.addAction(UIAction { [weak self] _ in self?.onEdit?() }, for: .touchUpInside)
 
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(49)
-            $0.leading.trailing.equalToSuperview().inset(20)
+        view.addSubviews(header, subtitleLabel, editButton)
+        header.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
         subtitleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
-            $0.centerX.equalToSuperview()
+            $0.top.equalTo(header.snp.bottom).offset(14)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-
-        buttonStack.snp.makeConstraints {
-            $0.top.equalTo(subtitleLabel.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(52)
+        editButton.snp.makeConstraints {
+            $0.top.equalTo(subtitleLabel.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.height.equalTo(DS.Size.button)
         }
-    }
-
-    @objc private func cancelButtonTapped() {
-        onCancel?()
-    }
-
-    @objc private func editButtonTapped() {
-        onEdit?()
     }
 }

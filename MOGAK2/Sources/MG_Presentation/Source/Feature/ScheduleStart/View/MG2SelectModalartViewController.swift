@@ -7,11 +7,12 @@ final class MG2SelectModalartViewController: UIViewController {
     private let viewModel: MG2SelectModalartViewModel
     private let onJogaksAdded: () -> Void
 
-    private let titleLabel: UILabel = {
+    private let headerView = MG2SheetHeaderView(title: "조각 가져오기")
+    private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "내 모다라트"
-        label.font = DesignSystemFont.semibold20L140.value
-        label.textColor = .black
+        label.apply(.footnote, color: DS.Color.sub)
+        label.text = "어느 모다라트에서 오늘의 조각을 가져올까요?"
+        label.textAlignment = .center
         return label
     }()
 
@@ -21,6 +22,9 @@ final class MG2SelectModalartViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 64
         return tableView
     }()
 
@@ -36,22 +40,35 @@ final class MG2SelectModalartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        navigationController?.navigationBar.tintColor = .black
-        navigationItem.backButtonTitle = ""
+        view.backgroundColor = DS.Color.surface
+        navigationController?.navigationBar.tintColor = DS.Color.ink
+        navigationItem.backButtonDisplayMode = .minimal
+        headerView.onClose = { [weak self] in
+            guard let self else { return }
+            coordinator?.closeJogakSelection(from: self)
+        }
         configureLayout()
         loadModalarts()
     }
 
-    private func configureLayout() {
-        view.addSubviews(titleLabel, tableView)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(36)
+    private func configureLayout() {
+        view.addSubviews(headerView, subtitleLabel, tableView)
+
+        headerView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+        }
+        subtitleLabel.snp.makeConstraints {
+            $0.top.equalTo(headerView.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         tableView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(24)
+            $0.top.equalTo(subtitleLabel.snp.bottom).offset(14)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -88,7 +105,4 @@ extension MG2SelectModalartViewController: UITableViewDataSource, UITableViewDel
         coordinator?.routeToJogakSelection(modalart: viewModel.modalarts[indexPath.row], modalarts: viewModel.modalarts, scheduledDate: viewModel.scheduledDate, from: self, onJogaksAdded: onJogaksAdded)
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        60
-    }
 }

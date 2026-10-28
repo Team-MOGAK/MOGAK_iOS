@@ -8,12 +8,19 @@
 import UIKit
 import SnapKit
 
+/// 모다라트 목록 한 줄 (56pt).
 final class MG2ModalartListCell: UITableViewCell {
     static let identifier = String(describing: MG2ModalartListCell.self)
 
     private let modalartLabel = UILabel()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        let background = UIView()
+        background.backgroundColor = DS.Color.listTile
+        selectedBackgroundView = background
+        modalartLabel.apply(.row)
         configureLayout()
     }
 
@@ -25,10 +32,8 @@ final class MG2ModalartListCell: UITableViewCell {
         contentView.addSubview(modalartLabel)
 
         modalartLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(30)
-            $0.top.equalToSuperview()
-            $0.trailing.equalToSuperview().offset(16)
-            $0.height.equalTo(53)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.cardX)
+            $0.centerY.equalToSuperview()
         }
     }
 
@@ -42,12 +47,15 @@ final class MG2ModalartListCell: UITableViewCell {
         modalartLabel.text = title
         switch style {
         case .normal:
-            modalartLabel.textColor = DesignSystemColor.black.value
+            modalartLabel.textColor = DS.Color.ink
+            modalartLabel.font = T.row.font
         case .defaultTitle:
-            modalartLabel.textColor = DesignSystemColor.gray3.value
+            modalartLabel.textColor = DS.Color.muted
+            modalartLabel.font = T.row.font
         case .add:
-            modalartLabel.textColor = DesignSystemColor.signature.value
+            modalartLabel.textColor = DS.Color.accentDeep
+            modalartLabel.font = T.button.font
         }
-        modalartLabel.textAlignment = .left
+        accessibilityTraits = .button
     }
 }

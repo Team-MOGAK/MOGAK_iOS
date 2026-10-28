@@ -3,6 +3,16 @@ import Foundation
 enum MG2MogakFormMode {
     case create(modalartID: Int)
     case edit(MG2ModalartMogakItemEntity)
+
+    var isCreate: Bool {
+        if case .create = self { return true }
+        return false
+    }
+}
+
+extension MG2MogakFormViewModel {
+    /// 모각 이름 글자 수 제한 (디자인 시스템 TextField limit).
+    static let titleLimit = 12
 }
 
 struct MG2MogakFormState {

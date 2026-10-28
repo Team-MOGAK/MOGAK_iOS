@@ -21,11 +21,15 @@ final class MG2ModalartCoordinator {
         return viewController
     }
 
-    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, onExit: @escaping () -> Void, from source: UIViewController) {
+    /// originFrame: 누른 칸의 창 좌표. 있으면 그 칸에서 확대되며 열린다.
+    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, originFrame: CGRect? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
         let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, mogaks: mogaks, selectedMogak: selectedMogak, occurrences: occurrences)
         let viewController = MG2MogakDetailViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.onExit = onExit
+        if let originFrame {
+            source.mainTabController?.nextPushTransition = MG2BoardZoomTransition(originFrame: originFrame)
+        }
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -61,7 +65,7 @@ final class MG2ModalartCoordinator {
 
     func presentModalartActions(onAdd: @escaping () -> Void, onDelete: @escaping () -> Void, from source: UIViewController) {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.view.tintColor = DesignSystemColor.signature.value
+        actionSheet.view.tintColor = DS.Color.accentDeep
         actionSheet.addAction(UIAlertAction(title: "모다라트 추가", style: .default) { _ in onAdd() })
         actionSheet.addAction(UIAlertAction(title: "현 모다라트 삭제", style: .destructive) { _ in onDelete() })
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel))
@@ -79,14 +83,14 @@ final class MG2ModalartCoordinator {
                 onSubmit(title, color)
             }
         }
-        configureSheet(viewController, height: 292)
+        configureSheet(viewController, height: 400)
         source.present(viewController, animated: true)
     }
 
     func presentMissingTitleNotice(from source: UIViewController) {
         let viewController = MG2NeedModalartTitleModal()
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController, height: 200)
+        configureSheet(viewController, height: 330)
         source.present(viewController, animated: true)
     }
 
@@ -94,7 +98,7 @@ final class MG2ModalartCoordinator {
         let viewController = MG2AskDeleteModal()
         viewController.onCancel = { [weak viewController] in viewController?.dismiss(animated: true) }
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true, completion: onConfirm) }
-        configureSheet(viewController, height: 239)
+        configureSheet(viewController, height: 340)
         source.present(viewController, animated: true)
     }
 
@@ -114,7 +118,8 @@ final class MG2ModalartCoordinator {
         let viewController = MG2MogakMainBottomModal(mogak: mogak)
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
-        configureSheet(viewController, height: 200)
+        viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
+        configureSheet(viewController, height: 300)
         source.present(viewController, animated: true)
     }
 
@@ -122,13 +127,14 @@ final class MG2ModalartCoordinator {
         let viewController = MG2JogakSimpleModal(viewData: viewData)
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
-        configureSheet(viewController, height: viewData.isRoutine ? 238 : 200)
+        viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
+        configureSheet(viewController, height: 410)
         source.present(viewController, animated: true)
     }
 
     func presentNoMogaksRemaining(from source: UIViewController) {
-        let alert = UIAlertController(title: "마지막 모각을 삭제하셨습니다", message: "메인 모다라트 화면으로 이동합니다.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default) { [weak source] _ in source?.navigationController?.popViewController(animated: true) })
+        let alert = UIAlertController(title: "마지막 모각을 삭제했어요", message: "모다라트 판으로 돌아갈게요", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "판으로 돌아가기", style: .default) { [weak source] _ in source?.navigationController?.popViewController(animated: true) })
         source.present(alert, animated: true)
     }
 
@@ -143,6 +149,7 @@ final class MG2ModalartCoordinator {
     private func configureSheet(_ viewController: UIViewController, height: CGFloat) {
         guard let sheet = viewController.sheetPresentationController else { return }
         sheet.detents = [.custom { _ in height }]
+        sheet.preferredCornerRadius = DS.Radius.sheet
         sheet.prefersGrabberVisible = true
     }
 }

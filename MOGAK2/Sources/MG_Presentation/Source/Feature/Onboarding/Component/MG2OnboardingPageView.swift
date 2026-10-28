@@ -13,35 +13,30 @@ final class MG2OnboardingPageView: UIView {
         }
 
         let title: String
-        let titleFont: UIFont
-        let highlight: (text: String, font: UIFont)?
         let imageName: String
         let imageLayout: ImageLayout
 
         static let all = [
-            Page(title: "되고 싶거나 이루고 싶은 \n목표를 설정해 \n의욕을 강화해보세요.", titleFont: UIFont.pretendard(.medium, size: 28), highlight: nil, imageName: "onboarding1", imageLayout: .intrinsic),
-            Page(title: "만다라트 기법을 통해 \n목표를 달성하기 위한 \n세부 목표를 구체화하세요.", titleFont: UIFont.pretendard(.regular, size: 28), highlight: ("만다라트 기법을 통해", UIFont.pretendard(.semiBold, size: 30)), imageName: "onboarding2", imageLayout: .fill(topOffset: 32)),
-            Page(title: "한 가지의 목표를 이루기 위한 \n8가지의 세부 목표를 \n설정하세요", titleFont: UIFont.pretendard(.regular, size: 28), highlight: ("8가지의 세부 목표를 \n설정하세요", UIFont.pretendard(.semiBold, size: 28)), imageName: "onboarding3", imageLayout: .fill(topOffset: 24)),
-            Page(title: "세부 목표를 이루기 위한 \n세부 행동 8가지를 정하고, \n습관으로 만들어보세요", titleFont: UIFont.pretendard(.regular, size: 28), highlight: ("\n세부 행동 8가지를 정하고, \n습관으로 만들어보세요", UIFont.pretendard(.semiBold, size: 28)), imageName: "onboarding4", imageLayout: .fill(topOffset: 24))
+            Page(title: "이루고 싶은\n최종 목표 하나를\n가운데 칸에 적어요", imageName: "onboarding1", imageLayout: .intrinsic),
+            Page(title: "최종 목표를 둘러싼\n모각 8개를\n채워요", imageName: "onboarding2", imageLayout: .fill(topOffset: 32)),
+            Page(title: "모각마다\n오늘 할 수 있는\n조각 8개를 정해요", imageName: "onboarding3", imageLayout: .fill(topOffset: 24)),
+            Page(title: "조각이 오늘의 할 일로 올라오고\n체크할수록\n판의 칸이 차올라요", imageName: "onboarding4", imageLayout: .fill(topOffset: 24))
         ]
     }
 
+    /// 온보딩 단계 제목 (T.onboardingTitle).
     private let titleLabel = UILabel().then {
-        $0.numberOfLines = 3
-        $0.textColor = .black
-        $0.textAlignment = .center
+        $0.numberOfLines = 0
+        $0.adjustsFontForContentSizeCategory = true
+        $0.accessibilityTraits = .header
     }
 
     private let imageView = UIImageView()
 
     init(page: Page) {
         super.init(frame: .zero)
-        backgroundColor = DesignSystemColor.gray2.value
-        titleLabel.text = page.title
-        titleLabel.font = page.titleFont
-        if let highlight = page.highlight {
-            titleLabel.asFont(targetString: highlight.text, font: highlight.font)
-        }
+        backgroundColor = DS.Color.canvas
+        titleLabel.attributedText = NSAttributedString(string: page.title, attributes: T.onboardingTitle.attributes(alignment: .center))
         imageView.image = UIImage(named: page.imageName)
         configureLayout(imageLayout: page.imageLayout)
     }
@@ -55,13 +50,13 @@ final class MG2OnboardingPageView: UIView {
 
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(64)
-            $0.centerX.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
 
         switch imageLayout {
         case .intrinsic:
             imageView.snp.makeConstraints {
-                if UIScreen.main.bounds.height < 670 {
+                if (window?.windowScene?.screen ?? UIScreen.main).bounds.height < 670 {
                     $0.top.equalTo(titleLabel.snp.bottom).offset(20)
                     $0.size.equalTo(280)
                 } else {

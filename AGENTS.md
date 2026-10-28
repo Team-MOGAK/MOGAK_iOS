@@ -41,6 +41,19 @@ MOGAK2/Sources/
 └── MG_Design        # Design tokens (colors, fonts) and assets
 ```
 
+Outside `MOGAK2/` (2026-10 design system rollout):
+
+```text
+Shared/        # compiled into the app AND MOGAKWidgetExtension: MG2TodaySnapshot, Live Activity attributes, piece AppIntents, Mascot.xcassets, Fonts
+MOGAKWidget/   # WidgetKit extension (home widget + Live Activity UI). Reads the App Group snapshot only; no network.
+```
+
+- App Group `group.com.team.mogaks` is on both targets (`Configuration/MOGAK.entitlements`, `Configuration/MOGAKWidget.entitlements`).
+- Widget/Live Activity buttons are `LiveActivityIntent`s, so they run in the app process; `MG2AppComposition.connectPieceIntents()` fills `MG2PieceIntentBridge` with `TodayUseCase` calls. The widget copy stays empty.
+- Design tokens are `DS` (colors/space/radius/size/shadow, `DS.Moak`, `DS.Pose`) and `T` (Pretendard + Dynamic Type) in `MG_Design/Source/Foundation/DS.swift`. Pretendard otf files live in `Shared/Fonts` (app + widget). Server palette hex values (`DesignSystemPalette`) are payloads and stay unchanged; map them with `DS.Moak.from(hex:)` / `displayColor(forServerHex:)`.
+- Ads: `MG2AdProviding` (Presentation protocol) is implemented by `MG2AdMobProvider` in MG_App; only coordinators call it. When to show ads is `AdPolicyUseCase` (Domain). Test ad unit IDs only for now.
+- Mascot pose rules live in `MG2Mood` (Domain); check them with `MOGAK2/scripts/domain_rules_check.sh`.
+
 ## Dependency Direction
 
 Preferred dependency flow:

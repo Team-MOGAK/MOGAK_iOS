@@ -17,7 +17,7 @@ final class MG2WebViewController: UIViewController {
 
     override func loadView() {
         let rootView = UIView()
-        rootView.backgroundColor = .white
+        rootView.backgroundColor = DS.Color.surface
         rootView.addSubview(webView)
         webView.snp.makeConstraints {
             $0.edges.equalTo(rootView.safeAreaLayoutGuide)
@@ -35,7 +35,7 @@ final class MG2WebViewController: UIViewController {
         super.viewWillAppear(animated)
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = DS.Color.surface
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.isHidden = false

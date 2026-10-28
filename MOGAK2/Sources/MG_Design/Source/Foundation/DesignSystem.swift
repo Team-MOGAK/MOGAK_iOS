@@ -35,31 +35,21 @@ enum DesignSystemPalette {
     ]
 }
 
+// 기존 화면은 그대로 두고 값만 모다라트 토큰(DS.Color)으로 연결.
 extension DesignSystemColor {
     var value: UIColor {
         switch self {
-        case .lightGreen:
-            return UIColor(hex: "11D796")
-        case .signature:
-            return UIColor(hex: "475FFD")
-        case .signatureBag:
-            return UIColor(hex: "F1F3FA")
-        case .red:
-            return UIColor(hex: "FF2323")
-        case .gray2:
-            return UIColor(hex: "EEF0F8")
-        case .gray3:
-            return UIColor(hex: "BFC3D4")
-        case .gray4:
-            return UIColor(hex: "808497")
-        case .gray5:
-            return UIColor(hex: "6E707B")
-        case .gray6:
-            return UIColor(hex: "24252E")
-        case .black:
-            return UIColor(hex: "000000")
-        case .white:
-            return UIColor(hex: "FFFFFF")
+        case .lightGreen: return DS.Color.success
+        case .signature: return DS.Color.accent
+        case .signatureBag: return DS.Color.canvas
+        case .red: return DS.Color.danger
+        case .gray2: return DS.Color.segment
+        case .gray3: return DS.Color.disabled
+        case .gray4: return DS.Color.muted
+        case .gray5: return DS.Color.sub
+        case .gray6: return DS.Color.ink
+        case .black: return DS.Color.ink
+        case .white: return DS.Color.surface
         }
     }
 }

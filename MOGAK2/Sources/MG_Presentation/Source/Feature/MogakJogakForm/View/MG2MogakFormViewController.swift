@@ -10,69 +10,47 @@ final class MG2MogakFormViewController: UIViewController {
     private var hasConfiguredInitialSelection = false
 
     private let scrollView = UIScrollView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
+        $0.keyboardDismissMode = .interactive
     }
     private let contentView = MG2DismissKeyboardView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
     }
-    private let mogakLabel = UILabel().then {
-        $0.text = "모각 이름"
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
+    private let mogakLabel = MG2FieldLabel("모각 이름")
+    private let mogakTextField = MG2TextField().then {
+        $0.placeholder = "모각 이름을 적어 주세요"
+        $0.accessibilityLabel = "모각 이름"
     }
-    private let mogakTextField = UITextField().then {
-        $0.placeholder = "작은 목표의 제목을 입력해주세요."
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.borderStyle = .none
-        $0.leftViewMode = .unlessEditing
+    private let mogakHintLabel = MG2HintLabel().then {
+        $0.show("최대 12자까지 적을 수 있어요")
     }
-    private let mogakUnderLineView = UIView().then {
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
-        $0.layer.borderWidth = 1
-    }
-    private let categoryLabel = UILabel().then {
-        $0.text = "카테고리"
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
-        $0.textColor = DesignSystemColor.gray6.value
-    }
-    private let categoryExplanationLabel = UILabel().then {
-        $0.text = "작은 목표가 속하는 분류를 선택해주세요."
-        $0.font = UIFont.pretendard(.regular, size: 14)
-        $0.textColor = DesignSystemColor.gray5.value
+    private let categoryLabel = MG2FieldLabel("분류")
+    private let categoryExplanationLabel = MG2HintLabel().then {
+        $0.show("모각의 분류를 골라 주세요")
     }
     private lazy var categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: MG2LeftAlignedCollectionViewFlowLayout()).then {
         guard let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         layout.minimumLineSpacing = 8
-        layout.minimumInteritemSpacing = 6
+        layout.minimumInteritemSpacing = 8
         $0.isScrollEnabled = false
-        $0.backgroundColor = .white
+        $0.backgroundColor = DS.Color.surface
         $0.register(MG2SelectionChipCell.self, forCellWithReuseIdentifier: MG2SelectionChipCell.identifier)
     }
-    private let customCategoryTextField = UITextField().then {
-        $0.placeholder = "카테고리 이름을 적어주세요."
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.borderStyle = .none
-        $0.leftViewMode = .unlessEditing
+    private let customCategoryTextField = MG2TextField().then {
+        $0.placeholder = "분류 이름을 적어 주세요"
+        $0.accessibilityLabel = "직접 적는 분류 이름"
         $0.isHidden = true
     }
-    private let customCategoryUnderLineView = UIView().then {
-        $0.layer.borderColor = DesignSystemColor.gray2.value.cgColor
-        $0.layer.borderWidth = 1
-        $0.isHidden = true
-    }
-    private let choiceColorLabel = UILabel().then {
-        $0.text = "색상 선택"
-        $0.textColor = DesignSystemColor.gray6.value
-        $0.font = UIFont.pretendard(.semiBold, size: 14)
-    }
+    private let choiceColorLabel = MG2FieldLabel("모각 색")
     private lazy var colorCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         guard let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout else { return }
-        layout.itemSize = CGSize(width: 40, height: 40)
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
+        layout.itemSize = CGSize(width: DS.Size.touch, height: DS.Size.touch)
+        layout.minimumLineSpacing = 8
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: DS.Space.sheet)
         layout.scrollDirection = .horizontal
         $0.showsHorizontalScrollIndicator = false
     }
     private lazy var completeButton = MG2PrimaryActionButton().then {
-        $0.setTitle("완료", for: .normal)
         $0.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
     }
 
@@ -87,7 +65,8 @@ final class MG2MogakFormViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = DS.Color.surface
+        completeButton.setTitle(viewModel.mode.isCreate ? "모각 만들기" : "모각 저장", for: .normal)
         configureInitialValues()
         configureView()
         configureNavigationBar()
@@ -137,68 +116,51 @@ final class MG2MogakFormViewController: UIViewController {
     }
 
     private func configureNavigationBar() {
-        navigationController?.navigationBar.topItem?.title = ""
-        switch viewModel.mode {
-        case .create:
-            title = "모각 생성"
-        case .edit:
-            title = "모각 수정"
-        }
-        navigationController?.navigationBar.titleTextAttributes = [
-            .font: UIFont.pretendard(.semiBold, size: 18)
-        ]
-        navigationController?.navigationBar.backIndicatorImage = UIImage(systemName: "chevron.left")
-        navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(systemName: "chevron.left")
-        navigationController?.navigationBar.tintColor = DesignSystemColor.gray6.value
+        title = viewModel.mode.isCreate ? "모각 만들기" : "모각 수정"
+        applyStepNavigationBar()
     }
 
     private func configureMogakField() {
-        [mogakLabel, mogakTextField, mogakUnderLineView].forEach(contentView.addSubview)
+        [mogakLabel, mogakTextField, mogakHintLabel].forEach(contentView.addSubview)
         mogakTextField.delegate = self
         mogakLabel.snp.makeConstraints {
             $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
-            $0.leading.equalToSuperview().offset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         mogakTextField.snp.makeConstraints {
-            $0.top.equalTo(mogakLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.top.equalTo(mogakLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
-        mogakUnderLineView.snp.makeConstraints {
+        mogakHintLabel.snp.makeConstraints {
             $0.top.equalTo(mogakTextField.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(2)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
     private func configureCategory() {
         [categoryLabel, categoryExplanationLabel, categoryCollectionView,
-         customCategoryTextField, customCategoryUnderLineView].forEach(contentView.addSubview)
+         customCategoryTextField].forEach(contentView.addSubview)
         categoryCollectionView.dataSource = self
         categoryCollectionView.delegate = self
         categoryCollectionView.tag = 1
         customCategoryTextField.delegate = self
 
         categoryLabel.snp.makeConstraints {
-            $0.top.equalTo(mogakUnderLineView.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(mogakHintLabel.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         categoryExplanationLabel.snp.makeConstraints {
-            $0.top.equalTo(categoryLabel.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(categoryLabel.snp.bottom).offset(4)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         categoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(categoryExplanationLabel.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(160)
         }
         customCategoryTextField.snp.makeConstraints {
-            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        customCategoryUnderLineView.snp.makeConstraints {
-            $0.top.equalTo(customCategoryTextField.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(2)
+            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(12)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -210,14 +172,14 @@ final class MG2MogakFormViewController: UIViewController {
         contentView.addSubviews(choiceColorLabel, colorCollectionView)
 
         choiceColorLabel.snp.makeConstraints {
-            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         colorCollectionView.snp.makeConstraints {
-            $0.top.equalTo(choiceColorLabel.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(choiceColorLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview().offset(DS.Space.sheet)
             $0.trailing.equalToSuperview()
-            $0.height.equalTo(40)
+            $0.height.equalTo(DS.Size.touch)
         }
     }
 
@@ -225,9 +187,9 @@ final class MG2MogakFormViewController: UIViewController {
         contentView.addSubview(completeButton)
         completeButton.snp.makeConstraints {
             $0.top.greaterThanOrEqualTo(colorCollectionView.snp.bottom).offset(28)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().offset(-24)
-            $0.height.equalTo(52)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.equalToSuperview().offset(-16)
+            $0.height.equalTo(DS.Size.button)
         }
     }
 
@@ -253,10 +215,9 @@ final class MG2MogakFormViewController: UIViewController {
     private func updateCustomCategoryVisibility() {
         let isCustomCategorySelected = viewModel.isCustomCategorySelected
         customCategoryTextField.isHidden = !isCustomCategorySelected
-        customCategoryUnderLineView.isHidden = !isCustomCategorySelected
         choiceColorLabel.snp.remakeConstraints {
-            $0.top.equalTo(isCustomCategorySelected ? customCategoryUnderLineView.snp.bottom : categoryCollectionView.snp.bottom).offset(40)
-            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalTo(isCustomCategorySelected ? customCategoryTextField.snp.bottom : categoryCollectionView.snp.bottom).offset(28)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         view.layoutIfNeeded()
     }
@@ -289,6 +250,12 @@ extension MG2MogakFormViewController: UITextFieldDelegate {
         return true
     }
 
+    /// 한도를 넘는 글자는 잘라 낸다 (모각 12).
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard textField == mogakTextField, let current = textField.text, let textRange = Range(range, in: current) else { return true }
+        return current.replacingCharacters(in: textRange, with: string).count <= MG2MogakFormViewModel.titleLimit
+    }
+
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if textField == mogakTextField {
             viewModel.updateTitle(textField.text ?? "")
@@ -308,13 +275,13 @@ extension MG2MogakFormViewController: UICollectionViewDataSource {
         if collectionView.tag == 1 {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2SelectionChipCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2SelectionChipCell else { return reusableCell }
-            cell.configure(title: viewModel.categories[indexPath.item].name, style: .category)
+            cell.configure(title: viewModel.categories[indexPath.item].name, style: .category, selectedColor: DS.Moak.from(hex: viewModel.state.color).deep)
             return cell
         }
 
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ColorSelectionCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2ColorSelectionCell else { return reusableCell }
-        cell.configure(color: UIColor(hex: viewModel.colors[indexPath.item]))
+        cell.configure(serverHex: viewModel.colors[indexPath.item], accessibilityName: "모각 색 \(indexPath.item + 1)")
         return cell
     }
 }
@@ -327,15 +294,17 @@ extension MG2MogakFormViewController: UICollectionViewDelegate {
             updateButtonState()
         } else {
             viewModel.selectColor(at: indexPath.item)
+            // 고른 분류 칩도 새 모각 색으로.
+            let selected = categoryCollectionView.indexPathsForSelectedItems
+            categoryCollectionView.reloadData()
+            selected?.forEach { categoryCollectionView.selectItem(at: $0, animated: false, scrollPosition: []) }
         }
     }
 }
 
 extension MG2MogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard collectionView.tag == 1 else { return CGSize(width: 40, height: 40) }
-        let text = viewModel.categories[indexPath.item].name as NSString
-        let size = text.size(withAttributes: [.font: UIFont.pretendard(.medium, size: 14)])
-        return CGSize(width: size.width + 40, height: size.height + 16)
+        guard collectionView.tag == 1 else { return CGSize(width: DS.Size.touch, height: DS.Size.touch) }
+        return MG2SelectionChipCell.size(for: viewModel.categories[indexPath.item].name)
     }
 }

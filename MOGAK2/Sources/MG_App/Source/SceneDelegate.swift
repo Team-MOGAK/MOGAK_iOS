@@ -41,6 +41,23 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .store(in: &cancellables)
     }
 
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // 첫 실행 · 온보딩 · 로그인 중에는 광고(와 추적 권한 요청)를 띄우지 않는다.
+        guard currentRoute == .main else { return }
+        composition.adProvider.start()
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        guard currentRoute == .main, composition.adPolicyUseCase.canShowAppOpenAd, let root = window?.rootViewController else { return }
+        composition.adProvider.presentAppOpen(from: root.mg2TopMostViewController) { [composition] shown in
+            if shown { composition.adPolicyUseCase.didShowAppOpenAd() }
+        }
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        composition.adPolicyUseCase.didEnterBackground()
+    }
+
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
         MG2SocialLoginURLHandler.handle(url)
@@ -55,5 +72,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = appFlowCoordinator.makeRoot(for: route)
         self.window = window
         window.makeKeyAndVisible()
+        if route == .main { composition.adProvider.start() }
     }
 }

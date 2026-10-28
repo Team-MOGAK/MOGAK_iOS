@@ -20,6 +20,11 @@ final class MG2ChooseJobViewModel {
         self.mode = mode
     }
 
+    var isEditingMode: Bool {
+        if case .editing = mode { return true }
+        return false
+    }
+
     func loadJobs(completion: @escaping (Result<Void, Error>) -> Void) {
         Task {
             do {

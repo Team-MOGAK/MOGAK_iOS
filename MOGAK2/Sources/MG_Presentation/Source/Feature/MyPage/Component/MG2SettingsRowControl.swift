@@ -4,24 +4,24 @@ import UIKit
 
 final class MG2SettingsRowControl: UIControl {
     private let titleLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = DesignSystemColor.gray6.value
+        $0.apply(.settingRow)
     }
 
     private let detailLabel = UILabel().then {
-        $0.font = UIFont.pretendard(.medium, size: 16)
-        $0.textColor = DesignSystemColor.gray3.value
+        $0.apply(.settingRow, color: DS.Color.sub)
     }
 
     private let chevronImageView = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
         $0.contentMode = .scaleAspectFit
-        $0.tintColor = DesignSystemColor.gray6.value
+        $0.tintColor = DS.Color.ghost
     }
 
-    init(title: String, detail: String? = nil) {
+    /// 탈퇴처럼 되돌릴 수 없는 행만 `danger`.
+    init(title: String, detail: String? = nil, isDestructive: Bool = false) {
         super.init(frame: .zero)
         titleLabel.text = title
+        if isDestructive { titleLabel.textColor = DS.Color.danger }
         detailLabel.text = detail
         detailLabel.isHidden = detail == nil
         chevronImageView.isHidden = detail != nil
@@ -55,7 +55,7 @@ final class MG2SettingsRowControl: UIControl {
             $0.size.equalTo(16)
         }
         snp.makeConstraints {
-            $0.height.equalTo(22)
+            $0.height.greaterThanOrEqualTo(DS.Size.touch)
         }
     }
 }
