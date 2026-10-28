@@ -6,6 +6,8 @@ final class MG2JogakFormViewController: UIViewController {
     weak var coordinator: MG2MogakJogakFormCoordinator?
     var onFinish: (() -> Void)?
 
+    private static let weekdayMinimumGap: CGFloat = 4
+
     private let viewModel: MG2JogakFormViewModel
     private var routineCollectionHeightConstraint: Constraint?
 
@@ -30,10 +32,11 @@ final class MG2JogakFormViewController: UIViewController {
     private let routineExplanationLabel = MG2HintLabel().then {
         $0.show("루틴은 고른 요일마다 오늘의 조각으로 올라와요")
     }
-    private let routineRepeatCollectionView = UICollectionView(frame: .zero, collectionViewLayout: MG2LeftAlignedCollectionViewFlowLayout()).then {
+    // 요일 7개는 기본 흐름 배치로 한 줄을 고르게 채운다.
+    private let routineRepeatCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         guard let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         layout.minimumLineSpacing = 8
-        layout.minimumInteritemSpacing = 8
+        layout.minimumInteritemSpacing = MG2JogakFormViewController.weekdayMinimumGap
         $0.isScrollEnabled = false
         $0.allowsMultipleSelection = true
         $0.backgroundColor = DS.Color.surface
@@ -49,6 +52,7 @@ final class MG2JogakFormViewController: UIViewController {
     }
     private let endTextField = MG2TextField().then {
         $0.placeholder = "날짜를 골라 주세요"
+        $0.font = .scaledCapped(UIFont.pretendard(.semiBold, size: 17).withMonospacedDigits(), relativeTo: .body)
         $0.rightViewMode = .never
         $0.accessibilityLabel = "끝나는 날"
         $0.isHidden = true
@@ -125,6 +129,7 @@ final class MG2JogakFormViewController: UIViewController {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
             $0.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide)
+            $0.height.equalTo(scrollView.frameLayoutGuide).priority(.low)
         }
     }
 
@@ -137,7 +142,8 @@ final class MG2JogakFormViewController: UIViewController {
     private func configurePath() {
         contentView.addSubview(pathBarView)
         pathBarView.snp.makeConstraints {
-            $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
+            // `.md-sheet` 안쪽 위 16 · 옆 20 · 아래 20.
+            $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(16)
             $0.leading.equalToSuperview().inset(DS.Space.sheet)
             $0.trailing.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
@@ -146,6 +152,7 @@ final class MG2JogakFormViewController: UIViewController {
     private func configureJogakTitle() {
         contentView.addSubviews(jogakDetailTitleLabel, jogakDetailTextField)
         jogakDetailTextField.delegate = self
+        // 칸 사이 28, 칸 안(라벨 · 필드 · 안내) 8.
         jogakDetailTitleLabel.snp.makeConstraints {
             $0.top.equalTo(pathBarView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
@@ -174,7 +181,7 @@ final class MG2JogakFormViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         routineRepeatCollectionView.snp.makeConstraints {
-            $0.top.equalTo(routineExplanationLabel.snp.bottom).offset(12)
+            $0.top.equalTo(routineExplanationLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             routineCollectionHeightConstraint = $0.height.equalTo(0).constraint
         }
@@ -186,7 +193,7 @@ final class MG2JogakFormViewController: UIViewController {
         endTextField.delegate = self
 
         endExplanationLabel.snp.makeConstraints {
-            $0.top.equalTo(endLabel.snp.bottom).offset(4)
+            $0.top.equalTo(endLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         endLabel.snp.makeConstraints {
@@ -198,7 +205,7 @@ final class MG2JogakFormViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         endDatePicker.snp.makeConstraints {
-            $0.top.equalTo(endTextField.snp.bottom).offset(12)
+            $0.top.equalTo(endTextField.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(216)
         }
@@ -206,12 +213,17 @@ final class MG2JogakFormViewController: UIViewController {
 
     private func configureCompleteButton() {
         contentView.addSubview(completeButton)
-        completeButton.snp.makeConstraints {
-            $0.top.greaterThanOrEqualTo(endTextField.snp.bottom).offset(40)
-            $0.top.greaterThanOrEqualTo(routineExplanationLabel.snp.bottom).offset(40)
+        layoutCompleteButton()
+    }
+
+    /// 보이는 마지막 칸 아래 28. 숨긴 칸이 자리를 차지하지 않게 기준을 바꾼다.
+    private func layoutCompleteButton() {
+        let lastVisibleView: UIView = !endDatePicker.isHidden ? endDatePicker : viewModel.state.isRoutine ? endTextField : routineExplanationLabel
+        completeButton.snp.remakeConstraints {
+            $0.top.greaterThanOrEqualTo(lastVisibleView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.bottom.equalToSuperview().offset(-16)
-            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalToSuperview().offset(-DS.Space.sheet)
+            $0.height.greaterThanOrEqualTo(DS.Size.button)
         }
     }
 
@@ -223,25 +235,18 @@ final class MG2JogakFormViewController: UIViewController {
         endTextField.isHidden = !isRoutine
         routineCollectionHeightConstraint?.update(offset: isRoutine ? DS.Size.touch : 0)
         if !isRoutine {
-            setEndDatePickerVisible(false)
+            endDatePicker.isHidden = true
         }
+        layoutCompleteButton()
         view.layoutIfNeeded()
     }
 
-    private func setEndDatePickerVisible(_ isVisible: Bool) {
-        endDatePicker.isHidden = !isVisible
-        completeButton.snp.remakeConstraints {
-            if isVisible {
-                $0.top.equalTo(endDatePicker.snp.bottom).offset(24)
-            } else {
-                $0.top.greaterThanOrEqualTo(endTextField.snp.bottom).offset(40)
-                $0.top.greaterThanOrEqualTo(routineExplanationLabel.snp.bottom).offset(40)
-            }
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.bottom.equalToSuperview().offset(-16)
-            $0.height.equalTo(DS.Size.button)
-        }
+    private func showEndDatePicker() {
+        endDatePicker.isHidden = false
+        layoutCompleteButton()
         view.layoutIfNeeded()
+        // 펼친 휠이 화면 밖에 있으면 보이게 올린다.
+        scrollView.scrollRectToVisible(endDatePicker.convert(endDatePicker.bounds, to: scrollView), animated: !UIAccessibility.isReduceMotionEnabled)
     }
 
     private func updateButtonState() {
@@ -286,7 +291,7 @@ extension MG2JogakFormViewController: UITextFieldDelegate {
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         guard textField == endTextField else { return true }
-        setEndDatePickerVisible(true)
+        showEndDatePicker()
         return false
     }
 
@@ -325,8 +330,8 @@ extension MG2JogakFormViewController: UICollectionViewDelegate {
 
 extension MG2JogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // 루틴 요일은 원형 칩 44 (터치 영역 최소 크기). 7개가 한 줄에 들어가게 줄인다.
-        let side = min(DS.Size.touch, floor((collectionView.bounds.width - 8 * 6) / 7))
+        // 루틴 요일은 원형 칩 44 (터치 영역 최소 크기). 375pt 폭(안쪽 335)에서도 7개가 한 줄에 들어간다.
+        let side = min(DS.Size.touch, floor((collectionView.bounds.width - Self.weekdayMinimumGap * 6) / 7))
         return CGSize(width: side, height: side)
     }
 }

@@ -136,7 +136,7 @@ extension MG2ModalartTitleEditorModal {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         colorLabel.snp.makeConstraints {
-            $0.top.equalTo(hintLabel.snp.bottom).offset(20)
+            $0.top.equalTo(hintLabel.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         colorCollectionView.snp.makeConstraints {
@@ -146,9 +146,10 @@ extension MG2ModalartTitleEditorModal {
             $0.height.equalTo(DS.Size.touch)
         }
         completeButton.snp.makeConstraints {
-            $0.top.equalTo(colorCollectionView.snp.bottom).offset(24)
+            $0.top.equalTo(colorCollectionView.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(DS.Size.button)
+            $0.bottom.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
     }
 }

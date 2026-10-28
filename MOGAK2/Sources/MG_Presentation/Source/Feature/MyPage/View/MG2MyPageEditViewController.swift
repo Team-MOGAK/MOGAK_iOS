@@ -9,7 +9,16 @@ final class MG2MyPageEditViewController: UIViewController {
     private let viewModel: MG2MyPageEditViewModel
     private var cancellables = Set<AnyCancellable>()
 
+    // 큰 글자에서 행이 늘어나도 잘리지 않게 스크롤 안에 둔다.
+    private let scrollView = UIScrollView().then {
+        $0.alwaysBounceVertical = true
+        $0.showsVerticalScrollIndicator = false
+    }
+
+    private let contentView = UIView()
+
     private let profileImageView = UIImageView().then {
+        $0.layer.cornerRadius = 38
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.backgroundColor = DS.Color.avatarBg
@@ -17,10 +26,12 @@ final class MG2MyPageEditViewController: UIViewController {
 
     private let nameLabel = UILabel().then {
         $0.apply(.title2)
+        $0.lineBreakMode = .byTruncatingTail
     }
 
     private let jobLabel = UILabel().then {
         $0.apply(.footnote, color: DS.Color.sub)
+        $0.lineBreakMode = .byTruncatingTail
     }
 
     private let accountCard = UIView().then {
@@ -36,12 +47,10 @@ final class MG2MyPageEditViewController: UIViewController {
 
     private lazy var settingsStack = UIStackView(arrangedSubviews: [profileImageRow, nicknameRow, jobRow]).then {
         $0.axis = .vertical
-        $0.spacing = 8
     }
 
     private lazy var accountStack = UIStackView(arrangedSubviews: [logoutRow, withdrawalRow]).then {
         $0.axis = .vertical
-        $0.spacing = 8
     }
 
     private let settingsCard = UIView().then {
@@ -72,38 +81,41 @@ final class MG2MyPageEditViewController: UIViewController {
         configureNavigationBar()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        profileImageView.layer.cornerRadius = profileImageView.bounds.height / 2
-    }
-
     private func configureLayout() {
-        view.addSubviews(profileImageView, nameLabel, jobLabel, settingsCard, accountCard)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(profileImageView, nameLabel, jobLabel, settingsCard, accountCard)
         settingsCard.addSubview(settingsStack)
         accountCard.addSubview(accountStack)
 
+        scrollView.snp.makeConstraints { $0.edges.equalTo(view.safeAreaLayoutGuide) }
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
         profileImageView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
+            $0.top.equalToSuperview().offset(24)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(76)
         }
         nameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(14)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(12)
             $0.centerX.equalToSuperview()
-            $0.leading.greaterThanOrEqualToSuperview().inset(20)
+            $0.leading.greaterThanOrEqualToSuperview().inset(DS.Space.gutter)
         }
         jobLabel.snp.makeConstraints {
-            $0.top.equalTo(nameLabel.snp.bottom).offset(8)
+            $0.top.equalTo(nameLabel.snp.bottom).offset(4)
             $0.centerX.equalToSuperview()
-            $0.leading.greaterThanOrEqualToSuperview().inset(20)
+            $0.leading.greaterThanOrEqualToSuperview().inset(DS.Space.gutter)
         }
         settingsCard.snp.makeConstraints {
             $0.top.equalTo(jobLabel.snp.bottom).offset(24)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         accountCard.snp.makeConstraints {
             $0.top.equalTo(settingsCard.snp.bottom).offset(DS.Space.stack)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
+            $0.bottom.equalToSuperview().inset(24)
         }
         [settingsStack, accountStack].forEach { stack in
             stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: DS.Space.cardX, bottom: 8, right: DS.Space.cardX)) }

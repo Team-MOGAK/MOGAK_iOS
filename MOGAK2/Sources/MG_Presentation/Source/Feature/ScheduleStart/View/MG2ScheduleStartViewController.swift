@@ -1,67 +1,68 @@
 import Combine
-import FSCalendar
 import SnapKit
 import UIKit
 
-/// 조각시작(홈): 주간 달력 · 진척 카드 · 오늘의 조각 · 조각 더 가져오기 · 목록 끝 네이티브 광고.
+/// 조각시작(홈): 주 · 월 달력 · 진척 카드 · 오늘의 조각 · 조각 더 가져오기 · 목록 끝 네이티브 광고.
 final class MG2ScheduleStartViewController: UIViewController {
     weak var coordinator: MG2ScheduleStartCoordinator?
 
     private let viewModel: MG2ScheduleStartViewModel
     private var cancellables = Set<AnyCancellable>()
 
-    private let calendarView: FSCalendar = {
-        let calendar = FSCalendar(frame: .zero)
-        calendar.backgroundColor = .clear
-        return calendar
+    /// 주 · 월 달력. 앱을 열면 오늘을 고른다.
+    private lazy var calendarView: MG2PagingCalendarView = {
+        let calendarView = MG2PagingCalendarView(calendar: MG2ScheduleStartViewModel.calendar, selectedDate: Date())
+        calendarView.onSelectDate = { [weak self] in self?.select($0) }
+        calendarView.onVisiblePageChange = { [weak self] _ in self?.updateHeader(animated: true) }
+        return calendarView
     }()
 
-    private lazy var calendarScopeButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "week"), for: .normal)
-        button.accessibilityLabel = "달력 펼치기"
-        button.addTarget(self, action: #selector(calendarScopeButtonTapped), for: .touchUpInside)
-        return button
+    private var selectedDate: Date { calendarView.selectedDate }
+
+    /// 주 · 월 보기 (`Segmented`: 주/월처럼 보기를 바꾸는 세그먼트).
+    private lazy var calendarScopeControl: MG2SegmentedControl = {
+        let control = MG2SegmentedControl(options: ["주", "월"])
+        control.accessibilityLabel = "달력 보기"
+        control.addTarget(self, action: #selector(calendarScopeChanged), for: .valueChanged)
+        return control
     }()
 
-    private lazy var previousPageButton = makeChevronButton(symbol: "chevron.left", label: "이전", action: #selector(previousPageButtonTapped))
-    private lazy var nextPageButton = makeChevronButton(symbol: "chevron.right", label: "다음", action: #selector(nextPageButtonTapped))
+    private lazy var previousPageButton = makeChevronButton(symbol: "chevron.left", label: "이전 주", action: #selector(previousPageButtonTapped))
+    private lazy var nextPageButton = makeChevronButton(symbol: "chevron.right", label: "다음 주", action: #selector(nextPageButtonTapped))
 
     private lazy var headerLabel: UILabel = {
         let label = UILabel()
         label.apply(.title2)
-        label.font = T.title2.font.withMonospacedDigits()
-        label.text = viewModel.calendarHeader(for: Date())
+        label.font = .scaledCapped(UIFont.pretendard(.extraBold, size: 20).withMonospacedDigits(), relativeTo: .title3)
+        label.textAlignment = .center
         label.accessibilityTraits = .header
         return label
+    }()
+
+    /// 연월 자리는 가장 긴 "0000년 00월" 폭으로 둔다. 9월 ↔ 10월에도 화살표가 움직이지 않는다.
+    private lazy var headerSlot: UIView = {
+        let probe = UILabel()
+        probe.font = headerLabel.font
+        probe.adjustsFontForContentSizeCategory = true
+        probe.text = "0000년 00월"
+        probe.isHidden = true
+        let slot = UIView()
+        slot.addSubviews(probe, headerLabel)
+        probe.snp.makeConstraints { $0.edges.equalToSuperview() }
+        headerLabel.snp.makeConstraints { $0.edges.equalToSuperview() }
+        return slot
     }()
 
     private let calendarContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = DS.Color.surface
         view.roundCorners(DS.Radius.card)
+        view.clipsToBounds = true
         return view
     }()
 
-    private let progressCardView = MG2ProgressCardView(isCompact: false)
-
-    private let emptyView: UIStackView = {
-        let mascot = MG2MascotView(size: 88)
-        mascot.pose = .wave
-        let title = UILabel()
-        title.apply(.title2)
-        title.text = "오늘의 조각이 없어요"
-        let sub = UILabel()
-        sub.apply(.paragraph, color: DS.Color.sub)
-        sub.text = "모다라트에서 오늘 할 조각을 가져와 볼까요?"
-        sub.numberOfLines = 0
-        sub.textAlignment = .center
-        let stack = UIStackView(arrangedSubviews: [mascot, title, sub])
-        stack.axis = .vertical
-        stack.alignment = .center
-        stack.spacing = 8
-        return stack
-    }()
+    /// iPhone SE(높이 667 이하)는 모각이 72.
+    private lazy var progressCardView = MG2ProgressCardView(isCompact: view.bounds.height <= 667)
 
     private lazy var openModalartButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton(style: .soft)
@@ -70,19 +71,45 @@ final class MG2ScheduleStartViewController: UIViewController {
         return button
     }()
 
+    /// 빈 상태는 목록 머리에 넣어 아래 버튼과 겹치지 않게 한다.
+    private lazy var emptyView: UIStackView = {
+        let mascot = MG2MascotView(size: 88)
+        mascot.pose = .wave
+        let title = UILabel()
+        title.apply(.title2)
+        title.text = "오늘의 조각이 없어요"
+        title.numberOfLines = 0
+        title.textAlignment = .center
+        let sub = UILabel()
+        sub.apply(.paragraph, color: DS.Color.sub)
+        sub.text = "모다라트에서 오늘 할 조각을 가져와 볼까요?"
+        sub.numberOfLines = 0
+        sub.textAlignment = .center
+        let stack = UIStackView(arrangedSubviews: [mascot, title, sub, openModalartButton])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.setCustomSpacing(16, after: sub)
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 32, leading: DS.Space.gutter, bottom: 0, trailing: DS.Space.gutter)
+        return stack
+    }()
+
     private let scheduleTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 72
+        tableView.estimatedRowHeight = DS.Size.row + 12 + MG2JogakOccurrenceCell.rowSpacing
         return tableView
     }()
 
     private lazy var addJogakButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton(style: .dashed)
         button.setTitle("+ 조각 더 가져오기", for: .normal)
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.titleLabel?.minimumScaleFactor = 0.8
         button.addTarget(self, action: #selector(addJogakButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -92,6 +119,8 @@ final class MG2ScheduleStartViewController: UIViewController {
     private static let nativeAdRefreshInterval: TimeInterval = 60
     private var nativeAdRefreshTimer: Timer?
     private let headerContainer = UIView()
+    /// 모각이 말풍선이 카드 위로 20 나온다. 목록은 위에서 자르므로 그만큼 자리를 둔다.
+    private static let listTopInset: CGFloat = 12
     private let footerContainer = UIView()
 
     init(viewModel: MG2ScheduleStartViewModel) {
@@ -107,8 +136,11 @@ final class MG2ScheduleStartViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = DS.Color.canvas
         configureLayout()
-        configureCalendar()
         configureTableView()
+        // 첫 응답 전에는 진척 카드 · 빈 상태를 숨긴다.
+        progressCardView.isHidden = true
+        emptyView.isHidden = true
+        updateHeader(animated: false)
         progressCardView.onOpenBoard = { [weak self] in self?.createModalartButtonTapped() }
         viewModel.externalChanges
             .sink { [weak self] in self?.refreshJogakOccurrences() }
@@ -118,8 +150,6 @@ final class MG2ScheduleStartViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
-
-        let selectedDate = calendarView.selectedDate ?? viewModel.state.selectedDate
         loadJogakOccurrences(date: selectedDate)
     }
 
@@ -144,74 +174,48 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 
     private func configureLayout() {
-        let headerStackView = UIStackView(arrangedSubviews: [previousPageButton, headerLabel, nextPageButton, UIView(), calendarScopeButton])
+        let headerStackView = UIStackView(arrangedSubviews: [previousPageButton, headerSlot, nextPageButton, UIView(), calendarScopeControl])
         headerStackView.alignment = .center
         headerStackView.spacing = 4
 
-        view.addSubviews(headerStackView, calendarContainerView, scheduleTableView, emptyView)
+        view.addSubviews(headerStackView, calendarContainerView, scheduleTableView)
         calendarContainerView.addSubview(calendarView)
-        headerContainer.addSubview(progressCardView)
 
-        let footerStack = UIStackView(arrangedSubviews: [addJogakButton, openModalartButton, nativeAdContainer])
+        let headerStack = UIStackView(arrangedSubviews: [progressCardView, emptyView])
+        headerStack.axis = .vertical
+        headerContainer.addSubview(headerStack)
+
+        // 광고는 ‘+ 조각 더 가져오기’ 아래 24.
+        let footerStack = UIStackView(arrangedSubviews: [addJogakButton, nativeAdContainer])
         footerStack.axis = .vertical
-        footerStack.spacing = DS.Space.stack
-        footerStack.setCustomSpacing(24, after: addJogakButton)
+        footerStack.spacing = 24
         footerContainer.addSubview(footerStack)
 
         headerStackView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(12)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
-            $0.height.equalTo(DS.Size.touch)
+            $0.height.greaterThanOrEqualTo(DS.Size.touch)
         }
         [previousPageButton, nextPageButton].forEach { $0.snp.makeConstraints { $0.size.equalTo(DS.Size.touch) } }
-        calendarScopeButton.snp.makeConstraints {
-            $0.width.equalTo(49)
-            $0.height.equalTo(DS.Size.touch)
-        }
+        // 옵션마다 좌우 14 + 글자 (`.md-seg button` padding 0 14).
+        calendarScopeControl.snp.makeConstraints { $0.width.greaterThanOrEqualTo(88) }
         calendarContainerView.snp.makeConstraints {
             $0.top.equalTo(headerStackView.snp.bottom).offset(4)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
         }
-        calendarView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 4, left: 8, bottom: 8, right: 8))
-            $0.height.equalTo(90)
-        }
+        calendarView.snp.makeConstraints { $0.edges.equalToSuperview() }
         scheduleTableView.snp.makeConstraints {
-            $0.top.equalTo(calendarContainerView.snp.bottom).offset(DS.Space.stack)
+            $0.top.equalTo(calendarContainerView.snp.bottom)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-        emptyView.snp.makeConstraints {
-            $0.top.equalTo(scheduleTableView).offset(32)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter * 2)
+        headerStack.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(Self.listTopInset)
+            $0.leading.trailing.equalToSuperview()
+            // 머리가 비면 위 여백만 남기므로 아래 간격은 양보한다.
+            $0.bottom.equalToSuperview().inset(DS.Space.stack).priority(.high)
         }
-        progressCardView.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: DS.Space.stack, right: 0)) }
         footerStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)) }
-        addJogakButton.snp.makeConstraints { $0.height.equalTo(DS.Size.button) }
-        openModalartButton.snp.makeConstraints { $0.height.equalTo(DS.Size.chip) }
-    }
-
-    private func configureCalendar() {
-        calendarView.delegate = self
-        calendarView.dataSource = self
-        calendarView.select(Date())
-        calendarView.locale = Locale(identifier: "ko_KR")
-        calendarView.scope = .week
-        calendarView.appearance.headerMinimumDissolvedAlpha = 0
-        calendarView.appearance.selectionColor = DS.Color.accent
-        calendarView.appearance.titleSelectionColor = DS.Color.surface
-        calendarView.appearance.borderRadius = 0.4
-        calendarView.weekdayHeight = 28
-        calendarView.headerHeight = 0
-        calendarView.appearance.weekdayFont = T.caption1.font
-        calendarView.appearance.weekdayTextColor = DS.Color.muted
-        calendarView.appearance.titleFont = T.subhead.font
-        calendarView.appearance.titleDefaultColor = DS.Color.ink
-        calendarView.appearance.titleTodayColor = DS.Color.accentDeep
-        calendarView.appearance.todayColor = DS.Color.accentSoft
-        calendarView.placeholderType = .none
-        calendarView.scrollEnabled = true
-        calendarView.scrollDirection = .horizontal
     }
 
     private func configureTableView() {
@@ -239,7 +243,6 @@ final class MG2ScheduleStartViewController: UIViewController {
         let state = viewModel.state
         let isToday = viewModel.isSelectedDateToday
         emptyView.isHidden = !state.isEmpty
-        openModalartButton.isHidden = !state.isEmpty
         addJogakButton.isHidden = !isToday
         renderProgress()
         scheduleTableView.reloadData()
@@ -289,8 +292,8 @@ final class MG2ScheduleStartViewController: UIViewController {
     private func sizeTableAccessory(_ accessory: UIView, assign: (UIView) -> Void) {
         let width = scheduleTableView.bounds.width
         guard width > 0 else { return }
-        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden
-        let height = isHeaderHidden ? 0 : accessory.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden && emptyView.isHidden
+        let height = isHeaderHidden ? Self.listTopInset : accessory.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
         guard accessory.frame.size != CGSize(width: width, height: height) else { return }
         accessory.frame = CGRect(x: 0, y: 0, width: width, height: height)
         assign(accessory)
@@ -305,12 +308,29 @@ final class MG2ScheduleStartViewController: UIViewController {
         return button
     }
 
-    @objc private func calendarScopeButtonTapped() {
-        let isShowingMonth = calendarView.scope == .month
-        calendarView.setScope(isShowingMonth ? .week : .month, animated: true)
-        calendarScopeButton.setImage(UIImage(named: isShowingMonth ? "week" : "month"), for: .normal)
-        calendarScopeButton.accessibilityLabel = isShowingMonth ? "달력 펼치기" : "달력 접기"
-        headerLabel.text = viewModel.calendarHeader(for: calendarView.currentPage)
+    // MARK: - 달력
+
+    /// 머리 연월은 보이는 쪽(주간은 고른 날 기준)을 따르고, 바뀔 때만 교차 페이드.
+    private func updateHeader(animated: Bool) {
+        let text = viewModel.calendarHeader(for: calendarView.titleDate)
+        guard headerLabel.text != text else { return }
+        guard animated else { return headerLabel.text = text }
+        UIView.transition(with: headerLabel, duration: 0.2, options: .transitionCrossDissolve) { self.headerLabel.text = text }
+    }
+
+    private func select(_ date: Date) {
+        updateHeader(animated: true)
+        loadJogakOccurrences(date: date)
+    }
+
+    /// 주간 ↔ 월간. 머리 줄은 그대로 두고 달력만 펼치거나 접는다.
+    @objc private func calendarScopeChanged() {
+        let isMonth = calendarScopeControl.selectedIndex == 1
+        calendarView.setScope(isMonth ? .month : .week, animated: true)
+        previousPageButton.accessibilityLabel = isMonth ? "이전 달" : "이전 주"
+        nextPageButton.accessibilityLabel = isMonth ? "다음 달" : "다음 주"
+        updateHeader(animated: true)
+        UIAccessibility.post(notification: .layoutChanged, argument: calendarView)
     }
 
     @objc private func createModalartButtonTapped() {
@@ -326,22 +346,15 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 
     @objc private func nextPageButtonTapped() {
-        moveCalendarPage(by: 1)
+        calendarView.scrollToPage(offset: 1, animated: true)
     }
 
     @objc private func previousPageButtonTapped() {
-        moveCalendarPage(by: -1)
-    }
-
-    private func moveCalendarPage(by value: Int) {
-        guard let page = viewModel.calendarPage(from: calendarView.currentPage, offset: value, isWeekly: calendarView.scope == .week) else { return }
-
-        calendarView.setCurrentPage(page, animated: true)
-        headerLabel.text = viewModel.calendarHeader(for: page)
+        calendarView.scrollToPage(offset: -1, animated: true)
     }
 
     private func refreshJogakOccurrences() {
-        loadJogakOccurrences(date: calendarView.selectedDate ?? Date())
+        loadJogakOccurrences(date: selectedDate)
     }
 
     private func toggleJogak(at indexPath: IndexPath) {
@@ -354,10 +367,12 @@ final class MG2ScheduleStartViewController: UIViewController {
         case .toggled(let isCompleted, let remaining):
             cell?.setCompleted(isCompleted, animated: true)
             if isCompleted {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 progressCardView.mascotView.hop()
                 MG2ToastView.show(in: view, title: "‘\(item.title)’ 완료", subtitle: remaining > 0 ? "한 걸음 더 · 남은 \(remaining)개" : nil)
             }
         case .completedAll:
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
             cell?.setCompleted(true, animated: true)
             progressCardView.mascotView.hop()
             presentCelebration()
@@ -411,23 +426,6 @@ final class MG2ScheduleStartViewController: UIViewController {
                 coordinator?.presentError(error, from: self)
             }
         }
-    }
-}
-
-extension MG2ScheduleStartViewController: FSCalendarDelegate, FSCalendarDataSource {
-    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
-        calendarView.snp.updateConstraints {
-            $0.height.equalTo(bounds.height)
-        }
-        view.layoutIfNeeded()
-    }
-
-    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
-        headerLabel.text = viewModel.calendarHeader(for: calendar.currentPage)
-    }
-
-    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        loadJogakOccurrences(date: date)
     }
 }
 

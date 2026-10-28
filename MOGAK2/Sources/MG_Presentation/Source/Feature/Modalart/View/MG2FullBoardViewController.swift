@@ -121,7 +121,8 @@ final class MG2FullBoardViewController: UIViewController {
             label.backgroundColor = moak.bg
             label.accessibilityLabel = "모각, \(cell.title)"
         case .jogak:
-            label.font = .pretendard(.semiBold, size: 10)
+            // 가장 작은 글자는 11pt(caption2). 칸을 넘치면 minimumScaleFactor로 줄어든다.
+            label.font = .pretendard(.semiBold, size: 11)
             label.textColor = DS.Color.ink
             label.backgroundColor = DS.Color.surface
             label.accessibilityLabel = "조각, \(cell.title)"

@@ -5,10 +5,15 @@ import UIKit
 final class MG2SettingsRowControl: UIControl {
     private let titleLabel = UILabel().then {
         $0.apply(.settingRow)
+        // 큰 글자에서는 자르지 않고 줄을 바꿔 행이 커진다.
+        $0.numberOfLines = 0
+        $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
     private let detailLabel = UILabel().then {
         $0.apply(.settingRow, color: DS.Color.sub)
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
     private let chevronImageView = UIImageView().then {
@@ -44,8 +49,11 @@ final class MG2SettingsRowControl: UIControl {
     private func configureLayout() {
         addSubviews(titleLabel, detailLabel, chevronImageView)
 
+        let trailingView: UIView = detailLabel.isHidden ? chevronImageView : detailLabel
         titleLabel.snp.makeConstraints {
             $0.leading.centerY.equalToSuperview()
+            $0.top.greaterThanOrEqualToSuperview().inset(12)
+            $0.trailing.lessThanOrEqualTo(trailingView.snp.leading).offset(-12)
         }
         detailLabel.snp.makeConstraints {
             $0.trailing.centerY.equalToSuperview()
@@ -54,8 +62,10 @@ final class MG2SettingsRowControl: UIControl {
             $0.trailing.centerY.equalToSuperview()
             $0.size.equalTo(16)
         }
+        // 행 높이 56 (`size-row`), 글자가 커지면 그만큼 늘어난다.
         snp.makeConstraints {
-            $0.height.greaterThanOrEqualTo(DS.Size.touch)
+            $0.height.greaterThanOrEqualTo(DS.Size.row)
+            $0.height.equalTo(DS.Size.row).priority(.low)
         }
     }
 }

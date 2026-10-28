@@ -29,7 +29,7 @@ final class MG2MogakFormViewController: UIViewController {
     private let categoryExplanationLabel = MG2HintLabel().then {
         $0.show("모각의 분류를 골라 주세요")
     }
-    private lazy var categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: MG2LeftAlignedCollectionViewFlowLayout()).then {
+    private lazy var categoryCollectionView = MG2WrappingCollectionView(frame: .zero, collectionViewLayout: MG2LeftAlignedCollectionViewFlowLayout()).then {
         guard let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout else { return }
         layout.minimumLineSpacing = 8
         layout.minimumInteritemSpacing = 8
@@ -77,6 +77,10 @@ final class MG2MogakFormViewController: UIViewController {
         configureCompleteButton()
         loadCategories()
         updateButtonState()
+        // 글자 크기가 바뀌면 칩 폭을 다시 잰다.
+        registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, _: UITraitCollection) in
+            self.categoryCollectionView.collectionViewLayout.invalidateLayout()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -113,6 +117,7 @@ final class MG2MogakFormViewController: UIViewController {
             $0.edges.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.frameLayoutGuide)
             $0.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide)
+            $0.height.equalTo(scrollView.frameLayoutGuide).priority(.low)
         }
     }
 
@@ -126,12 +131,14 @@ final class MG2MogakFormViewController: UIViewController {
         mogakTextField.delegate = self
         pathBarView.configure(viewModel.path)
         pathBarView.snp.makeConstraints {
-            $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
+            // `.md-sheet` 안쪽 위 16 · 옆 20 · 아래 20.
+            $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(16)
             $0.leading.equalToSuperview().inset(DS.Space.sheet)
             $0.trailing.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
+        // 칸 사이 28, 칸 안(라벨 · 필드 · 안내) 8.
         mogakLabel.snp.makeConstraints {
-            $0.top.equalTo(pathBarView.snp.bottom).offset(20)
+            $0.top.equalTo(pathBarView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         mogakTextField.snp.makeConstraints {
@@ -157,16 +164,15 @@ final class MG2MogakFormViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         categoryExplanationLabel.snp.makeConstraints {
-            $0.top.equalTo(categoryLabel.snp.bottom).offset(4)
+            $0.top.equalTo(categoryLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         categoryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(categoryExplanationLabel.snp.bottom).offset(12)
+            $0.top.equalTo(categoryExplanationLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.height.equalTo(160)
         }
         customCategoryTextField.snp.makeConstraints {
-            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(12)
+            $0.top.equalTo(categoryCollectionView.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
     }
@@ -195,8 +201,8 @@ final class MG2MogakFormViewController: UIViewController {
         completeButton.snp.makeConstraints {
             $0.top.greaterThanOrEqualTo(colorCollectionView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.bottom.equalToSuperview().offset(-16)
-            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalToSuperview().offset(-DS.Space.sheet)
+            $0.height.greaterThanOrEqualTo(DS.Size.button)
         }
     }
 
@@ -313,5 +319,16 @@ extension MG2MogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard collectionView.tag == 1 else { return CGSize(width: DS.Size.touch, height: DS.Size.touch) }
         return MG2SelectionChipCell.size(for: viewModel.categories[indexPath.item].name)
+    }
+}
+
+/// 줄바꿈된 칩 높이만큼 늘어나는 컬렉션 뷰. 고정 높이면 칩이 잘리거나 빈 자리가 남는다.
+private final class MG2WrappingCollectionView: UICollectionView {
+    override var contentSize: CGSize {
+        didSet { if oldValue.height != contentSize.height { invalidateIntrinsicContentSize() } }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: contentSize.height)
     }
 }

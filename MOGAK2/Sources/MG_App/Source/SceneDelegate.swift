@@ -42,9 +42,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // 첫 실행 · 온보딩 · 로그인 중에는 광고(와 추적 권한 요청)를 띄우지 않는다.
+        // 첫 실행 · 온보딩 · 로그인 중에는 권한을 묻지 않는다. 메인에 들어온 뒤에 묻는다.
         guard currentRoute == .main else { return }
-        composition.adProvider.start()
+        Task { await composition.requestStartupPermissions() }
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
@@ -72,6 +72,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = appFlowCoordinator.makeRoot(for: route)
         self.window = window
         window.makeKeyAndVisible()
-        if route == .main { composition.adProvider.start() }
+        if route == .main { Task { await composition.requestStartupPermissions() } }
     }
 }

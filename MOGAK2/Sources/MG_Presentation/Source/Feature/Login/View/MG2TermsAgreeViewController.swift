@@ -6,6 +6,8 @@ final class MG2TermsAgreeViewController: UIViewController {
 
     private let viewModel: MG2TermsAgreeViewModel
 
+    private let scrollView = UIScrollView()
+
     private let headerView = MG2ScreenHeaderView(title: "서비스 이용 동의")
 
     private lazy var allAgreementRow = MG2AgreementRowView(title: "약관 전체 동의", subtitle: "서비스 이용을 위해 약관에 모두 동의해요", isEmphasized: true)
@@ -50,22 +52,33 @@ final class MG2TermsAgreeViewController: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(headerView, allAgreementRow, agreementStackView, nextButton)
+        // 큰 글자 · 약관이 많을 때 버튼 아래로 깔리지 않도록 스크롤 안에 둔다.
+        view.addSubviews(scrollView, nextButton)
+        scrollView.addSubviews(headerView, allAgreementRow, agreementStackView)
 
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(nextButton.snp.top).offset(-12)
+        }
+        scrollView.contentLayoutGuide.snp.makeConstraints {
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
         headerView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.top.equalToSuperview().offset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         allAgreementRow.snp.makeConstraints {
             $0.top.equalTo(headerView.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         agreementStackView.snp.makeConstraints {
             $0.top.equalTo(allAgreementRow.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet + 16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter + 16)
+            $0.bottom.equalToSuperview().inset(DS.Space.sheet)
         }
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
             $0.height.equalTo(DS.Size.button)
         }

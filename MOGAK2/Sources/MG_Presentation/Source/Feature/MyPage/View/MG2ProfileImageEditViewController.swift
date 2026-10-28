@@ -51,14 +51,15 @@ final class MG2ProfileImageEditViewController: UIViewController {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
+        // 바꿀 이미지는 100pt 원 + 연필 배지.
         profileImageView.snp.makeConstraints {
-            $0.width.height.equalTo(120)
+            $0.width.height.equalTo(100)
             $0.top.equalTo(headerView.snp.bottom).offset(56)
             $0.centerX.equalToSuperview()
         }
         completeButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.height.equalTo(DS.Size.button)
+            $0.height.greaterThanOrEqualTo(DS.Size.button)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
 

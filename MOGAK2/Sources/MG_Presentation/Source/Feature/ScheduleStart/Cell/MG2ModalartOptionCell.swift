@@ -19,12 +19,14 @@ final class MG2ModalartOptionCell: UITableViewCell {
         dotView.layer.cornerRadius = 5
         modalartLabel.apply(.row)
         chevronView.tintColor = DS.Color.ghost
+        chevronView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        chevronView.setContentHuggingPriority(.required, for: .horizontal)
         contentView.addSubview(tileView)
         tileView.addSubviews(dotView, modalartLabel, chevronView)
 
         tileView.snp.makeConstraints {
             $0.top.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(8)
+            $0.bottom.equalToSuperview().inset(DS.Space.stack)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.greaterThanOrEqualTo(DS.Size.row)
         }
@@ -36,6 +38,7 @@ final class MG2ModalartOptionCell: UITableViewCell {
         modalartLabel.snp.makeConstraints {
             $0.leading.equalTo(dotView.snp.trailing).offset(12)
             $0.centerY.equalToSuperview()
+            $0.top.greaterThanOrEqualToSuperview().inset(12)
             $0.trailing.lessThanOrEqualTo(chevronView.snp.leading).offset(-8)
         }
         chevronView.snp.makeConstraints {

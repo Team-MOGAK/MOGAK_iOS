@@ -22,6 +22,9 @@ final class MG2SelectJogakViewController: UIViewController {
         let button = UIButton()
         button.setTitle("내 모다라트", for: .normal)
         button.titleLabel?.font = T.headline.font
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        // 긴 모다라트 이름은 한 줄 말줄임 (UIButton 기본값은 가운데 말줄임).
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.setTitleColor(DS.Color.ink, for: .normal)
         button.accessibilityHint = "다른 모다라트를 고를 수 있어요"
         button.showsMenuAsPrimaryAction = true
@@ -32,6 +35,8 @@ final class MG2SelectJogakViewController: UIViewController {
         let imageView = UIImageView(image: UIImage(systemName: "chevron.down"))
         imageView.tintColor = DS.Color.ghost
         imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
         return imageView
     }()
 
@@ -51,6 +56,9 @@ final class MG2SelectJogakViewController: UIViewController {
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        // 큰 글자에서 행이 늘어나도록 셀이 높이를 정한다 (최소 56 · 52).
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = DS.Size.row
         return tableView
     }()
 
@@ -68,24 +76,24 @@ final class MG2SelectJogakViewController: UIViewController {
         modalartButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
-            $0.height.equalTo(DS.Size.touch)
+            $0.height.greaterThanOrEqualTo(DS.Size.touch)
         }
 
         chevronImageView.snp.makeConstraints {
             $0.centerY.equalTo(modalartButton)
             $0.leading.equalTo(modalartButton.snp.trailing).offset(6)
+            $0.trailing.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(modalartButton.snp.bottom).offset(12)
+            $0.top.equalTo(modalartButton.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(addButton.snp.top).offset(-10)
         }
 
         addButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.sheet)
         }
     }
 
@@ -211,9 +219,5 @@ extension MG2SelectJogakViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard indexPath.row == 0 else { return }
         toggleSection(indexPath.section)
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        indexPath.row == 0 ? DS.Size.row : DS.Size.row - 4
     }
 }

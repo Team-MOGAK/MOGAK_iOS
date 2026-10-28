@@ -5,7 +5,8 @@ import UIKit
 final class MG2SelectionChipCell: UICollectionViewCell {
     static let identifier = String(describing: MG2SelectionChipCell.self)
     static let height = DS.Size.chip
-    static let font = T.footnoteBold.font
+    /// 글자 크기 설정이 바뀌어도 새 크기로 재도록 매번 만든다.
+    static var font: UIFont { T.footnoteBold.font }
 
     enum Style {
         case category
@@ -24,8 +25,16 @@ final class MG2SelectionChipCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.addSubview(titleLabel)
         contentView.layer.masksToBounds = true
-        titleLabel.font = Self.font
-        titleLabel.snp.makeConstraints { $0.center.equalToSuperview() }
+        titleLabel.apply(.footnoteBold, color: DS.Color.ink2)
+        titleLabel.textAlignment = .center
+        titleLabel.lineBreakMode = .byTruncatingTail
+        // 칸 크기가 고정이라 넘치면 한 줄 안에서 조금 줄인다.
+        titleLabel.adjustsFontSizeToFitWidth = true
+        titleLabel.minimumScaleFactor = 0.8
+        titleLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.leading.greaterThanOrEqualToSuperview().inset(4)
+        }
         isAccessibilityElement = true
         updateAppearance()
     }

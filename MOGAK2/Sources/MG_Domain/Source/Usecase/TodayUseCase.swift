@@ -58,6 +58,13 @@ final class TodayUseCase {
 
     var shouldOfferReminder: Bool { !reminder.hasOffered }
 
+    /// 메인 화면에 처음 들어왔을 때 알림 권한을 받는다. 허용하면 매일 알림(기본 오전 8시)을 바로 건다. 한 번만 묻는다.
+    func requestReminderPermissionIfNeeded() async {
+        guard !reminder.hasOffered else { return }
+        reminder.markOffered()
+        _ = await reminder.requestAndScheduleDaily()
+    }
+
     func enableReminder() async -> Bool {
         reminder.markOffered()
         return await reminder.requestAndScheduleDaily()

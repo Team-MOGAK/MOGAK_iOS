@@ -10,7 +10,8 @@ final class MG2MogakDetailViewController: UIViewController {
 
     private lazy var deleteButton = UIBarButtonItem(title: "모각 삭제", style: .plain, target: self, action: #selector(deleteButtonTapped)).then {
         $0.tintColor = DS.Color.danger
-        $0.setTitleTextAttributes([.font: T.footnoteBold.font], for: .normal)
+        // `.md-btn-danger` 15/700
+        $0.setTitleTextAttributes([.font: T.subhead.font], for: .normal)
     }
     private let mogakListCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         let layout = $0.collectionViewLayout as? UICollectionViewFlowLayout
@@ -199,7 +200,7 @@ final class MG2MogakDetailViewController: UIViewController {
 
     @objc private func deleteButtonTapped() {
         guard let selectedMogak = viewModel.state.selectedMogak else { return }
-        coordinator?.presentDeleteAction(title: selectedMogak.title, message: "선택한 조각을 삭제할까요?", onConfirm: { [weak self] in self?.removeSelectedMogak() }, from: self)
+        coordinator?.presentDeleteAction(title: selectedMogak.title, message: "이 모각과 안의 조각을 삭제할까요?", onConfirm: { [weak self] in self?.removeSelectedMogak() }, from: self)
     }
 }
 

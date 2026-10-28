@@ -78,14 +78,7 @@ final class MG2ScheduleStartCoordinator {
         let viewController = MG2JogakOptionsModal(title: title)
         viewController.onCancel = { [weak viewController] in viewController?.dismiss(animated: true) }
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
-        viewController.modalPresentationStyle = .pageSheet
-
-        if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.custom { _ in 230 }]
-            sheet.preferredCornerRadius = DS.Radius.sheet
-            sheet.prefersGrabberVisible = true
-        }
-        source.present(viewController, animated: true)
+        presentFittingSheet(viewController, from: source)
     }
 
     func presentCelebration(done: Int, completedCount: Int, from source: UIViewController, onConfirmed: @escaping () -> Void) {
@@ -98,9 +91,20 @@ final class MG2ScheduleStartCoordinator {
         let viewController = MG2ReminderOfferModal()
         viewController.onAccept = { [weak viewController] in viewController?.dismiss(animated: true, completion: onAccept) }
         viewController.onDecline = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDecline) }
+        presentFittingSheet(viewController, from: source)
+    }
+
+    /// 고정 높이 대신 내용 높이에 맞춘 시트. 글자 크기를 키워도 아래가 잘리지 않는다.
+    /// custom detent 값은 아래 안전 영역을 뺀 높이라 맞춤 높이에서 안전 영역을 뺀다.
+    private func presentFittingSheet(_ viewController: UIViewController, from source: UIViewController) {
+        let width = source.view.bounds.width
         viewController.modalPresentationStyle = .pageSheet
         if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.custom { _ in 360 }]
+            sheet.detents = [.custom { [weak viewController] context in
+                guard let view = viewController?.view else { return nil }
+                let height = view.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+                return min(height - view.safeAreaInsets.bottom, context.maximumDetentValue)
+            }]
             sheet.preferredCornerRadius = DS.Radius.sheet
             sheet.prefersGrabberVisible = true
         }

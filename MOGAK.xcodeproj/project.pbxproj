@@ -7,18 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D1AD0000000000000000000C /* MOGAKWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		D1AD00000000000000000011 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000010 /* GoogleMobileAds */; };
-		D1AD00000000000000000014 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000013 /* GoogleUserMessagingPlatform */; };
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
-		D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F902F6F90580014DA6D /* FSCalendar */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
 		D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FA32F7A0000014DA6D /* GoogleSignIn */; };
 		D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB52F7A0000014DA6D /* KakaoSDKAuth */; };
 		D18C0FB62F7A0000014DA6D /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB72F7A0000014DA6D /* KakaoSDKCommon */; };
 		D18C0FB82F7A0000014DA6D /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FB92F7A0000014DA6D /* KakaoSDKUser */; };
+		D1AD0000000000000000000C /* MOGAKWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D1AD00000000000000000011 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000010 /* GoogleMobileAds */; };
+		D1AD00000000000000000014 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = D1AD00000000000000000013 /* GoogleUserMessagingPlatform */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,16 +45,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MOGAKWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		9CFA7D012A458109003E80A7 /* MOGAK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MOGAK.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1AD00000000000000000001 /* MOGAKWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MOGAKWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1F0A0012F92000000A11CE0 /* Configuration/Auth.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Auth.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
 		D1AD00000000000000000002 /* Shared */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Shared; sourceTree = "<group>"; };
 		D1AD00000000000000000003 /* MOGAKWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAKWidget; sourceTree = "<group>"; };
-		D1090C862F6FC92A001FFF4E /* MOGAK2 */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MOGAK2; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +63,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D18C0F9A2F6F92830014DA6D /* Then in Frameworks */,
-				D18C0F912F6F90580014DA6D /* FSCalendar in Frameworks */,
 				D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */,
 				D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */,
 				D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */,
@@ -193,7 +191,6 @@
 			packageReferences = (
 				D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */,
 				D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */,
-				D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				D18C0FB22F7A0000014DA6D /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
@@ -388,6 +385,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "맞춤 광고를 보여 드리는 데만 사용해요. 허용하지 않아도 모든 기능을 쓸 수 있어요.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -427,6 +426,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "맞춤 광고를 보여 드리는 데만 사용해요. 허용하지 않아도 모든 기능을 쓸 수 있어요.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -554,14 +555,6 @@
 				minimumVersion = 5.11.1;
 			};
 		};
-		D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.8.4;
-			};
-		};
 		D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/devxoul/Then";
@@ -614,11 +607,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		D18C0F902F6F90580014DA6D /* FSCalendar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F8F2F6F90580014DA6D /* XCRemoteSwiftPackageReference "FSCalendar" */;
-			productName = FSCalendar;
 		};
 		D18C0F992F6F92830014DA6D /* Then */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -8,23 +8,29 @@
 import UIKit
 import SnapKit
 
-/// 판 가운데 칸 (GoalCell). 판에서는 최종 목표, 모각 화면에서는 모각 이름. 흰 글자 · `shadow-goal`.
+/// 판 가운데 칸 (GoalCell, `.md-goal`). 판에서는 최종 목표, 모각 화면에서는 모각 이름. 흰 글자 · `shadow-goal`.
+/// 캡션 11/700(0.85) · 이름 19/800(6자 넘으면 16), 위아래 10 · 좌우 8, 사이 6.
 final class MG2ModalartMainCell: UICollectionViewCell {
     static let identifier = "MG2ModalartMainCell"
 
     private let captionLabel: UILabel = {
         let label = UILabel()
-        label.apply(.caption1, color: DS.Color.surface.withAlphaComponent(0.85))
+        label.apply(.caption2, color: DS.Color.surface.withAlphaComponent(0.85))
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
         return label
     }()
 
     private let goalLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
+        label.lineBreakMode = .byTruncatingTail
         label.textColor = DS.Color.surface
         label.textAlignment = .center
         label.adjustsFontForContentSizeCategory = true
+        // 칸 높이가 고정이라 넘치면 마지막 줄을 말줄임.
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
     }()
 
@@ -54,12 +60,13 @@ final class MG2ModalartMainCell: UICollectionViewCell {
     private func configureLayout() {
         let stack = UIStackView(arrangedSubviews: [captionLabel, goalLabel])
         stack.axis = .vertical
-        stack.spacing = 4
+        stack.spacing = 6
         contentView.addSubview(stack)
 
         stack.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(12)
+            $0.leading.trailing.equalToSuperview().inset(8)
+            $0.top.greaterThanOrEqualToSuperview().inset(10)
         }
     }
 }

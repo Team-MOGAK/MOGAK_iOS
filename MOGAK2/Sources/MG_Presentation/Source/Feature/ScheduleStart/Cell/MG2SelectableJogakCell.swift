@@ -23,14 +23,17 @@ final class MG2SelectableJogakCell: UITableViewCell {
         backgroundColor = .clear
         contentView.addSubviews(checkView, titleLabel)
 
+        // 최소 52(체크 28 + 위아래 12), 큰 글자에서는 늘어난다. 이름은 한 줄 말줄임.
         checkView.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(DS.Space.sheet + 8)
             $0.centerY.equalToSuperview()
+            $0.top.greaterThanOrEqualToSuperview().inset(12)
         }
         titleLabel.snp.makeConstraints {
             $0.leading.equalTo(checkView.snp.trailing).offset(12)
             $0.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.centerY.equalToSuperview()
+            $0.top.greaterThanOrEqualToSuperview().inset(12)
         }
 
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(contentViewTapped)))

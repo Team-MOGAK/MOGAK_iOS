@@ -23,21 +23,16 @@ final class MG2ChooseJobViewController: UIViewController {
 
     private let headerView = MG2ScreenHeaderView(title: "희망 · 현직 직무", subtitle: "어떤 모각러들과 함께 성장하고 싶나요?")
 
-    private lazy var searchBar: UISearchBar = {
-        let search = UISearchBar()
-        search.delegate = self
-        search.searchBarStyle = .minimal
-        search.showsCancelButton = true
-        search.tintColor = DS.Color.accentDeep
-        search.searchTextField.backgroundColor = DS.Color.fill
-        search.searchTextField.roundCorners(DS.Radius.field)
-        search.searchTextField.clipsToBounds = true
-        search.searchTextField.borderStyle = .none
-        search.searchTextField.font = T.body.font
-        search.searchTextField.textColor = DS.Color.ink
-        search.searchTextField.attributedPlaceholder = NSAttributedString(string: "직무를 검색해 보세요", attributes: [.font: T.body.font, .foregroundColor: DS.Color.placeholder])
-        search.searchTextField.textAlignment = .left
-        return search
+    /// 직무 검색 (`.md-field`). 글자가 있으면 오른쪽 지우기 버튼으로 비운다.
+    private lazy var searchField: MG2TextField = {
+        let field = MG2TextField()
+        field.placeholder = "직무를 검색해 보세요"
+        field.accessibilityLabel = "직무 검색"
+        field.returnKeyType = .search
+        field.clearButtonMode = .never
+        field.delegate = self
+        field.addAction(UIAction { [weak self, weak field] _ in self?.updateJobSections(query: field?.text ?? "") }, for: .editingChanged)
+        return field
     }()
 
     private let tableView: UITableView = {
@@ -69,7 +64,7 @@ final class MG2ChooseJobViewController: UIViewController {
 
         configureNavigationBar()
         configureLabel()
-        configureSearchBar()
+        configureSearchField()
         configureButton()
         configureTableView()
 
@@ -85,17 +80,16 @@ final class MG2ChooseJobViewController: UIViewController {
 
         headerView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
-    private func configureSearchBar() {
-        view.addSubview(searchBar)
+    private func configureSearchField() {
+        view.addSubview(searchField)
 
-        searchBar.snp.makeConstraints {
+        searchField.snp.makeConstraints {
             $0.top.equalTo(headerView.snp.bottom).offset(24)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet - 8)
-            $0.height.equalTo(DS.Size.button + 8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
@@ -108,8 +102,8 @@ final class MG2ChooseJobViewController: UIViewController {
         view.addSubview(tableView)
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.top.equalTo(searchField.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.bottom.equalTo(nextButton.snp.top).offset(-12)
         }
     }
@@ -118,7 +112,7 @@ final class MG2ChooseJobViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.height.equalTo(DS.Size.button)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
@@ -165,19 +159,14 @@ final class MG2ChooseJobViewController: UIViewController {
     }
 }
 
-extension MG2ChooseJobViewController: UISearchBarDelegate {
+extension MG2ChooseJobViewController: UITextFieldDelegate {
     //외부 탭시 키보드 내림.
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateJobSections(query: searchText)
-    }
 
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = nil
-        searchBar.resignFirstResponder()
-        updateJobSections(query: "")
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
     }
 }
 

@@ -49,13 +49,22 @@ enum MG2JogakToggleOutcome {
 
 @MainActor
 final class MG2ScheduleStartViewModel {
-    private static let calendarHeaderFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월"
-        return formatter
+    /// 달력은 그레고리력 · 한국어 · 일요일 시작 (예전 달력과 같다).
+    static let calendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "ko_KR")
+        return calendar
     }()
+
+    private static let calendarHeaderFormatter = makeFormatter("yyyy년 M월")
+
+    private static func makeFormatter(_ format: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = calendar.locale
+        formatter.dateFormat = format
+        return formatter
+    }
 
     private let useCase: ScheduleStartUseCase
     private let todayUseCase: TodayUseCase
@@ -84,15 +93,6 @@ final class MG2ScheduleStartViewModel {
 
     func calendarHeader(for date: Date) -> String {
         Self.calendarHeaderFormatter.string(from: date)
-    }
-
-    func isToday(_ date: Date) -> Bool {
-        todayUseCase.isToday(date)
-    }
-
-    func calendarPage(from currentPage: Date, offset: Int, isWeekly: Bool) -> Date? {
-        let component: Calendar.Component = isWeekly ? .weekOfMonth : .month
-        return Calendar.current.date(byAdding: component, value: offset, to: currentPage)
     }
 
     func loadJogakOccurrences(date: Date, completion: @escaping (Result<Void, Error>) -> Void) {

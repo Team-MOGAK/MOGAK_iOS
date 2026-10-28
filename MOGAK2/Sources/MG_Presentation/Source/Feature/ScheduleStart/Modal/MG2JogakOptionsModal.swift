@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-/// 오늘의 조각 ⋯ 메뉴 시트.
+/// 오늘의 조각 ⋯ 메뉴 시트. `.md-sheet` padding 16 / 20 / 20 · gap 14. 높이는 내용에 맞춘다.
 final class MG2JogakOptionsModal: UIViewController {
     var onCancel: (() -> Void)?
     var onEdit: (() -> Void)?
@@ -24,9 +24,10 @@ final class MG2JogakOptionsModal: UIViewController {
         let header = MG2SheetHeaderView(title: "‘\(jogakTitle)’")
         header.onClose = { [weak self] in self?.onCancel?() }
         let subtitleLabel = UILabel()
-        subtitleLabel.apply(.paragraph, color: DS.Color.sub)
+        subtitleLabel.apply(.footnote, color: DS.Color.sub)
         subtitleLabel.text = "조각 이름이나 반복을 바꿀 수 있어요"
         subtitleLabel.textAlignment = .center
+        subtitleLabel.numberOfLines = 0
         let editButton = MG2PrimaryActionButton()
         editButton.setTitle("조각 수정", for: .normal)
         editButton.addAction(UIAction { [weak self] _ in self?.onEdit?() }, for: .touchUpInside)
@@ -41,9 +42,9 @@ final class MG2JogakOptionsModal: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         editButton.snp.makeConstraints {
-            $0.top.equalTo(subtitleLabel.snp.bottom).offset(20)
+            $0.top.equalTo(subtitleLabel.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.height.equalTo(DS.Size.button)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.sheet).priority(.high)
         }
     }
 }

@@ -22,6 +22,8 @@ class MG2NameCell: UITableViewCell {
         nameLabel.apply(.row)
         nameLabel.numberOfLines = 0
         checkView.tintColor = DS.Color.accentDeep
+        checkView.setContentHuggingPriority(.required, for: .horizontal)
+        checkView.setContentCompressionResistancePriority(.required, for: .horizontal)
         configureLayout()
     }
 

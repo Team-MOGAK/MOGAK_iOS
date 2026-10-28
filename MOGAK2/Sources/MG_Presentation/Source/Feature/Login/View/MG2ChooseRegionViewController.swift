@@ -69,7 +69,7 @@ final class MG2ChooseRegionViewController: UIViewController {
 
         headerView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
@@ -81,8 +81,8 @@ final class MG2ChooseRegionViewController: UIViewController {
 
         tableView.snp.makeConstraints {
             $0.top.equalTo(headerView.snp.bottom).offset(24)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-            $0.bottom.equalTo(nextButton.snp.top).offset(-8)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
+            $0.bottom.equalTo(nextButton.snp.top).offset(-12)
         }
     }
 
@@ -90,7 +90,7 @@ final class MG2ChooseRegionViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.height.equalTo(DS.Size.button)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }

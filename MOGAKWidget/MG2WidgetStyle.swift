@@ -5,25 +5,25 @@ enum MG2WidgetStyle {
     static let accent = Color(hex: 0x4B5EF6)
     static let ink = Color(hex: 0x17182B)
     static let sub = Color(hex: 0x5E6178)
+    static let muted = Color(hex: 0x6B6E85)
+    /// 다이나믹 아일랜드(검정) 위 보조 글자 (`island-sub`).
+    static let islandSub = Color(hex: 0xA8ABBE)
     static let faint = Color(hex: 0x8A8DA3)
     static let canvas = Color(hex: 0xF2F3F9)
     static let surface = Color.white
-    static let border = Color(hex: 0xD3D5E3)
     static let track = Color(hex: 0xE3E4EE)
-    static let success = Color(hex: 0x11C784)
-    static let islandSub = Color(hex: 0xA8ABBE)
 
-    /// 서버 모각 색(DesignSystemPalette.mogakColors 순서) → (deep, bg, fg)
+    /// 서버 모각 색(DesignSystemPalette.mogakColors 순서) → (base 테두리, deep 채움 · 체크)
     private static let serverMogakColors = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
-    private static let moak: [(deep: UInt32, bg: UInt32, fg: UInt32)] = [
-        (0x4B5EF6, 0xE8EBFF, 0x3445D6), (0xD63A64, 0xFFE6EC, 0xB8305A), (0xC9650F, 0xFFF0DF, 0x9E530A), (0x1E9A62, 0xDDF7EA, 0x17784D),
-        (0xD9531F, 0xFFE9DF, 0xAC4318), (0x8030E0, 0xF1E6FF, 0x6A21C4), (0x1386C4, 0xDDF3FF, 0x116E9E), (0xD3362C, 0xFFE5E3, 0xB02A23)
+    private static let moak: [(base: UInt32, deep: UInt32)] = [
+        (0x4B5EF6, 0x4B5EF6), (0xEF5B7E, 0xD63A64), (0xF0922F, 0xC9650F), (0x4DCB8C, 0x1E9A62),
+        (0xF07438, 0xD9531F), (0x9038F0, 0x8030E0), (0x5CC6F7, 0x1386C4), (0xE8473C, 0xD3362C)
     ]
 
-    static func moak(for hex: String?) -> (deep: Color, bg: Color, fg: Color) {
+    static func moak(for hex: String?) -> (base: Color, deep: Color) {
         let key = (hex ?? "").uppercased().replacingOccurrences(of: "#", with: "")
         let value = moak[serverMogakColors.firstIndex(of: key) ?? 0]
-        return (Color(hex: value.deep), Color(hex: value.bg), Color(hex: value.fg))
+        return (Color(hex: value.base), Color(hex: value.deep))
     }
 
     private static let pose: [String: (light: UInt32, deep: UInt32)] = [
@@ -34,7 +34,11 @@ enum MG2WidgetStyle {
 
     static func poseLight(_ name: String) -> Color { Color(hex: pose[name]?.light ?? 0x8FA8F5) }
     static func poseDeep(_ name: String) -> Color { Color(hex: pose[name]?.deep ?? 0x3445D6) }
-    static func poseImage(_ name: String) -> String { "moak.\(name)" }
+
+    /// 모각이 일러스트(자르지 않고 맞춤). 장식이라 VoiceOver에서 뺀다. 크기는 부르는 쪽에서 frame으로.
+    static func poseImage(_ name: String) -> some View {
+        Image("moak.\(name)").resizable().scaledToFit().accessibilityHidden(true)
+    }
 }
 
 extension Font {

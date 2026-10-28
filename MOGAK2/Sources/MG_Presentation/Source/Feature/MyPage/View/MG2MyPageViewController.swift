@@ -30,10 +30,17 @@ final class MG2MyPageViewController: UIViewController {
 
     private let nameLabel = UILabel().then {
         $0.apply(.title2)
+        $0.lineBreakMode = .byTruncatingTail
     }
 
     private let jobLabel = UILabel().then {
         $0.apply(.footnote, color: DS.Color.sub)
+        $0.lineBreakMode = .byTruncatingTail
+    }
+
+    private lazy var profileTextStack = UIStackView(arrangedSubviews: [nameLabel, jobLabel]).then {
+        $0.axis = .vertical
+        $0.spacing = 4
     }
 
     private let settingsCard = UIView().then {
@@ -62,7 +69,6 @@ final class MG2MyPageViewController: UIViewController {
 
     private lazy var settingsStack = UIStackView(arrangedSubviews: [pushRow, noticeRow, inquiryRow, termsRow, privacyRow, locationRow, versionRow]).then {
         $0.axis = .vertical
-        $0.spacing = 8
     }
 
     init(viewModel: MG2MyPageViewModel) {
@@ -93,13 +99,12 @@ final class MG2MyPageViewController: UIViewController {
         loadBannerIfNeeded()
     }
 
-
     private func configureLayout() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubviews(profileView, settingsCard, bannerContainer)
         settingsCard.addSubview(settingsStack)
-        profileView.addSubviews(profileImageView, nameLabel, jobLabel, profileButtonStack)
+        profileView.addSubviews(profileImageView, profileTextStack, profileButtonStack)
         profileButtonStack.addArrangedSubview(editButton)
         profileButtonStack.addArrangedSubview(shareButton)
 
@@ -117,20 +122,19 @@ final class MG2MyPageViewController: UIViewController {
             $0.leading.equalToSuperview().offset(DS.Space.cardX)
             $0.size.equalTo(76)
         }
-        nameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView).offset(10)
-            $0.leading.equalTo(profileImageView.snp.trailing).offset(11)
-            $0.trailing.lessThanOrEqualToSuperview().inset(20)
-        }
-        jobLabel.snp.makeConstraints {
-            $0.top.equalTo(nameLabel.snp.bottom).offset(8)
-            $0.leading.equalTo(nameLabel)
-            $0.trailing.lessThanOrEqualToSuperview().inset(20)
+        // 이름 · 직무는 아바타 가운데에 맞추고, 큰 글자로 아바타보다 커지면 버튼을 아래로 민다.
+        profileTextStack.snp.makeConstraints {
+            $0.centerY.equalTo(profileImageView).priority(.high)
+            $0.top.greaterThanOrEqualToSuperview().inset(20)
+            $0.leading.equalTo(profileImageView.snp.trailing).offset(12)
+            $0.trailing.equalToSuperview().inset(DS.Space.cardX)
         }
         profileButtonStack.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(24)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(24).priority(.low)
+            $0.top.greaterThanOrEqualTo(profileImageView.snp.bottom).offset(24)
+            $0.top.greaterThanOrEqualTo(profileTextStack.snp.bottom).offset(24)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.cardX)
-            $0.height.equalTo(DS.Size.chip)
+            $0.height.greaterThanOrEqualTo(DS.Size.chip)
             $0.bottom.equalToSuperview().inset(20)
         }
         settingsCard.snp.makeConstraints {
@@ -216,6 +220,10 @@ final class MG2MyPageViewController: UIViewController {
     private static func makeProfileActionButton(title: String) -> UIButton {
         MG2PrimaryActionButton(style: .soft).then {
             $0.setTitle(title, for: .normal)
+            // 반씩 나눈 고정 폭이라 큰 글자에서는 한 줄 안에서 조금 줄인다.
+            $0.titleLabel?.lineBreakMode = .byTruncatingTail
+            $0.titleLabel?.adjustsFontSizeToFitWidth = true
+            $0.titleLabel?.minimumScaleFactor = 0.8
         }
     }
 

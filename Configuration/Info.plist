@@ -33,10 +33,6 @@
 		<string>kakaolink</string>
 		<string>kakaoplus</string>
 	</array>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>맞춤 광고를 보여 드리는 데만 사용해요. 허용하지 않아도 모든 기능을 쓸 수 있어요.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

@@ -10,7 +10,7 @@ final class MG2ProfileImageSelectModal: UIViewController {
     private static let titleTop: CGFloat = 16
     private static let titleHeight: CGFloat = DS.Size.touch
     private static let gridTop: CGFloat = 14
-    private static let bottomInset: CGFloat = 32
+    private static let bottomInset: CGFloat = DS.Space.sheet
 
     var onSelection: ((Int) -> Void)?
     var onClose: (() -> Void)?

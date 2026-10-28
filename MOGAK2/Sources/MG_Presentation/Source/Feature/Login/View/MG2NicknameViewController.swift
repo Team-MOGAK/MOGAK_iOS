@@ -77,16 +77,18 @@ final class MG2NicknameViewController: UIViewController {
 
         headerView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.sheet)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
     private func configureProfileImage() {
         view.addSubview(profileImageView)
+        // 가입 완료 아바타 120. 키보드가 올라와 자리가 모자라면 간격(40 → 16)이 먼저, 그다음 아바타가 줄어든다.
         profileImageView.snp.makeConstraints {
-            // 가입 완료 아바타 120.
-            $0.width.height.equalTo(120)
-            $0.top.equalTo(headerView.snp.bottom).offset(40)
+            $0.width.equalTo(profileImageView.snp.height)
+            $0.height.equalTo(120).priority(.medium)
+            $0.top.equalTo(headerView.snp.bottom).offset(40).priority(.low)
+            $0.top.greaterThanOrEqualTo(headerView.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
         }
         // 프로필 수정에서는 "프로필 이미지 변경" 화면에서 바꾼다.
@@ -98,16 +100,17 @@ final class MG2NicknameViewController: UIViewController {
         view.addSubviews(nicknameLabel, nicknameTextField, guideLabel)
 
         nicknameLabel.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(40)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.top.equalTo(profileImageView.snp.bottom).offset(40).priority(.low)
+            $0.top.greaterThanOrEqualTo(profileImageView.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         nicknameTextField.snp.makeConstraints {
             $0.top.equalTo(nicknameLabel.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         guideLabel.snp.makeConstraints {
             $0.top.equalTo(nicknameTextField.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
@@ -115,9 +118,10 @@ final class MG2NicknameViewController: UIViewController {
         view.addSubview(nextButton)
 
         nextButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.height.equalTo(DS.Size.button)
             $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            $0.top.greaterThanOrEqualTo(guideLabel.snp.bottom).offset(16)
         }
     }
 

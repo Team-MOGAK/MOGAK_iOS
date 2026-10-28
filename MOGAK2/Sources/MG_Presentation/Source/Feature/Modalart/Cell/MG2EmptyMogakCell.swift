@@ -19,6 +19,8 @@ final class MG2EmptyMogakCell: UICollectionViewCell {
         let label = UILabel()
         label.apply(.footnoteBold, color: DS.Color.accentDeep)
         label.text = "모각 추가"
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
         return label
     }()
 
@@ -35,7 +37,10 @@ final class MG2EmptyMogakCell: UICollectionViewCell {
         stack.alignment = .center
         stack.spacing = 6
         contentView.addSubview(stack)
-        stack.snp.makeConstraints { $0.center.equalToSuperview() }
+        stack.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.leading.greaterThanOrEqualToSuperview().inset(8)
+        }
         contentView.isAccessibilityElement = true
         contentView.accessibilityLabel = "빈 칸에 모각 추가"
         contentView.accessibilityTraits = .button
@@ -49,6 +54,13 @@ final class MG2EmptyMogakCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         dashLayer.path = UIBezierPath(roundedRect: contentView.bounds.insetBy(dx: 1, dy: 1), cornerRadius: DS.Radius.cell).cgPath
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            guard !UIAccessibility.isReduceMotionEnabled else { return }
+            UIView.animate(withDuration: 0.15) { self.transform = self.isHighlighted ? CGAffineTransform(scaleX: 0.96, y: 0.96) : .identity }
+        }
     }
 
     func configure(isSuggested: Bool, label text: String = "모각 추가") {

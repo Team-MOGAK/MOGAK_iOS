@@ -1,57 +1,30 @@
 import SnapKit
 import UIKit
 
-/// 세그먼트 (`.md-seg`): 트랙 `segment` · 안쪽 3 · 모서리 12, 옵션 36pt · 13/700.
-/// 선택은 `surface` 바탕 · `ink` 글자 · 얕은 그림자, 나머지는 `sub`. 옵션은 2~3개.
-final class MG2SegmentedControl: UIControl {
-    private(set) var selectedIndex: Int
-    private var buttons = [UIButton]()
+/// 세그먼트 (`.md-seg`). 시스템 UISegmentedControl에 디자인 색만 입힌다.
+/// 트랙 `segment`, 선택 칸 `surface` · `ink`, 나머지 `sub`, 글자 13/700. 옵션은 2~3개.
+final class MG2SegmentedControl: UISegmentedControl {
+    var selectedIndex: Int { selectedSegmentIndex }
 
     init(options: [String], selectedIndex: Int = 0) {
-        self.selectedIndex = selectedIndex
-        super.init(frame: .zero)
+        super.init(items: options)
+        selectedSegmentIndex = selectedIndex
         backgroundColor = DS.Color.segment
-        roundCorners(12)
-
-        let stack = UIStackView()
-        stack.distribution = .fillEqually
-        addSubview(stack)
-        stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(3) }
-
-        for (index, option) in options.enumerated() {
-            let button = UIButton(type: .custom)
-            button.setTitle(option, for: .normal)
-            button.titleLabel?.font = T.footnoteBold.font
-            button.roundCorners(10)
-            button.layer.shadowColor = UIColor(hex: "1E2050").cgColor
-            button.layer.shadowOffset = CGSize(width: 0, height: 1)
-            button.layer.shadowRadius = 1
-            button.addAction(UIAction { [weak self] _ in self?.select(index, sendsActions: true) }, for: .touchUpInside)
-            button.snp.makeConstraints { $0.height.equalTo(DS.Size.chip) }
-            buttons.append(button)
-            stack.addArrangedSubview(button)
-        }
-        render()
+        selectedSegmentTintColor = DS.Color.surface
+        setTitleTextAttributes([.font: T.footnoteBold.font, .foregroundColor: DS.Color.sub], for: .normal)
+        setTitleTextAttributes([.font: T.footnoteBold.font, .foregroundColor: DS.Color.ink], for: .selected)
+        // 옵션 높이 36 + 안쪽 3 (`.md-seg`).
+        snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.chip + 6) }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// 코드로 고를 때. 사용자가 누르면 시스템이 `.valueChanged`를 보낸다.
     func select(_ index: Int, sendsActions: Bool = false) {
-        guard buttons.indices.contains(index), index != selectedIndex else { return }
-        selectedIndex = index
-        render()
+        guard index != selectedSegmentIndex else { return }
+        selectedSegmentIndex = index
         if sendsActions { sendActions(for: .valueChanged) }
-    }
-
-    private func render() {
-        for (index, button) in buttons.enumerated() {
-            let isSelected = index == selectedIndex
-            button.backgroundColor = isSelected ? DS.Color.surface : .clear
-            button.setTitleColor(isSelected ? DS.Color.ink : DS.Color.sub, for: .normal)
-            button.layer.shadowOpacity = isSelected ? 0.12 : 0
-            button.accessibilityTraits = isSelected ? [.button, .selected] : .button
-        }
     }
 }

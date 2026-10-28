@@ -17,6 +17,9 @@ class MG2JogakCell: UICollectionViewCell {
         label.apply(.subhead)
         label.numberOfLines = 3
         label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
+        // 큰 글자에서 칸을 넘치면 이름이 먼저 줄어 말줄임된다.
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
     }()
 
@@ -26,6 +29,9 @@ class MG2JogakCell: UICollectionViewCell {
         contentView.roundCorners(DS.Radius.cell)
         layer.apply(.card)
         tagLabel.isHidden = true
+        tagLabel.adjustsFontSizeToFitWidth = true
+        tagLabel.minimumScaleFactor = 0.8
+        tagLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
         let stack = UIStackView(arrangedSubviews: [tagLabel, nameLabel])
         stack.axis = .vertical
@@ -37,6 +43,7 @@ class MG2JogakCell: UICollectionViewCell {
             $0.leading.trailing.equalToSuperview().inset(8)
             $0.top.greaterThanOrEqualToSuperview().inset(10)
         }
+        nameLabel.snp.makeConstraints { $0.width.equalTo(stack) }
         contentView.isAccessibilityElement = true
         contentView.accessibilityTraits = .button
     }

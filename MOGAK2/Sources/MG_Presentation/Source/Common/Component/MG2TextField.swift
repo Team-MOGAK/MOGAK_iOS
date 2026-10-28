@@ -2,11 +2,17 @@ import SnapKit
 import UIKit
 
 /// 입력 필드 (`.md-field`): 52pt · `fill` 바탕 · 모서리 14 · 글자 17/600.
-/// 포커스 테두리 `accent` 2px, 잘못된 값 `danger` 2px, 오른쪽 44pt 지우기 버튼.
+/// 포커스 테두리 `accent` 2px, 잘못된 값 `danger` 2px, 글자가 있으면 오른쪽 44pt 지우기 버튼(안쪽 0 4 0 16).
 final class MG2TextField: UITextField {
     var isInvalid = false {
         didSet { updateBorder() }
     }
+
+    override var text: String? {
+        didSet { updateClearButton() }
+    }
+
+    private let clearButton = UIButton(type: .system)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,16 +26,18 @@ final class MG2TextField: UITextField {
         leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
         leftViewMode = .always
 
-        let clearButton = UIButton(type: .system)
-        clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        // 20pt 원 (`.md-field-clear span`).
+        clearButton.setImage(UIImage(systemName: "xmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 17)), for: .normal)
         clearButton.tintColor = DS.Color.disabled
         clearButton.frame = CGRect(x: 0, y: 0, width: DS.Size.touch, height: DS.Size.touch)
         clearButton.accessibilityLabel = "지우기"
         clearButton.addAction(UIAction { [weak self] _ in self?.clear() }, for: .touchUpInside)
         rightView = clearButton
-        rightViewMode = .whileEditing
+        rightViewMode = .always
+        addAction(UIAction { [weak self] _ in self?.updateClearButton() }, for: .editingChanged)
         snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.button) }
         updateBorder()
+        updateClearButton()
     }
 
     required init?(coder: NSCoder) {
@@ -38,7 +46,8 @@ final class MG2TextField: UITextField {
 
     override var placeholder: String? {
         didSet {
-            attributedPlaceholder = placeholder.map { NSAttributedString(string: $0, attributes: [.font: T.body.font, .foregroundColor: DS.Color.placeholder]) }
+            // 글꼴은 필드 글꼴을 따라 글자 크기 설정에 맞춰 바뀐다.
+            attributedPlaceholder = placeholder.map { NSAttributedString(string: $0, attributes: [.foregroundColor: DS.Color.placeholder]) }
         }
     }
 
@@ -62,6 +71,10 @@ final class MG2TextField: UITextField {
         sendActions(for: .editingChanged)
     }
 
+    private func updateClearButton() {
+        clearButton.isHidden = text?.isEmpty ?? true
+    }
+
     private func updateBorder() {
         layer.borderWidth = isInvalid || isFirstResponder ? 2 : 0
         layer.borderColor = (isInvalid ? DS.Color.danger : DS.Color.accent).cgColor
@@ -73,6 +86,7 @@ final class MG2FieldLabel: UILabel {
     init(_ text: String) {
         super.init(frame: .zero)
         apply(.footnoteBold, color: DS.Color.ink3)
+        numberOfLines = 0
         self.text = text
     }
 
@@ -114,6 +128,7 @@ final class MG2ScreenHeaderView: UIStackView {
         super.init(frame: .zero)
         axis = .vertical
         spacing = 8
+        // 줄 높이까지 T 스타일대로 (설명은 15/22).
         let titleLabel = UILabel()
         titleLabel.attributedText = NSAttributedString(string: title, attributes: style.attributes())
         titleLabel.numberOfLines = 0
@@ -122,9 +137,9 @@ final class MG2ScreenHeaderView: UIStackView {
         addArrangedSubview(titleLabel)
         if let subtitle {
             let subLabel = UILabel()
-            subLabel.apply(.paragraph, color: DS.Color.sub)
+            subLabel.attributedText = NSAttributedString(string: subtitle, attributes: T.paragraph.attributes(color: DS.Color.sub))
             subLabel.numberOfLines = 0
-            subLabel.text = subtitle
+            subLabel.adjustsFontForContentSizeCategory = true
             addArrangedSubview(subLabel)
         }
     }

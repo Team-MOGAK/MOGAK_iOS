@@ -25,14 +25,15 @@ final class MG2ModalartCoordinator {
         return viewController
     }
 
-    /// originFrame: 누른 칸의 창 좌표. 있으면 그 칸에서 확대되며 열린다.
-    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, modalartTitle: String, originFrame: CGRect? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
+    /// sourceView: 누른 판 칸. iOS 18부터 그 칸에서 확대되며 열리고 닫힐 때 그 칸으로 돌아간다 (시스템 zoom).
+    /// iOS 17이나 동작 줄이기에서는 기본 push.
+    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, modalartTitle: String, sourceView: UIView? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
         let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, modalartTitle: modalartTitle, mogaks: mogaks, selectedMogak: selectedMogak, occurrences: occurrences)
         let viewController = MG2MogakDetailViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.onExit = onExit
-        if let originFrame {
-            source.mainTabController?.nextPushTransition = MG2BoardZoomTransition(originFrame: originFrame)
+        if #available(iOS 18, *), let sourceView, !UIAccessibility.isReduceMotionEnabled {
+            viewController.preferredTransition = .zoom { [weak sourceView] _ in sourceView }
         }
         source.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -55,16 +56,16 @@ final class MG2ModalartCoordinator {
 
     func presentModalartList(modalarts: [MG2ModalartListItemEntity], onSelection: @escaping (Int) -> Void, onAdd: @escaping () -> Void, from source: UIViewController) {
         let viewController = MG2ModalartListModal(modalarts: modalarts)
-        viewController.onDismiss = { [weak viewController] in viewController?.dismiss(animated: false) }
+        viewController.onDismiss = { [weak viewController] in viewController?.dismiss(animated: true) }
         viewController.onSelection = { [weak viewController] index in
-            viewController?.dismiss(animated: false) {
+            viewController?.dismiss(animated: true) {
                 onSelection(index)
             }
         }
-        viewController.onAdd = { [weak viewController] in viewController?.dismiss(animated: false, completion: onAdd) }
+        viewController.onAdd = { [weak viewController] in viewController?.dismiss(animated: true, completion: onAdd) }
         viewController.modalPresentationStyle = .overFullScreen
         viewController.modalTransitionStyle = .crossDissolve
-        source.present(viewController, animated: false)
+        source.present(viewController, animated: true)
     }
 
     func presentModalartActions(onAdd: @escaping () -> Void, onDelete: @escaping () -> Void, from source: UIViewController) {
@@ -87,14 +88,14 @@ final class MG2ModalartCoordinator {
                 onSubmit(title, color)
             }
         }
-        configureSheet(viewController, height: 400)
+        configureSheet(viewController)
         source.present(viewController, animated: true)
     }
 
     func presentMissingTitleNotice(from source: UIViewController) {
         let viewController = MG2NeedModalartTitleModal()
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController, height: 330)
+        configureSheet(viewController)
         source.present(viewController, animated: true)
     }
 
@@ -102,7 +103,7 @@ final class MG2ModalartCoordinator {
         let viewController = MG2AskDeleteModal()
         viewController.onCancel = { [weak viewController] in viewController?.dismiss(animated: true) }
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true, completion: onConfirm) }
-        configureSheet(viewController, height: 340)
+        configureSheet(viewController)
         source.present(viewController, animated: true)
     }
 
@@ -123,7 +124,7 @@ final class MG2ModalartCoordinator {
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
         viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController, height: 300)
+        configureSheet(viewController)
         source.present(viewController, animated: true)
     }
 
@@ -132,7 +133,7 @@ final class MG2ModalartCoordinator {
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
         viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController, height: 410)
+        configureSheet(viewController)
         source.present(viewController, animated: true)
     }
 
@@ -167,9 +168,15 @@ final class MG2ModalartCoordinator {
         alertCoordinator.presentError(error, from: source)
     }
 
-    private func configureSheet(_ viewController: UIViewController, height: CGFloat) {
+    /// 시트 높이는 내용에 맞춘다 (`.md-sheet` 위 16 · 아래 20). 글자를 키우면 시트도 같이 커져 잘리지 않는다.
+    /// 각 시트는 마지막 요소를 아래 20 이상 띄워 둔다(`lessThanOrEqualTo`).
+    private func configureSheet(_ viewController: UIViewController) {
         guard let sheet = viewController.sheetPresentationController else { return }
-        sheet.detents = [.custom { _ in height }]
+        sheet.detents = [.custom { [weak viewController] context in
+            guard let view = viewController?.view else { return context.maximumDetentValue }
+            let fitting = view.systemLayoutSizeFitting(CGSize(width: view.bounds.width, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+            return min(fitting.height, context.maximumDetentValue)
+        }]
         sheet.preferredCornerRadius = DS.Radius.sheet
         sheet.prefersGrabberVisible = true
     }

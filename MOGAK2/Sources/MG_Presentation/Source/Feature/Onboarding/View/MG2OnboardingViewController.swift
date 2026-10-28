@@ -52,7 +52,7 @@ final class MG2OnboardingViewController: UIViewController, UIScrollViewDelegate 
             $0.bottom.equalTo(startButton.snp.top).offset(-18)
         }
         startButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
             $0.height.equalTo(DS.Size.button)
         }

@@ -6,7 +6,7 @@ import Then
 final class MG2OnboardingPageView: UIView {
     struct Page {
         enum ImageLayout {
-            /// 정사각형 이미지: 원본 크기, 작은 화면에서는 280으로 축소
+            /// 정사각형 이미지: 원본 크기, 자리가 모자라면 축소
             case intrinsic
             /// 세로로 긴 이미지: 제목 아래부터 화면 끝까지 맞춤
             case fill(topOffset: CGFloat)
@@ -50,22 +50,23 @@ final class MG2OnboardingPageView: UIView {
 
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(64)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
+
+        // 이미지는 제목보다 먼저 줄어든다(작은 화면 · 큰 글자). 비율은 그대로.
+        imageView.contentMode = .scaleAspectFit
+        imageView.setContentCompressionResistancePriority(.defaultLow + 1, for: .vertical)
 
         switch imageLayout {
         case .intrinsic:
+            // 자리가 모자라면 위 간격(64 → 20)이 먼저, 그다음 이미지가 줄어든다.
             imageView.snp.makeConstraints {
-                if (window?.windowScene?.screen ?? UIScreen.main).bounds.height < 670 {
-                    $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-                    $0.size.equalTo(280)
-                } else {
-                    $0.top.equalTo(titleLabel.snp.bottom).offset(64)
-                }
+                $0.top.equalTo(titleLabel.snp.bottom).offset(64).priority(.low)
+                $0.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(20)
+                $0.bottom.lessThanOrEqualToSuperview().offset(-10)
                 $0.centerX.equalToSuperview()
             }
         case .fill(let topOffset):
-            imageView.contentMode = .scaleAspectFit
             imageView.snp.makeConstraints {
                 $0.top.equalTo(titleLabel.snp.bottom).offset(topOffset)
                 $0.bottom.equalToSuperview().offset(-10)

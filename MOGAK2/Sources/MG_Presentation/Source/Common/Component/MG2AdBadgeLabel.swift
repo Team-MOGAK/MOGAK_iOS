@@ -1,12 +1,9 @@
-import SnapKit
 import UIKit
 
-/// 광고 표시 (`.md-adbadge`). 모든 광고에 붙인다 (AdMob 정책: 앱 버튼과 다르게).
-final class MG2AdBadgeLabel: UILabel {
-    private let insets = UIEdgeInsets(top: 1, left: 6, bottom: 1, right: 6)
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+/// 광고 표시 (`.md-adbadge` 11/16 800 · 안쪽 1 6 · 모서리 4 · 높이 18). 모든 광고에 붙인다 (AdMob 정책: 앱 버튼과 다르게).
+final class MG2AdBadgeLabel: MG2PaddingLabel {
+    init() {
+        super.init(top: 1, bottom: 1, left: 6, right: 6)
         text = "광고"
         font = .scaledCapped(.pretendard(.extraBold, size: 11), relativeTo: .caption2)
         adjustsFontForContentSizeCategory = true
@@ -15,18 +12,15 @@ final class MG2AdBadgeLabel: UILabel {
         layer.cornerRadius = 4
         clipsToBounds = true
         setContentHuggingPriority(.required, for: .horizontal)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func drawText(in rect: CGRect) {
-        super.drawText(in: rect.inset(by: insets))
-    }
-
     override var intrinsicContentSize: CGSize {
         let size = super.intrinsicContentSize
-        return CGSize(width: size.width + insets.left + insets.right, height: 18)
+        return CGSize(width: size.width, height: max(size.height, 18))
     }
 }

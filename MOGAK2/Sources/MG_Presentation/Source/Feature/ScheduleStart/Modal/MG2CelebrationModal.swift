@@ -7,6 +7,8 @@ final class MG2CelebrationModal: UIViewController {
 
     private let done: Int
     private let completedCount: Int
+    private let mascot = MG2MascotView(size: 104)
+    private let titleLabel = UILabel()
 
     init(done: Int, completedCount: Int) {
         self.done = done
@@ -29,15 +31,16 @@ final class MG2CelebrationModal: UIViewController {
         card.roundCorners(28)
         card.accessibilityViewIsModal = true
 
-        let mascot = MG2MascotView(size: 104)
         mascot.pose = .proud
         mascot.isInteractive = false
-        let titleLabel = UILabel()
-        titleLabel.font = UIFontMetrics(forTextStyle: .title2).scaledFont(for: .pretendard(.extraBold, size: 22), maximumPointSize: 30)
+        // `.md-cele h3` 22/28 800 · `p` 14/21 500 sub. 큰 글자에서는 줄바꿈.
+        titleLabel.font = .scaledCapped(.pretendard(.extraBold, size: 22), relativeTo: .title2)
         titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.textColor = DS.Color.ink
         titleLabel.text = "오늘 조각 모두 완료!"
         titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
+        titleLabel.accessibilityTraits = .header
         let subLabel = UILabel()
         subLabel.apply(.paragraph, color: DS.Color.sub)
         subLabel.font = .scaledCapped(.pretendard(.medium, size: 14), relativeTo: .subheadline)
@@ -60,6 +63,7 @@ final class MG2CelebrationModal: UIViewController {
         let stack = UIStackView(arrangedSubviews: [mascot, titleLabel, subLabel, stats, confirmButton])
         stack.axis = .vertical
         stack.alignment = .center
+        // gap 10, 통계 위아래 margin 8 · 6
         stack.spacing = 10
         stack.setCustomSpacing(18, after: subLabel)
         stack.setCustomSpacing(16, after: stats)
@@ -73,7 +77,12 @@ final class MG2CelebrationModal: UIViewController {
         }
         stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 24, left: 22, bottom: 20, right: 22)) }
         [stats, confirmButton].forEach { view in view.snp.makeConstraints { $0.width.equalTo(stack) } }
-        confirmButton.snp.makeConstraints { $0.height.equalTo(DS.Size.button) }
+    }
+
+    /// 나타날 때 모각이가 한 번 폴짝(`hop: 1`). 동작 줄이기면 MG2MascotView가 건너뛴다.
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        mascot.hop()
         UIAccessibility.post(notification: .screenChanged, argument: titleLabel)
     }
 
@@ -89,7 +98,6 @@ final class MG2CelebrationModal: UIViewController {
         let stack = UIStackView(arrangedSubviews: [valueLabel, nameLabel])
         stack.axis = .vertical
         stack.alignment = .center
-        stack.spacing = 2
         return stack
     }
 }

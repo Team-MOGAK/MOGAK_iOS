@@ -7,35 +7,32 @@
 
 import UIKit
 
-/// 패딩 값 설정해줄 수 있는 라벨
-final class MG2PaddingLabel: UILabel {
+/// 안쪽 여백이 있는 라벨. 크기 계산 · 줄바꿈 · 끝 줄임(…)도 여백 안쪽 기준이다.
+class MG2PaddingLabel: UILabel {
     var topInset: CGFloat
     var bottomInset: CGFloat
     var leftInset: CGFloat
     var rightInset: CGFloat
 
-    required init(top: CGFloat, bottom: CGFloat, left: CGFloat, right: CGFloat) {
+    init(top: CGFloat, bottom: CGFloat, left: CGFloat, right: CGFloat) {
         topInset = top
         bottomInset = bottom
         leftInset = left
         rightInset = right
-        super.init(frame: CGRect.zero)
+        super.init(frame: .zero)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+        let insets = UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
+        let rect = super.textRect(forBounds: bounds.inset(by: insets), limitedToNumberOfLines: numberOfLines)
+        return rect.inset(by: UIEdgeInsets(top: -topInset, left: -leftInset, bottom: -bottomInset, right: -rightInset))
+    }
+
     override func drawText(in rect: CGRect) {
-            let insets = UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
-            super.drawText(in: rect.inset(by: insets))
-        }
-
-    override var intrinsicContentSize: CGSize {
-        var contentSize = super.intrinsicContentSize
-        contentSize.height += topInset + bottomInset
-        contentSize.width += leftInset + rightInset
-
-        return contentSize
+        super.drawText(in: rect.inset(by: UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)))
     }
 }

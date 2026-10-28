@@ -1,3 +1,4 @@
+import SafariServices
 import UIKit
 
 @MainActor
@@ -35,9 +36,12 @@ final class MG2MyPageCoordinator {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
+    /// 공지 · 문의 · 약관은 외부 링크라 시스템 인앱 브라우저(SFSafariViewController)로 연다.
     func routeToWeb(destination: MG2WebDestination, from source: UIViewController) {
-        let viewController = MG2WebViewController(viewModel: MG2WebViewModel(destination: destination))
-        source.navigationController?.pushViewController(viewController, animated: true)
+        guard let url = URL(string: destination.rawValue) else { return }
+        let viewController = SFSafariViewController(url: url)
+        viewController.preferredControlTintColor = DS.Color.accentDeep
+        source.present(viewController, animated: true)
     }
 
     func routeToPushSetting(from source: UIViewController) {

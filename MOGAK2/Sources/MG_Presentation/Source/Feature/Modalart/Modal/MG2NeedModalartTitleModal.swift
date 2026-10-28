@@ -37,11 +37,13 @@ final class MG2NeedModalartTitleModal: UIViewController {
         stack.axis = .vertical
         stack.alignment = .center
         stack.spacing = 8
-        stack.setCustomSpacing(20, after: subTitleLabel)
+        stack.setCustomSpacing(14, after: subTitleLabel)
         view.addSubview(stack)
+        // `.md-sheet` 위 16 · 좌우 20 · 아래 20 (시트 높이는 내용에 맞춤)
         stack.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(28)
+            $0.top.equalToSuperview().offset(16)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.bottom.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
         closeButton.snp.makeConstraints {
             $0.width.equalTo(stack)

@@ -15,10 +15,10 @@ final class MG2ReminderScheduler: ReminderScheduling {
 
     var time: DateComponents {
         get {
-            let saved = UserDefaults.standard.array(forKey: Self.timeKey) as? [Int] ?? [9, 0]
-            return DateComponents(hour: saved.first ?? 9, minute: saved.last ?? 0)
+            let saved = UserDefaults.standard.array(forKey: Self.timeKey) as? [Int] ?? [8, 0]
+            return DateComponents(hour: saved.first ?? 8, minute: saved.last ?? 0)
         }
-        set { UserDefaults.standard.set([newValue.hour ?? 9, newValue.minute ?? 0], forKey: Self.timeKey) }
+        set { UserDefaults.standard.set([newValue.hour ?? 8, newValue.minute ?? 0], forKey: Self.timeKey) }
     }
 
     func cancelDaily() {

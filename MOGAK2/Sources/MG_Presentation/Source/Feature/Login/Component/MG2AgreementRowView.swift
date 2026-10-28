@@ -17,6 +17,7 @@ final class MG2AgreementRowView: UIControl {
         titleLabel.numberOfLines = 0
         subtitleLabel.apply(.footnote, color: DS.Color.sub)
         subtitleLabel.text = subtitle
+        subtitleLabel.numberOfLines = 0
         subtitleLabel.isHidden = subtitle == nil
         if isEmphasized {
             backgroundColor = DS.Color.listTile

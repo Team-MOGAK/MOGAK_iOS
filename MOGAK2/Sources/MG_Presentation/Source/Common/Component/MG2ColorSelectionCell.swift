@@ -4,6 +4,10 @@ import SnapKit
 final class MG2ColorSelectionCell: UICollectionViewCell {
     static let identifier = String(describing: MG2ColorSelectionCell.self)
 
+    // 색 원 40 · 고른 표시 흰 점 24. 누르는 영역(44)은 셀 크기가 맡는다.
+    private static let swatchSize: CGFloat = 40
+    private static let dotSize: CGFloat = 24
+
     private let colorView = UIView()
     private let innerView = UIView()
 
@@ -31,9 +35,9 @@ final class MG2ColorSelectionCell: UICollectionViewCell {
     }
 
     private func configureLayout() {
-        colorView.layer.cornerRadius = 20
+        colorView.layer.cornerRadius = Self.swatchSize / 2
         colorView.clipsToBounds = true
-        innerView.layer.cornerRadius = 12
+        innerView.layer.cornerRadius = Self.dotSize / 2
         innerView.clipsToBounds = true
 
         contentView.addSubview(colorView)
@@ -41,12 +45,12 @@ final class MG2ColorSelectionCell: UICollectionViewCell {
 
         colorView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.size.equalTo(40)
+            $0.size.equalTo(Self.swatchSize)
         }
 
         innerView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.size.equalTo(24)
+            $0.size.equalTo(Self.dotSize)
         }
     }
 }

@@ -9,6 +9,10 @@ final class MG2ModalartMainViewController: UIViewController {
 
     private let modalartNameLabel = UILabel().then {
         $0.apply(.title1)
+        $0.numberOfLines = 1
+        $0.lineBreakMode = .byTruncatingTail
+        // 긴 판 이름은 말줄임되고 오른쪽 버튼들을 밀어내지 않는다.
+        $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         $0.isUserInteractionEnabled = true
         $0.accessibilityTraits = .header
     }
@@ -25,6 +29,7 @@ final class MG2ModalartMainViewController: UIViewController {
         $0.layer.cornerRadius = DS.Size.touch / 2
         $0.layer.apply(.card)
         $0.accessibilityLabel = "모다라트 메뉴"
+        $0.enablePressFeedback()
         $0.addTarget(self, action: #selector(modalartMenuButtonTapped), for: .touchUpInside)
     }
     private lazy var fullBoardButton = UIButton(type: .system).then {
@@ -34,6 +39,7 @@ final class MG2ModalartMainViewController: UIViewController {
         $0.layer.cornerRadius = DS.Size.touch / 2
         $0.layer.apply(.card)
         $0.accessibilityLabel = "81칸 전체 보기"
+        $0.enablePressFeedback()
         $0.addTarget(self, action: #selector(fullBoardButtonTapped), for: .touchUpInside)
     }
     private let modalartCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
@@ -172,7 +178,6 @@ final class MG2ModalartMainViewController: UIViewController {
     }
 
     private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity, from indexPath: IndexPath) {
-        let originFrame = modalartCollectionView.cellForItem(at: indexPath).map { $0.convert($0.bounds, to: nil) }
         showLoading()
         view.isUserInteractionEnabled = false
         viewModel.loadOccurrences(for: mogak) { [weak self] result in
@@ -182,7 +187,7 @@ final class MG2ModalartMainViewController: UIViewController {
             switch result {
             case .success(let occurrences):
                 guard let modalartID = viewModel.state.selectedID else { return }
-                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, modalartTitle: viewModel.state.title, originFrame: originFrame, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
+                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, modalartTitle: viewModel.state.title, sourceView: modalartCollectionView.cellForItem(at: indexPath), onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }

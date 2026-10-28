@@ -25,7 +25,10 @@ final class MG2PathBarView: UIStackView {
         arrangedSubviews.forEach { $0.removeFromSuperview() }
         for (index, item) in items.enumerated() {
             if index > 0 { addArrangedSubview(makeSeparator()) }
-            addArrangedSubview(makeLabel(for: item))
+            // 자리가 모자라면 앞(판 이름)부터 줄인다. 마지막(지금 만드는 것)이 가장 오래 남는다.
+            let label = makeLabel(for: item)
+            label.setContentCompressionResistancePriority(.defaultLow + Float(index), for: .horizontal)
+            addArrangedSubview(label)
         }
         isHidden = items.isEmpty
         accessibilityLabel = "경로, " + items.map(\.label).joined(separator: ", ")
@@ -40,13 +43,10 @@ final class MG2PathBarView: UIStackView {
             chip.roundCorners(DS.Radius.tag)
             chip.clipsToBounds = true
             chip.lineBreakMode = .byTruncatingTail
-            chip.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             return chip
         }
         let tag = MG2TagLabel()
         tag.configure(text: item.label, moak: DS.Moak.from(hex: colorHex))
-        tag.lineBreakMode = .byTruncatingTail
-        tag.setContentCompressionResistancePriority(.defaultLow - 1, for: .horizontal)
         return tag
     }
 
@@ -54,7 +54,8 @@ final class MG2PathBarView: UIStackView {
     private func makeSeparator() -> UILabel {
         let separator = UILabel()
         separator.text = "›"
-        separator.font = .pretendard(.extraBold, size: 10)
+        separator.font = .scaledCapped(.pretendard(.extraBold, size: 10), relativeTo: .caption2)
+        separator.adjustsFontForContentSizeCategory = true
         separator.textColor = DS.Color.ghost
         separator.setContentCompressionResistancePriority(.required, for: .horizontal)
         return separator

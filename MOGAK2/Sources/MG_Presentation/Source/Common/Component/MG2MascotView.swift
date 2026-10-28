@@ -24,10 +24,9 @@ final class MG2MascotView: UIControl {
         super.init(frame: .zero)
         hopView.isUserInteractionEnabled = false
         imageView.contentMode = .scaleAspectFit
-        bubbleLabel.font = T.caption1.font
-        bubbleLabel.textColor = DS.Color.surface
+        // `.md-bubble` 12/16 700 · 안쪽 6 10 · 캡슐, 한 줄.
+        bubbleLabel.apply(.caption1, color: DS.Color.surface)
         bubbleLabel.backgroundColor = DS.Color.ink
-        bubbleLabel.layer.cornerRadius = 14
         bubbleLabel.clipsToBounds = true
         bubbleLabel.isHidden = true
         addSubviews(hopView, bubbleLabel)
@@ -43,7 +42,9 @@ final class MG2MascotView: UIControl {
         enablePressFeedback()
         isAccessibilityElement = true
         render(pose)
-        NotificationCenter.default.addObserver(self, selector: #selector(reduceMotionChanged), name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(restartBreathing), name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
+        // 백그라운드에 다녀오면 반복 애니메이션이 지워지므로 다시 건다.
+        NotificationCenter.default.addObserver(self, selector: #selector(restartBreathing), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -52,34 +53,25 @@ final class MG2MascotView: UIControl {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        if imageView.bounds.size != breathingSize { startBreathing() }
+        bubbleLabel.layer.cornerRadius = bubbleLabel.bounds.height / 2
+        if imageView.bounds.size != breathingSize { restartBreathing() }
     }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        window == nil ? imageView.layer.removeAllAnimations() : startBreathing()
+        restartBreathing()
     }
 
-    /// `mdHop`: 18% 1.1 × 0.86 → 55% 위로 18% · 0.95 × 1.08 → 80% 1.04 × 0.96 → 원래대로.
+    /// `mdHop` 0.55초: 눌림 1.1 × 0.86 → 위로 18% · 0.95 × 1.08 → 착지 1.04 × 0.96 → 원래대로.
     func hop() {
         guard !UIAccessibility.isReduceMotionEnabled, hopView.bounds.height > 0 else { return }
         let height = hopView.bounds.height
-        let animation = CAKeyframeAnimation(keyPath: "transform")
-        animation.values = [
-            CATransform3DIdentity,
-            bottomAnchored(scaleX: 1.1, y: 0.86, height: height),
-            CATransform3DConcat(bottomAnchored(scaleX: 0.95, y: 1.08, height: height), CATransform3DMakeTranslation(0, -height * 0.18, 0)),
-            bottomAnchored(scaleX: 1.04, y: 0.96, height: height),
-            CATransform3DIdentity
-        ].map { NSValue(caTransform3D: $0) }
-        animation.keyTimes = [0, 0.18, 0.55, 0.8, 1]
-        animation.duration = 0.55
-        animation.timingFunction = CAMediaTimingFunction(controlPoints: 0.3, 0.7, 0.4, 1)
-        hopView.layer.add(animation, forKey: "hop")
-    }
-
-    @objc private func reduceMotionChanged() {
-        startBreathing()
+        UIView.animateKeyframes(withDuration: 0.55, delay: 0, options: [.calculationModeCubic, .allowUserInteraction, .beginFromCurrentState]) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.18) { self.hopView.transform = Self.footAnchored(scaleX: 1.1, y: 0.86, height: height) }
+            UIView.addKeyframe(withRelativeStartTime: 0.18, relativeDuration: 0.37) { self.hopView.transform = Self.footAnchored(scaleX: 0.95, y: 1.08, height: height).concatenating(CGAffineTransform(translationX: 0, y: -height * 0.18)) }
+            UIView.addKeyframe(withRelativeStartTime: 0.55, relativeDuration: 0.25) { self.hopView.transform = Self.footAnchored(scaleX: 1.04, y: 0.96, height: height) }
+            UIView.addKeyframe(withRelativeStartTime: 0.8, relativeDuration: 0.2) { self.hopView.transform = .identity }
+        }
     }
 
     @objc private func tapped() {
@@ -90,10 +82,13 @@ final class MG2MascotView: UIControl {
         render(next.pose)
         bubbleLabel.text = next.bubble
         bubbleLabel.isHidden = false
+        bubbleLabel.alpha = 1
+        bubbleLabel.transform = .identity
         if !UIAccessibility.isReduceMotionEnabled {
+            // `mdPop`: 0.6배에서 튕기며 나타난다.
             bubbleLabel.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
             bubbleLabel.alpha = 0
-            UIView.animate(withDuration: 0.38, delay: 0, usingSpringWithDamping: 0.55, initialSpringVelocity: 0) {
+            UIView.animate(springDuration: 0.38, bounce: 0.4, initialSpringVelocity: 0, delay: 0, options: [.allowUserInteraction, .beginFromCurrentState]) {
                 self.bubbleLabel.transform = .identity
                 self.bubbleLabel.alpha = 1
             }
@@ -105,36 +100,42 @@ final class MG2MascotView: UIControl {
             guard let self else { return }
             reaction = nil
             render(pose)
-            bubbleLabel.isHidden = true
+            UIView.animate(withDuration: 0.2, delay: 0, options: [.allowUserInteraction, .beginFromCurrentState]) {
+                self.bubbleLabel.alpha = 0
+            } completion: { finished in
+                if finished { self.bubbleLabel.isHidden = true }
+            }
         }
         reactionWork = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
     }
 
     private func render(_ pose: MG2MoakPose) {
-        imageView.image = UIImage(named: DS.Pose(rawValue: pose.rawValue)?.imageName ?? "")
+        let image = UIImage(named: DS.Pose(rawValue: pose.rawValue)?.imageName ?? "")
+        if imageView.image != image {
+            // 포즈는 0.2초 교차 페이드로 바꾼다 (동작 줄이기에서도 허용되는 전환).
+            UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.imageView.image = image }
+        }
         accessibilityLabel = "모각이"
         accessibilityHint = isInteractive ? "누르면 반응해요" : nil
         accessibilityTraits = isInteractive ? .button : .image
     }
 
-    /// `mdBreathe`: 1.2초마다 1 ↔ 1.03 × 0.97, 발끝 고정.
-    private func startBreathing() {
+    /// `mdBreathe`: 1.2초마다 1 ↔ 1.03 × 0.97, 발끝 고정. 크기가 바뀌거나 화면에 다시 붙으면 새로 건다.
+    @objc private func restartBreathing() {
         breathingSize = imageView.bounds.size
-        imageView.layer.removeAnimation(forKey: "breathe")
+        imageView.layer.removeAllAnimations()
+        UIView.performWithoutAnimation { imageView.transform = .identity }
         guard window != nil, !UIAccessibility.isReduceMotionEnabled, breathingSize.height > 0 else { return }
-        let animation = CABasicAnimation(keyPath: "transform")
-        animation.fromValue = NSValue(caTransform3D: CATransform3DIdentity)
-        animation.toValue = NSValue(caTransform3D: bottomAnchored(scaleX: 1.03, y: 0.97, height: breathingSize.height))
-        animation.duration = 1.2
-        animation.autoreverses = true
-        animation.repeatCount = .infinity
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        imageView.layer.add(animation, forKey: "breathe")
+        let squash = Self.footAnchored(scaleX: 1.03, y: 0.97, height: breathingSize.height)
+        // 레이아웃이 다른 애니메이션 안에서 불려도 자기 시간 · 곡선을 쓴다.
+        UIView.animate(withDuration: 1.2, delay: 0, options: [.autoreverse, .repeat, .curveEaseInOut, .allowUserInteraction, .overrideInheritedDuration, .overrideInheritedCurve, .overrideInheritedOptions]) {
+            self.imageView.transform = squash
+        }
     }
 
-    /// 가운데 기준 크기 변화를 아래쪽 기준으로 옮긴다 (transform-origin: 50% 100%).
-    private func bottomAnchored(scaleX: CGFloat, y: CGFloat, height: CGFloat) -> CATransform3D {
-        CATransform3DConcat(CATransform3DMakeScale(scaleX, y, 1), CATransform3DMakeTranslation(0, height * (1 - y) / 2, 0))
+    /// 가운데 기준 크기 변화를 발끝(아래 가운데) 기준으로 옮긴다 (transform-origin: 50% 100%).
+    private static func footAnchored(scaleX: CGFloat, y: CGFloat, height: CGFloat) -> CGAffineTransform {
+        CGAffineTransform(translationX: 0, y: height * (1 - y) / 2).scaledBy(x: scaleX, y: y)
     }
 }

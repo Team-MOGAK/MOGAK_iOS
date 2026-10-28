@@ -59,7 +59,7 @@ extension UIViewController {
         if let navigationController = self as? UINavigationController, let visibleViewController = navigationController.visibleViewController {
             return visibleViewController.mg2TopMostViewController
         }
-        if let mainTabController = self as? MG2MainTabViewController, let selectedViewController = mainTabController.selectedViewController {
+        if let tabBarController = self as? UITabBarController, let selectedViewController = tabBarController.selectedViewController {
             return selectedViewController.mg2TopMostViewController
         }
         return self

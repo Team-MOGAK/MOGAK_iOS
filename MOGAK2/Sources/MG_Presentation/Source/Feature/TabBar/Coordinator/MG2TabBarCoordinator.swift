@@ -13,7 +13,6 @@ final class MG2TabBarCoordinator {
     }
 
     func start() -> UIViewController {
-        let roots = [scheduleStartCoordinator.start(), modalartCoordinator.start(), myPageCoordinator.start()]
-        return MG2MainTabViewController(navigationControllers: roots.map(UINavigationController.init(rootViewController:)))
+        MG2MainTabViewController(scheduleStart: scheduleStartCoordinator.start(), modalart: modalartCoordinator.start(), myPage: myPageCoordinator.start())
     }
 }

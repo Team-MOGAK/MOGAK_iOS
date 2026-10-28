@@ -54,6 +54,7 @@ MOGAKWidget/   # WidgetKit extension (home widget + Live Activity UI). Reads the
 - Ads: `MG2AdProviding` (Presentation protocol) is implemented by `MG2AdMobProvider` in MG_App; only coordinators call it. When to show ads is `AdPolicyUseCase` (Domain). Test ad unit IDs only for now.
 - Mascot pose rules live in `MG2Mood` (Domain); check them with `MOGAK2/scripts/domain_rules_check.sh`.
 - Server-blocked features (weekly progress, piece timer, race vs last week) stay `TODO(server)`; never invent endpoints. Wide screens (Duo unfolded portrait) get a 560pt content column via `additionalSafeAreaInsets` in `MG2MainTabViewController`. Custom-size fonts go through `UIFont.scaledCapped` so Dynamic Type stops at accessibility1.
+- iOS-native first: the design artifact is web-based, so copy its look but build with native iOS components and behaviour (system `UITabBarController`, `UISegmentedControl`, paging `UICollectionView`, `UISheetPresentationController`, `SFSafariViewController`, UIKit spring/keyframe animations, native zoom transition). No web views or third-party UI libraries.
 
 ## Dependency Direction
 

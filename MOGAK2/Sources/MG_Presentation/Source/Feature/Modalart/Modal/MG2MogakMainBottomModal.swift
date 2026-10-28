@@ -56,7 +56,7 @@ final class MG2MogakMainBottomModal: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         editButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
             $0.height.equalTo(DS.Size.button)
         }
@@ -64,6 +64,7 @@ final class MG2MogakMainBottomModal: UIViewController {
             $0.top.equalTo(editButton.snp.bottom).offset(4)
             $0.centerX.equalToSuperview()
             $0.height.equalTo(DS.Size.touch)
+            $0.bottom.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
     }
 }

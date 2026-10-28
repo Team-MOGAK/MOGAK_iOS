@@ -192,7 +192,8 @@ enum T: CaseIterable {
         .scaledCapped(.pretendard(spec.weight, size: spec.size), relativeTo: spec.textStyle)
     }
 
-    var lineHeight: CGFloat { UIFontMetrics(forTextStyle: spec.textStyle).scaledValue(for: spec.lineHeight) }
+    /// 글자와 같은 비율로 커지고, 글자처럼 accessibility1에서 멈춘다.
+    var lineHeight: CGFloat { spec.lineHeight * font.pointSize / spec.size }
     var kern: CGFloat { -0.02 * font.pointSize }
 
     func attributes(color: UIColor = DS.Color.ink, alignment: NSTextAlignment = .natural) -> [NSAttributedString.Key: Any] {
@@ -206,6 +207,7 @@ enum T: CaseIterable {
 
 extension UIFont {
     /// 글자 크기 설정(Dynamic Type)을 따르되 accessibility1(accessibilityMedium)까지만 커진다. T에 없는 크기도 이걸로.
+    /// 조절 전 폰트(.pretendard)만 넣는다. T.font처럼 이미 조절된 폰트를 넣으면 UIKit이 예외를 던진다.
     static func scaledCapped(_ font: UIFont, relativeTo textStyle: UIFont.TextStyle) -> UIFont {
         let metrics = UIFontMetrics(forTextStyle: textStyle)
         let maxSize = metrics.scaledValue(for: font.pointSize, compatibleWith: UITraitCollection(preferredContentSizeCategory: .accessibilityMedium))

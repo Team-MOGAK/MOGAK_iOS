@@ -15,7 +15,7 @@ protocol TodaySurfaceRefreshing {
 protocol ReminderScheduling: AnyObject {
     var hasOffered: Bool { get }
     func markOffered()
-    /// 매일 알림 시각(시 · 분). 기본 오전 9시.
+    /// 매일 알림 시각(시 · 분). 기본 오전 8시.
     var time: DateComponents { get set }
     /// 권한을 받고 `time`에 매일 알림을 건다. 권한이 없으면 false.
     func requestAndScheduleDaily() async -> Bool

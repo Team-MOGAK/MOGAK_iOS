@@ -15,6 +15,7 @@ final class MG2PushSettingViewController: UIViewController {
 
     private let reminderLabel = UILabel().then {
         $0.apply(.settingRow)
+        $0.numberOfLines = 0
         $0.text = "매일 조각 알림"
     }
 
@@ -26,17 +27,26 @@ final class MG2PushSettingViewController: UIViewController {
 
     private let timeLabel = UILabel().then {
         $0.apply(.settingRow)
+        $0.numberOfLines = 0
         $0.text = "알림 시각"
     }
 
-    private lazy var timePicker = UIDatePicker().then {
-        $0.datePickerMode = .time
-        $0.preferredDatePickerStyle = .compact
-        $0.locale = Locale(identifier: "ko_KR")
-        $0.minuteInterval = 5
-        $0.tintColor = DS.Color.accentDeep
-        $0.accessibilityLabel = "알림 시각"
-        $0.addTarget(self, action: #selector(settingChanged), for: .valueChanged)
+    /// 알림 시각은 칩으로 고른다 (`Chip`: 알림 시간처럼 여러 값 중 하나).
+    private lazy var timeChips: [UIButton] = viewModel.timeOptions.enumerated().map { index, option in
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = option.title
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = T.footnoteBold.font
+            return outgoing
+        }
+        configuration.titleLineBreakMode = .byTruncatingTail
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14)
+        configuration.background.cornerRadius = DS.Size.chip / 2
+        let button = UIButton(configuration: configuration)
+        button.snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.chip) }
+        button.addAction(UIAction { [weak self] _ in self?.timeSelected(at: index) }, for: .touchUpInside)
+        return button
     }
 
     private let hintLabel = UILabel().then {
@@ -83,13 +93,25 @@ final class MG2PushSettingViewController: UIViewController {
     }
 
     private func configureLayout() {
-        let reminderRow = UIStackView(arrangedSubviews: [reminderLabel, reminderSwitch]).then { $0.alignment = .center }
-        let timeRow = UIStackView(arrangedSubviews: [timeLabel, timePicker]).then { $0.alignment = .center }
-        let rows = UIStackView(arrangedSubviews: [reminderRow, timeRow]).then {
+        // 스위치 · 시각은 그대로 두고, 큰 글자에서는 라벨이 줄을 바꿔 행이 커진다 (최소 56).
+        let reminderRow = UIStackView(arrangedSubviews: [reminderLabel, reminderSwitch]).then {
+            $0.alignment = .center
+            $0.spacing = 12
+            $0.snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.row) }
+        }
+        reminderLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        reminderSwitch.setContentCompressionResistancePriority(.required, for: .horizontal)
+        // 칩은 왼쪽부터 간격 8 (Chip FlowLayout).
+        let chipRow = UIStackView(arrangedSubviews: timeChips + [UIView()]).then { $0.spacing = 8 }
+        let timeRow = UIStackView(arrangedSubviews: [timeLabel, chipRow]).then {
             $0.axis = .vertical
             $0.spacing = 8
+            $0.isLayoutMarginsRelativeArrangement = true
+            $0.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0)
         }
-        [reminderRow, timeRow].forEach { $0.snp.makeConstraints { $0.height.greaterThanOrEqualTo(DS.Size.row) } }
+        let rows = UIStackView(arrangedSubviews: [reminderRow, timeRow]).then {
+            $0.axis = .vertical
+        }
 
         view.addSubviews(card, hintLabel, deniedLabel, openSettingsButton)
         card.addSubview(rows)
@@ -98,9 +120,10 @@ final class MG2PushSettingViewController: UIViewController {
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
         }
         rows.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: DS.Space.cardX, bottom: 8, right: DS.Space.cardX)) }
+        // 안내 문구는 카드 안 글자 줄에 맞춘다.
         hintLabel.snp.makeConstraints {
             $0.top.equalTo(card.snp.bottom).offset(12)
-            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter + 4)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter + DS.Space.cardX)
         }
         deniedLabel.snp.makeConstraints {
             $0.top.equalTo(hintLabel.snp.bottom).offset(16)
@@ -114,16 +137,24 @@ final class MG2PushSettingViewController: UIViewController {
 
     private func render() {
         reminderSwitch.isOn = viewModel.isOn
-        timePicker.date = Calendar.current.date(from: viewModel.time) ?? Date()
-        timePicker.isEnabled = viewModel.isOn
-        timePicker.alpha = viewModel.isOn ? 1 : 0.4
+        for (index, chip) in timeChips.enumerated() {
+            let isSelected = viewModel.selectedTimeIndex == index
+            chip.configuration?.baseForegroundColor = isSelected ? DS.Color.surface : DS.Color.ink2
+            chip.configuration?.background.backgroundColor = isSelected ? DS.Color.accent : DS.Color.fill
+            chip.accessibilityTraits = isSelected ? [.button, .selected] : .button
+            chip.isEnabled = viewModel.isOn
+            chip.alpha = viewModel.isOn ? 1 : 0.4
+        }
         deniedLabel.isHidden = !viewModel.isDenied
         openSettingsButton.isHidden = !viewModel.isDenied
     }
 
     @objc private func settingChanged() {
-        let time = Calendar.current.dateComponents([.hour, .minute], from: timePicker.date)
-        viewModel.update(isOn: reminderSwitch.isOn, time: time) { [weak self] in self?.render() }
+        viewModel.update(isOn: reminderSwitch.isOn, time: viewModel.time) { [weak self] in self?.render() }
+    }
+
+    private func timeSelected(at index: Int) {
+        viewModel.update(isOn: reminderSwitch.isOn, time: viewModel.timeOptions[index].time) { [weak self] in self?.render() }
     }
 
     @objc private func openSettingsTapped() {

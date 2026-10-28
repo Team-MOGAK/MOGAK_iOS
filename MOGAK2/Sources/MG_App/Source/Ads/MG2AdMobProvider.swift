@@ -35,8 +35,11 @@ final class MG2AdMobProvider: NSObject, MG2AdProviding {
         }
     }
 
+    /// `.md-banner`: 60 이상 · 모서리 12 · 안쪽 0 12 · 간격 10. 왼쪽에 ‘광고’, 오른쪽에 광고. 표시를 광고 위에 덮지 않는다.
     func makeBanner(width: CGFloat, rootViewController: UIViewController) -> UIView {
-        let banner = GADBannerView(adSize: GADCurrentOrientationInlineAdaptiveBannerAdSizeWithWidth(width))
+        let badge = MG2AdBadgeLabel()
+        let adWidth = width - 12 * 2 - 10 - badge.intrinsicContentSize.width
+        let banner = GADBannerView(adSize: GADCurrentOrientationInlineAdaptiveBannerAdSizeWithWidth(adWidth))
         banner.adUnitID = UnitID.banner
         banner.rootViewController = rootViewController
         banner.load(GADRequest())
@@ -47,12 +50,20 @@ final class MG2AdMobProvider: NSObject, MG2AdProviding {
         container.clipsToBounds = true
         container.layer.borderWidth = 1
         container.layer.borderColor = DS.Color.track.cgColor
-        let badge = MG2AdBadgeLabel()
-        container.addSubviews(banner, badge)
-        badge.snp.makeConstraints { $0.top.leading.equalToSuperview().inset(6) }
-        banner.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        container.addSubviews(badge, banner)
+        container.snp.makeConstraints {
             $0.height.greaterThanOrEqualTo(60)
+            $0.height.equalTo(60).priority(.low)
+        }
+        badge.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(12)
+            $0.centerY.equalToSuperview()
+        }
+        banner.snp.makeConstraints {
+            $0.leading.equalTo(badge.snp.trailing).offset(10)
+            $0.trailing.equalToSuperview().inset(12)
+            $0.centerY.equalToSuperview()
+            $0.top.greaterThanOrEqualToSuperview()
         }
         return container
     }
@@ -137,7 +148,9 @@ extension MG2AdMobProvider: GADNativeAdLoaderDelegate {
     }
 }
 
-/// 홈 목록 끝 네이티브 광고 카드. CTA는 앱 주 버튼과 다른 회색, AdChoices는 SDK가 모서리에 그린다.
+/// 홈 목록 끝 네이티브 광고 카드 (`.md-native`): 안쪽 12 14 14 · 간격 10 · 모서리 20.
+/// 위 18pt 줄에 ‘광고’, 아이콘 48 옆 제목 15/700 · 본문 13/500 (가운데 정렬, 잘리지 않게 여러 줄), 아래 40pt 회색 CTA.
+/// CTA는 앱 주 버튼과 다른 회색, AdChoices는 SDK가 모서리에 그린다.
 private final class MG2NativeAdCardView: GADNativeAdView {
     init(nativeAd: GADNativeAd) {
         super.init(frame: .zero)
@@ -152,44 +165,44 @@ private final class MG2NativeAdCardView: GADNativeAdView {
         icon.clipsToBounds = true
         icon.backgroundColor = DS.Color.fill
         let headline = UILabel()
-        headline.apply(.callout)
-        headline.font = .scaledCapped(.pretendard(.bold, size: 15), relativeTo: .subheadline)
+        headline.apply(.subhead)
+        headline.numberOfLines = 0
         headline.text = nativeAd.headline
         let body = UILabel()
         body.apply(.footnote, color: DS.Color.sub)
-        body.numberOfLines = 2
+        body.numberOfLines = 0
         body.text = nativeAd.body
+        body.isHidden = nativeAd.body == nil
+        let texts = UIStackView(arrangedSubviews: [headline, body])
+        texts.axis = .vertical
+        texts.spacing = 2
+        let row = UIStackView(arrangedSubviews: [icon, texts])
+        row.alignment = .center
+        row.spacing = 12
         let cta = UIButton(type: .system)
         cta.setTitle(nativeAd.callToAction, for: .normal)
         cta.setTitleColor(DS.Color.ink, for: .normal)
-        cta.titleLabel?.font = .scaledCapped(.pretendard(.bold, size: 14), relativeTo: .footnote)
+        cta.titleLabel?.font = .scaledCapped(.pretendard(.bold, size: 14), relativeTo: .subheadline)
         cta.titleLabel?.adjustsFontForContentSizeCategory = true
+        cta.titleLabel?.adjustsFontSizeToFitWidth = true
+        cta.titleLabel?.minimumScaleFactor = 0.8
         cta.backgroundColor = DS.Color.fill
         cta.roundCorners(12)
         cta.isUserInteractionEnabled = false
 
-        addSubviews(badge, icon, headline, body, cta)
+        addSubviews(badge, row, cta)
         badge.snp.makeConstraints {
             $0.top.equalToSuperview().inset(12)
             $0.leading.equalToSuperview().inset(14)
         }
-        icon.snp.makeConstraints {
+        icon.snp.makeConstraints { $0.size.equalTo(48) }
+        row.snp.makeConstraints {
             $0.top.equalTo(badge.snp.bottom).offset(10)
-            $0.leading.equalToSuperview().inset(14)
-            $0.size.equalTo(48)
+            $0.leading.trailing.equalToSuperview().inset(14)
         }
-        headline.snp.makeConstraints {
-            $0.top.equalTo(icon)
-            $0.leading.equalTo(icon.snp.trailing).offset(12)
-            $0.trailing.equalToSuperview().inset(14)
-        }
-        body.snp.makeConstraints {
-            $0.top.equalTo(headline.snp.bottom).offset(2)
-            $0.leading.trailing.equalTo(headline)
-        }
+        // 14pt는 accessibility1에서도 줄 높이 약 30이라 40 안에 들어간다.
         cta.snp.makeConstraints {
-            $0.top.greaterThanOrEqualTo(icon.snp.bottom).offset(10)
-            $0.top.greaterThanOrEqualTo(body.snp.bottom).offset(10)
+            $0.top.equalTo(row.snp.bottom).offset(10)
             $0.leading.trailing.bottom.equalToSuperview().inset(14)
             $0.height.equalTo(40)
         }

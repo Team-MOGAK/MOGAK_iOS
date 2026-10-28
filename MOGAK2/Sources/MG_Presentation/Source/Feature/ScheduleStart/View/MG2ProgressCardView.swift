@@ -17,18 +17,24 @@ final class MG2ProgressCardView: UIView {
     init(isCompact: Bool) {
         mascotView = MG2MascotView(size: isCompact ? 72 : 84)
         super.init(frame: .zero)
+        // 모각이 말풍선이 카드 위로 나오므로 모서리만 둥글리고 자르지 않는다 (clipsToBounds 금지).
         roundCorners(DS.Radius.card)
+        // `.md-pcard-title` 17/22 700 한 줄 말줄임. "오늘의 조각 n / m"도 숫자가 바뀌는 자리라 고정폭 숫자.
         titleLabel.apply(.button)
-        // "오늘의 조각 n / m"도 숫자가 바뀌는 자리라 고정폭 숫자.
         titleLabel.font = .scaledCapped(UIFont.pretendard(.bold, size: 17).withMonospacedDigits(), relativeTo: .body)
-        percentLabel.apply(.metric)
-        percentLabel.font = T.metric.font.withMonospacedDigits()
-        lineLabel.apply(.footnote, color: DS.Color.sub)
-        lineLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        // `.md-pcard-pct` 22/26 800 고정폭 숫자. 줄지 않는다.
+        percentLabel.apply(.metric)
+        percentLabel.font = .scaledCapped(UIFont.pretendard(.extraBold, size: 22).withMonospacedDigits(), relativeTo: .title2)
+        percentLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        percentLabel.setContentHuggingPriority(.required, for: .horizontal)
+        lineLabel.apply(.footnote, color: DS.Color.sub)
+        lineLabel.lineBreakMode = .byTruncatingTail
 
-        let topRow = UIStackView(arrangedSubviews: [titleLabel, UIView(), percentLabel])
+        let topRow = UIStackView(arrangedSubviews: [titleLabel, percentLabel])
         topRow.alignment = .firstBaseline
+        topRow.spacing = 8
         let stack = UIStackView(arrangedSubviews: [topRow, progressBar, lineLabel])
         stack.axis = .vertical
         stack.spacing = 10
@@ -42,6 +48,7 @@ final class MG2ProgressCardView: UIView {
         mainButton.isAccessibilityElement = true
         mainButton.accessibilityTraits = .button
 
+        // padding 12 10 12 18 · gap 8
         mainButton.snp.makeConstraints {
             $0.top.bottom.leading.equalToSuperview()
             $0.trailing.equalTo(mascotView.snp.leading).offset(-8)
@@ -69,8 +76,10 @@ final class MG2ProgressCardView: UIView {
         UIView.animate(withDuration: lastDone == nil ? 0 : 0.4) {
             self.backgroundColor = progress.isAllDone ? DS.Color.successBg : DS.Color.surface
         }
-        titleLabel.text = progress.isAllDone ? "오늘 조각 모두 완료!" : "오늘의 조각 \(progress.done) / \(progress.total)"
-        percentLabel.text = "\(progress.percent)%"
+        // 숫자 전환은 크로스페이드.
+        for (label, text) in [(titleLabel, progress.isAllDone ? "오늘 조각 모두 완료!" : "오늘의 조각 \(progress.done) / \(progress.total)"), (percentLabel, "\(progress.percent)%")] where label.text != text {
+            UIView.transition(with: label, duration: lastDone == nil ? 0 : 0.25, options: .transitionCrossDissolve) { label.text = text }
+        }
         percentLabel.textColor = color
         lineLabel.text = progress.line
         progressBar.setProgress(Double(progress.percent) / 100, color: progress.isAllDone ? DS.Color.success : color, animated: lastDone != nil)

@@ -37,28 +37,45 @@ final class MG2PrimaryActionButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// 좌우 여백은 글자 폭에 더한다 (soft 12 · 나머지 20).
+    /// 좌우 여백 (soft 12 · 나머지 20).
+    private var horizontalPadding: CGFloat { style == .soft ? 12 : 20 }
+
     override var intrinsicContentSize: CGSize {
-        CGSize(width: super.intrinsicContentSize.width + (style == .soft ? 12 : 20) * 2, height: style.height)
+        CGSize(width: super.intrinsicContentSize.width + horizontalPadding * 2, height: style.height)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        // 글자는 좌우 여백 안에서 한 줄. 넘치면 0.8배까지 줄이고 그다음 끝을 줄인다.
+        titleLabel?.frame = bounds.insetBy(dx: horizontalPadding, dy: 0)
         dashLayer.path = UIBezierPath(roundedRect: bounds.insetBy(dx: 0.75, dy: 0.75), cornerRadius: DS.Radius.button).cgPath
+    }
+
+    /// soft(36)도 누르는 영역은 최소 44 × 44.
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let dx = min((bounds.width - DS.Size.touch) / 2, 0)
+        let dy = min((bounds.height - DS.Size.touch) / 2, 0)
+        return bounds.insetBy(dx: dx, dy: dy).contains(point)
     }
 
     private func configureLayout() {
         roundCorners(style == .soft ? 10 : DS.Radius.button)
-        let font: UIFont = {
+        // T 글자는 이미 크기 조절된 폰트라 다시 조절하지 않는다 (두 번 조절하면 크래시).
+        // primary 17/700 · dashed · danger 15/700 · soft 13/700 · ghost 15/600.
+        titleLabel?.font = {
             switch style {
             case .primary: return T.button.font
-            case .dashed, .danger: return .pretendard(.bold, size: 15)
+            case .dashed, .danger: return T.subhead.font
             case .soft: return T.footnoteBold.font
-            case .ghost: return .pretendard(.semiBold, size: 15)
+            case .ghost: return .scaledCapped(.pretendard(.semiBold, size: 15), relativeTo: .subheadline)
             }
         }()
-        titleLabel?.font = .scaledCapped(font, relativeTo: .body)
         titleLabel?.adjustsFontForContentSizeCategory = true
+        titleLabel?.textAlignment = .center
+        titleLabel?.numberOfLines = 1
+        titleLabel?.lineBreakMode = .byTruncatingTail
+        titleLabel?.adjustsFontSizeToFitWidth = true
+        titleLabel?.minimumScaleFactor = 0.8
         if style == .dashed {
             dashLayer.fillColor = nil
             dashLayer.strokeColor = DS.Color.accentLine.cgColor

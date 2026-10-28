@@ -13,6 +13,7 @@ final class MG2SelectModalartViewController: UIViewController {
         label.apply(.footnote, color: DS.Color.sub)
         label.text = "어느 모다라트에서 오늘의 조각을 가져올까요?"
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
 
@@ -24,7 +25,7 @@ final class MG2SelectModalartViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 64
+        tableView.estimatedRowHeight = DS.Size.row + 8
         return tableView
     }()
 
@@ -56,6 +57,7 @@ final class MG2SelectModalartViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
+    /// `.md-sheet`: padding 16 / 20, 블록 사이 gap 14.
     private func configureLayout() {
         view.addSubviews(headerView, subtitleLabel, tableView)
 
@@ -64,7 +66,7 @@ final class MG2SelectModalartViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         subtitleLabel.snp.makeConstraints {
-            $0.top.equalTo(headerView.snp.bottom).offset(8)
+            $0.top.equalTo(headerView.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         tableView.snp.makeConstraints {

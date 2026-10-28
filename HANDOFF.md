@@ -58,12 +58,29 @@
 - 마이페이지 › 푸시 알림 화면(`MG2PushSettingViewController`): 매일 조각 알림 켜기/끄기 · 시각
 - 안 쓰던 `DesignSystemFont` 삭제, 경고(deprecated API) 정리
 
+## 2026-10-28 3차 (UI 정밀 수정 — bundle.css 대조)
+
+- 홈 달력: FSCalendar 제거(패키지도 뺌). 주간은 직접 그린 7일 띠(36pt 원 · 고정폭 숫자), 월간은 `UICalendarView`
+- 판→모각: iOS 18 기본 줌 전환(`preferredTransition = .zoom`), iOS 17 · 동작 줄이기는 일반 push. `MG2BoardZoomTransition` · `nextPushTransition` 삭제
+- 애니메이션: 누름 · 모각이(숨쉬기 · 폴짝 · 말풍선) · 토스트 · 체크 원 · 진척 막대 · 로딩을 UIKit 기본 API(spring · keyframes)로. CAKeyframe/controlPoints 없음
+- 크기 · 간격: 버튼 · 칩 · 태그 · 필드 · 시트 헤더 · 탭 바 · 토스트 · 광고 · 진척 카드 · 조각 행 · 축하 카드 · 판 칸 · 위젯 · 라이브 액티비티를 bundle.css 값으로
+- 잘림: 한 줄 제목은 말줄임, 설명은 여러 줄, 고정 높이 → 최소 높이, 시트는 내용 맞춤 높이, 큰 글자에서 행이 늘어남
+- 줄 높이(`T.lineHeight`)도 accessibility1에서 멈춤
+
+## 2026-10-28 4차 (iOS 네이티브로)
+
+- 탭 바: 직접 그린 떠 있는 탭 바 → 시스템 `UITabBarController`(iOS 26은 시스템 유리 탭 바). 하위 화면은 `hidesBottomBarWhenPushed`. Duo 가로 2단(탭 바 2개)은 시스템 탭 바와 맞지 않아 뺐고, 넓은 화면은 560pt 가운데 열
+- 세그먼트: 시스템 `UISegmentedControl`에 디자인 색
+- 공지 · 문의 · 약관: `WKWebView` 화면 → `SFSafariViewController`
+- 권한: 메인에 처음 들어오면 알림 → 광고 추적(ATT) · 동의(UMP) 순서로 묻는다. 알림 허용 시 매일 오전 8시 알림을 건다
+- 홈 달력: 페이지 스크롤 달력(주 · 월), 주↔월은 줄이 펼쳐지고 접히는 전환
+
 ## 남은 것
 
 - 서버 API 필요: 위 "서버 API가 있어야 하는 것" 참고
 - 정해야 할 것: 프로필 공유 · 위치 서비스 이용 동의는 아직 "준비 중이에요" 안내만 (기능 정의 필요)
 - 확인 필요: 위젯 번들 ID를 `com.team.mogaks.MOGAKWidget`로 정했음 → 포털 ID와 같은지
-- 실제 동작 미확인: 위젯·라이브 액티비티 버튼, 광고·ATT·UMP, 확대 전환, Duo 2단, 81칸 보기, 푸시 알림 설정, 전체 화면 모습
+- 실제 동작 미확인: 위젯·라이브 액티비티 버튼, 광고·ATT·UMP, 확대 전환, 81칸 보기, 푸시 알림 설정, 전체 화면 모습
 - 출시 전: AdMob 실제 ID로 교체 (`MG2AdMobProvider.swift`의 `TODO(ads)`, Info.plist `GADApplicationIdentifier`)
 - 커밋 (새 브랜치 권장)
 

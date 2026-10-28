@@ -8,25 +8,41 @@
 import UIKit
 import SnapKit
 
-/// 판 3×3의 모각 칸 (MoakCell). 태그 · 이름, ⋯로 모각 설정.
+/// 판 3×3의 모각 칸 (`.md-cell`): 가운데 정렬 태그 · 이름 15/700, 위아래 10 · 좌우 8, 사이 8. ⋯로 모각 설정.
 final class MG2MogakCell: UICollectionViewCell {
     static let identifier: String = "MG2MogakCell"
     private var onSettingsTap: (() -> Void)?
 
     // TODO(server): 이번 주 진척 API가 생기면 아래에서 모각 색(bg)으로 차오르는 칸과 % 표시.
-    private let tagLabel = MG2TagLabel()
+    private let tagLabel: MG2TagLabel = {
+        let label = MG2TagLabel()
+        // 칸 폭을 넘는 카테고리는 줄였다가 말줄임.
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+        label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        return label
+    }()
 
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.apply(.subhead)
         label.numberOfLines = 2
+        label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
+        // 큰 글자에서 칸을 넘치면 이름이 먼저 줄어 말줄임된다.
+        label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
     }()
 
+    /// 44pt 터치 영역, 점 세 개는 칸 안쪽 위 오른쪽 모서리(10pt)에.
     private lazy var settingsButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .bold)), for: .normal)
-        button.tintColor = DS.Color.ghost
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .bold))
+        configuration.baseForegroundColor = DS.Color.faint
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 10)
+        let button = UIButton(configuration: configuration)
+        button.contentHorizontalAlignment = .trailing
+        button.contentVerticalAlignment = .top
         button.accessibilityLabel = "모각 설정"
         button.addTarget(self, action: #selector(settingIconTapped), for: .touchUpInside)
         return button
@@ -52,6 +68,10 @@ final class MG2MogakCell: UICollectionViewCell {
         contentView.isAccessibilityElement = true
         contentView.accessibilityLabel = "\(mogak.title) 모각 열기, \(mogak.category.name)"
         contentView.accessibilityTraits = .button
+        contentView.accessibilityCustomActions = [UIAccessibilityCustomAction(name: "모각 설정") { [weak self] _ in
+            self?.onSettingsTap?()
+            return true
+        }]
     }
 
     override func layoutSubviews() {
@@ -76,16 +96,18 @@ final class MG2MogakCell: UICollectionViewCell {
     }
 
     private func configureLayout() {
-        contentView.addSubviews(tagLabel, nameLabel, settingsButton)
+        let stack = UIStackView(arrangedSubviews: [tagLabel, nameLabel])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        contentView.addSubviews(stack, settingsButton)
 
-        tagLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().inset(12)
-            $0.trailing.lessThanOrEqualTo(settingsButton.snp.leading)
+        stack.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(8)
+            $0.top.greaterThanOrEqualToSuperview().inset(10)
         }
-        nameLabel.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(12)
-            $0.bottom.equalToSuperview().inset(12)
-        }
+        nameLabel.snp.makeConstraints { $0.width.equalTo(stack) }
         settingsButton.snp.makeConstraints {
             $0.top.trailing.equalToSuperview()
             $0.size.equalTo(DS.Size.touch)

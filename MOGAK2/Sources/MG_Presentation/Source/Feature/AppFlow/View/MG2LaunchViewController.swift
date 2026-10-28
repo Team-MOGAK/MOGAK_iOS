@@ -17,10 +17,10 @@ final class MG2LaunchViewController: UIViewController {
         $0.hidesWhenStopped = true
     }
 
+    /// 설명 문구 (paragraph 15/22 · `sub`). 두 줄이라 줄 높이까지 맞춘다.
     private let statusLabel = UILabel().then {
-        $0.apply(.paragraph, color: DS.Color.sub)
-        $0.textAlignment = .center
         $0.numberOfLines = 0
+        $0.adjustsFontForContentSizeCategory = true
     }
 
     private lazy var retryButton = MG2PrimaryActionButton().then {
@@ -59,10 +59,10 @@ final class MG2LaunchViewController: UIViewController {
         }
         statusLabel.snp.makeConstraints {
             $0.top.equalTo(activityIndicator.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         retryButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.height.equalTo(DS.Size.button)
             $0.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
@@ -71,20 +71,24 @@ final class MG2LaunchViewController: UIViewController {
     private func handle(_ state: MG2LaunchViewModel.State) {
         switch state {
         case .waiting:
-            statusLabel.text = nil
+            setStatus(nil)
             retryButton.isHidden = true
         case .preparing:
             activityIndicator.startAnimating()
-            statusLabel.text = "잠시만 기다려 주세요"
+            setStatus("잠시만 기다려 주세요")
         case .failed:
             activityIndicator.stopAnimating()
-            statusLabel.text = "연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요"
+            setStatus("연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요")
             retryButton.isHidden = false
         case .ready:
             activityIndicator.stopAnimating()
-            statusLabel.text = nil
+            setStatus(nil)
             coordinator?.finishLaunch()
         }
+    }
+
+    private func setStatus(_ text: String?) {
+        statusLabel.attributedText = text.map { NSAttributedString(string: $0, attributes: T.paragraph.attributes(color: DS.Color.sub, alignment: .center)) }
     }
 
     @objc private func retryButtonTapped() {

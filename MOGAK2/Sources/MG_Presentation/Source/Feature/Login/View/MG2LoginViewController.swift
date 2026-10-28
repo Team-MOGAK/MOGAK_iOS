@@ -33,8 +33,12 @@ final class MG2LoginViewController: UIViewController {
         return label
     }()
 
+    /// 일러스트(384×448)는 남는 자리만 쓴다. 작은 화면(SE)에서는 문구 · 버튼보다 먼저 줄어든다.
     private let loginImage = UIImageView().then {
         $0.image = UIImage(named: "LoginLogo")
+        $0.contentMode = .scaleAspectFit
+        $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        $0.setContentHuggingPriority(.defaultLow, for: .vertical)
     }
 
     private lazy var appleLoginButton = makeLoginButton(title: "Apple로 로그인", image: UIImage(systemName: "apple.logo"), backgroundColor: .black, titleColor: .white).then {
@@ -59,6 +63,7 @@ final class MG2LoginViewController: UIViewController {
         $0.apply(.footnote, color: DS.Color.muted)
         $0.text = "둘러보기에서는 기록이 남지 않아요"
         $0.textAlignment = .center
+        $0.numberOfLines = 0
         $0.isAccessibilityElement = false
     }
 
@@ -87,7 +92,7 @@ final class MG2LoginViewController: UIViewController {
 
         mogakLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(48)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
     }
 
@@ -106,7 +111,7 @@ final class MG2LoginViewController: UIViewController {
 
         loginButtonStackView.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
+            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
         }
         [appleLoginButton, kakaoLoginButton, googleLoginButton].forEach { button in button.snp.makeConstraints { $0.height.equalTo(DS.Size.button) } }
     }
@@ -154,13 +159,22 @@ final class MG2LoginViewController: UIViewController {
         configuration.image = image
         configuration.imagePadding = 10
         configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
-        configuration.attributedTitle = AttributedString(title, attributes: AttributeContainer([.font: T.button.font]))
+        configuration.title = title
+        // 글자 크기를 바꿔도 다시 맞춘다. 제목은 한 줄, 넘치면 0.8배까지 줄인 뒤 말줄임.
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var attributes = attributes
+            attributes.font = T.button.font
+            return attributes
+        }
+        configuration.titleLineBreakMode = .byTruncatingTail
         configuration.baseForegroundColor = titleColor
         configuration.background.backgroundColor = backgroundColor
         configuration.background.cornerRadius = DS.Radius.button
         configuration.background.strokeColor = borderColor
         configuration.background.strokeWidth = borderColor == nil ? 0 : 1
         let button = UIButton(configuration: configuration)
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.titleLabel?.minimumScaleFactor = 0.8
         button.enablePressFeedback()
         return button
     }
