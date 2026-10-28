@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
-		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		5E1E70012F93000000A11CE0 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 5E1E70022F93000000A11CE0 /* SkeletonView */; };
+		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
 		D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FA32F7A0000014DA6D /* GoogleSignIn */; };
@@ -382,7 +382,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -423,7 +423,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAK.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Configuration/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -461,7 +461,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAKWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Configuration/MOGAKWidget-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -488,7 +488,7 @@
 				CODE_SIGN_ENTITLEMENTS = Configuration/MOGAKWidget.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Configuration/MOGAKWidget-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "모각";
@@ -542,20 +542,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.7.1;
-			};
-		};
 		5E1E70032F93000000A11CE0 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Juanpe/SkeletonView";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.31.0;
+			};
+		};
+		D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
 			};
 		};
 		D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */ = {
@@ -609,15 +609,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D18C0F872F6F8FB30014DA6D /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
-		};
 		5E1E70022F93000000A11CE0 /* SkeletonView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5E1E70032F93000000A11CE0 /* XCRemoteSwiftPackageReference "SkeletonView" */;
 			productName = SkeletonView;
+		};
+		D18C0F872F6F8FB30014DA6D /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 		D18C0F8A2F6F8FC80014DA6D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
