@@ -12,20 +12,24 @@ struct MG2TodayProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (MG2TodayEntry) -> Void) {
-        completion(MG2TodayEntry(date: Date(), snapshot: .loadForToday()))
+        completion(MG2TodayEntry(date: Date(), snapshot: .load(for: Date())))
     }
 
-    /// 자정에 새 날 조각으로 바뀐다 (앱이 열리기 전까지는 빈 상태).
+    /// 자정에 앱이 미리 둔 내일 조각으로 바뀐다. 그것도 없으면 앱을 열 때까지 빈 상태.
     func getTimeline(in context: Context, completion: @escaping (Timeline<MG2TodayEntry>) -> Void) {
-        let midnight = Calendar.current.startOfDay(for: Date().addingTimeInterval(86_400))
-        completion(Timeline(entries: [MG2TodayEntry(date: Date(), snapshot: .loadForToday())], policy: .after(midnight)))
+        let now = Date()
+        let midnight = Calendar.current.startOfDay(for: now.addingTimeInterval(86_400))
+        let entries = [MG2TodayEntry(date: now, snapshot: .load(for: now)), MG2TodayEntry(date: midnight, snapshot: .load(for: midnight))]
+        completion(Timeline(entries: entries, policy: .after(midnight)))
     }
 }
 
 struct MG2TodayWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "MG2TodayWidget", provider: MG2TodayProvider()) { entry in
+            // 글자 크기는 앱과 같이 accessibility1까지만.
             MG2TodayWidgetView(entry: entry)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .containerBackground(MG2WidgetStyle.surface, for: .widget)
         }
         .configurationDisplayName("오늘의 조각")

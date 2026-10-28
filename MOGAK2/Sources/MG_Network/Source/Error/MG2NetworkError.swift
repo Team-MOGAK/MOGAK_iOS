@@ -13,23 +13,23 @@ enum MG2NetworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .offline:
-            return "네트워크 연결을 확인해주세요."
+            return "네트워크 연결을 확인해 주세요"
         case .timeout:
-            return "응답이 늦어지고 있어요. 잠시 후 다시 시도해주세요."
+            return "응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요"
         case .rateLimited:
-            return "요청이 많아요. 잠시 후 다시 시도해주세요."
+            return "요청이 많아요. 잠시 후 다시 시도해 주세요"
         case .httpFailure(400):
-            return "입력한 내용을 다시 확인해주세요."
+            return "입력한 내용을 다시 확인해 주세요"
         case .httpFailure(401):
-            return "로그인이 만료됐어요. 다시 로그인해주세요."
+            return "로그인이 만료됐어요. 다시 로그인해 주세요"
         case .httpFailure(403):
-            return "접근 권한이 없어요."
+            return "접근 권한이 없어요"
         case .httpFailure(404):
-            return "요청한 정보를 찾을 수 없어요."
+            return "요청한 정보를 찾을 수 없어요"
         case .httpFailure(500...):
-            return "서버에 문제가 생겼어요. 잠시 후 다시 시도해주세요."
+            return "서버에 문제가 생겼어요. 잠시 후 다시 시도해 주세요"
         case .httpFailure, .requestFailed:
-            return "요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요."
+            return "요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요"
         }
     }
 }

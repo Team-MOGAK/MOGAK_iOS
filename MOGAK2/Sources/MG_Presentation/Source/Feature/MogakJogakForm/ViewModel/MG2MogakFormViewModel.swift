@@ -28,15 +28,18 @@ final class MG2MogakFormViewModel {
     private static let customCategoryCode = "OTHER"
 
     let mode: MG2MogakFormMode
+    /// 화면 위 경로: 판 › 모각 n/8.
+    let path: [MG2PathItem]
     let colors = DesignSystemPalette.mogakColors
     private(set) var categories = [MG2MogakCategoryEntity]()
 
     private let useCase: MogakEditingUseCase
     private(set) var state = MG2MogakFormState()
 
-    init(useCase: MogakEditingUseCase, mode: MG2MogakFormMode) {
+    init(useCase: MogakEditingUseCase, mode: MG2MogakFormMode, path: [MG2PathItem]) {
         self.useCase = useCase
         self.mode = mode
+        self.path = path
         if case .edit(let mogak) = mode {
             state = MG2MogakFormState(title: mogak.title, selectedCategoryCode: mogak.category.code, customCategory: mogak.category.code == nil ? mogak.category.name : nil, isCustomCategorySelected: mogak.category.code == nil, color: mogak.color ?? DesignSystemPalette.signatureHex)
         }

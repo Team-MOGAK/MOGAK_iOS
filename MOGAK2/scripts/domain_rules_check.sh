@@ -27,12 +27,16 @@ assert(pose(5, 5, evening: true) == .proud)
 assert(MG2Mood(done: 0, total: 0).pose(done: 0, total: 0) == .wave)
 assert(MG2Mood(done: 0, total: 0, isTimerRunning: true).pose(done: 0, total: 0) == .hurry)
 assert(MG2Mood(done: 1, total: 5).line(done: 1, total: 5) == "좋아요, 1개 했어요!")
+assert(MG2Mood(done: 2, total: 5, raceAhead: true).pose(done: 2, total: 5) == .thumbs)
+assert(MG2Mood(done: 2, total: 5, raceAhead: false).pose(done: 2, total: 5) == .sweat)
+assert(MG2Mood(done: 2, total: 5, isTimerRunning: true, raceAhead: true).pose(done: 2, total: 5) == .hurry)
 
 final class Store: AdPolicyStorage {
     var installDate: Date?
     var interstitialDates = [Date]()
     var lastAppOpenAdDate: Date?
     var lastBackgroundDate: Date?
+    var unlockedPastDays = [Date]()
 }
 
 let day: TimeInterval = 86_400
@@ -43,9 +47,9 @@ let policy = AdPolicyUseCase(storage: store, now: { clock })
 
 assert(policy.registerLaunch())
 assert(!policy.registerLaunch())
-assert(!policy.canShowNativeAd && !policy.canShowInterstitial)
+assert(!policy.canShowNativeAd && !policy.canShowBanner && !policy.canShowInterstitial)
 clock = start + day
-assert(policy.canShowNativeAd && !policy.canShowInterstitial)
+assert(policy.canShowNativeAd && policy.canShowBanner && !policy.canShowInterstitial)
 clock = start + 2 * day
 assert(policy.canShowInterstitial)
 policy.didShowInterstitial()
@@ -69,6 +73,7 @@ assert(policy.pastDayAccess(for: clock - day) == .editable)
 assert(policy.pastDayAccess(for: clock - 3 * day) == .rewardRequired)
 policy.unlockPastDay(clock - 3 * day)
 assert(policy.pastDayAccess(for: clock - 3 * day) == .editable)
+assert(AdPolicyUseCase(storage: store, now: { clock }).pastDayAccess(for: clock - 3 * day) == .editable)
 assert(policy.pastDayAccess(for: clock - 8 * day) == .readOnly)
 
 print("domain rules: OK")

@@ -30,11 +30,14 @@ final class TodayUseCase {
     /// 오늘 조각으로 요약을 만들어 저장하고 위젯 · 라이브 액티비티를 다시 그린다.
     @discardableResult
     func publish(_ pieces: [MG2TodaySnapshot.Piece]) async -> MG2TodaySnapshot {
+        async let nextDay = nextDaySnapshot()
         let missed = await missedYesterday()
         let done = pieces.filter(\.isDone).count
+        // TODO(server): 조각 타이머(isTimerRunning)와 지난주 레이스(raceAhead)는 서버 API가 생기면 넘긴다.
         let mood = MG2Mood(done: done, total: pieces.count, isEvening: calendar.component(.hour, from: now()) >= MG2Mood.eveningHour, missedYesterday: missed)
         let snapshot = MG2TodaySnapshot(date: calendar.startOfDay(for: now()), pieces: pieces, pose: mood.pose(done: done, total: pieces.count).rawValue, line: mood.line(done: done, total: pieces.count))
         snapshotStorage.save(snapshot)
+        if let nextDay = await nextDay { snapshotStorage.saveNextDay(nextDay) }
         surfaces.refresh(with: snapshot)
         return snapshot
     }
@@ -64,6 +67,22 @@ final class TodayUseCase {
         reminder.markOffered()
     }
 
+    /// 푸시 알림 설정 화면: 지금 매일 알림이 걸려 있는지와 그 시각.
+    func reminderSettings() async -> (isOn: Bool, time: DateComponents) {
+        (await reminder.isScheduled(), reminder.time)
+    }
+
+    /// 켜면 권한을 받고 그 시각에 다시 건다. 권한이 없으면 꺼진 채로 false.
+    func updateReminder(isOn: Bool, time: DateComponents) async -> Bool {
+        reminder.markOffered()
+        reminder.time = time
+        guard isOn else {
+            reminder.cancelDaily()
+            return false
+        }
+        return await reminder.requestAndScheduleDaily()
+    }
+
     static func piece(from entity: MG2JogakOccurrenceEntity) -> MG2TodaySnapshot.Piece {
         MG2TodaySnapshot.Piece(jogakID: entity.key.jogakID, scheduledDate: entity.key.scheduledDate, title: entity.title, mogakTitle: entity.mogakTitle, color: entity.color, isRoutine: entity.isRoutine, isDone: entity.status == .success)
     }
@@ -82,6 +101,15 @@ final class TodayUseCase {
         pieces[index].isDone = isDone
         await publish(pieces)
         externalChanges.send()
+    }
+
+    /// 내일 조각. 위젯이 자정에 이걸로 넘어간다. 못 불러오면 nil(위젯은 빈 상태로).
+    private func nextDaySnapshot() async -> MG2TodaySnapshot? {
+        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now())),
+              let occurrences = try? await repository.getJogakOccurrences(date: tomorrow) else { return nil }
+        let pieces = occurrences.map(Self.piece(from:))
+        let mood = MG2Mood(done: 0, total: pieces.count)
+        return MG2TodaySnapshot(date: tomorrow, pieces: pieces, pose: mood.pose(done: 0, total: pieces.count).rawValue, line: mood.line(done: 0, total: pieces.count))
     }
 
     /// 어제 조각이 있었는데 하나도 못 했으면 true. 하루에 한 번만 불러온다.

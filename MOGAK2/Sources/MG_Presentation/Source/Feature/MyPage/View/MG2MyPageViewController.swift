@@ -139,7 +139,8 @@ final class MG2MyPageViewController: UIViewController {
         }
         settingsStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: DS.Space.cardX, bottom: 8, right: DS.Space.cardX)) }
         bannerContainer.snp.makeConstraints {
-            $0.top.equalTo(settingsCard.snp.bottom).offset(24)
+            // 인라인 배너는 설정 목록과 붙이지 않는다 (위 28).
+            $0.top.equalTo(settingsCard.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter)
             $0.bottom.equalToSuperview().inset(24)
         }
@@ -185,11 +186,11 @@ final class MG2MyPageViewController: UIViewController {
     }
 
     @objc private func shareButtonTapped() {
-        coordinator?.presentUnavailableFeature("프로필 공유 서비스는 준비중이에요", from: self)
+        coordinator?.presentUnavailableFeature("프로필 공유는 준비 중이에요", from: self)
     }
 
     @objc private func pushRowTapped() {
-        coordinator?.presentUnavailableFeature("푸시 알림 서비스는 준비중이에요", from: self)
+        coordinator?.routeToPushSetting(from: self)
     }
 
     @objc private func noticeRowTapped() {
@@ -209,7 +210,7 @@ final class MG2MyPageViewController: UIViewController {
     }
 
     @objc private func locationRowTapped() {
-        coordinator?.presentUnavailableFeature("위치 서비스 이용동의 서비스는 준비중이에요", from: self)
+        coordinator?.presentUnavailableFeature("위치 서비스 이용 동의는 준비 중이에요", from: self)
     }
 
     private static func makeProfileActionButton(title: String) -> UIButton {
@@ -220,7 +221,7 @@ final class MG2MyPageViewController: UIViewController {
 
     /// 배너는 마이페이지 맨 아래(스크롤 안). 탭 바 옆 고정 배너는 두지 않는다.
     private func loadBannerIfNeeded() {
-        guard bannerContainer.subviews.isEmpty, view.bounds.width > 0 else { return }
+        guard viewModel.canShowBanner, bannerContainer.subviews.isEmpty, view.bounds.width > 0 else { return }
         guard let banner = coordinator?.makeBanner(width: view.bounds.width - DS.Space.gutter * 2, from: self) else { return }
         bannerContainer.addSubview(banner)
         banner.snp.makeConstraints { $0.edges.equalToSuperview() }

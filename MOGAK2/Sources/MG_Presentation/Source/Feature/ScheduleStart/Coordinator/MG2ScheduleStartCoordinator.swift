@@ -27,8 +27,8 @@ final class MG2ScheduleStartCoordinator {
         return viewController
     }
 
-    func routeToJogakEditing(jogak: MG2JogakDetailEntity, from source: UIViewController) {
-        formCoordinator.routeToJogakEditing(jogak: jogak, from: source) {}
+    func routeToJogakEditing(jogak: MG2JogakDetailEntity, path: [MG2PathItem], from source: UIViewController) {
+        formCoordinator.routeToJogakEditing(jogak: jogak, path: path, from: source) {}
     }
 
     func presentJogakSelection(scheduledDate: Date, from source: UIViewController, onJogaksAdded: @escaping () -> Void) {

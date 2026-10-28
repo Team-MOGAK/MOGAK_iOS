@@ -27,15 +27,11 @@ final class MG2AdMobProvider: NSObject, MG2AdProviding {
     func start() {
         guard !isStarted else { return }
         isStarted = true
-        ATTrackingManager.requestTrackingAuthorization { _ in
-            Task { @MainActor in
-                UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: UMPRequestParameters()) { _ in
-                    Task { @MainActor in
-                        try? await UMPConsentForm.loadAndPresentIfRequired(from: nil)
-                        GADMobileAds.sharedInstance().start(completionHandler: nil)
-                    }
-                }
-            }
+        Task { @MainActor in
+            _ = await ATTrackingManager.requestTrackingAuthorization()
+            try? await UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: UMPRequestParameters())
+            try? await UMPConsentForm.loadAndPresentIfRequired(from: nil)
+            _ = await GADMobileAds.sharedInstance().start()
         }
     }
 
@@ -157,7 +153,7 @@ private final class MG2NativeAdCardView: GADNativeAdView {
         icon.backgroundColor = DS.Color.fill
         let headline = UILabel()
         headline.apply(.callout)
-        headline.font = .pretendard(.bold, size: 15)
+        headline.font = .scaledCapped(.pretendard(.bold, size: 15), relativeTo: .subheadline)
         headline.text = nativeAd.headline
         let body = UILabel()
         body.apply(.footnote, color: DS.Color.sub)
@@ -166,7 +162,8 @@ private final class MG2NativeAdCardView: GADNativeAdView {
         let cta = UIButton(type: .system)
         cta.setTitle(nativeAd.callToAction, for: .normal)
         cta.setTitleColor(DS.Color.ink, for: .normal)
-        cta.titleLabel?.font = .pretendard(.bold, size: 14)
+        cta.titleLabel?.font = .scaledCapped(.pretendard(.bold, size: 14), relativeTo: .footnote)
+        cta.titleLabel?.adjustsFontForContentSizeCategory = true
         cta.backgroundColor = DS.Color.fill
         cta.roundCorners(12)
         cta.isUserInteractionEnabled = false

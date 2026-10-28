@@ -21,7 +21,7 @@ final class MG2ToastView: UIView {
 
         let titleLabel = UILabel()
         titleLabel.apply(.callout, color: DS.Color.surface)
-        titleLabel.font = .pretendard(.bold, size: 15)
+        titleLabel.font = .scaledCapped(.pretendard(.bold, size: 15), relativeTo: .subheadline)
         titleLabel.text = title
         let subLabel = UILabel()
         subLabel.apply(.footnote, color: DS.Color.toastSub)
@@ -35,13 +35,13 @@ final class MG2ToastView: UIView {
         row.spacing = 12
         row.alignment = .center
         if let actionTitle {
-            let button = UIButton(type: .system)
-            button.setTitle(actionTitle, for: .normal)
-            button.setTitleColor(DS.Color.surface, for: .normal)
-            button.titleLabel?.font = T.footnoteBold.font
-            button.backgroundColor = UIColor.white.withAlphaComponent(0.14)
-            button.roundCorners(10)
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+            var configuration = UIButton.Configuration.plain()
+            configuration.attributedTitle = AttributedString(actionTitle, attributes: AttributeContainer([.font: T.footnoteBold.font]))
+            configuration.baseForegroundColor = DS.Color.surface
+            configuration.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
+            configuration.background.backgroundColor = UIColor.white.withAlphaComponent(0.14)
+            configuration.background.cornerRadius = 10
+            let button = UIButton(configuration: configuration)
             button.addAction(UIAction { [weak self] _ in self?.action?(); self?.removeFromSuperview() }, for: .touchUpInside)
             button.snp.makeConstraints { $0.height.equalTo(DS.Size.chip); $0.width.greaterThanOrEqualTo(DS.Size.touch) }
             button.setContentHuggingPriority(.required, for: .horizontal)

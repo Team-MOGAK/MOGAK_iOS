@@ -7,10 +7,14 @@ final class MG2MyPageCoordinator {
     private let userState: MG2UserState
     private let loginCoordinator: MG2LoginCoordinator
     private let loginGateCoordinator: MG2LoginGateCoordinator
+    private let todayUseCase: TodayUseCase
+    private let adPolicyUseCase: AdPolicyUseCase
     private let adProvider: MG2AdProviding
     private let alertCoordinator = MG2AlertCoordinator()
 
-    init(userUseCase: UserUseCase, authUseCase: AuthUseCase, userState: MG2UserState, loginCoordinator: MG2LoginCoordinator, adProvider: MG2AdProviding) {
+    init(userUseCase: UserUseCase, authUseCase: AuthUseCase, userState: MG2UserState, loginCoordinator: MG2LoginCoordinator, todayUseCase: TodayUseCase, adPolicyUseCase: AdPolicyUseCase, adProvider: MG2AdProviding) {
+        self.todayUseCase = todayUseCase
+        self.adPolicyUseCase = adPolicyUseCase
         self.adProvider = adProvider
         self.userUseCase = userUseCase
         self.authUseCase = authUseCase
@@ -20,7 +24,7 @@ final class MG2MyPageCoordinator {
     }
 
     func start() -> UIViewController {
-        let viewController = MG2MyPageViewController(viewModel: MG2MyPageViewModel(userUseCase: userUseCase, userState: userState))
+        let viewController = MG2MyPageViewController(viewModel: MG2MyPageViewModel(userUseCase: userUseCase, userState: userState, adPolicyUseCase: adPolicyUseCase))
         viewController.coordinator = self
         return viewController
     }
@@ -34,6 +38,17 @@ final class MG2MyPageCoordinator {
     func routeToWeb(destination: MG2WebDestination, from source: UIViewController) {
         let viewController = MG2WebViewController(viewModel: MG2WebViewModel(destination: destination))
         source.navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    func routeToPushSetting(from source: UIViewController) {
+        let viewController = MG2PushSettingViewController(viewModel: MG2PushSettingViewModel(todayUseCase: todayUseCase))
+        viewController.coordinator = self
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    func openSystemSettings(from source: UIViewController) {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        source.view.window?.windowScene?.open(url, options: nil)
     }
 
     func routeToProfileImageEdit(from source: UIViewController) {
@@ -63,7 +78,7 @@ final class MG2MyPageCoordinator {
     }
 
     func presentWithdrawalConfirmation(onConfirm: @escaping () -> Void, from source: UIViewController) {
-        let alert = UIAlertController(title: "정말 회원탈퇴를 하시겠습니까?", message: "탈퇴하면 모다라트와 조각 기록을 되살릴 수 없어요", preferredStyle: .alert)
+        let alert = UIAlertController(title: "정말 탈퇴할까요?", message: "탈퇴하면 모다라트와 조각 기록을 되살릴 수 없어요", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "취소", style: .cancel))
         alert.addAction(UIAlertAction(title: "탈퇴하기", style: .destructive) { _ in onConfirm() })
         source.present(alert, animated: true)
@@ -74,7 +89,7 @@ final class MG2MyPageCoordinator {
     }
 
     func presentUnavailableFeature(_ message: String, from source: UIViewController) {
-        alertCoordinator.presentInfo(title: "준비중", message: message, from: source)
+        alertCoordinator.presentInfo(title: "준비 중이에요", message: message, from: source)
     }
 
     func makeBanner(width: CGFloat, from source: UIViewController) -> UIView {

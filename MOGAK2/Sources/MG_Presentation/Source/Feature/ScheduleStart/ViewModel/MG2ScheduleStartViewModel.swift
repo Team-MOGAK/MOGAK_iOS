@@ -9,9 +9,15 @@ struct MG2JogakOccurrenceItem {
     var status: MG2JogakOccurrenceStatus
     let isRoutine: Bool
     let achievements: Int
+    /// 루틴 반복 요일. 못 불러오면 비어 있고 "루틴"만 보인다.
+    var routineDays = [MG2Weekday]()
 
     var isCompleted: Bool { status == .success }
-    var detail: String { isRoutine ? "루틴" : "오늘만" }
+    var detail: String {
+        guard isRoutine else { return "오늘만" }
+        let days = routineDays.sorted { $0.rawValue < $1.rawValue }.map(\.shortKoreanTitle)
+        return days.isEmpty ? "루틴" : "루틴 · " + days.joined(separator: "·")
+    }
 }
 
 /// 진척 카드에 그릴 오늘 상태.
@@ -100,8 +106,11 @@ final class MG2ScheduleStartViewModel {
 
         Task {
             do {
-                state.occurrences = try await useCase.getJogakOccurrences(date: date).map {
-                    MG2JogakOccurrenceItem(key: $0.key, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, status: $0.status, isRoutine: $0.isRoutine, achievements: $0.achievements)
+                let occurrences = try await useCase.getJogakOccurrences(date: date)
+                // 요일은 보조 정보라 못 불러와도 목록은 보여 준다.
+                let routineDays = (try? await useCase.routineWeekdays(for: occurrences)) ?? [:]
+                state.occurrences = occurrences.map {
+                    MG2JogakOccurrenceItem(key: $0.key, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, status: $0.status, isRoutine: $0.isRoutine, achievements: $0.achievements, routineDays: routineDays[$0.key.jogakID] ?? [])
                 }
                 await publishTodayIfNeeded()
                 completion(.success(()))

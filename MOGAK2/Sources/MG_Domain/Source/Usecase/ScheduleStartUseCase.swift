@@ -13,6 +13,11 @@ final class ScheduleStartUseCase {
         try await repository.getJogakOccurrences(date: date)
     }
 
+    /// 루틴 조각의 반복 요일 ("루틴 · 월·수·금").
+    func routineWeekdays(for occurrences: [MG2JogakOccurrenceEntity]) async throws -> [Int: [MG2Weekday]] {
+        try await repository.routineWeekdays(for: occurrences)
+    }
+
     func startJogak(jogakId: Int, scheduledDate: Date) async throws {
         try await repository.startJogak(jogakId: jogakId, scheduledDate: scheduledDate)
     }

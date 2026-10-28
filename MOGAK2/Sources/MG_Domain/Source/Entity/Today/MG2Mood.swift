@@ -13,12 +13,17 @@ enum MG2MoakPose: String, CaseIterable {
 /// 오늘의 조각 진척에 따른 모각이 상태. 앱 · 위젯 · 라이브 액티비티가 같은 규칙(moodOf · poseOf · moodLine)을 쓴다.
 enum MG2Mood: Equatable {
     case morning, progress, last, done, evening, missed, timer
+    /// 지난주와 비교한 레이스. isAhead가 false면 뒤지는 중.
+    case race(isAhead: Bool)
 
     static let eveningHour = 18
 
-    init(done: Int, total: Int, isEvening: Bool = false, missedYesterday: Bool = false, isTimerRunning: Bool = false) {
+    /// raceAhead는 지난주 비교 결과. 비교할 기록이 없으면 nil.
+    init(done: Int, total: Int, isEvening: Bool = false, missedYesterday: Bool = false, isTimerRunning: Bool = false, raceAhead: Bool? = nil) {
         if isTimerRunning {
             self = .timer
+        } else if let raceAhead {
+            self = .race(isAhead: raceAhead)
         } else if total > 0 && done >= total {
             self = .done
         } else if isEvening && total > 0 {
@@ -41,6 +46,7 @@ enum MG2Mood: Equatable {
         case .evening: return total - done >= 3 ? .sweat : .think
         case .missed: return .tired
         case .timer: return .hurry
+        case .race(let isAhead): return isAhead ? .thumbs : .sweat
         }
     }
 
@@ -53,6 +59,7 @@ enum MG2Mood: Equatable {
         case .evening: return "오늘 \(max(total - done, 0))개 남았어요"
         case .missed: return "어제는 쉬었어요. 오늘 다시 시작!"
         case .timer: return "집중하는 중"
+        case .race(let isAhead): return isAhead ? "지난주보다 앞서고 있어요" : "지난주보다 조금 뒤처졌어요"
         }
     }
 }

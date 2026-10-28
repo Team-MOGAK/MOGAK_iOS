@@ -17,7 +17,6 @@ final class AdPolicyUseCase {
     private let storage: AdPolicyStorage
     private let calendar: Calendar
     private let now: () -> Date
-    private var unlockedDays = Set<Date>()
 
     init(storage: AdPolicyStorage, calendar: Calendar = .current, now: @escaping () -> Date = Date.init) {
         self.storage = storage
@@ -41,6 +40,9 @@ final class AdPolicyUseCase {
 
     /// 네이티브: 홈 목록 맨 끝, 설치 2일째부터.
     var canShowNativeAd: Bool { installDay >= 2 }
+
+    /// 배너: 마이페이지 맨 아래. 첫 실행 날에는 띄우지 않는다.
+    var canShowBanner: Bool { installDay >= 2 }
 
     /// 전면: 3일째부터 · 하루 2회 · 5분 간격.
     var canShowInterstitial: Bool {
@@ -75,12 +77,13 @@ final class AdPolicyUseCase {
         let age = days(from: date, to: now())
         if age <= 1 { return .editable }
         if age > Self.rewardWindowDays { return .readOnly }
-        return unlockedDays.contains(calendar.startOfDay(for: date)) ? .editable : .rewardRequired
+        return storage.unlockedPastDays.contains(calendar.startOfDay(for: date)) ? .editable : .rewardRequired
     }
 
-    /// 보상형 광고를 끝까지 본 날은 이번 실행 동안 열어 둔다.
+    /// 보상형 광고를 끝까지 본 날은 계속 열어 둔다. 7일이 지난 날은 어차피 읽기 전용이라 지운다.
     func unlockPastDay(_ date: Date) {
-        unlockedDays.insert(calendar.startOfDay(for: date))
+        let kept = storage.unlockedPastDays.filter { days(from: $0, to: now()) <= Self.rewardWindowDays }
+        storage.unlockedPastDays = Array(Set(kept + [calendar.startOfDay(for: date)]))
     }
 
     private func days(from start: Date, to end: Date) -> Int {

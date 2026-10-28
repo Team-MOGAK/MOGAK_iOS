@@ -59,10 +59,11 @@ extension Color {
 }
 
 extension MG2TodaySnapshot {
-    static func loadForToday() -> MG2TodaySnapshot? {
-        guard let data = UserDefaults(suiteName: MG2AppGroup.identifier)?.data(forKey: MG2AppGroup.snapshotKey),
-              let snapshot = try? JSONDecoder().decode(MG2TodaySnapshot.self, from: data),
-              Calendar.current.isDateInToday(snapshot.date) else { return nil }
-        return snapshot
+    /// 그날의 요약. 오늘 요약이 지난 날 것이면 앱이 미리 둔 내일 요약을 쓴다.
+    static func load(for day: Date) -> MG2TodaySnapshot? {
+        let defaults = UserDefaults(suiteName: MG2AppGroup.identifier)
+        return [MG2AppGroup.snapshotKey, MG2AppGroup.nextDaySnapshotKey]
+            .compactMap { defaults?.data(forKey: $0).flatMap { try? JSONDecoder().decode(MG2TodaySnapshot.self, from: $0) } }
+            .first { Calendar.current.isDate($0.date, inSameDayAs: day) }
     }
 }

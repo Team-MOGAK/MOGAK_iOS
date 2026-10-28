@@ -82,7 +82,7 @@ final class MG2ScheduleStartViewController: UIViewController {
 
     private lazy var addJogakButton: MG2PrimaryActionButton = {
         let button = MG2PrimaryActionButton(style: .dashed)
-        button.setTitle("+ 모다라트에서 조각 더 가져오기", for: .normal)
+        button.setTitle("+ 조각 더 가져오기", for: .normal)
         button.addTarget(self, action: #selector(addJogakButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -183,7 +183,7 @@ final class MG2ScheduleStartViewController: UIViewController {
         }
         emptyView.snp.makeConstraints {
             $0.top.equalTo(scheduleTableView).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.gutter * 2)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter * 2)
         }
         progressCardView.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: DS.Space.stack, right: 0)) }
         footerStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)) }
@@ -405,7 +405,8 @@ final class MG2ScheduleStartViewController: UIViewController {
 
             switch result {
             case .success(let detail):
-                coordinator?.routeToJogakEditing(jogak: detail, from: self)
+                // 홈에서는 판을 모르니 모각만 보여 준다.
+                coordinator?.routeToJogakEditing(jogak: detail, path: [MG2PathItem(label: detail.mogakTitle, colorHex: detail.color)], from: self)
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }

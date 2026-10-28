@@ -5,13 +5,28 @@ import UserNotifications
 final class MG2ReminderScheduler: ReminderScheduling {
     private static let offeredKey = "MG2ReminderOffered"
     private static let requestID = "MG2DailyReminder"
-    // ponytail: 알림 시각 고정(오전 9시). 사용자 설정이 필요하면 마이페이지 푸시 알림 설정에서 받기.
-    private static let hour = 9
+    private static let timeKey = "MG2ReminderTime"
 
     var hasOffered: Bool { UserDefaults.standard.bool(forKey: Self.offeredKey) }
 
     func markOffered() {
         UserDefaults.standard.set(true, forKey: Self.offeredKey)
+    }
+
+    var time: DateComponents {
+        get {
+            let saved = UserDefaults.standard.array(forKey: Self.timeKey) as? [Int] ?? [9, 0]
+            return DateComponents(hour: saved.first ?? 9, minute: saved.last ?? 0)
+        }
+        set { UserDefaults.standard.set([newValue.hour ?? 9, newValue.minute ?? 0], forKey: Self.timeKey) }
+    }
+
+    func cancelDaily() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Self.requestID])
+    }
+
+    func isScheduled() async -> Bool {
+        await UNUserNotificationCenter.current().pendingNotificationRequests().contains { $0.identifier == Self.requestID }
     }
 
     func requestAndScheduleDaily() async -> Bool {
@@ -21,7 +36,7 @@ final class MG2ReminderScheduler: ReminderScheduling {
         let content = UNMutableNotificationContent()
         content.title = "오늘의 조각"
         content.body = "오늘 조각, 하나씩 시작해 볼까요?"
-        let trigger = UNCalendarNotificationTrigger(dateMatching: DateComponents(hour: Self.hour), repeats: true)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: time, repeats: true)
         try? await center.add(UNNotificationRequest(identifier: Self.requestID, content: content, trigger: trigger))
         return true
     }

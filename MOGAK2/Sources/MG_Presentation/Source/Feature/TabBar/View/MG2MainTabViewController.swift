@@ -48,6 +48,13 @@ final class MG2MainTabViewController: UIViewController {
 
     var selectedViewController: UIViewController? { navigationControllers[selectedTab.rawValue] }
 
+    /// 전면 광고(앱 열기)를 덮어도 되는 화면인지. 시트가 떠 있거나 판 · 모각 화면, 하위 화면이면 안 된다.
+    var allowsFullScreenAd: Bool {
+        guard presentedViewController == nil else { return false }
+        let focusedTab = isDual ? leadingTab : selectedTab
+        return focusedTab != .modalart && navigationControllers[focusedTab.rawValue].viewControllers.count == 1
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = DS.Color.canvas
@@ -115,6 +122,14 @@ final class MG2MainTabViewController: UIViewController {
             navigationControllers[selectedTab.rawValue].view.frame = bounds
             layoutBar(compactBar, width: Self.compactBarWidth, centerX: bounds.midX)
         }
+        visibleTabs().forEach { applyContentColumn(to: navigationControllers[$0.rawValue]) }
+    }
+
+    /// 넓은 화면(Duo 펼침 세로)에서는 내용을 560pt 가운데 열로 모은다. 바탕은 끝까지 칠한다.
+    private func applyContentColumn(to navigation: UINavigationController) {
+        let inset = max((navigation.view.bounds.width - MG2MandalaGrid.maxBoardWidth - DS.Space.gutter * 2) / 2, 0)
+        guard navigation.additionalSafeAreaInsets.left != inset else { return }
+        navigation.additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
     }
 
     private func layoutBar(_ bar: UIView, width: CGFloat, centerX: CGFloat) {

@@ -37,8 +37,9 @@ final class MG2PrimaryActionButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// 좌우 여백은 글자 폭에 더한다 (soft 12 · 나머지 20).
     override var intrinsicContentSize: CGSize {
-        CGSize(width: super.intrinsicContentSize.width, height: style.height)
+        CGSize(width: super.intrinsicContentSize.width + (style == .soft ? 12 : 20) * 2, height: style.height)
     }
 
     override func layoutSubviews() {
@@ -56,9 +57,8 @@ final class MG2PrimaryActionButton: UIButton {
             case .ghost: return .pretendard(.semiBold, size: 15)
             }
         }()
-        titleLabel?.font = UIFontMetrics.default.scaledFont(for: font, maximumPointSize: font.pointSize * 1.4)
+        titleLabel?.font = .scaledCapped(font, relativeTo: .body)
         titleLabel?.adjustsFontForContentSizeCategory = true
-        contentEdgeInsets = UIEdgeInsets(top: 0, left: style == .soft ? 12 : 20, bottom: 0, right: style == .soft ? 12 : 20)
         if style == .dashed {
             dashLayer.fillColor = nil
             dashLayer.strokeColor = DS.Color.accentLine.cgColor

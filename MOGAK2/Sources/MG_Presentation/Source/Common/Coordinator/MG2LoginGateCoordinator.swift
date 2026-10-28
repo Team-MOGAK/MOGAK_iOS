@@ -9,9 +9,9 @@ final class MG2LoginGateCoordinator {
     }
 
     func present(from source: UIViewController) {
-        let alert = UIAlertController(title: "로그인 필요", message: "이 기능은 로그인하면 쓸 수 있어요.\n로그인할까요?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "아니요", style: .cancel))
-        alert.addAction(UIAlertAction(title: "네", style: .default) { [weak self, weak source] _ in
+        let alert = UIAlertController(title: "로그인이 필요해요", message: "이 기능은 로그인하면 쓸 수 있어요", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "계속 둘러보기", style: .cancel))
+        alert.addAction(UIAlertAction(title: "로그인하기", style: .default) { [weak self, weak source] _ in
             guard let self, let source else { return }
             let loginViewController = loginCoordinator.makeLogin()
             loginViewController.onAuthenticationCompleted = { [weak loginViewController] in loginViewController?.dismiss(animated: true) }

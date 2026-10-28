@@ -4,7 +4,7 @@ enum MG2MandalaGrid {
     static let itemCount = 9
     static let centerIndex = 4
 
-    /// 판은 넓은 화면(Duo 펼침)에서 560pt 가운데 열.
+    /// 넓은 화면(Duo 펼침 세로)의 가운데 열 폭. 판과 모든 탭 내용이 이 폭을 넘지 않는다.
     static let maxBoardWidth: CGFloat = 560
     /// 칸 높이가 이보다 낮으면(SE · Duo 접힘) 이름 1줄.
     static let singleLineCellHeight: CGFloat = 124

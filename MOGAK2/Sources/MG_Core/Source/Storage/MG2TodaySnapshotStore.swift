@@ -4,12 +4,16 @@ import Foundation
 final class MG2TodaySnapshotStore: TodaySnapshotStorage {
     private let defaults = UserDefaults(suiteName: MG2AppGroup.identifier)
 
-    func load() -> MG2TodaySnapshot? {
-        defaults?.data(forKey: MG2AppGroup.snapshotKey).flatMap { try? JSONDecoder().decode(MG2TodaySnapshot.self, from: $0) }
+    func save(_ snapshot: MG2TodaySnapshot) {
+        save(snapshot, forKey: MG2AppGroup.snapshotKey)
     }
 
-    func save(_ snapshot: MG2TodaySnapshot) {
+    func saveNextDay(_ snapshot: MG2TodaySnapshot) {
+        save(snapshot, forKey: MG2AppGroup.nextDaySnapshotKey)
+    }
+
+    private func save(_ snapshot: MG2TodaySnapshot, forKey key: String) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
-        defaults?.set(data, forKey: MG2AppGroup.snapshotKey)
+        defaults?.set(data, forKey: key)
     }
 }

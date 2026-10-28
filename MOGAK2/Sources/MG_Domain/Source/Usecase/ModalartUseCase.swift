@@ -63,18 +63,22 @@ final class ModalartUseCase {
         }
     }
 
+    /// 81칸 전체 보기: 모각마다 조각 이름(모각 상세와 같은 순서). 모각마다 한 번씩 차례로 불러온다.
+    func loadJogakTitles(for mogaks: [MG2ModalartMogakItemEntity], from date: Date) async throws -> [Int: [String]] {
+        var titlesByMogakID = [Int: [String]]()
+        for mogak in mogaks {
+            titlesByMogakID[mogak.mogakId] = try await getMogakOverview(mogakId: mogak.mogakId, from: date).map(\.title)
+        }
+        return titlesByMogakID
+    }
+
     func getJogakDetail(jogakId: Int) async throws -> MG2JogakDetailEntity {
         try await jogakRepository.getJogakDetail(jogakId: jogakId)
     }
 
-    /// 루틴 조각의 반복 요일. 조각마다 상세 API를 불러야 해서 하나씩 요청한다.
+    /// 루틴 조각의 반복 요일.
     func routineWeekdays(for occurrences: [MG2JogakOccurrenceEntity]) async throws -> [Int: [MG2Weekday]] {
-        var weekdaysByJogakID = [Int: [MG2Weekday]]()
-        for occurrence in occurrences where occurrence.isRoutine {
-            let jogakID = occurrence.key.jogakID
-            weekdaysByJogakID[jogakID] = try await jogakRepository.getJogakDetail(jogakId: jogakID).days
-        }
-        return weekdaysByJogakID
+        try await jogakRepository.routineWeekdays(for: occurrences)
     }
 
     func editModalart(id: Int, title: String, color: String) async throws -> MG2ModalartUpsertEntity {

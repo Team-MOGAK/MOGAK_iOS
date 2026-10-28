@@ -52,7 +52,7 @@ final class MG2ChooseJobViewController: UIViewController {
 
     private lazy var nextButton: UIButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle(viewModel.isEditingMode ? "직무 저장" : "다음", for: .normal)
+        button.setTitle(viewModel.isEditingMode ? "직무 저장" : "직무 정하고 계속하기", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button

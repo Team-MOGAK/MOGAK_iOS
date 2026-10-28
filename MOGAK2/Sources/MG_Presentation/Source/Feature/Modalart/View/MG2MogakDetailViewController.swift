@@ -154,7 +154,7 @@ final class MG2MogakDetailViewController: UIViewController {
     }
 
     private func editJogak(_ jogak: MG2JogakDetailEntity) {
-        coordinator?.routeToJogakEditing(jogak: jogak, from: self) { [weak self] in self?.reloadOccurrences() }
+        coordinator?.routeToJogakEditing(jogak: jogak, path: viewModel.mogakPath, from: self) { [weak self] in self?.reloadOccurrences() }
     }
 
     private func confirmJogakDeletion(_ jogak: MG2JogakDetailEntity) {
@@ -162,7 +162,7 @@ final class MG2MogakDetailViewController: UIViewController {
     }
 
     private func editMogak(_ mogak: MG2ModalartMogakItemEntity) {
-        coordinator?.routeToMogakEditing(mogak: mogak, from: self) { [weak self] in self?.reloadMogaks() }
+        coordinator?.routeToMogakEditing(mogak: mogak, path: viewModel.mogakPath, from: self) { [weak self] in self?.reloadMogaks() }
     }
 
     private func confirmMogakDeletion() {
@@ -267,7 +267,7 @@ extension MG2MogakDetailViewController: UICollectionViewDelegate {
 
         guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item) else { return }
         guard viewModel.state.occurrences.indices.contains(jogakIndex) else {
-            coordinator?.routeToJogakCreation(mogak: selectedMogak, from: self) { [weak self] in self?.reloadOccurrences() }
+            coordinator?.routeToJogakCreation(mogak: selectedMogak, path: viewModel.jogakCreationPath, from: self) { [weak self] in self?.reloadOccurrences() }
             return
         }
 

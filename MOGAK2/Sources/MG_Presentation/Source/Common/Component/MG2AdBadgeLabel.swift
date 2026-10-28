@@ -8,7 +8,8 @@ final class MG2AdBadgeLabel: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         text = "광고"
-        font = .pretendard(.extraBold, size: 11)
+        font = .scaledCapped(.pretendard(.extraBold, size: 11), relativeTo: .caption2)
+        adjustsFontForContentSizeCategory = true
         textColor = DS.Color.sub
         backgroundColor = DS.Color.segment
         layer.cornerRadius = 4

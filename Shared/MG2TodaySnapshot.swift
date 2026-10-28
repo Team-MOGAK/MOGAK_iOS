@@ -27,4 +27,6 @@ struct MG2TodaySnapshot: Codable, Equatable {
 enum MG2AppGroup {
     static let identifier = "group.com.team.mogaks"
     static let snapshotKey = "MG2TodaySnapshot"
+    /// 내일 조각. 앱을 열지 않아도 위젯이 자정에 새 날로 넘어가게 미리 둔다.
+    static let nextDaySnapshotKey = "MG2NextDaySnapshot"
 }

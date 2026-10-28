@@ -40,7 +40,7 @@ final class MG2CelebrationModal: UIViewController {
         titleLabel.textAlignment = .center
         let subLabel = UILabel()
         subLabel.apply(.paragraph, color: DS.Color.sub)
-        subLabel.font = UIFontMetrics(forTextStyle: .subheadline).scaledFont(for: .pretendard(.medium, size: 14))
+        subLabel.font = .scaledCapped(.pretendard(.medium, size: 14), relativeTo: .subheadline)
         subLabel.text = "모다라트가 오늘 몫만큼 채워졌어요"
         subLabel.textAlignment = .center
         subLabel.numberOfLines = 0
@@ -79,7 +79,8 @@ final class MG2CelebrationModal: UIViewController {
 
     private func stat(value: String, label: String) -> UIView {
         let valueLabel = UILabel()
-        valueLabel.font = UIFontMetrics(forTextStyle: .headline).scaledFont(for: .pretendard(.extraBold, size: 18).withMonospacedDigits())
+        valueLabel.font = .scaledCapped(UIFont.pretendard(.extraBold, size: 18).withMonospacedDigits(), relativeTo: .headline)
+        valueLabel.adjustsFontForContentSizeCategory = true
         valueLabel.textColor = DS.Color.ink
         valueLabel.text = value
         let nameLabel = UILabel()

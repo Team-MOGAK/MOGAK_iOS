@@ -52,8 +52,8 @@ final class MG2NicknameViewModel {
     }
 
     func nicknameValidationMessage(_ nickname: String) -> String? {
-        guard nickname.count >= Self.nicknameLengthRange.lowerBound else { return "2글자 이상 입력해주세요" }
-        guard nickname.count <= Self.nicknameLengthRange.upperBound else { return "10글자 이하로 입력해주세요" }
+        guard nickname.count >= Self.nicknameLengthRange.lowerBound else { return "2글자 이상 적어 주세요" }
+        guard nickname.count <= Self.nicknameLengthRange.upperBound else { return "10글자 이하로 적어 주세요" }
         return nil
     }
 

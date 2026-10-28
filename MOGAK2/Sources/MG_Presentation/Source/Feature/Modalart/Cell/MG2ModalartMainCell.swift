@@ -42,7 +42,7 @@ final class MG2ModalartMainCell: UICollectionViewCell {
     /// 이름이 6자를 넘으면 16pt, 아니면 19pt.
     func configure(title: String, color: String, caption: String? = nil) {
         goalLabel.text = title
-        goalLabel.font = UIFontMetrics(forTextStyle: .headline).scaledFont(for: .pretendard(.extraBold, size: title.count > 6 ? 16 : 19), maximumPointSize: 26)
+        goalLabel.font = .scaledCapped(.pretendard(.extraBold, size: title.count > 6 ? 16 : 19), relativeTo: .headline)
         captionLabel.text = caption
         captionLabel.isHidden = caption == nil
         contentView.backgroundColor = DS.Moak.displayColor(forServerHex: color)

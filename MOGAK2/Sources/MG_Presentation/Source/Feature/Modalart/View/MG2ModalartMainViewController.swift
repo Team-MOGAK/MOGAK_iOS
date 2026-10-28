@@ -27,6 +27,15 @@ final class MG2ModalartMainViewController: UIViewController {
         $0.accessibilityLabel = "모다라트 메뉴"
         $0.addTarget(self, action: #selector(modalartMenuButtonTapped), for: .touchUpInside)
     }
+    private lazy var fullBoardButton = UIButton(type: .system).then {
+        $0.setImage(UIImage(systemName: "square.grid.3x3", withConfiguration: UIImage.SymbolConfiguration(pointSize: 17, weight: .bold)), for: .normal)
+        $0.tintColor = DS.Color.ink
+        $0.backgroundColor = DS.Color.surface
+        $0.layer.cornerRadius = DS.Size.touch / 2
+        $0.layer.apply(.card)
+        $0.accessibilityLabel = "81칸 전체 보기"
+        $0.addTarget(self, action: #selector(fullBoardButtonTapped), for: .touchUpInside)
+    }
     private let modalartCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         $0.backgroundColor = .clear
         $0.clipsToBounds = false
@@ -68,7 +77,7 @@ final class MG2ModalartMainViewController: UIViewController {
     }
 
     private func configureLayout() {
-        view.addSubviews(modalartNameLabel, showModalartListButton, modalartMenuButton, modalartCollectionView)
+        view.addSubviews(modalartNameLabel, showModalartListButton, fullBoardButton, modalartMenuButton, modalartCollectionView)
         modalartNameLabel.snp.makeConstraints {
             $0.leading.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.gutter)
             nameTopConstraint = $0.top.equalTo(view.safeAreaLayoutGuide).inset(12).constraint
@@ -78,7 +87,12 @@ final class MG2ModalartMainViewController: UIViewController {
             $0.size.equalTo(DS.Size.touch)
             $0.leading.equalTo(modalartNameLabel.snp.trailing)
             $0.centerY.equalTo(modalartNameLabel)
-            $0.trailing.lessThanOrEqualTo(modalartMenuButton.snp.leading).offset(-8)
+            $0.trailing.lessThanOrEqualTo(fullBoardButton.snp.leading).offset(-8)
+        }
+        fullBoardButton.snp.makeConstraints {
+            $0.size.equalTo(DS.Size.touch)
+            $0.trailing.equalTo(modalartMenuButton.snp.leading).offset(-8)
+            $0.centerY.equalTo(modalartNameLabel)
         }
         modalartMenuButton.snp.makeConstraints {
             $0.size.equalTo(DS.Size.touch)
@@ -168,7 +182,7 @@ final class MG2ModalartMainViewController: UIViewController {
             switch result {
             case .success(let occurrences):
                 guard let modalartID = viewModel.state.selectedID else { return }
-                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, originFrame: originFrame, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
+                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, modalartTitle: viewModel.state.title, originFrame: originFrame, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
             }
@@ -181,6 +195,10 @@ final class MG2ModalartMainViewController: UIViewController {
             return
         }
         coordinator?.presentModalartList(modalarts: viewModel.state.modalarts, onSelection: { [weak self] in self?.selectModalart(at: $0) }, onAdd: { [weak self] in self?.createModalart() }, from: self)
+    }
+
+    @objc private func fullBoardButtonTapped() {
+        coordinator?.presentFullBoard(modalartTitle: viewModel.state.title, mogaks: viewModel.state.mogaks, isGuest: viewModel.isGuest, from: self)
     }
 
     @objc private func modalartMenuButtonTapped() {
@@ -196,7 +214,7 @@ final class MG2ModalartMainViewController: UIViewController {
             coordinator?.presentLoginGate(from: self)
             return
         }
-        coordinator?.routeToMogakEditing(mogak: mogak, from: self) { [weak self] in self?.reloadSelectedModalart() }
+        coordinator?.routeToMogakEditing(mogak: mogak, path: viewModel.mogakPath(for: mogak), from: self) { [weak self] in self?.reloadSelectedModalart() }
     }
 
     private func confirmModalartDeletion() {
@@ -250,7 +268,7 @@ extension MG2ModalartMainViewController: UICollectionViewDelegate {
         } else if viewModel.state.needsTitle {
             coordinator?.presentMissingTitleNotice(from: self)
         } else if let modalartID = viewModel.state.selectedID {
-            coordinator?.routeToMogakCreation(modalartID: modalartID, from: self) { [weak self] in self?.reloadSelectedModalart() }
+            coordinator?.routeToMogakCreation(modalartID: modalartID, path: viewModel.mogakCreationPath, from: self) { [weak self] in self?.reloadSelectedModalart() }
         }
     }
 }

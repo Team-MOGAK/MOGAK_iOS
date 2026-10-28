@@ -6,6 +6,7 @@ final class MG2AdPolicyStore: AdPolicyStorage {
         static let interstitialDates = "MG2AdInterstitialDates"
         static let lastAppOpenAdDate = "MG2AdLastAppOpenDate"
         static let lastBackgroundDate = "MG2AdLastBackgroundDate"
+        static let unlockedPastDays = "MG2AdUnlockedPastDays"
     }
 
     private let defaults = UserDefaults.standard
@@ -28,5 +29,10 @@ final class MG2AdPolicyStore: AdPolicyStorage {
     var lastBackgroundDate: Date? {
         get { defaults.object(forKey: Key.lastBackgroundDate) as? Date }
         set { defaults.set(newValue, forKey: Key.lastBackgroundDate) }
+    }
+
+    var unlockedPastDays: [Date] {
+        get { defaults.array(forKey: Key.unlockedPastDays) as? [Date] ?? [] }
+        set { defaults.set(newValue, forKey: Key.unlockedPastDays) }
     }
 }

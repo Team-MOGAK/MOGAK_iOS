@@ -189,11 +189,7 @@ enum T: CaseIterable {
     }
 
     var font: UIFont {
-        let spec = spec
-        let maxSize = UIFontMetrics(forTextStyle: spec.textStyle)
-            .scaledValue(for: spec.size, compatibleWith: UITraitCollection(preferredContentSizeCategory: .accessibilityMedium))
-        return UIFontMetrics(forTextStyle: spec.textStyle)
-            .scaledFont(for: .pretendard(spec.weight, size: spec.size), maximumPointSize: maxSize)
+        .scaledCapped(.pretendard(spec.weight, size: spec.size), relativeTo: spec.textStyle)
     }
 
     var lineHeight: CGFloat { UIFontMetrics(forTextStyle: spec.textStyle).scaledValue(for: spec.lineHeight) }
@@ -205,6 +201,21 @@ enum T: CaseIterable {
         paragraph.maximumLineHeight = lineHeight
         paragraph.alignment = alignment
         return [.font: font, .foregroundColor: color, .kern: kern, .paragraphStyle: paragraph]
+    }
+}
+
+extension UIFont {
+    /// 글자 크기 설정(Dynamic Type)을 따르되 accessibility1(accessibilityMedium)까지만 커진다. T에 없는 크기도 이걸로.
+    static func scaledCapped(_ font: UIFont, relativeTo textStyle: UIFont.TextStyle) -> UIFont {
+        let metrics = UIFontMetrics(forTextStyle: textStyle)
+        let maxSize = metrics.scaledValue(for: font.pointSize, compatibleWith: UITraitCollection(preferredContentSizeCategory: .accessibilityMedium))
+        return metrics.scaledFont(for: font, maximumPointSize: maxSize)
+    }
+
+    /// 숫자가 바뀌는 자리(%, 3/5)는 고정폭 숫자.
+    func withMonospacedDigits() -> UIFont {
+        let descriptor = fontDescriptor.addingAttributes([.featureSettings: [[UIFontDescriptor.FeatureKey.type: kNumberSpacingType, UIFontDescriptor.FeatureKey.selector: kMonospacedNumbersSelector]]])
+        return UIFont(descriptor: descriptor, size: 0)
     }
 }
 

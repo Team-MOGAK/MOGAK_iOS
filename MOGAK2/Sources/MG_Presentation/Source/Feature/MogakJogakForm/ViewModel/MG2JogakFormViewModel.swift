@@ -7,7 +7,6 @@ enum MG2JogakFormMode {
 
 struct MG2JogakFormState {
     var title = ""
-    var category = ""
     var categoryColor = DesignSystemPalette.signatureHex
     var isRoutine = false
     var selectedRoutineDayIndices = Set<Int>()
@@ -18,6 +17,8 @@ struct MG2JogakFormState {
 @MainActor
 final class MG2JogakFormViewModel {
     let mode: MG2JogakFormMode
+    /// 화면 위 경로: 판 › 모각 › 조각 n/8.
+    let path: [MG2PathItem]
 
     var isCreating: Bool {
         if case .create = mode { return true }
@@ -50,18 +51,19 @@ final class MG2JogakFormViewModel {
         return formatter
     }()
 
-    init(useCase: MogakEditingUseCase, mode: MG2JogakFormMode) {
+    init(useCase: MogakEditingUseCase, mode: MG2JogakFormMode, path: [MG2PathItem]) {
         self.useCase = useCase
         self.mode = mode
+        self.path = path
         let today = Date()
         switch mode {
         case .create(let mogak):
             originalScheduleState = nil
-            state = MG2JogakFormState(category: mogak.category.name, categoryColor: mogak.color ?? DesignSystemPalette.signatureHex, today: today)
+            state = MG2JogakFormState(categoryColor: mogak.color ?? DesignSystemPalette.signatureHex, today: today)
         case .edit(let jogak):
             let endDate = jogak.endDate
             let selectedDayIndices = Set(jogak.days.map(\.rawValue))
-            state = MG2JogakFormState(title: jogak.title, category: jogak.category.name, categoryColor: jogak.color ?? DesignSystemPalette.signatureHex, isRoutine: jogak.isRoutine, selectedRoutineDayIndices: selectedDayIndices, today: today, endDate: endDate)
+            state = MG2JogakFormState(title: jogak.title, categoryColor: jogak.color ?? DesignSystemPalette.signatureHex, isRoutine: jogak.isRoutine, selectedRoutineDayIndices: selectedDayIndices, today: today, endDate: endDate)
             originalScheduleState = ScheduleState(isRoutine: jogak.isRoutine, selectedDayIndices: selectedDayIndices, endDate: endDate)
         }
     }

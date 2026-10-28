@@ -163,6 +163,15 @@ final class MG2ModalartMainViewModel {
         ]
     }
 
+    /// 모각 만들기 화면 위 경로: 판 › 모각 n/8.
+    var mogakCreationPath: [MG2PathItem] {
+        [MG2PathItem(label: state.title), MG2PathItem(label: "모각 \(state.mogaks.count + 1)/8")]
+    }
+
+    func mogakPath(for mogak: MG2ModalartMogakItemEntity) -> [MG2PathItem] {
+        [MG2PathItem(label: state.title), MG2PathItem(label: mogak.title, colorHex: mogak.color)]
+    }
+
     private func makeGuestMogak(title: String, category: String, color: String) -> MG2ModalartMogakItemEntity {
         MG2ModalartMogakItemEntity(mogakId: 0, title: title, category: MG2MogakCategoryEntity(code: nil, name: category), color: color)
     }

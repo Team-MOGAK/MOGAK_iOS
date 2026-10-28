@@ -16,8 +16,7 @@ final class MG2JogakFormViewController: UIViewController {
     private let contentView = MG2DismissKeyboardView().then {
         $0.backgroundColor = DS.Color.surface
     }
-    private let mogakCategoryTitleLabel = MG2FieldLabel("모각")
-    private let mogakCategoryLabel = MG2TagLabel()
+    private let pathBarView = MG2PathBarView()
     private let jogakDetailTitleLabel = MG2FieldLabel("조각 이름")
     private let jogakDetailTextField = MG2TextField().then {
         $0.placeholder = "오늘 할 조각을 적어 주세요"
@@ -85,7 +84,7 @@ final class MG2JogakFormViewController: UIViewController {
         configureInitialValues()
         configureView()
         configureNavigationBar()
-        configureCategory()
+        configurePath()
         configureJogakTitle()
         configureRoutine()
         configureEndDate()
@@ -114,8 +113,8 @@ final class MG2JogakFormViewController: UIViewController {
 
     private func configureInitialValues() {
         let state = viewModel.state
-        jogakDetailTextField.text = viewModel.state.title
-        mogakCategoryLabel.configure(text: state.category, moak: DS.Moak.from(hex: state.categoryColor))
+        jogakDetailTextField.text = state.title
+        pathBarView.configure(viewModel.path)
     }
 
     private func configureView() {
@@ -134,15 +133,13 @@ final class MG2JogakFormViewController: UIViewController {
         applyStepNavigationBar()
     }
 
-    private func configureCategory() {
-        contentView.addSubviews(mogakCategoryTitleLabel, mogakCategoryLabel)
-        mogakCategoryTitleLabel.snp.makeConstraints {
+    /// 판 › 모각 › 조각 n/8. 어느 모각에 만드는지 알려 준다.
+    private func configurePath() {
+        contentView.addSubview(pathBarView)
+        pathBarView.snp.makeConstraints {
             $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
-        }
-        mogakCategoryLabel.snp.makeConstraints {
-            $0.top.equalTo(mogakCategoryTitleLabel.snp.bottom).offset(8)
             $0.leading.equalToSuperview().inset(DS.Space.sheet)
+            $0.trailing.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
         }
     }
 
@@ -150,7 +147,7 @@ final class MG2JogakFormViewController: UIViewController {
         contentView.addSubviews(jogakDetailTitleLabel, jogakDetailTextField)
         jogakDetailTextField.delegate = self
         jogakDetailTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(mogakCategoryLabel.snp.bottom).offset(28)
+            $0.top.equalTo(pathBarView.snp.bottom).offset(28)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         jogakDetailTextField.snp.makeConstraints {

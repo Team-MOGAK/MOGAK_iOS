@@ -43,8 +43,8 @@ final class MG2AppComposition {
         let loginCoordinator = MG2LoginCoordinator(authUseCase: authUseCase, userUseCase: userUseCase, userState: userState)
         let formCoordinator = MG2MogakJogakFormCoordinator(useCase: mogakEditingUseCase)
         let scheduleStartCoordinator = MG2ScheduleStartCoordinator(useCase: scheduleStartUseCase, todayUseCase: todayUseCase, adPolicyUseCase: adPolicyUseCase, adProvider: adProvider, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
-        let modalartCoordinator = MG2ModalartCoordinator(useCase: modalartUseCase, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
-        let myPageCoordinator = MG2MyPageCoordinator(userUseCase: userUseCase, authUseCase: authUseCase, userState: userState, loginCoordinator: loginCoordinator, adProvider: adProvider)
+        let modalartCoordinator = MG2ModalartCoordinator(useCase: modalartUseCase, adPolicyUseCase: adPolicyUseCase, adProvider: adProvider, userState: userState, formCoordinator: formCoordinator, loginCoordinator: loginCoordinator)
+        let myPageCoordinator = MG2MyPageCoordinator(userUseCase: userUseCase, authUseCase: authUseCase, userState: userState, loginCoordinator: loginCoordinator, todayUseCase: todayUseCase, adPolicyUseCase: adPolicyUseCase, adProvider: adProvider)
         let tabBarCoordinator = MG2TabBarCoordinator(scheduleStartCoordinator: scheduleStartCoordinator, modalartCoordinator: modalartCoordinator, myPageCoordinator: myPageCoordinator)
         let onboardingCoordinator = MG2OnboardingCoordinator(authUseCase: authUseCase)
 

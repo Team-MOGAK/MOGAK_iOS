@@ -42,12 +42,25 @@ final class MG2MogakDetailViewModel {
 
     private let useCase: ModalartUseCase
     private let modalartID: Int
+    private let modalartTitle: String
     private(set) var state: MG2MogakDetailViewState
 
-    init(useCase: ModalartUseCase, modalartID: Int, mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity]) {
+    init(useCase: ModalartUseCase, modalartID: Int, modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity]) {
         self.useCase = useCase
         self.modalartID = modalartID
+        self.modalartTitle = modalartTitle
         state = MG2MogakDetailViewState(mogaks: mogaks, selectedMogakID: selectedMogak.mogakId, occurrences: occurrences, routineDaysTextByJogakID: [:])
+    }
+
+    /// 만들기 · 수정 화면 위 경로: 판 › 모각.
+    var mogakPath: [MG2PathItem] {
+        guard let mogak = state.selectedMogak else { return [MG2PathItem(label: modalartTitle)] }
+        return [MG2PathItem(label: modalartTitle), MG2PathItem(label: mogak.title, colorHex: mogak.color)]
+    }
+
+    /// 판 › 모각 › 조각 n/8.
+    var jogakCreationPath: [MG2PathItem] {
+        mogakPath + [MG2PathItem(label: "조각 \(state.occurrences.count + 1)/8")]
     }
 
     var hasRoutineOccurrences: Bool {

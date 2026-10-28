@@ -16,6 +16,7 @@ final class MG2MogakFormViewController: UIViewController {
     private let contentView = MG2DismissKeyboardView().then {
         $0.backgroundColor = DS.Color.surface
     }
+    private let pathBarView = MG2PathBarView()
     private let mogakLabel = MG2FieldLabel("모각 이름")
     private let mogakTextField = MG2TextField().then {
         $0.placeholder = "모각 이름을 적어 주세요"
@@ -121,10 +122,16 @@ final class MG2MogakFormViewController: UIViewController {
     }
 
     private func configureMogakField() {
-        [mogakLabel, mogakTextField, mogakHintLabel].forEach(contentView.addSubview)
+        [pathBarView, mogakLabel, mogakTextField, mogakHintLabel].forEach(contentView.addSubview)
         mogakTextField.delegate = self
-        mogakLabel.snp.makeConstraints {
+        pathBarView.configure(viewModel.path)
+        pathBarView.snp.makeConstraints {
             $0.top.equalTo(contentView.safeAreaLayoutGuide).offset(12)
+            $0.leading.equalToSuperview().inset(DS.Space.sheet)
+            $0.trailing.lessThanOrEqualToSuperview().inset(DS.Space.sheet)
+        }
+        mogakLabel.snp.makeConstraints {
+            $0.top.equalTo(pathBarView.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(DS.Space.sheet)
         }
         mogakTextField.snp.makeConstraints {

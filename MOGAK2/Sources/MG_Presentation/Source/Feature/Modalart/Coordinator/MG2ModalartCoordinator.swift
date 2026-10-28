@@ -3,13 +3,17 @@ import UIKit
 @MainActor
 final class MG2ModalartCoordinator {
     private let useCase: ModalartUseCase
+    private let adPolicyUseCase: AdPolicyUseCase
+    private let adProvider: MG2AdProviding
     private let userState: MG2UserState
     private let formCoordinator: MG2MogakJogakFormCoordinator
     private let loginGateCoordinator: MG2LoginGateCoordinator
     private let alertCoordinator = MG2AlertCoordinator()
 
-    init(useCase: ModalartUseCase, userState: MG2UserState, formCoordinator: MG2MogakJogakFormCoordinator, loginCoordinator: MG2LoginCoordinator) {
+    init(useCase: ModalartUseCase, adPolicyUseCase: AdPolicyUseCase, adProvider: MG2AdProviding, userState: MG2UserState, formCoordinator: MG2MogakJogakFormCoordinator, loginCoordinator: MG2LoginCoordinator) {
         self.useCase = useCase
+        self.adPolicyUseCase = adPolicyUseCase
+        self.adProvider = adProvider
         self.userState = userState
         self.formCoordinator = formCoordinator
         loginGateCoordinator = MG2LoginGateCoordinator(loginCoordinator: loginCoordinator)
@@ -22,8 +26,8 @@ final class MG2ModalartCoordinator {
     }
 
     /// originFrame: 누른 칸의 창 좌표. 있으면 그 칸에서 확대되며 열린다.
-    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, originFrame: CGRect? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
-        let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, mogaks: mogaks, selectedMogak: selectedMogak, occurrences: occurrences)
+    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, modalartTitle: String, originFrame: CGRect? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
+        let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, modalartTitle: modalartTitle, mogaks: mogaks, selectedMogak: selectedMogak, occurrences: occurrences)
         let viewController = MG2MogakDetailViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.onExit = onExit
@@ -33,20 +37,20 @@ final class MG2ModalartCoordinator {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
-    func routeToMogakCreation(modalartID: Int, from source: UIViewController, onFinish: @escaping () -> Void) {
-        formCoordinator.routeToMogakCreation(modalartID: modalartID, from: source, onFinish: onFinish)
+    func routeToMogakCreation(modalartID: Int, path: [MG2PathItem], from source: UIViewController, onFinish: @escaping () -> Void) {
+        formCoordinator.routeToMogakCreation(modalartID: modalartID, path: path, from: source, onFinish: onFinish)
     }
 
-    func routeToMogakEditing(mogak: MG2ModalartMogakItemEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
-        formCoordinator.routeToMogakEditing(mogak: mogak, from: source, onFinish: onFinish)
+    func routeToMogakEditing(mogak: MG2ModalartMogakItemEntity, path: [MG2PathItem], from source: UIViewController, onFinish: @escaping () -> Void) {
+        formCoordinator.routeToMogakEditing(mogak: mogak, path: path, from: source, onFinish: onFinish)
     }
 
-    func routeToJogakCreation(mogak: MG2ModalartMogakItemEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
-        formCoordinator.routeToJogakCreation(mogak: mogak, from: source, onFinish: onFinish)
+    func routeToJogakCreation(mogak: MG2ModalartMogakItemEntity, path: [MG2PathItem], from source: UIViewController, onFinish: @escaping () -> Void) {
+        formCoordinator.routeToJogakCreation(mogak: mogak, path: path, from: source, onFinish: onFinish)
     }
 
-    func routeToJogakEditing(jogak: MG2JogakDetailEntity, from source: UIViewController, onFinish: @escaping () -> Void) {
-        formCoordinator.routeToJogakEditing(jogak: jogak, from: source, onFinish: onFinish)
+    func routeToJogakEditing(jogak: MG2JogakDetailEntity, path: [MG2PathItem], from source: UIViewController, onFinish: @escaping () -> Void) {
+        formCoordinator.routeToJogakEditing(jogak: jogak, path: path, from: source, onFinish: onFinish)
     }
 
     func presentModalartList(modalarts: [MG2ModalartListItemEntity], onSelection: @escaping (Int) -> Void, onAdd: @escaping () -> Void, from source: UIViewController) {
@@ -140,6 +144,23 @@ final class MG2ModalartCoordinator {
 
     func presentLoginGate(from source: UIViewController) {
         loginGateCoordinator.present(from: source)
+    }
+
+    func presentFullBoard(modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], isGuest: Bool, from source: UIViewController) {
+        let viewModel = MG2FullBoardViewModel(useCase: useCase, adPolicyUseCase: adPolicyUseCase, modalartTitle: modalartTitle, mogaks: mogaks, isGuest: isGuest)
+        let viewController = MG2FullBoardViewController(viewModel: viewModel)
+        viewController.coordinator = self
+        viewController.modalPresentationStyle = .fullScreen
+        source.present(viewController, animated: true)
+    }
+
+    /// 81칸을 닫은 뒤가 전면 광고 자리다 (3일째부터 · 하루 2회 · 5분 간격). 판 화면 안에는 광고를 넣지 않는다.
+    func closeFullBoard(_ viewController: UIViewController, showsInterstitial: Bool, onInterstitialShown: @escaping () -> Void) {
+        let presenter = viewController.presentingViewController
+        viewController.dismiss(animated: true) { [adProvider] in
+            guard showsInterstitial, let presenter else { return }
+            adProvider.presentInterstitial(from: presenter) { shown in if shown { onInterstitialShown() } }
+        }
     }
 
     func presentError(_ error: Error, from source: UIViewController) {

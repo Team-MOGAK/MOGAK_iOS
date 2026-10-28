@@ -6,7 +6,9 @@ import WidgetKit
 struct MG2TodayLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MG2TodayActivityAttributes.self) { context in
+            // 글자 크기는 앱과 같이 accessibility1까지만.
             LockScreenView(state: context.state)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .activityBackgroundTint(Color.white.opacity(0.94))
                 .activitySystemActionForegroundColor(MG2WidgetStyle.ink)
         } dynamicIsland: { context in
@@ -19,9 +21,11 @@ struct MG2TodayLiveActivity: Widget {
                     Text("\(state.done)/\(state.total)").font(.pretendard(20, .heavy, relativeTo: .title3)).monospacedDigit()
                         .foregroundStyle(MG2WidgetStyle.poseLight(state.pose))
                         .contentTransition(.numericText())
+                        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     Text(state.line).font(.pretendard(15, .bold, relativeTo: .subheadline)).foregroundStyle(.white).lineLimit(1)
+                        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
@@ -29,6 +33,7 @@ struct MG2TodayLiveActivity: Widget {
                         NextPieceButton(state: state, tint: MG2WidgetStyle.poseLight(state.pose), textColor: MG2WidgetStyle.ink, subColor: MG2WidgetStyle.islandSub)
                     }
                     .padding(.horizontal, 6)
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 }
             } compactLeading: {
                 Image(MG2WidgetStyle.poseImage(state.pose)).resizable().scaledToFit().frame(width: 28, height: 28)

@@ -19,6 +19,8 @@ final class MG2ProgressCardView: UIView {
         super.init(frame: .zero)
         roundCorners(DS.Radius.card)
         titleLabel.apply(.button)
+        // "오늘의 조각 n / m"도 숫자가 바뀌는 자리라 고정폭 숫자.
+        titleLabel.font = .scaledCapped(UIFont.pretendard(.bold, size: 17).withMonospacedDigits(), relativeTo: .body)
         percentLabel.apply(.metric)
         percentLabel.font = T.metric.font.withMonospacedDigits()
         lineLabel.apply(.footnote, color: DS.Color.sub)
@@ -73,20 +75,11 @@ final class MG2ProgressCardView: UIView {
         lineLabel.text = progress.line
         progressBar.setProgress(Double(progress.percent) / 100, color: progress.isAllDone ? DS.Color.success : color, animated: lastDone != nil)
         mascotView.pose = progress.pose
-        if let lastDone, progress.done > lastDone { mascotView.hop() }
         lastDone = progress.done
         mainButton.accessibilityLabel = "‘\(modalartTitle ?? "모다라트")’ 모다라트 열기, 오늘 \(progress.percent)퍼센트 완료, \(progress.line)"
     }
 
     @objc private func mainTapped() {
         onOpenBoard?()
-    }
-}
-
-extension UIFont {
-    /// 숫자가 바뀌는 자리(%, 3/5)는 고정폭 숫자.
-    func withMonospacedDigits() -> UIFont {
-        let descriptor = fontDescriptor.addingAttributes([.featureSettings: [[UIFontDescriptor.FeatureKey.type: kNumberSpacingType, UIFontDescriptor.FeatureKey.selector: kMonospacedNumbersSelector]]])
-        return UIFont(descriptor: descriptor, size: 0)
     }
 }

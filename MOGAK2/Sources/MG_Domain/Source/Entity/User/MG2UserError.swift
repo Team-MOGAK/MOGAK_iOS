@@ -6,7 +6,7 @@ enum MG2UserError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .nicknameTaken:
-            return "이미 사용 중인 닉네임이에요."
+            return "이미 사용 중인 닉네임이에요"
         }
     }
 }

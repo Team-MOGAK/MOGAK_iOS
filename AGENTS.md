@@ -53,6 +53,7 @@ MOGAKWidget/   # WidgetKit extension (home widget + Live Activity UI). Reads the
 - Design tokens are `DS` (colors/space/radius/size/shadow, `DS.Moak`, `DS.Pose`) and `T` (Pretendard + Dynamic Type) in `MG_Design/Source/Foundation/DS.swift`. Pretendard otf files live in `Shared/Fonts` (app + widget). Server palette hex values (`DesignSystemPalette`) are payloads and stay unchanged; map them with `DS.Moak.from(hex:)` / `displayColor(forServerHex:)`.
 - Ads: `MG2AdProviding` (Presentation protocol) is implemented by `MG2AdMobProvider` in MG_App; only coordinators call it. When to show ads is `AdPolicyUseCase` (Domain). Test ad unit IDs only for now.
 - Mascot pose rules live in `MG2Mood` (Domain); check them with `MOGAK2/scripts/domain_rules_check.sh`.
+- Server-blocked features (weekly progress, piece timer, race vs last week) stay `TODO(server)`; never invent endpoints. Wide screens (Duo unfolded portrait) get a 560pt content column via `additionalSafeAreaInsets` in `MG2MainTabViewController`. Custom-size fonts go through `UIFont.scaledCapped` so Dynamic Type stops at accessibility1.
 
 ## Dependency Direction
 

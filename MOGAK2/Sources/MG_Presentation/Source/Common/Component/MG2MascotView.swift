@@ -43,6 +43,7 @@ final class MG2MascotView: UIControl {
         enablePressFeedback()
         isAccessibilityElement = true
         render(pose)
+        NotificationCenter.default.addObserver(self, selector: #selector(reduceMotionChanged), name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -75,6 +76,10 @@ final class MG2MascotView: UIControl {
         animation.duration = 0.55
         animation.timingFunction = CAMediaTimingFunction(controlPoints: 0.3, 0.7, 0.4, 1)
         hopView.layer.add(animation, forKey: "hop")
+    }
+
+    @objc private func reduceMotionChanged() {
+        startBreathing()
     }
 
     @objc private func tapped() {

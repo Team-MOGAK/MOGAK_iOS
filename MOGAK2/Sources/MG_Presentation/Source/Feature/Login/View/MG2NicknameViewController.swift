@@ -45,7 +45,7 @@ final class MG2NicknameViewController: UIViewController {
 
     private lazy var nextButton: UIButton = {
         let button = MG2PrimaryActionButton()
-        button.setTitle(viewModel.isEditing ? "닉네임 저장" : "다음", for: .normal)
+        button.setTitle(viewModel.isEditing ? "닉네임 저장" : "닉네임 정하고 계속하기", for: .normal)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
         button.isEnabled = false
         return button
