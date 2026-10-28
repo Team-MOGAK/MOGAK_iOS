@@ -60,14 +60,12 @@ extension UIViewController {
         sheet.prefersGrabberVisible = true
     }
 
-    /// 내용 높이에 맞춘 시트. 가장 큰 높이를 넘으면 거기서 멈춘다. 내용이 바뀌면 `invalidateDetents()`.
-    func configureDesignSheetFittingContent() {
+    /// 내용 높이에 맞춘 시트. 띄우기 전에 한 번 재서 그 높이로 고정한다. 끌어도 늘어나지 않는다.
+    /// width는 시트가 뜰 화면의 폭. 시트 높이에는 아래 안전 영역이 들어가지 않아 잰 값을 그대로 쓴다.
+    func configureDesignSheetFittingContent(width: CGFloat) {
         configureDesignSheet()
-        sheetPresentationController?.detents = [.custom { [weak self] context in
-            guard let view = self?.view else { return context.maximumDetentValue }
-            let fitting = view.systemLayoutSizeFitting(CGSize(width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
-            // 시트 높이에는 아래 안전 영역이 들어가지 않는다.
-            return min(fitting.height - view.safeAreaInsets.bottom, context.maximumDetentValue)
-        }]
+        let height = view.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+        sheetPresentationController?.detents = [.custom { context in min(height, context.maximumDetentValue) }]
+        sheetPresentationController?.prefersScrollingExpandsWhenScrolledToEdge = false
     }
 }

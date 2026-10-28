@@ -9,6 +9,11 @@ enum MG2MandalaGrid {
     /// 칸 높이가 이보다 낮으면(SE · Duo 접힘) 이름 1줄.
     static let singleLineCellHeight: CGFloat = 124
 
+    /// contentIndex의 반대: 모각 · 조각 순서 → 판 칸 위치.
+    static func gridIndex(forContent contentIndex: Int) -> Int {
+        contentIndex < centerIndex ? contentIndex : contentIndex + 1
+    }
+
     static func contentIndex(for gridIndex: Int) -> Int? {
         guard gridIndex != centerIndex else { return nil }
         return gridIndex < centerIndex ? gridIndex : gridIndex - 1

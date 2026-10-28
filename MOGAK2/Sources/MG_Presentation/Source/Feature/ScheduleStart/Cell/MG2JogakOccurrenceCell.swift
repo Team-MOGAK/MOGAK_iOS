@@ -3,7 +3,7 @@ import UIKit
 
 /// 오늘의 조각 한 줄 (PieceRow). 행 전체가 체크 영역이고 ⋯는 별도 메뉴.
 /// 완료하면 `done-row` 바탕 · `faint` 취소선 (일부러 흐리게).
-final class MG2JogakOccurrenceCell: UITableViewCell {
+final class MG2JogakOccurrenceCell: UITableViewCell, MG2SkeletonBlockCell {
     static let reuseIdentifier = "MG2JogakOccurrenceCell"
     /// 행 사이 `space-stack`.
     static let rowSpacing = DS.Space.stack
@@ -23,6 +23,8 @@ final class MG2JogakOccurrenceCell: UITableViewCell {
     }()
 
     private var onMoreTapped: (() -> Void)?
+    /// 스켈레톤은 행 사이 여백을 뺀 카드만 덮는다.
+    var skeletonBlock: UIView { cardView }
     private var title = ""
     private var moak = DS.Moak.blue
 

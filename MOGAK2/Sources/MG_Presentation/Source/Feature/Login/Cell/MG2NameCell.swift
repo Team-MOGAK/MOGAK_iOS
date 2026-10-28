@@ -61,3 +61,8 @@ class MG2NameCell: UITableViewCell {
         }
     }
 }
+
+/// 칸 아래 8 여백은 빼고 타일만 덩어리로 덮는다.
+extension MG2NameCell: MG2SkeletonBlockCell {
+    var skeletonBlock: UIView { tileView }
+}

@@ -49,6 +49,8 @@ final class MG2ModalartMainViewController: UIViewController {
     }
     private var cellSize = CGSize(width: 100, height: 120)
     private var nameTopConstraint: Constraint?
+    /// 다른 판을 불러오는 중. 9칸을 빈 칸으로 그리고 제목 · 9칸을 덩어리로 덮는다.
+    private var isLoadingBoard = false
 
     init(viewModel: MG2ModalartMainViewModel) {
         self.viewModel = viewModel
@@ -88,6 +90,8 @@ final class MG2ModalartMainViewController: UIViewController {
             $0.leading.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.gutter)
             nameTopConstraint = $0.top.equalTo(view.safeAreaLayoutGuide).inset(12).constraint
             $0.trailing.lessThanOrEqualTo(showModalartListButton.snp.leading)
+            // 이름이 오기 전에도 한 줄 높이를 지켜 스켈레톤에서 바뀔 때 버튼이 움직이지 않게.
+            $0.height.greaterThanOrEqualTo(T.title1.lineHeight)
         }
         showModalartListButton.snp.makeConstraints {
             $0.size.equalTo(DS.Size.touch)
@@ -121,6 +125,8 @@ final class MG2ModalartMainViewController: UIViewController {
         let boardWidth = min(safeFrame.width - DS.Space.gutter * 2, MG2MandalaGrid.maxBoardWidth)
         let availableHeight = safeFrame.maxY - modalartNameLabel.frame.maxY - 20
         let size = MG2MandalaGrid.boardCellSize(boardWidth: boardWidth, availableHeight: availableHeight)
+        // 처음 불러올 때는 판 크기가 잡힌 뒤에야 칸이 생기니 그때 덮는다.
+        if isLoadingBoard { coverBoardCells() }
         guard size != cellSize || modalartCollectionView.bounds.width == 0 else { return }
         cellSize = size
         modalartCollectionView.snp.updateConstraints {
@@ -131,43 +137,57 @@ final class MG2ModalartMainViewController: UIViewController {
     }
 
     private func loadModalart() {
-        performLoading(viewModel.load)
+        reloadBoard(showsSkeleton: true, viewModel.load)
     }
 
     private func selectModalart(at index: Int) {
-        performLoading { completion in viewModel.selectModalart(at: index, completion: completion) }
+        reloadBoard(showsSkeleton: true) { completion in viewModel.selectModalart(at: index, completion: completion) }
     }
 
     private func createModalart() {
-        performLoading(viewModel.createModalart)
+        reloadBoard(showsSkeleton: true, viewModel.createModalart)
     }
 
     private func updateModalart(title: String, color: String) {
-        performLoading { completion in viewModel.updateSelectedModalart(title: title, color: color, completion: completion) }
+        reloadBoard(showsSkeleton: false) { completion in viewModel.updateSelectedModalart(title: title, color: color, completion: completion) }
     }
 
     private func removeSelectedModalart() {
-        performLoading(viewModel.deleteSelectedModalart)
+        reloadBoard(showsSkeleton: true, viewModel.deleteSelectedModalart)
     }
 
     private func reloadSelectedModalart() {
-        performLoading(viewModel.reloadSelectedModalart)
+        reloadBoard(showsSkeleton: false, viewModel.reloadSelectedModalart)
     }
 
-    private func performLoading(_ operation: (@escaping (Result<Void, Error>) -> Void) -> Void) {
-        showLoading()
-        view.isUserInteractionEnabled = false
+    /// 다른 판을 불러올 때(처음 · 목록에서 고르기 · 만들기 · 삭제)는 제목과 9칸을 덩어리로 덮고, 오면 페이드로 바꾼다.
+    /// 보이는 판을 다시 부를 때(모각 화면에서 돌아오기 · 제목 수정)는 덮지 않고 조용히 바꾼다. 아이콘 버튼은 늘 그대로.
+    private func reloadBoard(showsSkeleton: Bool, _ operation: (@escaping (Result<Void, Error>) -> Void) -> Void) {
+        var isFinished = false
         operation { [weak self] result in
             guard let self else { return }
-            hideLoading()
-            view.isUserInteractionEnabled = true
-            switch result {
-            case .success:
-                render()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
+            isFinished = true
+            if isLoadingBoard {
+                isLoadingBoard = false
+                modalartNameLabel.hideSkeletonBlocks()
+                modalartCollectionView.hideSkeletonBlocks()
             }
+            UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
         }
+        // 둘러보기처럼 바로 끝났으면 덮지 않는다.
+        guard showsSkeleton, !isFinished else { return }
+        isLoadingBoard = true
+        // 제목이 비어 있으면 덩어리 폭이 없으니 자리 글을 넣는다.
+        if modalartNameLabel.text?.isEmpty ?? true { modalartNameLabel.text = "모다라트" }
+        modalartNameLabel.showSkeletonBlocks()
+        modalartCollectionView.reloadData()
+        coverBoardCells()
+    }
+
+    private func coverBoardCells() {
+        modalartCollectionView.layoutIfNeeded()
+        modalartCollectionView.showSkeletonBlocks()
     }
 
     private func render() {
@@ -177,21 +197,16 @@ final class MG2ModalartMainViewController: UIViewController {
         modalartCollectionView.reloadData()
     }
 
-    private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity, from indexPath: IndexPath) {
-        showLoading()
-        view.isUserInteractionEnabled = false
-        viewModel.loadOccurrences(for: mogak) { [weak self] result in
-            guard let self else { return }
-            hideLoading()
-            view.isUserInteractionEnabled = true
-            switch result {
-            case .success(let occurrences):
-                guard let modalartID = viewModel.state.selectedID else { return }
-                coordinator?.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, occurrences: occurrences, modalartID: modalartID, modalartTitle: viewModel.state.title, sourceView: modalartCollectionView.cellForItem(at: indexPath), onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
-            }
+    /// 그 칸에서 바로 확대해 들어간다. 조각은 모각 화면이 스켈레톤을 띄운 채 불러온다.
+    private func openMogakDetail(_ mogak: MG2ModalartMogakItemEntity) {
+        // 81칸에서 눌러도 둘러보기면 로그인 안내부터.
+        guard !viewModel.isGuest else {
+            coordinator?.presentLoginGate(from: self)
+            return
         }
+        guard let coordinator, let modalartID = viewModel.state.selectedID else { return }
+        let sourceCell = viewModel.state.mogaks.firstIndex { $0.mogakId == mogak.mogakId }.flatMap { modalartCollectionView.cellForItem(at: IndexPath(item: MG2MandalaGrid.gridIndex(forContent: $0), section: 0)) }
+        coordinator.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, modalartID: modalartID, modalartTitle: viewModel.state.title, sourceView: sourceCell, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
     }
 
     @objc private func modalartListButtonTapped() {
@@ -203,7 +218,7 @@ final class MG2ModalartMainViewController: UIViewController {
     }
 
     @objc private func fullBoardButtonTapped() {
-        coordinator?.presentFullBoard(modalartTitle: viewModel.state.title, mogaks: viewModel.state.mogaks, isGuest: viewModel.isGuest, from: self)
+        coordinator?.presentFullBoard(modalartTitle: viewModel.state.title, mogaks: viewModel.state.mogaks, isGuest: viewModel.isGuest, onSelectMogak: { [weak self] mogak in self?.openMogakDetail(mogak) }, from: self)
     }
 
     @objc private func modalartMenuButtonTapped() {
@@ -234,6 +249,12 @@ extension MG2ModalartMainViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        // 불러오는 동안은 데이터 없이 빈 칸 9개 (스켈레톤 자리).
+        if isLoadingBoard {
+            let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath)
+            (reusableCell as? MG2EmptyMogakCell)?.configure(isSuggested: false)
+            return reusableCell
+        }
         if indexPath.item == MG2MandalaGrid.centerIndex {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ModalartMainCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2ModalartMainCell else { return reusableCell }
@@ -269,7 +290,7 @@ extension MG2ModalartMainViewController: UICollectionViewDelegate {
 
         guard let mogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item) else { return }
         if viewModel.state.mogaks.indices.contains(mogakIndex) {
-            openMogakDetail(viewModel.state.mogaks[mogakIndex], from: indexPath)
+            openMogakDetail(viewModel.state.mogaks[mogakIndex])
         } else if viewModel.state.needsTitle {
             coordinator?.presentMissingTitleNotice(from: self)
         } else if let modalartID = viewModel.state.selectedID {

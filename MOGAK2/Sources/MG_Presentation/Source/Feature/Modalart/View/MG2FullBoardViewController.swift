@@ -1,7 +1,7 @@
 import SnapKit
 import UIKit
 
-/// 모다라트 81칸 전체 보기. 칸이 작아서 두 손가락으로 키워 볼 수 있다.
+/// 모다라트 81칸 전체 보기. 칸이 작아서 두 손가락으로 키워 볼 수 있고, 칸을 누르면 그 모각 화면으로 간다.
 final class MG2FullBoardViewController: UIViewController {
     weak var coordinator: MG2ModalartCoordinator?
 
@@ -27,8 +27,7 @@ final class MG2FullBoardViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = DS.Color.canvas
         configureLayout()
-        render()
-        load()
+        loadJogakTitles()
     }
 
     override func viewDidLayoutSubviews() {
@@ -45,6 +44,7 @@ final class MG2FullBoardViewController: UIViewController {
         scrollView.showsHorizontalScrollIndicator = false
         view.addSubviews(headerView, scrollView)
         scrollView.addSubview(boardView)
+        boardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(boardTapped(_:))))
         headerView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
@@ -98,6 +98,24 @@ final class MG2FullBoardViewController: UIViewController {
         scrollView.contentInset = UIEdgeInsets(top: offsetY, left: offsetX, bottom: offsetY, right: offsetX)
     }
 
+    /// 바로 띄우고 조각 제목이 올 때까지 조각 칸만 덩어리로 덮는다. 최종 목표 · 모각 칸은 이미 안다.
+    private func loadJogakTitles() {
+        var isFinished = false
+        var coveredLabels = [MG2PaddingLabel]()
+        viewModel.load { [weak self] result in
+            guard let self else { return }
+            isFinished = true
+            coveredLabels.forEach { $0.hideSkeletonBlocks() }
+            UIView.transition(with: boardView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
+        }
+        // 둘러보기처럼 바로 끝났으면 덮지 않는다.
+        guard !isFinished else { return }
+        render()
+        coveredLabels = zip(viewModel.blocks.joined(), cellLabels.joined()).filter { $0.0.kind == .jogak }.map(\.1)
+        coveredLabels.forEach { $0.showSkeletonBlocks() }
+    }
+
     private func render() {
         for (blocks, labels) in zip(viewModel.blocks, cellLabels) {
             for (cell, label) in zip(blocks, labels) {
@@ -109,6 +127,8 @@ final class MG2FullBoardViewController: UIViewController {
     private func configure(_ label: MG2PaddingLabel, with cell: MG2FullBoardCell) {
         let moak = DS.Moak.from(hex: cell.colorHex)
         label.text = cell.title
+        // 모각 · 조각 칸은 눌러서 그 모각으로 간다.
+        label.accessibilityTraits = cell.kind == .mogak || cell.kind == .jogak ? .button : .staticText
         switch cell.kind {
         case .goal:
             label.font = .pretendard(.extraBold, size: 12)
@@ -132,17 +152,13 @@ final class MG2FullBoardViewController: UIViewController {
         }
     }
 
-    private func load() {
-        showLoading()
-        viewModel.load { [weak self] result in
-            guard let self else { return }
-            hideLoading()
-            switch result {
-            case .success:
-                render()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
-            }
+    @objc private func boardTapped(_ gesture: UITapGestureRecognizer) {
+        let point = gesture.location(in: boardView)
+        for (blockIndex, labels) in cellLabels.enumerated() {
+            guard let cellIndex = labels.firstIndex(where: { $0.frame.contains(point) }) else { continue }
+            guard let mogak = viewModel.mogak(atBlock: blockIndex, cell: cellIndex) else { return }
+            coordinator?.openMogakFromFullBoard(mogak, from: self)
+            return
         }
     }
 
@@ -159,5 +175,15 @@ extension MG2FullBoardViewController: UIScrollViewDelegate {
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerBoard()
+    }
+
+    /// 확대한 배율로 글자를 다시 그린다. 그대로 두면 1배로 그린 글자를 늘려서 흐려 보인다.
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        let contentScale = traitCollection.displayScale * scale
+        cellLabels.joined().forEach { label in
+            label.contentScaleFactor = contentScale
+            label.layer.contentsScale = contentScale
+            label.setNeedsDisplay()
+        }
     }
 }

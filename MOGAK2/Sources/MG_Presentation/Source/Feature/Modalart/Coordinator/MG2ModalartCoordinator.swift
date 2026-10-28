@@ -9,6 +9,7 @@ final class MG2ModalartCoordinator {
     private let formCoordinator: MG2MogakJogakFormCoordinator
     private let loginGateCoordinator: MG2LoginGateCoordinator
     private let alertCoordinator = MG2AlertCoordinator()
+    private var fullBoardSelection: ((MG2ModalartMogakItemEntity) -> Void)?
 
     init(useCase: ModalartUseCase, adPolicyUseCase: AdPolicyUseCase, adProvider: MG2AdProviding, userState: MG2UserState, formCoordinator: MG2MogakJogakFormCoordinator, loginCoordinator: MG2LoginCoordinator) {
         self.useCase = useCase
@@ -25,10 +26,11 @@ final class MG2ModalartCoordinator {
         return viewController
     }
 
+    /// 바로 연다. 조각은 모각 화면이 조각 칸을 스켈레톤으로 덮은 채 불러온다.
     /// sourceView: 누른 판 칸. iOS 18부터 그 칸에서 확대되며 열리고 닫힐 때 그 칸으로 돌아간다 (시스템 zoom).
     /// iOS 17이나 동작 줄이기에서는 기본 push.
-    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity], modalartID: Int, modalartTitle: String, sourceView: UIView? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
-        let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, modalartTitle: modalartTitle, mogaks: mogaks, selectedMogak: selectedMogak, occurrences: occurrences)
+    func routeToMogakDetail(mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, modalartID: Int, modalartTitle: String, sourceView: UIView? = nil, onExit: @escaping () -> Void, from source: UIViewController) {
+        let viewModel = MG2MogakDetailViewModel(useCase: useCase, modalartID: modalartID, modalartTitle: modalartTitle, mogaks: mogaks, selectedMogak: selectedMogak)
         let viewController = MG2MogakDetailViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.onExit = onExit
@@ -88,14 +90,14 @@ final class MG2ModalartCoordinator {
                 onSubmit(title, color)
             }
         }
-        configureSheet(viewController)
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 
     func presentMissingTitleNotice(from source: UIViewController) {
         let viewController = MG2NeedModalartTitleModal()
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController)
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 
@@ -103,7 +105,7 @@ final class MG2ModalartCoordinator {
         let viewController = MG2AskDeleteModal()
         viewController.onCancel = { [weak viewController] in viewController?.dismiss(animated: true) }
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true, completion: onConfirm) }
-        configureSheet(viewController)
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 
@@ -124,7 +126,7 @@ final class MG2ModalartCoordinator {
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
         viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController)
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 
@@ -133,7 +135,7 @@ final class MG2ModalartCoordinator {
         viewController.onDelete = { [weak viewController] in viewController?.dismiss(animated: true, completion: onDelete) }
         viewController.onEdit = { [weak viewController] in viewController?.dismiss(animated: true, completion: onEdit) }
         viewController.onClose = { [weak viewController] in viewController?.dismiss(animated: true) }
-        configureSheet(viewController)
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 
@@ -147,12 +149,21 @@ final class MG2ModalartCoordinator {
         loginGateCoordinator.present(from: source)
     }
 
-    func presentFullBoard(modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], isGuest: Bool, from source: UIViewController) {
+    /// 바로 띄운다. 조각 제목은 81칸 화면이 조각 칸을 스켈레톤으로 덮은 채 불러온다.
+    func presentFullBoard(modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], isGuest: Bool, onSelectMogak: @escaping (MG2ModalartMogakItemEntity) -> Void, from source: UIViewController) {
         let viewModel = MG2FullBoardViewModel(useCase: useCase, adPolicyUseCase: adPolicyUseCase, modalartTitle: modalartTitle, mogaks: mogaks, isGuest: isGuest)
         let viewController = MG2FullBoardViewController(viewModel: viewModel)
         viewController.coordinator = self
         viewController.modalPresentationStyle = .fullScreen
+        fullBoardSelection = onSelectMogak
         source.present(viewController, animated: true)
+    }
+
+    /// 81칸에서 칸을 누르면 81칸을 닫고 그 모각 화면으로 간다. 이동하는 길이라 광고는 띄우지 않는다.
+    func openMogakFromFullBoard(_ mogak: MG2ModalartMogakItemEntity, from viewController: UIViewController) {
+        let selection = fullBoardSelection
+        fullBoardSelection = nil
+        viewController.dismiss(animated: true) { selection?(mogak) }
     }
 
     /// 81칸을 닫은 뒤가 전면 광고 자리다 (3일째부터 · 하루 2회 · 5분 간격). 판 화면 안에는 광고를 넣지 않는다.
@@ -166,18 +177,5 @@ final class MG2ModalartCoordinator {
 
     func presentError(_ error: Error, from source: UIViewController) {
         alertCoordinator.presentError(error, from: source)
-    }
-
-    /// 시트 높이는 내용에 맞춘다 (`.md-sheet` 위 16 · 아래 20). 글자를 키우면 시트도 같이 커져 잘리지 않는다.
-    /// 각 시트는 마지막 요소를 아래 20 이상 띄워 둔다(`lessThanOrEqualTo`).
-    private func configureSheet(_ viewController: UIViewController) {
-        guard let sheet = viewController.sheetPresentationController else { return }
-        sheet.detents = [.custom { [weak viewController] context in
-            guard let view = viewController?.view else { return context.maximumDetentValue }
-            let fitting = view.systemLayoutSizeFitting(CGSize(width: view.bounds.width, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
-            return min(fitting.height, context.maximumDetentValue)
-        }]
-        sheet.preferredCornerRadius = DS.Radius.sheet
-        sheet.prefersGrabberVisible = true
     }
 }

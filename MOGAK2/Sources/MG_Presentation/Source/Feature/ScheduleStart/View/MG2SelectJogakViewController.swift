@@ -7,6 +7,9 @@ final class MG2SelectJogakViewController: UIViewController {
     private let viewModel: MG2SelectJogakViewModel
     private let onJogaksAdded: () -> Void
     private var expandedSections = Set<Int>()
+    /// 고른 모다라트의 조각이 올 때까지 자리 표시 행에 스켈레톤을 씌운다.
+    private var isShowingPlaceholders = false
+    private static let placeholderCount = 4
 
     init(viewModel: MG2SelectJogakViewModel, onJogaksAdded: @escaping () -> Void) {
         self.viewModel = viewModel
@@ -67,7 +70,8 @@ final class MG2SelectJogakViewController: UIViewController {
         view.backgroundColor = DS.Color.surface
         applyStepNavigationBar()
         configureLayout()
-        configureModalarts()
+        configureModalartMenu()
+        selectModalart(viewModel.initialModalart)
     }
 
     private func configureLayout() {
@@ -97,13 +101,6 @@ final class MG2SelectJogakViewController: UIViewController {
         }
     }
 
-    private func configureModalarts() {
-        configureModalartMenu()
-        let modalarts = viewModel.modalarts
-        guard let selected = modalarts.first(where: { $0.id == viewModel.initialModalart.id }) ?? modalarts.first else { return }
-        selectModalart(selected)
-    }
-
     private func configureModalartMenu() {
         let actions = viewModel.modalarts.map { modalart in UIAction(title: modalart.title) { [weak self] _ in self?.selectModalart(modalart) } }
         modalartButton.menu = UIMenu(children: actions)
@@ -114,16 +111,24 @@ final class MG2SelectJogakViewController: UIViewController {
         loadSections(modalartID: modalart.id)
     }
 
+    /// 목록 자리만 스켈레톤으로 덮고 고른 모다라트의 조각을 불러온 뒤 교차 페이드. 메뉴 버튼은 그대로 둔다.
     private func loadSections(modalartID: Int) {
-        showLoading()
+        isShowingPlaceholders = true
+        tableView.reloadData()
+        tableView.setContentOffset(CGPoint(x: 0, y: -tableView.adjustedContentInset.top), animated: false)
+        view.layoutIfNeeded()
+        tableView.showSkeletonBlocks()
         viewModel.loadMogakSections(modalartID: modalartID) { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            tableView.hideSkeletonBlocks()
+            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
+            }
 
             switch result {
             case .success:
                 modalartButton.setTitle(viewModel.selectedModalart?.title, for: .normal)
-                tableView.reloadData()
                 updateAddButtonState()
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
@@ -133,10 +138,10 @@ final class MG2SelectJogakViewController: UIViewController {
 
     @objc private func addButtonTapped() {
         guard viewModel.hasSelectedJogaks else { return }
-        showLoading()
+        addButton.setLoading(true)
         viewModel.addSelectedJogaks { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            addButton.setLoading(false)
             switch result {
             case .success:
                 coordinator?.finishJogakSelection(from: self, onFinished: onJogaksAdded)
@@ -186,10 +191,11 @@ final class MG2SelectJogakViewController: UIViewController {
 
 extension MG2SelectJogakViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        viewModel.sections.count
+        isShowingPlaceholders ? Self.placeholderCount : viewModel.sections.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard !isShowingPlaceholders else { return 1 }
         let jogakCount = viewModel.sections[section].jogaks.count
         return expandedSections.contains(section) ? jogakCount + 1 : 1
     }
@@ -197,8 +203,9 @@ extension MG2SelectJogakViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2ExpandableMogakCell.reuseIdentifier, for: indexPath) as? MG2ExpandableMogakCell else { return UITableViewCell() }
-            cell.configure(with: viewModel.sections[indexPath.section])
-            cell.setExpanded(expandedSections.contains(indexPath.section))
+            // 불러오는 동안은 접힌 자리 표시 머리 줄.
+            cell.configure(with: isShowingPlaceholders ? .placeholder : viewModel.sections[indexPath.section])
+            cell.setExpanded(!isShowingPlaceholders && expandedSections.contains(indexPath.section))
             return cell
         }
 

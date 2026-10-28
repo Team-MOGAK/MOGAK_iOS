@@ -29,6 +29,7 @@ final class MG2MogakJogakFormCoordinator {
         alertCoordinator.presentError(error, from: source)
     }
 
+    /// 화면을 바로 넣고, 분류 칩은 화면이 스켈레톤으로 불러온다.
     private func pushMogakForm(mode: MG2MogakFormMode, path: [MG2PathItem], from source: UIViewController, onFinish: @escaping () -> Void) {
         let viewController = MG2MogakFormViewController(viewModel: MG2MogakFormViewModel(useCase: useCase, mode: mode, path: path))
         viewController.coordinator = self

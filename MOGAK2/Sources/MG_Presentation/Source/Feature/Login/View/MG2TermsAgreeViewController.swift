@@ -84,16 +84,19 @@ final class MG2TermsAgreeViewController: UIViewController {
         }
     }
 
+    /// 불러오는 동안 자리 표시 약관 줄을 한 줄씩 덩어리로 덮는다. 제목 · 전체 동의 · 버튼은 그대로. 오면 겹쳐 바꾼다.
     private func loadConsentItems() {
-        showLoading()
+        (0..<4).forEach { _ in agreementStackView.addArrangedSubview(MG2AgreementRowView(title: "약관 항목에 동의해요")) }
+        view.layoutIfNeeded()
+        agreementStackView.arrangedSubviews.forEach { $0.showSkeletonBlocks() }
         viewModel.loadConsentItems { [weak self] result in
             guard let self else { return }
-            hideLoading()
-            switch result {
-            case .success:
-                configureAgreementRows()
-                renderAgreements()
-            case .failure(let error):
+            agreementStackView.arrangedSubviews.forEach { $0.hideSkeletonBlocks() }
+            UIView.transition(with: scrollView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.configureAgreementRows()
+                self.renderAgreements()
+            }
+            if case .failure(let error) = result {
                 coordinator?.presentError(error, from: self)
             }
         }

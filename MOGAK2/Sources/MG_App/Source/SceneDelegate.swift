@@ -65,11 +65,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func applyRoute(_ windowScene: UIWindowScene, route: MG2AppLaunchRoute, force: Bool = false) {
         guard force || currentRoute != route else { return }
+        let previousRoute = currentRoute
         currentRoute = route
         currentLoginState = composition.userState.loginState
 
         let window = self.window ?? UIWindow(windowScene: windowScene)
-        window.rootViewController = appFlowCoordinator.makeRoot(for: route)
+        let root = appFlowCoordinator.makeRoot(for: route)
+        if previousRoute == .launch {
+            // 스플래시에서 첫 화면으로는 부드럽게 넘어간다.
+            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve) { window.rootViewController = root }
+        } else {
+            window.rootViewController = root
+        }
         self.window = window
         window.makeKeyAndVisible()
         if route == .main { Task { await composition.requestStartupPermissions() } }

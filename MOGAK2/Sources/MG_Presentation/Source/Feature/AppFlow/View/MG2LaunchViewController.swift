@@ -7,6 +7,8 @@ final class MG2LaunchViewController: UIViewController {
     weak var coordinator: MG2AppFlowCoordinator?
 
     private let viewModel: MG2LaunchViewModel
+    /// 지금 하고 있는 일. 로딩이 보이면 이 단계의 문구를 띄운다.
+    private var step = MG2LaunchStep.connecting
 
     private let logoImageView = UIImageView(image: UIImage(named: "Logo")).then {
         $0.contentMode = .scaleAspectFit
@@ -71,24 +73,33 @@ final class MG2LaunchViewController: UIViewController {
     private func handle(_ state: MG2LaunchViewModel.State) {
         switch state {
         case .waiting:
+            step = .connecting
             setStatus(nil)
             retryButton.isHidden = true
         case .preparing:
             activityIndicator.startAnimating()
-            setStatus("잠시만 기다려 주세요")
+            setStatus(step.message, animated: true)
         case .failed:
             activityIndicator.stopAnimating()
             setStatus("연결이 원활하지 않아요\n잠시 후 다시 시도해 주세요")
             retryButton.isHidden = false
         case .ready:
-            activityIndicator.stopAnimating()
-            setStatus(nil)
-            coordinator?.finishLaunch()
+            coordinator?.finishLaunch { [weak self] step in self?.show(step) }
         }
     }
 
-    private func setStatus(_ text: String?) {
-        statusLabel.attributedText = text.map { NSAttributedString(string: $0, attributes: T.paragraph.attributes(color: DS.Color.sub, alignment: .center)) }
+    /// 로딩이 이미 보이면 문구를 이 단계로 바로 바꾸고, 아니면 로딩이 뜰 때 이 문구로 시작한다.
+    private func show(_ step: MG2LaunchStep) {
+        self.step = step
+        if activityIndicator.isAnimating { setStatus(step.message, animated: true) }
+    }
+
+    private func setStatus(_ text: String?, animated: Bool = false) {
+        let apply = { [statusLabel] in
+            statusLabel.attributedText = text.map { NSAttributedString(string: $0, attributes: T.paragraph.attributes(color: DS.Color.sub, alignment: .center)) }
+        }
+        guard animated, !UIAccessibility.isReduceMotionEnabled else { return apply() }
+        UIView.transition(with: statusLabel, duration: 0.2, options: .transitionCrossDissolve, animations: apply)
     }
 
     @objc private func retryButtonTapped() {

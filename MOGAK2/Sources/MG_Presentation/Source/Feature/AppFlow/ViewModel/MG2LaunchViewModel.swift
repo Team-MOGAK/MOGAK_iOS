@@ -32,7 +32,8 @@ final class MG2LaunchViewModel {
         Task { [weak self] in
             guard let self else { return }
             let isReady = await serverReadinessUseCase.waitUntilReady()
-            preparing.cancel()
+            // 준비되면 첫 화면 데이터를 이어서 부르니, 로딩 표시는 화면이 넘어갈 때까지 그대로 둔다.
+            if !isReady { preparing.cancel() }
             onStateChange?(isReady ? .ready : .failed)
         }
     }

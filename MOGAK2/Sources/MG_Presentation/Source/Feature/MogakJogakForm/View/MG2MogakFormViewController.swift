@@ -8,6 +8,7 @@ final class MG2MogakFormViewController: UIViewController {
 
     private let viewModel: MG2MogakFormViewModel
     private var hasConfiguredInitialSelection = false
+    private var isShowingPlaceholders = false
 
     private let scrollView = UIScrollView().then {
         $0.backgroundColor = DS.Color.surface
@@ -75,8 +76,9 @@ final class MG2MogakFormViewController: UIViewController {
         configureCategory()
         configureColorPicker()
         configureCompleteButton()
-        loadCategories()
+        updateCustomCategoryVisibility()
         updateButtonState()
+        loadCategories()
         // 글자 크기가 바뀌면 칩 폭을 다시 잰다.
         registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, _: UITraitCollection) in
             self.categoryCollectionView.collectionViewLayout.invalidateLayout()
@@ -93,15 +95,11 @@ final class MG2MogakFormViewController: UIViewController {
         guard !hasConfiguredInitialSelection else { return }
         hasConfiguredInitialSelection = true
 
-        if let categoryIndex = viewModel.selectedCategoryIndex {
-            let indexPath = IndexPath(item: categoryIndex, section: 0)
-            categoryCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-        }
+        // 처음 고른 분류는 분류가 온 뒤 `loadCategories`에서 고른다.
         if let colorIndex = viewModel.colors.firstIndex(of: viewModel.state.color) {
             let indexPath = IndexPath(item: colorIndex, section: 0)
             colorCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
         }
-        updateCustomCategoryVisibility()
     }
 
     private func configureInitialValues() {
@@ -206,20 +204,23 @@ final class MG2MogakFormViewController: UIViewController {
         }
     }
 
+    /// 불러오는 동안 자리 표시 분류 칩을 칩마다 덩어리로 덮는다. 나머지 칸은 그대로. 오면 겹쳐 바꾸고 처음 분류를 고른다.
     private func loadCategories() {
-        showLoading()
+        isShowingPlaceholders = true
+        categoryCollectionView.reloadData()
+        view.layoutIfNeeded()
+        categoryCollectionView.showSkeletonBlocks()
         viewModel.loadCategories { [weak self] result in
             guard let self else { return }
-            hideLoading()
-            switch result {
-            case .success:
-                categoryCollectionView.reloadData()
-                if let index = viewModel.selectedCategoryIndex {
-                    categoryCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: [])
+            categoryCollectionView.hideSkeletonBlocks()
+            UIView.transition(with: categoryCollectionView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.isShowingPlaceholders = false
+                self.categoryCollectionView.reloadData()
+                if let index = self.viewModel.selectedCategoryIndex {
+                    self.categoryCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: [])
                 }
-                updateCustomCategoryVisibility()
-                updateButtonState()
-            case .failure(let error):
+            }
+            if case .failure(let error) = result {
                 coordinator?.presentError(error, from: self)
             }
         }
@@ -241,11 +242,11 @@ final class MG2MogakFormViewController: UIViewController {
 
     @objc private func completeButtonTapped() {
         guard viewModel.isValid else { return }
-        showLoading()
+        completeButton.setLoading(true)
         view.isUserInteractionEnabled = false
         viewModel.submit { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            completeButton.setLoading(false)
             view.isUserInteractionEnabled = true
             switch result {
             case .success:
@@ -281,14 +282,16 @@ extension MG2MogakFormViewController: UITextFieldDelegate {
 
 extension MG2MogakFormViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        collectionView.tag == 1 ? viewModel.categories.count : viewModel.colors.count
+        guard collectionView.tag == 1 else { return viewModel.colors.count }
+        // 불러오는 동안은 이름 없는 자리 표시 칩.
+        return isShowingPlaceholders ? 6 : viewModel.categories.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView.tag == 1 {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2SelectionChipCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2SelectionChipCell else { return reusableCell }
-            cell.configure(title: viewModel.categories[indexPath.item].name, style: .category, selectedColor: DS.Moak.from(hex: viewModel.state.color).deep)
+            cell.configure(title: isShowingPlaceholders ? "" : viewModel.categories[indexPath.item].name, style: .category, selectedColor: DS.Moak.from(hex: viewModel.state.color).deep)
             return cell
         }
 
@@ -318,7 +321,7 @@ extension MG2MogakFormViewController: UICollectionViewDelegate {
 extension MG2MogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard collectionView.tag == 1 else { return CGSize(width: DS.Size.touch, height: DS.Size.touch) }
-        return MG2SelectionChipCell.size(for: viewModel.categories[indexPath.item].name)
+        return MG2SelectionChipCell.size(for: isShowingPlaceholders ? "분류 이름" : viewModel.categories[indexPath.item].name)
     }
 }
 

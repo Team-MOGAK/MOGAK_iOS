@@ -2,13 +2,15 @@ import UIKit
 import SnapKit
 
 /// 조각 가져오기: 모다라트 고르기 한 줄 (리스트 타일 56). 판 색 점 · 이름 · 셰브론(`ghost`).
-final class MG2ModalartOptionCell: UITableViewCell {
+final class MG2ModalartOptionCell: UITableViewCell, MG2SkeletonBlockCell {
     static let reuseIdentifier = "MG2ModalartOptionCell"
 
     private let tileView = UIView()
     private let dotView = UIView()
     private let modalartLabel = UILabel()
     private let chevronView = UIImageView(image: UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)))
+    /// 스켈레톤은 행 사이 여백을 뺀 타일만 덮는다.
+    var skeletonBlock: UIView { tileView }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

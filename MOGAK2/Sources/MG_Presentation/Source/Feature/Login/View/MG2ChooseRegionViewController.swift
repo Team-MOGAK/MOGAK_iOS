@@ -11,6 +11,7 @@ import SnapKit
 final class MG2ChooseRegionViewController: UIViewController {
     weak var coordinator: MG2LoginCoordinator?
     private let viewModel: MG2ChooseRegionViewModel
+    private var isShowingPlaceholders = false
 
     init(viewModel: MG2ChooseRegionViewModel) {
         self.viewModel = viewModel
@@ -101,14 +102,21 @@ final class MG2ChooseRegionViewController: UIViewController {
         nextButton.isEnabled = hasSelection
     }
 
+    /// 불러오는 동안 자리 표시 지역 줄을 칸마다 덩어리로 덮는다. 제목 · 버튼은 그대로. 오면 겹쳐 바꾼다.
     private func loadRegions() {
-        showLoading()
+        isShowingPlaceholders = true
+        tableView.reloadData()
+        view.layoutIfNeeded()
+        tableView.showSkeletonBlocks()
         viewModel.loadRegions { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            tableView.hideSkeletonBlocks()
+            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
+            }
             switch result {
             case .success:
-                tableView.reloadData()
                 renderSelection()
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
@@ -131,14 +139,15 @@ final class MG2ChooseRegionViewController: UIViewController {
 }
 
 extension MG2ChooseRegionViewController: UITableViewDelegate, UITableViewDataSource {
+    /// 불러오는 동안은 이름 없는 자리 표시 6칸.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.regions.count
+        isShowingPlaceholders ? 6 : viewModel.regions.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MG2RegionCell") as? MG2RegionCell else {return UITableViewCell()}
-        let item = viewModel.regions[indexPath.row]
-        cell.configure(name: item, isChecked: item == viewModel.selectedRegion)
+        let item = isShowingPlaceholders ? "" : viewModel.regions[indexPath.row]
+        cell.configure(name: item, isChecked: !isShowingPlaceholders && item == viewModel.selectedRegion)
         cell.selectionStyle = .none
         return cell
     }

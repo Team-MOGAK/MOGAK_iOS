@@ -9,6 +9,7 @@ final class MG2ScheduleStartCoordinator {
     private let userState: MG2UserState
     private let formCoordinator: MG2MogakJogakFormCoordinator
     private let loginGateCoordinator: MG2LoginGateCoordinator
+    private var preparedViewModel: MG2ScheduleStartViewModel?
     private let alertCoordinator = MG2AlertCoordinator()
 
     init(useCase: ScheduleStartUseCase, todayUseCase: TodayUseCase, adPolicyUseCase: AdPolicyUseCase, adProvider: MG2AdProviding, userState: MG2UserState, formCoordinator: MG2MogakJogakFormCoordinator, loginCoordinator: MG2LoginCoordinator) {
@@ -22,15 +23,29 @@ final class MG2ScheduleStartCoordinator {
     }
 
     func start() -> UIViewController {
-        let viewController = MG2ScheduleStartViewController(viewModel: MG2ScheduleStartViewModel(useCase: useCase, todayUseCase: todayUseCase, adPolicyUseCase: adPolicyUseCase, userState: userState))
+        let viewModel = preparedViewModel ?? makeViewModel()
+        preparedViewModel = nil
+        let viewController = MG2ScheduleStartViewController(viewModel: viewModel)
         viewController.coordinator = self
         return viewController
+    }
+
+    /// 앱을 켤 때 스플래시가 기다리는 동안 홈 첫 화면 데이터를 미리 불러 둔다. 실패하면 홈이 다시 부른다.
+    func prepare() async {
+        let viewModel = makeViewModel()
+        try? await viewModel.load(date: Date())
+        preparedViewModel = viewModel
+    }
+
+    private func makeViewModel() -> MG2ScheduleStartViewModel {
+        MG2ScheduleStartViewModel(useCase: useCase, todayUseCase: todayUseCase, adPolicyUseCase: adPolicyUseCase, userState: userState)
     }
 
     func routeToJogakEditing(jogak: MG2JogakDetailEntity, path: [MG2PathItem], from source: UIViewController) {
         formCoordinator.routeToJogakEditing(jogak: jogak, path: path, from: source) {}
     }
 
+    /// 시트를 바로 띄운다. 모다라트 목록은 시트가 스켈레톤을 띄운 채 불러온다.
     func presentJogakSelection(scheduledDate: Date, from source: UIViewController, onJogaksAdded: @escaping () -> Void) {
         let viewModel = MG2SelectModalartViewModel(useCase: useCase, scheduledDate: scheduledDate)
         let viewController = MG2SelectModalartViewController(viewModel: viewModel, onJogaksAdded: onJogaksAdded)
@@ -39,7 +54,9 @@ final class MG2ScheduleStartCoordinator {
         navigationController.modalPresentationStyle = .pageSheet
 
         if let sheet = navigationController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+            // 목록이 길어도 끌어서 커지지 않는 한 가지 높이.
+            sheet.detents = [.custom { context in context.maximumDetentValue * 0.75 }]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.preferredCornerRadius = DS.Radius.sheet
             sheet.delegate = source as? UISheetPresentationControllerDelegate
             sheet.prefersGrabberVisible = true
@@ -47,6 +64,7 @@ final class MG2ScheduleStartCoordinator {
         source.present(navigationController, animated: true)
     }
 
+    /// 바로 넘어간다. 고른 모다라트의 조각은 다음 화면이 스켈레톤을 띄운 채 불러온다.
     func routeToJogakSelection(modalart: MG2ModalartOption, modalarts: [MG2ModalartOption], scheduledDate: Date, from source: UIViewController, onJogaksAdded: @escaping () -> Void) {
         let viewModel = MG2SelectJogakViewModel(useCase: useCase, scheduledDate: scheduledDate, modalarts: modalarts, initialModalart: modalart)
         let viewController = MG2SelectJogakViewController(viewModel: viewModel, onJogaksAdded: onJogaksAdded)
@@ -94,20 +112,9 @@ final class MG2ScheduleStartCoordinator {
         presentFittingSheet(viewController, from: source)
     }
 
-    /// 고정 높이 대신 내용 높이에 맞춘 시트. 글자 크기를 키워도 아래가 잘리지 않는다.
-    /// custom detent 값은 아래 안전 영역을 뺀 높이라 맞춤 높이에서 안전 영역을 뺀다.
+    /// 내용 높이에 맞춘 시트 (띄우기 전에 한 번 재서 고정, 끌어도 늘어나지 않음).
     private func presentFittingSheet(_ viewController: UIViewController, from source: UIViewController) {
-        let width = source.view.bounds.width
-        viewController.modalPresentationStyle = .pageSheet
-        if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.custom { [weak viewController] context in
-                guard let view = viewController?.view else { return nil }
-                let height = view.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
-                return min(height - view.safeAreaInsets.bottom, context.maximumDetentValue)
-            }]
-            sheet.preferredCornerRadius = DS.Radius.sheet
-            sheet.prefersGrabberVisible = true
-        }
+        viewController.configureDesignSheetFittingContent(width: source.view.bounds.width)
         source.present(viewController, animated: true)
     }
 

@@ -6,6 +6,9 @@ final class MG2SelectModalartViewController: UIViewController {
 
     private let viewModel: MG2SelectModalartViewModel
     private let onJogaksAdded: () -> Void
+    /// 목록이 올 때까지 자리 표시 행에 스켈레톤을 씌운다.
+    private var isShowingPlaceholders = true
+    private static let placeholderCount = 4
 
     private let headerView = MG2SheetHeaderView(title: "조각 가져오기")
     private let subtitleLabel: UILabel = {
@@ -75,29 +78,32 @@ final class MG2SelectModalartViewController: UIViewController {
         }
     }
 
+    /// 목록 자리만 스켈레톤으로 덮고 불러온 뒤 교차 페이드. 머리 · 안내 문구는 그대로 둔다.
     private func loadModalarts() {
-        showLoading()
+        tableView.reloadData()
+        view.layoutIfNeeded()
+        tableView.showSkeletonBlocks()
         viewModel.loadModalarts { [weak self] result in
             guard let self else { return }
-            hideLoading()
-
-            switch result {
-            case .success:
-                tableView.reloadData()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
+            tableView.hideSkeletonBlocks()
+            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
             }
+            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
         }
     }
 }
 
 extension MG2SelectModalartViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.modalarts.count
+        isShowingPlaceholders ? Self.placeholderCount : viewModel.modalarts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2ModalartOptionCell.reuseIdentifier, for: indexPath) as? MG2ModalartOptionCell else { return UITableViewCell() }
+        // 자리 표시 행은 빈 타일.
+        guard !isShowingPlaceholders else { return cell }
         cell.configure(with: viewModel.modalarts[indexPath.row])
         return cell
     }

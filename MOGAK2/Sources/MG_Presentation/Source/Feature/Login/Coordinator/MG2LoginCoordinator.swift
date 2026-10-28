@@ -51,6 +51,7 @@ final class MG2LoginCoordinator {
         source.navigationController?.pushViewController(makeNickname(mode: .registration(draft)), animated: true)
     }
 
+    /// 화면을 바로 넣고, 목록은 화면이 스켈레톤으로 불러온다.
     func routeToChooseJob(draft: MG2RegistrationDraft, from source: UIViewController) {
         source.navigationController?.pushViewController(makeChooseJob(mode: .registration(draft)), animated: true)
     }

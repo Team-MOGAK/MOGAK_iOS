@@ -18,6 +18,8 @@ final class MG2ScheduleStartViewController: UIViewController {
     }()
 
     private var selectedDate: Date { calendarView.selectedDate }
+    /// 미리 불러온 내용을 그린 직후 첫 viewWillAppear에서 또 부르지 않게.
+    private var skipsNextRefresh = false
 
     /// 주 · 월 보기 (`Segmented`: 주/월처럼 보기를 바꾸는 세그먼트).
     private lazy var calendarScopeControl: MG2SegmentedControl = {
@@ -95,6 +97,9 @@ final class MG2ScheduleStartViewController: UIViewController {
         return stack
     }()
 
+    /// 처음 보는 날을 불러오는 동안은 자리 표시 행에 스켈레톤을 씌운다.
+    private var isShowingPlaceholders = false
+
     private let scheduleTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.backgroundColor = .clear
@@ -145,11 +150,20 @@ final class MG2ScheduleStartViewController: UIViewController {
         viewModel.externalChanges
             .sink { [weak self] in self?.refreshJogakOccurrences() }
             .store(in: &cancellables)
+        // 스플래시에서 미리 불러왔으면 로딩 없이 바로 그린다.
+        if viewModel.hasLoaded(selectedDate) {
+            renderOccurrences()
+            skipsNextRefresh = true
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        guard !skipsNextRefresh else {
+            skipsNextRefresh = false
+            return
+        }
         loadJogakOccurrences(date: selectedDate)
     }
 
@@ -224,22 +238,49 @@ final class MG2ScheduleStartViewController: UIViewController {
         scheduleTableView.register(MG2JogakOccurrenceCell.self, forCellReuseIdentifier: MG2JogakOccurrenceCell.reuseIdentifier)
     }
 
+    /// 처음 보는 날만 스켈레톤을 띄우고, 이미 보여 준 날은 조용히 새로 고친다.
     private func loadJogakOccurrences(date: Date) {
-        showLoading()
+        if !viewModel.hasLoaded(date) { showPlaceholders(for: date) }
         viewModel.loadJogakOccurrences(date: date) { [weak self] result in
             guard let self else { return }
-            hideLoading()
-
             switch result {
             case .success:
                 renderOccurrences()
             case .failure(let error):
+                // 스켈레톤은 걷고 있던 내용을 다시 보여 준다.
+                if isShowingPlaceholders { renderOccurrences() }
                 coordinator?.presentError(error, from: self)
             }
         }
     }
 
+    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 채우고 덩어리 스켈레톤으로 덮는다. 달력 · 머리 · 아래 버튼은 그대로, 광고는 숨긴다.
+    private func showPlaceholders(for date: Date) {
+        isShowingPlaceholders = true
+        progressCardView.render(.placeholder, modalartTitle: nil)
+        progressCardView.isHidden = false
+        emptyView.isHidden = true
+        addJogakButton.isHidden = !viewModel.isToday(date)
+        nativeAdContainer.isHidden = true
+        scheduleTableView.reloadData()
+        view.layoutIfNeeded()
+        progressCardView.showSkeletonBlocks()
+        scheduleTableView.showSkeletonBlocks()
+    }
+
+    /// 스켈레톤이 떠 있으면 실제 행으로 교차 페이드.
     private func renderOccurrences() {
+        guard isShowingPlaceholders else { return applyOccurrences() }
+        progressCardView.hideSkeletonBlocks()
+        scheduleTableView.hideSkeletonBlocks()
+        UIView.transition(with: scheduleTableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+            self.isShowingPlaceholders = false
+            self.applyOccurrences()
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func applyOccurrences() {
         let state = viewModel.state
         let isToday = viewModel.isSelectedDateToday
         emptyView.isHidden = !state.isEmpty
@@ -251,7 +292,7 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 
     private func renderProgress() {
-        if let progress = viewModel.state.progress, progress.total > 0 {
+        if let progress = viewModel.state.progress, progress.total > 0, !isShowingPlaceholders {
             progressCardView.render(progress, modalartTitle: nil)
             progressCardView.isHidden = false
         } else {
@@ -292,7 +333,7 @@ final class MG2ScheduleStartViewController: UIViewController {
     private func sizeTableAccessory(_ accessory: UIView, assign: (UIView) -> Void) {
         let width = scheduleTableView.bounds.width
         guard width > 0 else { return }
-        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden && emptyView.isHidden
+        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden && emptyView.isHidden && !isShowingPlaceholders
         let height = isHeaderHidden ? Self.listTopInset : accessory.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
         guard accessory.frame.size != CGSize(width: width, height: height) else { return }
         accessory.frame = CGRect(x: 0, y: 0, width: width, height: height)
@@ -412,11 +453,12 @@ final class MG2ScheduleStartViewController: UIViewController {
         coordinator?.presentJogakOptions(title: item.title, onEdit: { [weak self] in self?.editJogak(jogakID: item.key.jogakID) }, from: self)
     }
 
+    /// 조각을 먼저 불러온 뒤 수정 화면으로 넘어간다. 실패하면 홈에 남는다.
     private func editJogak(jogakID: Int) {
-        showLoading()
+        let finish = beginPendingTransition()
         viewModel.getJogakForEditing(jogakId: jogakID) { [weak self] result in
+            finish()
             guard let self else { return }
-            hideLoading()
 
             switch result {
             case .success(let detail):
@@ -431,7 +473,7 @@ final class MG2ScheduleStartViewController: UIViewController {
 
 extension MG2ScheduleStartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.state.occurrences.count
+        isShowingPlaceholders ? MG2JogakOccurrenceItem.placeholderCount : viewModel.state.occurrences.count
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -441,6 +483,10 @@ extension MG2ScheduleStartViewController: UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2JogakOccurrenceCell.reuseIdentifier, for: indexPath) as? MG2JogakOccurrenceCell else { return UITableViewCell() }
 
+        guard !isShowingPlaceholders else {
+            cell.configure(item: .placeholder) {}
+            return cell
+        }
         let item = viewModel.state.occurrences[indexPath.row]
         cell.configure(item: item) { [weak self] in self?.showJogakOptions(for: item) }
         return cell

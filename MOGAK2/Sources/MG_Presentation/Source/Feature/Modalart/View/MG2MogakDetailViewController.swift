@@ -27,6 +27,10 @@ final class MG2MogakDetailViewController: UIViewController {
         $0.isScrollEnabled = false
     }
     private var cellSize = CGSize(width: 100, height: 120)
+    /// 다른 모각의 조각을 불러오는 중. 조각 8칸을 빈 칸으로 그리고 덩어리로 덮는다 (모각 칩 · 가운데 모각 칸은 이미 안다).
+    private var isLoadingJogaks = false
+    /// 마지막으로 시작한 불러오기. 칩을 빨리 바꾸면 앞서 시작한 것이 늦게 와도 그리지 않는다.
+    private var latestLoadID = 0
 
     init(viewModel: MG2MogakDetailViewModel) {
         self.viewModel = viewModel
@@ -42,11 +46,8 @@ final class MG2MogakDetailViewController: UIViewController {
         view.backgroundColor = DS.Color.canvas
         configureLayout()
         configureCollectionViews()
-        if viewModel.hasRoutineOccurrences {
-            performLoading(viewModel.loadRoutineDays)
-        } else {
-            render()
-        }
+        render()
+        reload(showsSkeleton: true, viewModel.reloadOccurrences)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -56,8 +57,9 @@ final class MG2MogakDetailViewController: UIViewController {
         updateDeleteButton()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    /// 판 칸으로 돌아가는 확대 전환이 끝난 뒤에 판을 다시 불러온다 (밀어서 닫다 취소하면 부르지 않는다).
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         if isMovingFromParent {
             onExit?()
         }
@@ -84,6 +86,8 @@ final class MG2MogakDetailViewController: UIViewController {
         let safeFrame = view.safeAreaLayoutGuide.layoutFrame
         let boardWidth = min(safeFrame.width - DS.Space.gutter * 2, MG2MandalaGrid.maxBoardWidth)
         let size = MG2MandalaGrid.boardCellSize(boardWidth: boardWidth, availableHeight: safeFrame.maxY - mogakListCollectionView.frame.maxY - 16)
+        // 처음 열 때는 판 크기가 잡힌 뒤에야 칸이 생기니 그때 덮는다.
+        if isLoadingJogaks { coverJogakCells() }
         guard size != cellSize || jogakCollectionView.bounds.width == 0 else { return }
         cellSize = size
         jogakCollectionView.snp.updateConstraints {
@@ -119,37 +123,12 @@ final class MG2MogakDetailViewController: UIViewController {
         navigationItem.rightBarButtonItem = viewModel.state.selectedMogak == nil ? nil : deleteButton
     }
 
-    private func performLoading(_ operation: (@escaping (Result<Void, Error>) -> Void) -> Void) {
-        showLoading()
-        view.isUserInteractionEnabled = false
-        operation { [weak self] result in
-            guard let self else { return }
-            hideLoading()
-            view.isUserInteractionEnabled = true
-            switch result {
-            case .success:
-                render()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
-            }
-        }
-    }
-
+    /// 다른 모각으로 바뀌니 조각 칸을 덮는다.
     private func removeSelectedMogak() {
-        showLoading()
-        view.isUserInteractionEnabled = false
-        viewModel.deleteSelectedMogak { [weak self] result in
-            guard let self else { return }
-            hideLoading()
-            view.isUserInteractionEnabled = true
-            switch result {
-            case .success(.reloaded):
-                render()
-            case .success(.noMogaksRemaining):
-                render()
-                coordinator?.presentNoMogaksRemaining(from: self)
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
+        reload(showsSkeleton: true) { [viewModel] completion in
+            viewModel.deleteSelectedMogak { [weak self] result in
+                completion(result.map { _ in })
+                if case .success(.noMogaksRemaining) = result, let self { self.coordinator?.presentNoMogaksRemaining(from: self) }
             }
         }
     }
@@ -170,25 +149,54 @@ final class MG2MogakDetailViewController: UIViewController {
         coordinator?.presentDeleteConfirmation(onConfirm: { [weak self] in self?.removeSelectedMogak() }, from: self)
     }
 
+    /// 조각 만들기 · 수정 뒤.
     private func reloadOccurrences() {
-        performLoading(viewModel.reloadOccurrences)
+        reload(showsSkeleton: false, viewModel.reloadOccurrences)
     }
 
+    /// 모각 수정 뒤.
     private func reloadMogaks() {
-        performLoading(viewModel.reloadMogaks)
+        reload(showsSkeleton: false, viewModel.reloadMogaks)
     }
 
     private func removeJogak(id: Int) {
-        performLoading { completion in viewModel.deleteJogak(id: id, completion: completion) }
+        reload(showsSkeleton: false) { completion in viewModel.deleteJogak(id: id, completion: completion) }
+    }
+
+    /// 다른 모각의 조각을 불러올 때(처음 · 칩 바꾸기 · 모각 삭제)는 조각 8칸만 덮고, 오면 페이드로 바꾼다.
+    /// 보이는 조각을 다시 부를 때(수정 · 조각 삭제 뒤)는 덮지 않고 조용히 바꾼다.
+    private func reload(showsSkeleton: Bool, _ operation: (@escaping (Result<Void, Error>) -> Void) -> Void) {
+        latestLoadID += 1
+        let loadID = latestLoadID
+        var isFinished = false
+        operation { [weak self] result in
+            guard let self else { return }
+            isFinished = true
+            if loadID == latestLoadID {
+                if isLoadingJogaks {
+                    isLoadingJogaks = false
+                    jogakCollectionView.hideSkeletonBlocks()
+                }
+                UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+            }
+            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
+        }
+        guard showsSkeleton, !isFinished else { return }
+        isLoadingJogaks = true
+        jogakCollectionView.reloadData()
+        coverJogakCells()
+    }
+
+    private func coverJogakCells() {
+        jogakCollectionView.layoutIfNeeded()
+        jogakCollectionView.showSkeletonBlocks(where: { $0.item != MG2MandalaGrid.centerIndex })
     }
 
     private func showJogakActions(for occurrence: MG2JogakOccurrenceEntity) {
-        showLoading()
-        view.isUserInteractionEnabled = false
+        let finish = beginPendingTransition()
         viewModel.loadJogakActionContext(for: occurrence) { [weak self] result in
+            finish()
             guard let self else { return }
-            hideLoading()
-            view.isUserInteractionEnabled = true
             switch result {
             case .success(let context):
                 coordinator?.presentJogakActions(viewData: context.summary, onEdit: { [weak self] in self?.editJogak(context.detail) }, onDelete: { [weak self] in self?.confirmJogakDeletion(context.detail) }, from: self)
@@ -229,7 +237,8 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
             return cell
         }
 
-        guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.occurrences.indices.contains(jogakIndex) else { return emptyCell(collectionView, at: indexPath) }
+        // 불러오는 동안 조각 자리는 빈 칸 (스켈레톤 자리).
+        guard !isLoadingJogaks, let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.occurrences.indices.contains(jogakIndex) else { return emptyCell(collectionView, at: indexPath) }
         let occurrence = viewModel.state.occurrences[jogakIndex]
         if occurrence.isRoutine {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2RoutineJogakCell.routineIdentifier, for: indexPath)
@@ -247,7 +256,7 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
     /// 빈 칸: 다음에 채울 칸 하나만 "조각 추가"로 강조.
     private func emptyCell(_ collectionView: UICollectionView, at indexPath: IndexPath) -> UICollectionViewCell {
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath)
-        let isNext = MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.occurrences.count && viewModel.state.selectedMogak != nil
+        let isNext = !isLoadingJogaks && MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.occurrences.count && viewModel.state.selectedMogak != nil
         (reusableCell as? MG2EmptyMogakCell)?.configure(isSuggested: isNext, label: "조각 추가")
         return reusableCell
     }
@@ -256,7 +265,8 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
 extension MG2MogakDetailViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == mogakListCollectionView {
-            performLoading { completion in viewModel.selectMogak(at: indexPath.item, completion: completion) }
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            reload(showsSkeleton: true) { completion in viewModel.selectMogak(at: indexPath.item, completion: completion) }
             return
         }
 

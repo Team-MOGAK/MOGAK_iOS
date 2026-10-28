@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4DF83CF32B18B5CC00E1BD6D /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DF83CF22B18B5CC00E1BD6D /* WebKit.framework */; };
 		D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F872F6F8FB30014DA6D /* SnapKit */; };
+		5E1E70012F93000000A11CE0 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 5E1E70022F93000000A11CE0 /* SkeletonView */; };
 		D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F8A2F6F8FC80014DA6D /* Alamofire */; };
 		D18C0F9A2F6F92830014DA6D /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0F992F6F92830014DA6D /* Then */; };
 		D18C0FA42F7A0000014DA6D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D18C0FA32F7A0000014DA6D /* GoogleSignIn */; };
@@ -64,6 +65,7 @@
 			files = (
 				D18C0F9A2F6F92830014DA6D /* Then in Frameworks */,
 				D18C0F882F6F8FB30014DA6D /* SnapKit in Frameworks */,
+				5E1E70012F93000000A11CE0 /* SkeletonView in Frameworks */,
 				D18C0F8B2F6F8FC80014DA6D /* Alamofire in Frameworks */,
 				D18C0FB42F7A0000014DA6D /* KakaoSDKAuth in Frameworks */,
 				D18C0FB62F7A0000014DA6D /* KakaoSDKCommon in Frameworks */,
@@ -190,6 +192,7 @@
 			mainGroup = 9CFA7CF82A458109003E80A7;
 			packageReferences = (
 				D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */,
+				5E1E70032F93000000A11CE0 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 				D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */,
 				D18C0F982F6F92830014DA6D /* XCRemoteSwiftPackageReference "Then" */,
 				D18C0FA22F7A0000014DA6D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
@@ -547,6 +550,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		5E1E70032F93000000A11CE0 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
 		D18C0F892F6F8FC80014DA6D /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -602,6 +613,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D18C0F862F6F8FB30014DA6D /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		5E1E70022F93000000A11CE0 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E1E70032F93000000A11CE0 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 		D18C0F8A2F6F8FC80014DA6D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

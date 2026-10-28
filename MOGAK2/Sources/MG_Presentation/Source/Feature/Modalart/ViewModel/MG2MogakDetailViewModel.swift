@@ -45,11 +45,11 @@ final class MG2MogakDetailViewModel {
     private let modalartTitle: String
     private(set) var state: MG2MogakDetailViewState
 
-    init(useCase: ModalartUseCase, modalartID: Int, modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity, occurrences: [MG2JogakOccurrenceEntity]) {
+    init(useCase: ModalartUseCase, modalartID: Int, modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], selectedMogak: MG2ModalartMogakItemEntity) {
         self.useCase = useCase
         self.modalartID = modalartID
         self.modalartTitle = modalartTitle
-        state = MG2MogakDetailViewState(mogaks: mogaks, selectedMogakID: selectedMogak.mogakId, occurrences: occurrences, routineDaysTextByJogakID: [:])
+        state = MG2MogakDetailViewState(mogaks: mogaks, selectedMogakID: selectedMogak.mogakId, occurrences: [], routineDaysTextByJogakID: [:])
     }
 
     /// 만들기 · 수정 화면 위 경로: 판 › 모각.
@@ -63,21 +63,6 @@ final class MG2MogakDetailViewModel {
         mogakPath + [MG2PathItem(label: "조각 \(state.occurrences.count + 1)/8")]
     }
 
-    var hasRoutineOccurrences: Bool {
-        state.occurrences.contains { $0.isRoutine }
-    }
-
-    func loadRoutineDays(completion: @escaping (Result<Void, Error>) -> Void) {
-        Task {
-            do {
-                state.routineDaysTextByJogakID = try await loadRoutineDaysText(for: state.occurrences)
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
     func selectMogak(at index: Int, completion: @escaping (Result<Void, Error>) -> Void) {
         guard state.mogaks.indices.contains(index) else { return completion(.success(())) }
         state.selectedMogakID = state.mogaks[index].mogakId
@@ -85,10 +70,10 @@ final class MG2MogakDetailViewModel {
     }
 
     func reloadOccurrences(completion: @escaping (Result<Void, Error>) -> Void) {
-        guard let selectedMogak = state.selectedMogak else { return completion(.success(())) }
+        guard let mogakID = state.selectedMogak?.mogakId else { return completion(.success(())) }
         Task {
             do {
-                try await reloadOccurrences(mogakID: selectedMogak.mogakId)
+                try await reloadOccurrences(mogakID: mogakID)
                 completion(.success(()))
             } catch {
                 completion(.failure(error))
@@ -166,6 +151,8 @@ final class MG2MogakDetailViewModel {
     private func reloadOccurrences(mogakID: Int) async throws {
         let occurrences = try await useCase.getMogakOverview(mogakId: mogakID, from: Date())
         let routineDaysText = try await loadRoutineDaysText(for: occurrences)
+        // 그사이 다른 모각을 골랐으면 늦게 온 결과는 버린다.
+        guard state.selectedMogakID == mogakID else { return }
         state.occurrences = occurrences
         state.routineDaysTextByJogakID = routineDaysText
     }

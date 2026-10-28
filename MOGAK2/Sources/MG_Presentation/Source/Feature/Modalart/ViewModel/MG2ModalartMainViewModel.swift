@@ -114,17 +114,6 @@ final class MG2ModalartMainViewModel {
         }
     }
 
-    func loadOccurrences(for mogak: MG2ModalartMogakItemEntity, completion: @escaping (Result<[MG2JogakOccurrenceEntity], Error>) -> Void) {
-        Task {
-            do {
-                let occurrences = try await useCase.getMogakOverview(mogakId: mogak.mogakId, from: Date())
-                completion(.success(occurrences))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-
     private func reloadSelectingFirst() async throws {
         state.modalarts = try await useCase.loadModalarts()
         guard let first = state.modalarts.first else { return }

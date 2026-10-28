@@ -21,6 +21,8 @@ final class MG2FullBoardViewModel {
     private let mogaks: [MG2ModalartMogakItemEntity]
     private let isGuest: Bool
     private var jogakTitlesByMogakID = [Int: [String]]()
+    /// 조각 제목을 불러오는 중. 이때 모각이 있는 블록의 둘레 8칸은 제목 없는 조각 칸(스켈레톤 자리)이다.
+    private var isLoadingJogaks = false
 
     init(useCase: ModalartUseCase, adPolicyUseCase: AdPolicyUseCase, modalartTitle: String, mogaks: [MG2ModalartMogakItemEntity], isGuest: Bool) {
         self.useCase = useCase
@@ -39,6 +41,13 @@ final class MG2FullBoardViewModel {
         }
     }
 
+    /// 누른 칸의 모각. 가운데 블록은 둘레 칸, 바깥 블록은 칸 전체가 그 모각이다. 최종 목표 · 빈 모각 자리는 nil.
+    func mogak(atBlock blockIndex: Int, cell cellIndex: Int) -> MG2ModalartMogakItemEntity? {
+        let mogakIndex = blockIndex == MG2MandalaGrid.centerIndex ? MG2MandalaGrid.contentIndex(for: cellIndex) : MG2MandalaGrid.contentIndex(for: blockIndex)
+        guard let mogakIndex, mogaks.indices.contains(mogakIndex) else { return nil }
+        return mogaks[mogakIndex]
+    }
+
     /// 81칸을 닫을 때가 전면 광고 자리다.
     var canShowInterstitial: Bool { adPolicyUseCase.canShowInterstitial }
 
@@ -52,11 +61,14 @@ final class MG2FullBoardViewModel {
             completion(.success(()))
             return
         }
+        isLoadingJogaks = true
         Task {
             do {
                 jogakTitlesByMogakID = try await useCase.loadJogakTitles(for: mogaks, from: Date())
+                isLoadingJogaks = false
                 completion(.success(()))
             } catch {
+                isLoadingJogaks = false
                 completion(.failure(error))
             }
         }
@@ -74,6 +86,7 @@ final class MG2FullBoardViewModel {
         let titles = jogakTitlesByMogakID[mogak.mogakId] ?? []
         return (0..<MG2MandalaGrid.itemCount).map { index in
             guard let jogakIndex = MG2MandalaGrid.contentIndex(for: index) else { return MG2FullBoardCell(kind: .mogak, title: mogak.title, colorHex: mogak.color) }
+            guard !isLoadingJogaks else { return MG2FullBoardCell(kind: .jogak) }
             guard titles.indices.contains(jogakIndex) else { return MG2FullBoardCell(kind: .empty) }
             return MG2FullBoardCell(kind: .jogak, title: titles[jogakIndex], colorHex: mogak.color)
         }

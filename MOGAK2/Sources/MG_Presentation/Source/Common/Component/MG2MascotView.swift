@@ -1,8 +1,6 @@
 import SnapKit
 import UIKit
 
-/// 움직이는 모각이 (`.md-mascot`). 숨쉬기 1.2초(발끝 기준 1.03 × 0.97) · 체크하면 폴짝 0.55초 ·
-/// 누르면 반응 포즈와 말풍선 1.5초. 동작 줄이기를 켜면 움직임 없이 포즈만 바뀐다.
 final class MG2MascotView: UIControl {
     var pose: MG2MoakPose = .wave {
         didSet { if reaction == nil { render(pose) } }

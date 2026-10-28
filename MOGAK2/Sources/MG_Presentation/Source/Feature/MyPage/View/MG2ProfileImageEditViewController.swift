@@ -79,10 +79,10 @@ final class MG2ProfileImageEditViewController: UIViewController {
     }
 
     @objc private func completeButtonTapped() {
-        showLoading()
+        completeButton.setLoading(true)
         viewModel.submit { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            completeButton.setLoading(false)
             switch result {
             case .success:
                 coordinator?.routeBack(from: self)

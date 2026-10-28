@@ -158,10 +158,10 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     @objc private func logoutRowTapped() {
-        showLoading()
+        logoutRow.setLoading(true)
         viewModel.logout { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            logoutRow.setLoading(false)
             if case .failure(let error) = result {
                 coordinator?.presentError(error, from: self)
             }
@@ -173,10 +173,10 @@ final class MG2MyPageEditViewController: UIViewController {
     }
 
     private func withdraw() {
-        showLoading()
+        withdrawalRow.setLoading(true)
         viewModel.withdraw { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            withdrawalRow.setLoading(false)
             if case .failure(let error) = result {
                 coordinator?.presentError(error, from: self)
             }

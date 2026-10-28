@@ -267,11 +267,11 @@ final class MG2JogakFormViewController: UIViewController {
 
     @objc private func completeButtonTapped() {
         guard viewModel.isValid else { return }
-        showLoading()
+        completeButton.setLoading(true)
         view.isUserInteractionEnabled = false
         viewModel.submit { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            completeButton.setLoading(false)
             view.isUserInteractionEnabled = true
             switch result {
             case .success:

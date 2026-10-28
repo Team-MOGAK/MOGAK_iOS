@@ -15,6 +15,8 @@ final class MG2LoginViewController: UIViewController {
     var onGuestContinue: (() -> Void)?
 
     private let viewModel: MG2LoginViewModel
+    /// 로그인 중인 소셜 버튼.
+    private var pendingButton: UIButton?
     init(viewModel: MG2LoginViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -121,12 +123,14 @@ final class MG2LoginViewController: UIViewController {
     }
 
     private func render(_ state: MG2LoginViewState) {
+        // 누른 버튼 안에 로딩, 나머지 버튼은 흐리게 막는다.
         let buttons = [appleLoginButton, kakaoLoginButton, googleLoginButton, guestLoginButton]
         buttons.forEach {
-            $0.isEnabled = !state.isLoading
-            $0.alpha = state.isLoading ? 0.6 : 1
+            $0.isEnabled = !state.isLoading || $0 === pendingButton
+            $0.alpha = state.isLoading && $0 !== pendingButton ? 0.6 : 1
         }
-        state.isLoading ? showLoading() : hideLoading()
+        pendingButton?.setLoading(state.isLoading)
+        if !state.isLoading { pendingButton = nil }
 
         guard state.isLoginFailed, presentedViewController == nil else { return }
         coordinator?.presentLoginFailure(from: self) { [weak self] in self?.viewModel.clearError() }
@@ -145,6 +149,7 @@ final class MG2LoginViewController: UIViewController {
     }
 
     private func login(with provider: MG2SocialLoginProvider) {
+        pendingButton = [.apple: appleLoginButton, .kakao: kakaoLoginButton, .google: googleLoginButton][provider]
         viewModel.login(provider: provider) { [weak self] in self?.onAuthenticationCompleted?() }
     }
 

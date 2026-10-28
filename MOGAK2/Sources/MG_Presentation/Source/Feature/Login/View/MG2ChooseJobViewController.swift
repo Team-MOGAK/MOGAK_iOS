@@ -10,6 +10,7 @@ import SnapKit
 
 final class MG2ChooseJobViewController: UIViewController {
     private let viewModel: MG2ChooseJobViewModel
+    private var isShowingPlaceholders = false
     weak var coordinator: MG2LoginCoordinator?
 
     init(viewModel: MG2ChooseJobViewModel) {
@@ -124,19 +125,29 @@ final class MG2ChooseJobViewController: UIViewController {
     }
 
     private func updateJobSections(query: String) {
+        // 불러오는 중이면 다 온 뒤에 검색어로 거른다.
+        guard !isShowingPlaceholders else { return }
         viewModel.updateSections(matching: query)
         tableView.reloadData()
         renderSelection()
     }
 
+    /// 불러오는 동안 자리 표시 직무 줄을 칸마다 덩어리로 덮는다. 제목 · 검색칸 · 버튼은 그대로. 오면 겹쳐 바꾼다.
     private func loadJobs() {
-        showLoading()
+        isShowingPlaceholders = true
+        tableView.reloadData()
+        view.layoutIfNeeded()
+        tableView.showSkeletonBlocks()
         viewModel.loadJobs { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            tableView.hideSkeletonBlocks()
+            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                self.isShowingPlaceholders = false
+                self.viewModel.updateSections(matching: self.searchField.text ?? "")
+                self.tableView.reloadData()
+            }
             switch result {
             case .success:
-                tableView.reloadData()
                 renderSelection()
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
@@ -171,38 +182,44 @@ extension MG2ChooseJobViewController: UITextFieldDelegate {
 }
 
 extension MG2ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
+    /// 불러오는 동안은 이름 없는 자리 표시 한 묶음.
+    private var sections: [MG2JobSection] {
+        isShowingPlaceholders ? [MG2JobSection(title: "", jobs: Array(repeating: "", count: 6))] : viewModel.sections
+    }
+
     func numberOfSections(in tableView: UITableView) -> Int {
-        viewModel.sections.count
+        sections.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.sections[section].jobs.count
+        sections[section].jobs.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? MG2NameCell else { return UITableViewCell() }
 
-        let job = viewModel.sections[indexPath.section].jobs[indexPath.row]
-        cell.configure(name: job, isChecked: viewModel.selectedJob == job)
+        let job = sections[indexPath.section].jobs[indexPath.row]
+        cell.configure(name: job, isChecked: !isShowingPlaceholders && viewModel.selectedJob == job)
         cell.selectionStyle = .none
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard !isShowingPlaceholders else { return }
         viewModel.selectJob(section: indexPath.section, row: indexPath.row)
         renderSelection()
         tableView.reloadData()
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        viewModel.sections[section].title
+        isShowingPlaceholders ? nil : sections[section].title
     }
 
     /// 목록 제목 (13 · 700 `ink-3`).
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
         var content = header.defaultContentConfiguration()
-        content.text = viewModel.sections[section].title
+        content.text = sections[section].title
         content.textProperties.font = T.footnoteBold.font
         content.textProperties.color = DS.Color.ink3
         content.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)

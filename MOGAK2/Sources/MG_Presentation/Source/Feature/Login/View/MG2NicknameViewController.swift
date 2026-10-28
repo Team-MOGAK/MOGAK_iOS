@@ -138,10 +138,10 @@ final class MG2NicknameViewController: UIViewController {
     @objc private func nextButtonTapped() {
         let nickname = nicknameTextField.text ?? ""
         guard viewModel.canSubmit(nickname) else { return }
-        showLoading()
+        nextButton.setLoading(true)
         viewModel.submit(nickname) { [weak self] result in
             guard let self else { return }
-            hideLoading()
+            nextButton.setLoading(false)
             switch result {
             case .success(.continueRegistration(let draft)):
                 coordinator?.routeToChooseJob(draft: draft, from: self)
