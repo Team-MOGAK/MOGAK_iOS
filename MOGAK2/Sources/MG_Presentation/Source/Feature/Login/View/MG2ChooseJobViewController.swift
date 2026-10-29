@@ -156,8 +156,10 @@ final class MG2ChooseJobViewController: UIViewController {
     }
 
     @objc private func nextButtonTapped() {
+        nextButton.setLoading(true)
         viewModel.submit { [weak self] result in
             guard let self else { return }
+            nextButton.setLoading(false)
             switch result {
             case .success(.continueRegistration(let draft)):
                 coordinator?.routeToChooseRegion(draft: draft, from: self)

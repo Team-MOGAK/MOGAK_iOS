@@ -73,6 +73,8 @@ final class MG2ModalartMainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        // 처음 불러오기가 실패했으면 탭에 다시 들어올 때 다시 부른다. 판 없이 두면 아무것도 누를 수 없다.
+        if !isLoadingBoard, !viewModel.isGuest, !viewModel.state.hasModalart { loadModalart() }
     }
 
 

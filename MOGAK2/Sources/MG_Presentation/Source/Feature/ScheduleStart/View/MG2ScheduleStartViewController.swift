@@ -18,6 +18,8 @@ final class MG2ScheduleStartViewController: UIViewController {
     }()
 
     private var selectedDate: Date { calendarView.selectedDate }
+    /// 마지막으로 본 오늘. 자정이 지나면 오늘을 보고 있던 화면을 새 오늘로 옮긴다.
+    private var currentDay = MG2ScheduleStartViewModel.calendar.startOfDay(for: Date())
     /// 미리 불러온 내용을 그린 직후 첫 viewWillAppear에서 또 부르지 않게.
     private var skipsNextRefresh = false
 
@@ -127,6 +129,8 @@ final class MG2ScheduleStartViewController: UIViewController {
     /// 모각이 말풍선이 카드 위로 20 나온다. 목록은 위에서 자르므로 그만큼 자리를 둔다.
     private static let listTopInset: CGFloat = 12
     private let footerContainer = UIView()
+    /// 마지막 조각을 체크해 모두 끝낸 조각. 서버가 받아 준 뒤에 축하 카드를 띄운다.
+    private var pendingCelebrationKey: MG2JogakOccurrenceKey?
 
     init(viewModel: MG2ScheduleStartViewModel) {
         self.viewModel = viewModel
@@ -150,6 +154,8 @@ final class MG2ScheduleStartViewController: UIViewController {
         viewModel.externalChanges
             .sink { [weak self] in self?.refreshJogakOccurrences() }
             .store(in: &cancellables)
+        // 자정 · 시간대 변경. 앱이 쉬는 중이었으면 돌아올 때 한 번 온다.
+        NotificationCenter.default.addObserver(self, selector: #selector(dayMayHaveChanged), name: UIApplication.significantTimeChangeNotification, object: nil)
         // 스플래시에서 미리 불러왔으면 로딩 없이 바로 그린다.
         if viewModel.hasLoaded(selectedDate) {
             renderOccurrences()
@@ -171,7 +177,9 @@ final class MG2ScheduleStartViewController: UIViewController {
         super.viewDidAppear(animated)
         nativeAdRefreshTimer?.invalidate()
         nativeAdRefreshTimer = Timer.scheduledTimer(withTimeInterval: Self.nativeAdRefreshInterval, repeats: true) { [weak self] _ in
-            self?.refreshNativeAd()
+            // 시트 · 축하 카드가 홈을 덮고 있으면 보이지 않는 광고는 바꾸지 않는다.
+            guard let self, presentedViewController == nil else { return }
+            refreshNativeAd()
         }
     }
 
@@ -322,7 +330,8 @@ final class MG2ScheduleStartViewController: UIViewController {
                 return
             }
             nativeAdContainer.subviews.forEach { $0.removeFromSuperview() }
-            nativeAdContainer.isHidden = false
+            // 기다리는 사이 지난 날 · 빈 목록 · 스켈레톤으로 바뀌었으면 숨긴 채 둔다.
+            nativeAdContainer.isHidden = !viewModel.canShowNativeAd || isShowingPlaceholders
             nativeAdContainer.addSubview(adView)
             adView.snp.makeConstraints { $0.edges.equalToSuperview() }
             view.setNeedsLayout()
@@ -374,6 +383,17 @@ final class MG2ScheduleStartViewController: UIViewController {
         UIAccessibility.post(notification: .layoutChanged, argument: calendarView)
     }
 
+    /// 날이 바뀌었으면 달력의 오늘 표시를 새로 그리고, 오늘을 보고 있었으면 새 오늘로 옮겨 불러온다.
+    @objc private func dayMayHaveChanged() {
+        let today = MG2ScheduleStartViewModel.calendar.startOfDay(for: Date())
+        guard today != currentDay else { return }
+        let wasViewingToday = MG2ScheduleStartViewModel.calendar.isDate(selectedDate, inSameDayAs: currentDay)
+        currentDay = today
+        calendarView.reset(selecting: wasViewingToday ? today : selectedDate)
+        updateHeader(animated: false)
+        loadJogakOccurrences(date: selectedDate)
+    }
+
     @objc private func createModalartButtonTapped() {
         coordinator?.routeToModalartTab(from: self)
     }
@@ -401,7 +421,7 @@ final class MG2ScheduleStartViewController: UIViewController {
     private func toggleJogak(at indexPath: IndexPath) {
         guard viewModel.state.occurrences.indices.contains(indexPath.row) else { return }
         let item = viewModel.state.occurrences[indexPath.row]
-        let outcome = viewModel.toggleJogakCompletion(at: indexPath.row) { [weak self] result in self?.handleJogakCompletionResult(result) }
+        let outcome = viewModel.toggleJogakCompletion(at: indexPath.row) { [weak self] result in self?.handleJogakCompletionResult(result, key: item.key) }
         let cell = scheduleTableView.cellForRow(at: indexPath) as? MG2JogakOccurrenceCell
 
         switch outcome {
@@ -416,7 +436,8 @@ final class MG2ScheduleStartViewController: UIViewController {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             cell?.setCompleted(true, animated: true)
             progressCardView.mascotView.hop()
-            presentCelebration()
+            // 체크 · 진동 · 모각이는 바로, 축하 카드는 서버가 받아 준 뒤에 (실패하면 축하 없이 체크가 풀리고 오류가 뜬다).
+            pendingCelebrationKey = item.key
         case .readOnly:
             MG2ToastView.show(in: view, title: "지난 날 기록은 볼 수만 있어요")
         case .rewardRequired:
@@ -442,11 +463,19 @@ final class MG2ScheduleStartViewController: UIViewController {
         }
     }
 
-    private func handleJogakCompletionResult(_ result: Result<Void, Error>) {
+    private func handleJogakCompletionResult(_ result: Result<Void, Error>, key: MG2JogakOccurrenceKey) {
         renderProgress()
-        guard case .failure(let error) = result else { return }
-        scheduleTableView.reloadData()
-        coordinator?.presentError(error, from: self)
+        let celebrates = pendingCelebrationKey == key
+        if celebrates { pendingCelebrationKey = nil }
+        switch result {
+        case .success:
+            // 기다리는 사이 다른 조각을 풀었거나 다른 날로 옮겼으면 축하하지 않는다.
+            let state = viewModel.state
+            if celebrates, viewModel.isSelectedDateToday, !state.isEmpty, state.occurrences.allSatisfy(\.isCompleted) { presentCelebration() }
+        case .failure(let error):
+            scheduleTableView.reloadData()
+            coordinator?.presentError(error, from: self)
+        }
     }
 
     private func showJogakOptions(for item: MG2JogakOccurrenceItem) {

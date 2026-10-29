@@ -22,6 +22,7 @@ final class MG2PushSettingViewModel {
     func load(completion: @escaping () -> Void) {
         Task {
             (isOn, time) = await todayUseCase.reminderSettings()
+            if isOn { isDenied = false }
             completion()
         }
     }

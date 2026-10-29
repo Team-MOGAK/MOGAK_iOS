@@ -26,6 +26,8 @@ final class MG2AdMobProvider: NSObject, MG2AdProviding {
     /// 추적 허용(ATT) → 동의(UMP) → SDK 시작. 첫 화면이 뜬 뒤 한 번만.
     func start() {
         guard !isStarted else { return }
+        // 추적 허용 창은 앱이 활성일 때만 뜬다. 알림 권한 창이 막 닫혀 아직 비활성이면 다음 활성화 때 다시 불린다.
+        guard UIApplication.shared.applicationState == .active else { return }
         isStarted = true
         Task { @MainActor in
             _ = await ATTrackingManager.requestTrackingAuthorization()
@@ -97,10 +99,11 @@ final class MG2AdMobProvider: NSObject, MG2AdProviding {
         }
     }
 
-    func presentAppOpen(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
+    /// 불러오는 사이 다른 화면으로 옮겼을 수 있으니 띄우기 직전에 `isAllowed`를 다시 확인한다.
+    func presentAppOpen(from viewController: UIViewController, isAllowed: @escaping () -> Bool, completion: @escaping (Bool) -> Void) {
         GADAppOpenAd.load(withAdUnitID: UnitID.appOpen, request: GADRequest()) { [weak self] ad, _ in
             Task { @MainActor in
-                guard let self, let ad else { return completion(false) }
+                guard let self, let ad, isAllowed(), viewController.presentedViewController == nil else { return completion(false) }
                 self.present(ad, completion: completion) { ad.present(fromRootViewController: viewController) }
             }
         }

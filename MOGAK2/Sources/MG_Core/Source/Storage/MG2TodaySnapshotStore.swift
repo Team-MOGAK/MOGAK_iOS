@@ -12,6 +12,11 @@ final class MG2TodaySnapshotStore: TodaySnapshotStorage {
         save(snapshot, forKey: MG2AppGroup.nextDaySnapshotKey)
     }
 
+    func clear() {
+        defaults?.removeObject(forKey: MG2AppGroup.snapshotKey)
+        defaults?.removeObject(forKey: MG2AppGroup.nextDaySnapshotKey)
+    }
+
     private func save(_ snapshot: MG2TodaySnapshot, forKey key: String) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         defaults?.set(data, forKey: key)

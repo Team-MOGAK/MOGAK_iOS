@@ -49,7 +49,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         guard currentRoute == .main, composition.adPolicyUseCase.canShowAppOpenAd, let root = window?.rootViewController as? MG2MainTabViewController, root.allowsFullScreenAd else { return }
-        composition.adProvider.presentAppOpen(from: root) { [composition] shown in
+        composition.adProvider.presentAppOpen(from: root, isAllowed: { [weak root] in root?.allowsFullScreenAd == true }) { [composition] shown in
             if shown { composition.adPolicyUseCase.didShowAppOpenAd() }
         }
     }

@@ -114,6 +114,7 @@ final class MG2SelectJogakViewController: UIViewController {
     /// 목록 자리만 스켈레톤으로 덮고 고른 모다라트의 조각을 불러온 뒤 교차 페이드. 메뉴 버튼은 그대로 둔다.
     private func loadSections(modalartID: Int) {
         isShowingPlaceholders = true
+        expandedSections.removeAll()
         tableView.reloadData()
         tableView.setContentOffset(CGPoint(x: 0, y: -tableView.adjustedContentInset.top), animated: false)
         view.layoutIfNeeded()
@@ -126,9 +127,10 @@ final class MG2SelectJogakViewController: UIViewController {
                 self.tableView.reloadData()
             }
 
+            // 실패하면 보이는 목록(앞 판)의 이름으로 되돌린다.
+            modalartButton.setTitle((viewModel.selectedModalart ?? viewModel.initialModalart).title, for: .normal)
             switch result {
             case .success:
-                modalartButton.setTitle(viewModel.selectedModalart?.title, for: .normal)
                 updateAddButtonState()
             case .failure(let error):
                 coordinator?.presentError(error, from: self)
@@ -148,6 +150,8 @@ final class MG2SelectJogakViewController: UIViewController {
             case .failure(let error):
                 tableView.reloadData()
                 updateAddButtonState()
+                // 실패 전까지 가져온 조각은 서버에 들어갔다. 시트를 닫지 않아도 홈은 새로 고친다.
+                onJogaksAdded()
                 coordinator?.presentError(error, from: self)
             }
         }

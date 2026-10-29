@@ -36,8 +36,7 @@ final class ModalartUseCase {
 
     /// 오늘부터 7일 동안의 조각을 모아, 조각마다 가장 가까운 날짜 하나만 남긴다.
     func getMogakOverview(mogakId: Int, from date: Date) async throws -> [MG2JogakOccurrenceEntity] {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+        let calendar = Calendar(identifier: .gregorian)
         let dates = (0..<7).compactMap {
             calendar.date(byAdding: .day, value: $0, to: date)
         }

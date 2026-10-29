@@ -42,6 +42,13 @@ final class TodayUseCase {
         return snapshot
     }
 
+    /// 로그아웃 · 탈퇴 · 둘러보기: 앞 계정의 조각이 위젯 · 라이브 액티비티에 남지 않게 지운다.
+    func clearSurfaces() {
+        missedYesterdayCache = nil
+        snapshotStorage.clear()
+        surfaces.clear()
+    }
+
     /// 라이브 액티비티 "다음 조각 완료".
     func completeNextPiece() async throws {
         var pieces = try await todayPieces()

@@ -4,11 +4,14 @@ import Foundation
 protocol TodaySnapshotStorage {
     func save(_ snapshot: MG2TodaySnapshot)
     func saveNextDay(_ snapshot: MG2TodaySnapshot)
+    func clear()
 }
 
 /// 위젯 · 라이브 액티비티를 새 요약으로 다시 그린다. 구현은 MG_App (WidgetKit · ActivityKit).
 protocol TodaySurfaceRefreshing {
     func refresh(with snapshot: MG2TodaySnapshot)
+    /// 위젯을 다시 그리고 라이브 액티비티를 모두 닫는다.
+    func clear()
 }
 
 /// 매일 조각 알림. 구현은 MG_Core (UserNotifications).

@@ -12,7 +12,6 @@ extension UIView {
     /// 덩어리로 덮는다. 표 · 컬렉션이면 보이는 칸마다 한 덩어리이고, `isIncluded`로 덮지 않을 칸(이미 아는 내용)을 뺀다.
     /// 데이터가 다 올 때까지 그대로 두고, 오면 `hideSkeletonBlocks()` 뒤에 내용을 그린다.
     func showSkeletonBlocks(where isIncluded: (IndexPath) -> Bool = { _ in true }) {
-        isUserInteractionEnabled = false
         accessibilityElementsHidden = true
         // 글 상자도 한 덩어리로 (라이브러리 기본은 글줄 막대).
         SkeletonAppearance.default.renderSingleLineAsView = true
@@ -26,6 +25,8 @@ extension UIView {
                 block.showAnimatedGradientSkeleton(usingGradient: SkeletonGradient(baseColor: DS.Color.segment))
             }
         }
+        // 라이브러리가 덮기 전 누르기 상태를 저장했다가 걷을 때 되돌린다. 먼저 끄면 꺼진 채로 저장돼 영영 못 누른다.
+        isUserInteractionEnabled = false
     }
 
     func hideSkeletonBlocks() {

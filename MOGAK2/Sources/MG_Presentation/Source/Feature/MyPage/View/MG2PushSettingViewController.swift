@@ -82,6 +82,12 @@ final class MG2PushSettingViewController: UIViewController {
         view.backgroundColor = DS.Color.canvas
         configureLayout()
         render()
+        reload()
+        // 기기 설정에서 알림을 켜고 끄고 돌아오면 다시 읽는다.
+        NotificationCenter.default.addObserver(self, selector: #selector(reload), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    @objc private func reload() {
         viewModel.load { [weak self] in self?.render() }
     }
 

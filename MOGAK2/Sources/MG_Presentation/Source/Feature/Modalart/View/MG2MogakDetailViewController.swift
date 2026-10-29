@@ -58,9 +58,10 @@ final class MG2MogakDetailViewController: UIViewController {
     }
 
     /// 판 칸으로 돌아가는 확대 전환이 끝난 뒤에 판을 다시 불러온다 (밀어서 닫다 취소하면 부르지 않는다).
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        if isMovingFromParent {
+    /// 위에 폼이 떠 있는 채 탭을 눌러 한 번에 빠져도 불리도록 화면에서 빠질 때를 본다.
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        if parent == nil {
             onExit?()
         }
     }
@@ -289,6 +290,8 @@ extension MG2MogakDetailViewController: UICollectionViewDelegate {
 extension MG2MogakDetailViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == mogakListCollectionView {
+            // 모각 목록은 조각보다 먼저 바뀐다. 예전 칸 수로 물어도 터지지 않게 칸 그리기와 같이 막는다.
+            guard viewModel.state.mogaks.indices.contains(indexPath.item) else { return .zero }
             return MG2MogakListCell.size(for: viewModel.state.mogaks[indexPath.item].title)
         }
         return cellSize

@@ -14,7 +14,8 @@ enum MG2APIDateCoding {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        // 앱의 "오늘"(달력 · 위젯)과 같은 기기 시간대. 한국 기기는 전과 같고, 해외에서도 그 나라의 오늘 조각이 나온다.
+        formatter.timeZone = .current
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }

@@ -56,11 +56,6 @@ final class MG2ChooseRegionViewController: UIViewController {
         loadRegions()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        navigationController?.navigationBar.isHidden = true
-    }
-
     private func configureNavigationBar() {
         applyStepNavigationBar()
     }
@@ -126,8 +121,10 @@ final class MG2ChooseRegionViewController: UIViewController {
 
     // MARK: - 유저 등록
     @objc private func nextButtonTapped() {
+        nextButton.setLoading(true)
         viewModel.join { [weak self] result in
             guard let self else { return }
+            nextButton.setLoading(false)
             switch result {
             case .failure(let error):
                 coordinator?.presentError(error, from: self)

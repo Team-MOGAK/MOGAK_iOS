@@ -94,7 +94,7 @@ final class MG2OnboardingViewController: UIViewController, UIScrollViewDelegate 
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let page = Int(floor(scrollView.contentOffset.x / max(scrollView.frame.width, 1)))
+        let page = Int((scrollView.contentOffset.x / max(scrollView.frame.width, 1)).rounded())
         pageControl.currentPage = max(0, min(page, pageViews.count - 1))
         updateStartButton(page: pageControl.currentPage)
     }

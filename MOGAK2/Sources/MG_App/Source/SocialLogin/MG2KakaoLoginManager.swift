@@ -2,6 +2,7 @@ import Foundation
 import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
+import UIKit
 
 @MainActor
 final class MG2KakaoLoginManager {
@@ -30,6 +31,18 @@ final class MG2KakaoLoginManager {
         return false
     }
 
+    /// 카카오톡에서 로그인하지 않고 그냥 돌아오면 SDK가 완료를 부르지 않아 로그인 버튼이 계속 돈다.
+    /// 돌아오고 1초가 지나도 콜백 URL이 안 왔으면(SDK 대기 핸들러가 남아 있으면) 취소로 끝낸다.
+    private static func cancelIfReturnedWithoutLogin(_ completion: @escaping (OAuthToken?, Error?) -> Void) {
+        Task {
+            for await _ in NotificationCenter.default.notifications(named: UIApplication.willEnterForegroundNotification) { break }
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            guard AuthController.shared.authorizeWithTalkCompletionHandler != nil else { return }
+            AuthController.shared.authorizeWithTalkCompletionHandler = nil
+            completion(nil, MG2SocialLoginError.cancelled)
+        }
+    }
+
     func token() async throws -> String {
         guard Self.configureSDK() else { throw MG2SocialLoginError.configurationMissing(provider: "Kakao") }
 
@@ -48,6 +61,7 @@ final class MG2KakaoLoginManager {
 
             if UserApi.isKakaoTalkLoginAvailable() {
                 UserApi.shared.loginWithKakaoTalk(completion: completion)
+                Self.cancelIfReturnedWithoutLogin(completion)
             } else {
                 UserApi.shared.loginWithKakaoAccount(completion: completion)
             }

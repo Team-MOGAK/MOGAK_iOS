@@ -18,7 +18,8 @@ struct MG2TodayProvider: TimelineProvider {
     /// 자정에 앱이 미리 둔 내일 조각으로 바뀐다. 그것도 없으면 앱을 열 때까지 빈 상태.
     func getTimeline(in context: Context, completion: @escaping (Timeline<MG2TodayEntry>) -> Void) {
         let now = Date()
-        let midnight = Calendar.current.startOfDay(for: now.addingTimeInterval(86_400))
+        // 24시간을 더하면 서머타임이 바뀌는 날 자정을 놓친다. 오늘 0시에 하루를 더한다.
+        let midnight = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: now)) ?? now.addingTimeInterval(86_400)
         let entries = [MG2TodayEntry(date: now, snapshot: .load(for: now)), MG2TodayEntry(date: midnight, snapshot: .load(for: midnight))]
         completion(Timeline(entries: entries, policy: .after(midnight)))
     }
@@ -55,7 +56,8 @@ struct MG2TodayWidgetView: View {
         } else {
             VStack(spacing: 6) {
                 MG2WidgetStyle.poseImage("wave").frame(maxWidth: 56, maxHeight: 56)
-                Text("앱을 열어 오늘의 조각을 불러와요")
+                // 요약이 있는데 0개면 정말 오늘 조각이 없는 것이다.
+                Text(entry.snapshot == nil ? "앱을 열어 오늘의 조각을 불러와요" : "오늘의 조각이 없어요")
                     .font(.pretendard(13, .medium, relativeTo: .footnote))
                     .foregroundStyle(MG2WidgetStyle.sub)
                     .multilineTextAlignment(.center)

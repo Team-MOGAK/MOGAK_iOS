@@ -34,6 +34,8 @@ final class MG2NicknameViewController: UIViewController {
         textField.delegate = self
         textField.returnKeyType = .done
         textField.accessibilityLabel = "닉네임"
+        // 칠 때마다(지우기 버튼 포함) 저장 버튼을 맞춘다.
+        textField.addAction(UIAction { [weak self] _ in self?.renderSubmissionState() }, for: .editingChanged)
         return textField
     }()
 

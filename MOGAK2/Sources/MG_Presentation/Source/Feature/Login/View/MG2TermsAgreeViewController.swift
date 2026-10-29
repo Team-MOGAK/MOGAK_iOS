@@ -96,8 +96,9 @@ final class MG2TermsAgreeViewController: UIViewController {
                 self.configureAgreementRows()
                 self.renderAgreements()
             }
+            // 약관 화면은 첫 화면이라 뒤로 갈 곳이 없다. 실패하면 다시 불러올 수 있게 한다.
             if case .failure(let error) = result {
-                coordinator?.presentError(error, from: self)
+                coordinator?.presentError(error, from: self) { [weak self] in self?.loadConsentItems() }
             }
         }
     }

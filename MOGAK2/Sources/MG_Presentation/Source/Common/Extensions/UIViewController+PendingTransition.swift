@@ -23,4 +23,11 @@ extension UIViewController {
             self?.view.isUserInteractionEnabled = true
         }
     }
+
+    /// 저장하는 동안 화면과 뒤로 가기(버튼 · 밀기)를 막는다. 저장 중에 빠져나가면 완료 처리(앞 화면 새로 고침)가 사라진다.
+    func setLeavingBlocked(_ isBlocked: Bool) {
+        view.isUserInteractionEnabled = !isBlocked
+        navigationItem.hidesBackButton = isBlocked
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !isBlocked
+    }
 }

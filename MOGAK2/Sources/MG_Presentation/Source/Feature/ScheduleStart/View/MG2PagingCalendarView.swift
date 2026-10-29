@@ -127,6 +127,13 @@ final class MG2PagingCalendarView: UIView {
         collectionView.contentOffset = CGPoint(x: CGFloat(pageIndex) * bounds.width, y: 0)
     }
 
+    /// 자정이 지나면 부른다. 오늘 표시를 새로 그리고 `date`를 골라 그 쪽을 보여 준다.
+    func reset(selecting date: Date) {
+        selectedDate = calendar.startOfDay(for: date)
+        collectionView.reloadData()
+        scroll(to: index(of: selectedDate), animated: false)
+    }
+
     /// 화살표: 옆 쪽으로 미끄러져 넘어간다.
     func scrollToPage(offset: Int, animated: Bool) {
         scroll(to: targetIndex + offset, animated: animated)

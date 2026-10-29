@@ -39,16 +39,27 @@ struct DefaultNetworkProvider: NetworkProvider {
 
     private func responseData(target: NetworkRequest) async throws -> Data {
         let urlRequest = try authenticatedURLRequest(for: target)
-        let response = await session.request(urlRequest).serializingData().response
+        let response = await session.request(urlRequest).serializingData(emptyResponseCodes: Self.anyStatusCode).response
 
-        if target.requiresAuthorization, requiresTokenRefresh(response), let refreshedAccessToken = try await tokenRefresh.refreshAccessToken(), !refreshedAccessToken.isEmpty {
+        if target.requiresAuthorization, requiresTokenRefresh(response), let refreshedAccessToken = try await accessToken(replacing: urlRequest), !refreshedAccessToken.isEmpty {
             guard var retryRequest = try? target.makeURLRequest() else { throw MG2NetworkError.requestFailed }
             retryRequest.setValue("Bearer \(refreshedAccessToken)", forHTTPHeaderField: "Authorization")
-            let retryResponse = await session.request(retryRequest).serializingData().response
+            let retryResponse = await session.request(retryRequest).serializingData(emptyResponseCodes: Self.anyStatusCode).response
             return try validatedData(from: retryResponse)
         }
 
         return try validatedData(from: response)
+    }
+
+    /// 본문 없는 응답도 상태 코드로 판단한다. 기본값(204 · 205만 허용)이면 본문 없는 401은 갱신을 못 하고, 본문 없는 200은 실패가 된다.
+    private static let anyStatusCode = Set(100..<600)
+
+    /// 이 요청을 보낸 뒤 다른 요청이 이미 토큰을 갱신했으면 그 토큰을 쓴다. 같은 토큰이면 새로 갱신한다.
+    private func accessToken(replacing request: URLRequest) async throws -> String? {
+        if let stored = accessTokenProvider(), !stored.isEmpty, request.value(forHTTPHeaderField: "Authorization") != "Bearer \(stored)" {
+            return stored
+        }
+        return try await tokenRefresh.refreshAccessToken()
     }
 
     /// 401은 만료된 토큰, 403 T006은 가입 완료 전에 받은 토큰이다. 둘 다 갱신 후 한 번만 재시도한다.

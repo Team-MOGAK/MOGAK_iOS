@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 @MainActor
@@ -29,6 +30,7 @@ final class MG2AppComposition {
     /// 광고 노출 규칙과 AdMob 어댑터. SceneDelegate가 앱 열기 광고에 같이 쓴다.
     lazy var adPolicyUseCase = AdPolicyUseCase(storage: MG2AdPolicyStore())
     let adProvider = MG2AdMobProvider()
+    private var cancellables = Set<AnyCancellable>()
 
     private init() {}
 
@@ -43,6 +45,12 @@ final class MG2AppComposition {
     func connectPieceIntents() {
         MG2PieceIntentBridge.completeNext = { [todayUseCase] in try await todayUseCase.completeNextPiece() }
         MG2PieceIntentBridge.toggle = { [todayUseCase] in try await todayUseCase.togglePiece(jogakID: $0) }
+        // 로그아웃 · 탈퇴 · 둘러보기로 바뀌면 앞 계정 조각을 위젯 · 라이브 액티비티에서 지운다.
+        userState.$loginState
+            .removeDuplicates()
+            .filter { $0 == .logout || $0 == .guest }
+            .sink { [todayUseCase] _ in todayUseCase.clearSurfaces() }
+            .store(in: &cancellables)
     }
 
     /// 첫 화면을 정하고 루트 화면을 만드는 Coordinator. 앱 실행마다 한 번 만든다.

@@ -72,8 +72,8 @@ final class MG2LoginCoordinator {
         source.navigationController?.popViewController(animated: true)
     }
 
-    func presentError(_ error: Error, from source: UIViewController) {
-        alertCoordinator.presentError(error, from: source)
+    func presentError(_ error: Error, from source: UIViewController, onRetry: (() -> Void)? = nil) {
+        alertCoordinator.presentError(error, from: source, onRetry: onRetry)
     }
 
     /// 실패 사유(SDK·서버 원문)는 보여주지 않는다.

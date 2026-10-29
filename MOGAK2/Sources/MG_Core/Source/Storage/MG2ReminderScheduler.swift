@@ -25,8 +25,11 @@ final class MG2ReminderScheduler: ReminderScheduling {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Self.requestID])
     }
 
+    /// 걸려 있어도 기기 설정에서 알림을 막았으면 오지 않으니 꺼진 것으로 본다.
     func isScheduled() async -> Bool {
-        await UNUserNotificationCenter.current().pendingNotificationRequests().contains { $0.identifier == Self.requestID }
+        let center = UNUserNotificationCenter.current()
+        guard [.authorized, .provisional, .ephemeral].contains(await center.notificationSettings().authorizationStatus) else { return false }
+        return await center.pendingNotificationRequests().contains { $0.identifier == Self.requestID }
     }
 
     func requestAndScheduleDaily() async -> Bool {

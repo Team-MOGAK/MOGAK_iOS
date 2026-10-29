@@ -65,7 +65,7 @@ final class MG2MogakDetailViewModel {
 
     func selectMogak(at index: Int, completion: @escaping (Result<Void, Error>) -> Void) {
         guard state.mogaks.indices.contains(index) else { return completion(.success(())) }
-        state.selectedMogakID = state.mogaks[index].mogakId
+        select(mogakID: state.mogaks[index].mogakId)
         reloadOccurrences(completion: completion)
     }
 
@@ -135,7 +135,6 @@ final class MG2MogakDetailViewModel {
     }
 
     private func reloadMogaksAndOccurrences() async throws {
-        let previousSelection = state.selectedMogakID
         state.mogaks = try await useCase.getModalartMogaks(modalartId: modalartID)
         guard !state.mogaks.isEmpty else {
             state.occurrences = []
@@ -143,9 +142,18 @@ final class MG2MogakDetailViewModel {
             return
         }
 
-        let selection = state.mogaks.first { $0.mogakId == previousSelection } ?? state.mogaks[0]
-        state.selectedMogakID = selection.mogakId
+        // 기다리는 사이 다른 모각 칩을 눌렀을 수 있으니 지금 고른 모각을 기준으로 한다.
+        let selection = state.mogaks.first { $0.mogakId == state.selectedMogakID } ?? state.mogaks[0]
+        select(mogakID: selection.mogakId)
         try await reloadOccurrences(mogakID: selection.mogakId)
+    }
+
+    /// 다른 모각으로 바꾸면 앞 모각의 조각을 비운다. 불러오다 실패해도 앞 모각 조각이 새 모각 아래 남지 않는다.
+    private func select(mogakID: Int) {
+        guard state.selectedMogakID != mogakID else { return }
+        state.selectedMogakID = mogakID
+        state.occurrences = []
+        state.routineDaysTextByJogakID = [:]
     }
 
     private func reloadOccurrences(mogakID: Int) async throws {

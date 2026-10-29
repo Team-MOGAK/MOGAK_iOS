@@ -12,7 +12,8 @@ final class MG2SessionStore: SessionStorage {
     var accessToken: String? { MG2TokenStore.accessToken }
     var refreshToken: String? { MG2TokenStore.refreshToken }
     var isFirstTime: Bool { MG2LaunchStorage.isFirstTime }
-    var storedUserIsRegistered: Bool? { MG2LaunchStorage.storedUserIsRegistered }
+    /// 앱을 지웠다 깔면 UserDefaults는 비고 키체인 값만 남는다.
+    var storedUserIsRegistered: Bool? { MG2LaunchStorage.storedUserIsRegistered ?? MG2TokenStore.isRegistered }
 
     var profileImageID: Int? {
         guard let userID else { return nil }
@@ -20,7 +21,7 @@ final class MG2SessionStore: SessionStorage {
     }
 
     private var userID: Int? {
-        UserDefaults.standard.object(forKey: Key.userID) as? Int
+        UserDefaults.standard.object(forKey: Key.userID) as? Int ?? MG2TokenStore.userID
     }
 
     func saveProfileImageID(_ imageID: Int) {
@@ -30,6 +31,7 @@ final class MG2SessionStore: SessionStorage {
 
     func saveSession(tokens: MG2TokenPair, userID: Int, isRegistered: Bool) {
         saveTokens(tokens)
+        MG2TokenStore.saveUser(id: userID, isRegistered: isRegistered)
         UserDefaults.standard.set(userID, forKey: Key.userID)
         MG2LaunchStorage.setUserIsRegistered(isRegistered)
     }
@@ -43,7 +45,7 @@ final class MG2SessionStore: SessionStorage {
     }
 
     func clearAuthentication() {
-        MG2TokenStore.clearTokens()
+        MG2TokenStore.clearSession()
         MG2LaunchStorage.clearUserRegistration()
         UserDefaults.standard.removeObject(forKey: Key.userID)
     }
@@ -52,7 +54,7 @@ final class MG2SessionStore: SessionStorage {
         if let userID {
             MG2Keychain.delete(service: Self.profileImageService, account: String(userID))
         }
-        MG2TokenStore.clearTokens()
+        MG2TokenStore.clearSession()
         MG2LaunchStorage.resetAfterWithdrawal()
         UserDefaults.standard.removeObject(forKey: Key.userID)
     }

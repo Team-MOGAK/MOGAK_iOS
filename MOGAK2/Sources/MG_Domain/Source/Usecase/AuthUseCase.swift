@@ -27,14 +27,18 @@ final class AuthUseCase {
 
         do {
             _ = try await refreshAccessToken()
-            storage.setFirstTime(false)
-            userState.isRegistered = storage.storedUserIsRegistered ?? true
-            userState.loginState = .login
-        } catch {
+        } catch MG2AuthError.sessionExpired {
             storage.clearAuthentication()
             userState.isRegistered = false
             userState.loginState = .logout
+            return
+        } catch {
+            // 연결 문제 · 서버 오류로는 세션을 지우지 않는다. 다음 요청에서 다시 갱신한다.
         }
+        storage.setFirstTime(false)
+        // 재설치해도 키체인에 가입 여부가 남는다. 그것도 없던 예전 설치는 가입한 것으로 본다.
+        userState.isRegistered = storage.storedUserIsRegistered ?? true
+        userState.loginState = .login
     }
 
     func continueAsGuest() {
@@ -50,6 +54,7 @@ final class AuthUseCase {
     }
 
     /// 새 액세스 토큰을 받아 저장한다. 저장된 리프레시 토큰이 없으면 nil.
+    /// 쓰는 중에 만료되면 화면은 그대로 두고 요청마다 "로그인이 만료됐어요" 오류만 보인다.
     func refreshAccessToken() async throws -> String? {
         guard let refreshToken = storage.refreshToken, !refreshToken.isEmpty else { return nil }
         let tokens = try await repository.refresh(refreshToken: refreshToken)
@@ -58,7 +63,11 @@ final class AuthUseCase {
     }
 
     func logout() async throws {
-        try await repository.logout()
+        do {
+            try await repository.logout()
+        } catch MG2AuthError.sessionExpired {
+            // 만료돼 서버 로그아웃은 못 해도 기기에서는 로그아웃한다. 안 그러면 로그아웃 버튼도 실패해 갇힌다.
+        }
         storage.clearAuthentication()
         signOut()
     }

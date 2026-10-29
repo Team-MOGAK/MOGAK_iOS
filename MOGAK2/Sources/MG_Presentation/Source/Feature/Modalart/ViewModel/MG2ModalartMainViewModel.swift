@@ -22,6 +22,8 @@ final class MG2ModalartMainViewModel {
     private let userState: MG2UserState
 
     private(set) var state = MG2ModalartMainViewState()
+    /// 마지막으로 부른 판. 기다리는 사이 다른 판을 고르면 앞 응답은 버린다.
+    private var latestSelectionRequest = 0
 
     init(useCase: ModalartUseCase, userState: MG2UserState) {
         self.useCase = useCase
@@ -41,6 +43,8 @@ final class MG2ModalartMainViewModel {
             do {
                 try await reloadSelectingFirst()
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -54,6 +58,8 @@ final class MG2ModalartMainViewModel {
             do {
                 try await loadSelection(id: modalart.id, index: index)
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -65,6 +71,8 @@ final class MG2ModalartMainViewModel {
             do {
                 try await createDefaultModalart()
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -76,12 +84,17 @@ final class MG2ModalartMainViewModel {
         Task {
             do {
                 let updated = try await useCase.editModalart(id: selectedID, title: title, color: color)
-                state.title = updated.title
-                state.color = updated.color
-                if state.modalarts.indices.contains(state.selectedIndex) {
-                    state.modalarts[state.selectedIndex] = MG2ModalartListItemEntity(id: updated.id, title: updated.title, color: updated.color)
+                // 기다리는 사이 다른 판으로 바꿨을 수 있으니 고친 판을 id로 찾아 바꾼다.
+                if let index = state.modalarts.firstIndex(where: { $0.id == updated.id }) {
+                    state.modalarts[index] = MG2ModalartListItemEntity(id: updated.id, title: updated.title, color: updated.color)
+                }
+                if state.selectedID == selectedID {
+                    state.title = updated.title
+                    state.color = updated.color
                 }
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -95,6 +108,8 @@ final class MG2ModalartMainViewModel {
                 try await useCase.deleteModalart(id: selectedID)
                 try await reloadSelectingFirst()
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -108,6 +123,8 @@ final class MG2ModalartMainViewModel {
             do {
                 try await loadSelection(id: selectedID, index: selectedIndex)
                 completion(.success(()))
+            } catch is CancellationError {
+                // 더 나중에 고른 판의 응답이 그린다.
             } catch {
                 completion(.failure(error))
             }
@@ -121,13 +138,16 @@ final class MG2ModalartMainViewModel {
     }
 
     private func loadSelection(id: Int, index: Int) async throws {
+        latestSelectionRequest += 1
+        let request = latestSelectionRequest
         async let detail = useCase.getModalartDetail(modalartId: id)
         async let mogaks = useCase.getModalartMogaks(modalartId: id)
         let (modalart, loadedMogaks) = try await (detail, mogaks)
+        guard request == latestSelectionRequest else { throw CancellationError() }
 
         state.selectedID = id
         state.selectedIndex = index
-        state.title = modalart?.title ?? state.modalarts[index].title
+        state.title = modalart?.title ?? state.modalarts.first { $0.id == id }?.title ?? state.title
         state.color = modalart?.color ?? DesignSystemPalette.neutralGrayHex
         state.mogaks = loadedMogaks
     }

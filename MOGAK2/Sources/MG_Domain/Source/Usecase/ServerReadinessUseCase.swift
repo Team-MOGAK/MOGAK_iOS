@@ -36,6 +36,8 @@ final class ServerReadinessUseCase {
         let deadline = Date().addingTimeInterval(Self.totalTimeout)
         for attempt in 0..<Self.maxAttempts {
             let timeout = min(Self.requestTimeout, deadline.timeIntervalSinceNow)
+            // 남은 시간이 거의 없으면 요청 시간 제한이 0 이하가 되어 기본값(60초)으로 늘어날 수 있다.
+            guard timeout > 1 else { return false }
             switch try? await repository.checkReady(timeout: timeout) {
             case .ready?:
                 return true
