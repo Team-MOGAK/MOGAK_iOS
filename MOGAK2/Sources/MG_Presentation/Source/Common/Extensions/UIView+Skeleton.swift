@@ -37,17 +37,18 @@ extension UIView {
 
     private func skeletonBlocks(where isIncluded: (IndexPath) -> Bool) -> [UIView] {
         if let tableView = self as? UITableView {
-            return (tableView.indexPathsForVisibleRows ?? []).filter(isIncluded).compactMap { tableView.cellForRow(at: $0).map(\.skeletonBlock) }
+            return (tableView.indexPathsForVisibleRows ?? []).filter(isIncluded).compactMap { tableView.cellForRow(at: $0).map(\.skeletonTarget) }
         }
         if let collectionView = self as? UICollectionView {
-            return collectionView.indexPathsForVisibleItems.filter(isIncluded).compactMap { collectionView.cellForItem(at: $0).map(\.skeletonBlock) }
+            return collectionView.indexPathsForVisibleItems.filter(isIncluded).compactMap { collectionView.cellForItem(at: $0).map(\.skeletonTarget) }
         }
         return [self]
     }
 }
 
 private extension UIView {
-    var skeletonBlock: UIView {
+    /// 덮을 덩어리. 이름을 프로토콜의 `skeletonBlock`과 같게 두면 아래 줄이 프로토콜 대신 이 속성을 다시 불러 끝없이 돌다 터진다.
+    var skeletonTarget: UIView {
         (self as? MG2SkeletonBlockCell)?.skeletonBlock ?? (self as? UITableViewCell)?.contentView ?? (self as? UICollectionViewCell)?.contentView ?? self
     }
 }
