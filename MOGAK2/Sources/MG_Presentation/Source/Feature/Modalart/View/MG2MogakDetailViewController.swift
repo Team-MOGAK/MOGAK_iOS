@@ -173,14 +173,18 @@ final class MG2MogakDetailViewController: UIViewController {
         operation { [weak self] result in
             guard let self else { return }
             isFinished = true
-            if loadID == latestLoadID {
-                if isLoadingJogaks {
-                    isLoadingJogaks = false
-                    jogakCollectionView.hideSkeletonBlocks()
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                if loadID == latestLoadID {
+                    if isLoadingJogaks {
+                        isLoadingJogaks = false
+                        jogakCollectionView.hideSkeletonBlocks()
+                    }
+                    UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
                 }
-                UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+                if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
             }
-            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
         }
         guard showsSkeleton, !isFinished else { return }
         isLoadingJogaks = true

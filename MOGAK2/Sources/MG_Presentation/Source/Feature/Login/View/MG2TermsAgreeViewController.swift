@@ -91,14 +91,18 @@ final class MG2TermsAgreeViewController: UIViewController {
         agreementStackView.arrangedSubviews.forEach { $0.showSkeletonBlocks() }
         viewModel.loadConsentItems { [weak self] result in
             guard let self else { return }
-            agreementStackView.arrangedSubviews.forEach { $0.hideSkeletonBlocks() }
-            UIView.transition(with: scrollView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                self.configureAgreementRows()
-                self.renderAgreements()
-            }
-            // 약관 화면은 첫 화면이라 뒤로 갈 곳이 없다. 실패하면 다시 불러올 수 있게 한다.
-            if case .failure(let error) = result {
-                coordinator?.presentError(error, from: self) { [weak self] in self?.loadConsentItems() }
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                agreementStackView.arrangedSubviews.forEach { $0.hideSkeletonBlocks() }
+                UIView.transition(with: scrollView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                    self.configureAgreementRows()
+                    self.renderAgreements()
+                }
+                // 약관 화면은 첫 화면이라 뒤로 갈 곳이 없다. 실패하면 다시 불러올 수 있게 한다.
+                if case .failure(let error) = result {
+                    coordinator?.presentError(error, from: self) { [weak self] in self?.loadConsentItems() }
+                }
             }
         }
     }

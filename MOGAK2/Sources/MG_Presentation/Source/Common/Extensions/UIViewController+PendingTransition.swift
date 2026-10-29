@@ -24,6 +24,11 @@ extension UIViewController {
         }
     }
 
+    /// 화면 전환(밀기 · 확대 · 시트)이 진행 중이면 끝난 뒤에, 아니면 바로 한다. 전환과 내용 바뀜이 겹쳐 움직이지 않게.
+    func afterTransition(_ work: @escaping () -> Void) {
+        guard let coordinator = transitionCoordinator, coordinator.animate(alongsideTransition: nil, completion: { _ in work() }) else { return work() }
+    }
+
     /// 저장하는 동안 화면과 뒤로 가기(버튼 · 밀기)를 막는다. 저장 중에 빠져나가면 완료 처리(앞 화면 새로 고침)가 사라진다.
     func setLeavingBlocked(_ isBlocked: Bool) {
         view.isUserInteractionEnabled = !isBlocked

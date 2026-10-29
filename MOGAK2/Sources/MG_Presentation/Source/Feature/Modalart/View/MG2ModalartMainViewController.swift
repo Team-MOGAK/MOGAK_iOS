@@ -169,13 +169,17 @@ final class MG2ModalartMainViewController: UIViewController {
         operation { [weak self] result in
             guard let self else { return }
             isFinished = true
-            if isLoadingBoard {
-                isLoadingBoard = false
-                modalartNameLabel.hideSkeletonBlocks()
-                modalartCollectionView.hideSkeletonBlocks()
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                if isLoadingBoard {
+                    isLoadingBoard = false
+                    modalartNameLabel.hideSkeletonBlocks()
+                    modalartCollectionView.hideSkeletonBlocks()
+                }
+                UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+                if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
             }
-            UIView.transition(with: view, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
-            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
         }
         // 둘러보기처럼 바로 끝났으면 덮지 않는다.
         guard showsSkeleton, !isFinished else { return }

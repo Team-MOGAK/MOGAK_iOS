@@ -140,17 +140,21 @@ final class MG2ChooseJobViewController: UIViewController {
         tableView.showSkeletonBlocks()
         viewModel.loadJobs { [weak self] result in
             guard let self else { return }
-            tableView.hideSkeletonBlocks()
-            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                self.isShowingPlaceholders = false
-                self.viewModel.updateSections(matching: self.searchField.text ?? "")
-                self.tableView.reloadData()
-            }
-            switch result {
-            case .success:
-                renderSelection()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                tableView.hideSkeletonBlocks()
+                UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                    self.isShowingPlaceholders = false
+                    self.viewModel.updateSections(matching: self.searchField.text ?? "")
+                    self.tableView.reloadData()
+                }
+                switch result {
+                case .success:
+                    renderSelection()
+                case .failure(let error):
+                    coordinator?.presentError(error, from: self)
+                }
             }
         }
     }

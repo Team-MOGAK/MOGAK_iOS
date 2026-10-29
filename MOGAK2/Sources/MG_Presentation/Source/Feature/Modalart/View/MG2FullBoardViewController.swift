@@ -105,9 +105,13 @@ final class MG2FullBoardViewController: UIViewController {
         viewModel.load { [weak self] result in
             guard let self else { return }
             isFinished = true
-            coveredLabels.forEach { $0.hideSkeletonBlocks() }
-            UIView.transition(with: boardView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
-            if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                coveredLabels.forEach { $0.hideSkeletonBlocks() }
+                UIView.transition(with: boardView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+                if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
+            }
         }
         // 둘러보기처럼 바로 끝났으면 덮지 않는다.
         guard !isFinished else { return }

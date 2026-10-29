@@ -251,13 +251,17 @@ final class MG2ScheduleStartViewController: UIViewController {
         if !viewModel.hasLoaded(date) { showPlaceholders(for: date) }
         viewModel.loadJogakOccurrences(date: date) { [weak self] result in
             guard let self else { return }
-            switch result {
-            case .success:
-                renderOccurrences()
-            case .failure(let error):
-                // 스켈레톤은 걷고 있던 내용을 다시 보여 준다.
-                if isShowingPlaceholders { renderOccurrences() }
-                coordinator?.presentError(error, from: self)
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                switch result {
+                case .success:
+                    renderOccurrences()
+                case .failure(let error):
+                    // 스켈레톤은 걷고 있던 내용을 다시 보여 준다.
+                    if isShowingPlaceholders { renderOccurrences() }
+                    coordinator?.presentError(error, from: self)
+                }
             }
         }
     }

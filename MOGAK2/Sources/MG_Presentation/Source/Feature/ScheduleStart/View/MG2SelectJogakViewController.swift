@@ -121,19 +121,23 @@ final class MG2SelectJogakViewController: UIViewController {
         tableView.showSkeletonBlocks()
         viewModel.loadMogakSections(modalartID: modalartID) { [weak self] result in
             guard let self else { return }
-            tableView.hideSkeletonBlocks()
-            UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                self.isShowingPlaceholders = false
-                self.tableView.reloadData()
-            }
+            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
+            afterTransition { [weak self] in
+                guard let self else { return }
+                tableView.hideSkeletonBlocks()
+                UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+                    self.isShowingPlaceholders = false
+                    self.tableView.reloadData()
+                }
 
-            // 실패하면 보이는 목록(앞 판)의 이름으로 되돌린다.
-            modalartButton.setTitle((viewModel.selectedModalart ?? viewModel.initialModalart).title, for: .normal)
-            switch result {
-            case .success:
-                updateAddButtonState()
-            case .failure(let error):
-                coordinator?.presentError(error, from: self)
+                // 실패하면 보이는 목록(앞 판)의 이름으로 되돌린다.
+                modalartButton.setTitle((viewModel.selectedModalart ?? viewModel.initialModalart).title, for: .normal)
+                switch result {
+                case .success:
+                    updateAddButtonState()
+                case .failure(let error):
+                    coordinator?.presentError(error, from: self)
+                }
             }
         }
     }
