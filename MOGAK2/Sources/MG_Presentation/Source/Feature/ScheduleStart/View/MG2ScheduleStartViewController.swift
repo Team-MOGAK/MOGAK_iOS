@@ -101,6 +101,9 @@ final class MG2ScheduleStartViewController: UIViewController {
 
     /// 처음 보는 날을 불러오는 동안은 자리 표시 행에 스켈레톤을 씌운다.
     private var isShowingPlaceholders = false
+    /// 처음 보는 날을 고른 뒤 스켈레톤으로 바꾸기까지 기다리는 시간. 그 안에 오면 스켈레톤 없이 바로 바꿔 깜빡이지 않는다.
+    private static let placeholderDelay: TimeInterval = 0.2
+    private var placeholderWork: DispatchWorkItem?
 
     private let scheduleTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -154,7 +157,7 @@ final class MG2ScheduleStartViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(dayMayHaveChanged), name: UIApplication.significantTimeChangeNotification, object: nil)
         // 스플래시에서 미리 불러왔으면 로딩 없이 바로 그린다.
         if viewModel.hasLoaded(selectedDate) {
-            renderOccurrences()
+            renderOccurrences(animated: false)
             skipsNextRefresh = true
         }
     }
@@ -225,48 +228,68 @@ final class MG2ScheduleStartViewController: UIViewController {
     }
 
     /// 처음 보는 날만 스켈레톤을 띄우고, 이미 보여 준 날은 조용히 새로 고친다.
+    /// 이미 보여 준 날은 조용히 새로 고친다.
+    /// 처음 보는 날은 0.2초 안에 오면 앞 날 모습에서 바로 겹쳐 바꾸고, 늦으면 그때 스켈레톤으로 겹쳐 바꾼 뒤 내용으로 겹쳐 바꾼다.
     private func loadJogakOccurrences(date: Date) {
-        if !viewModel.hasLoaded(date) { showPlaceholders(for: date) }
+        placeholderWork?.cancel()
+        let isNewContent = !viewModel.hasLoaded(date)
+        if isNewContent {
+            // 기다리는 동안 앞 날 조각은 눌리지 않게 한다.
+            scheduleTableView.isUserInteractionEnabled = false
+            let work = DispatchWorkItem { [weak self] in self?.showPlaceholders(for: date) }
+            placeholderWork = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.placeholderDelay, execute: work)
+        }
         viewModel.loadJogakOccurrences(date: date) { [weak self] result in
             guard let self else { return }
-            // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
-            afterTransition { [weak self] in
-                guard let self else { return }
-                switch result {
-                case .success:
-                    renderOccurrences()
-                case .failure(let error):
-                    // 스켈레톤은 걷고 있던 내용을 다시 보여 준다.
-                    if isShowingPlaceholders { renderOccurrences() }
+            placeholderWork?.cancel()
+            // 표 줄 수가 목록과 어긋나지 않게 바로 그린다. 화면 전환 중이면 겹쳐 바꾸는 효과만 뺀다.
+            let animated = transitionCoordinator == nil && (isNewContent || isShowingPlaceholders)
+            switch result {
+            case .success:
+                renderOccurrences(animated: animated)
+            case .failure(let error):
+                // 다른 날로 바꾸다 실패하면 빈 목록으로, 보던 날을 새로 고치다 실패하면 그대로 둔다.
+                if isNewContent || isShowingPlaceholders { renderOccurrences(animated: animated) }
+                afterTransition { [weak self] in
+                    guard let self else { return }
                     coordinator?.presentError(error, from: self)
                 }
             }
         }
     }
 
-    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 채우고 덩어리 스켈레톤으로 덮는다. 달력 · 머리 · 아래 버튼은 그대로.
+    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 바꿔 덩어리 스켈레톤으로 덮는다. 앞 날 모습에서 겹쳐 바뀐다.
+    /// 진척 카드는 오늘만 있으니 오늘일 때만 자리를 둔다 (다른 날에 카드 자리가 생겼다 사라지며 목록이 튀지 않게).
     private func showPlaceholders(for date: Date) {
-        isShowingPlaceholders = true
-        progressCardView.render(.placeholder, modalartTitle: nil)
-        progressCardView.isHidden = false
-        emptyView.isHidden = true
-        addJogakButton.isHidden = !viewModel.isToday(date)
-        scheduleTableView.reloadData()
-        view.layoutIfNeeded()
-        progressCardView.showSkeletonBlocks()
-        scheduleTableView.showSkeletonBlocks()
+        let isToday = viewModel.isToday(date)
+        UIView.transition(with: scheduleTableView, duration: 0.2, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+            self.isShowingPlaceholders = true
+            self.progressCardView.render(.placeholder, modalartTitle: nil)
+            self.progressCardView.isHidden = !isToday
+            self.emptyView.isHidden = true
+            self.addJogakButton.isHidden = !isToday
+            self.scheduleTableView.reloadData()
+            self.view.layoutIfNeeded()
+            if isToday { self.progressCardView.showSkeletonBlocks() }
+            self.scheduleTableView.showSkeletonBlocks()
+        }
     }
 
-    /// 스켈레톤이 떠 있으면 실제 행으로 교차 페이드.
-    private func renderOccurrences() {
-        guard isShowingPlaceholders else { return applyOccurrences() }
-        progressCardView.hideSkeletonBlocks()
-        scheduleTableView.hideSkeletonBlocks()
-        UIView.transition(with: scheduleTableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
+    /// 새 내용을 그린다. 스켈레톤이 떠 있으면 걷고, `animated`면 앞 모습(스켈레톤 · 앞 날)에서 겹쳐 바꾼다.
+    private func renderOccurrences(animated: Bool) {
+        if isShowingPlaceholders {
+            progressCardView.hideSkeletonBlocks()
+            scheduleTableView.hideSkeletonBlocks()
+        }
+        let apply = {
             self.isShowingPlaceholders = false
+            self.scheduleTableView.isUserInteractionEnabled = true
             self.applyOccurrences()
             self.view.layoutIfNeeded()
         }
+        guard animated else { return apply() }
+        UIView.transition(with: scheduleTableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction], animations: apply)
     }
 
     private func applyOccurrences() {
