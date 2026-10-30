@@ -2,7 +2,7 @@ import Combine
 import SnapKit
 import UIKit
 
-/// 조각시작(홈): 주 · 월 달력 · 진척 카드 · 오늘의 조각 · 조각 더 가져오기 · 목록 끝 네이티브 광고.
+/// 조각시작(홈): 주 · 월 달력 · 진척 카드 · 오늘의 조각 · 조각 더 가져오기.
 final class MG2ScheduleStartViewController: UIViewController {
     weak var coordinator: MG2ScheduleStartCoordinator?
 
@@ -121,10 +121,6 @@ final class MG2ScheduleStartViewController: UIViewController {
         return button
     }()
 
-    private let nativeAdContainer = UIView()
-    /// 네이티브 광고 60초 새로 고침. 화면이 보일 때만 돈다.
-    private static let nativeAdRefreshInterval: TimeInterval = 60
-    private var nativeAdRefreshTimer: Timer?
     private let headerContainer = UIView()
     /// 모각이 말풍선이 카드 위로 20 나온다. 목록은 위에서 자르므로 그만큼 자리를 둔다.
     private static let listTopInset: CGFloat = 12
@@ -173,22 +169,6 @@ final class MG2ScheduleStartViewController: UIViewController {
         loadJogakOccurrences(date: selectedDate)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        nativeAdRefreshTimer?.invalidate()
-        nativeAdRefreshTimer = Timer.scheduledTimer(withTimeInterval: Self.nativeAdRefreshInterval, repeats: true) { [weak self] _ in
-            // 시트 · 축하 카드가 홈을 덮고 있으면 보이지 않는 광고는 바꾸지 않는다.
-            guard let self, presentedViewController == nil else { return }
-            refreshNativeAd()
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        nativeAdRefreshTimer?.invalidate()
-        nativeAdRefreshTimer = nil
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         sizeTableAccessory(headerContainer) { scheduleTableView.tableHeaderView = $0 }
@@ -207,10 +187,8 @@ final class MG2ScheduleStartViewController: UIViewController {
         headerStack.axis = .vertical
         headerContainer.addSubview(headerStack)
 
-        // 광고는 ‘+ 조각 더 가져오기’ 아래 24.
-        let footerStack = UIStackView(arrangedSubviews: [addJogakButton, nativeAdContainer])
+        let footerStack = UIStackView(arrangedSubviews: [addJogakButton])
         footerStack.axis = .vertical
-        footerStack.spacing = 24
         footerContainer.addSubview(footerStack)
 
         headerStackView.snp.makeConstraints {
@@ -266,14 +244,13 @@ final class MG2ScheduleStartViewController: UIViewController {
         }
     }
 
-    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 채우고 덩어리 스켈레톤으로 덮는다. 달력 · 머리 · 아래 버튼은 그대로, 광고는 숨긴다.
+    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 채우고 덩어리 스켈레톤으로 덮는다. 달력 · 머리 · 아래 버튼은 그대로.
     private func showPlaceholders(for date: Date) {
         isShowingPlaceholders = true
         progressCardView.render(.placeholder, modalartTitle: nil)
         progressCardView.isHidden = false
         emptyView.isHidden = true
         addJogakButton.isHidden = !viewModel.isToday(date)
-        nativeAdContainer.isHidden = true
         scheduleTableView.reloadData()
         view.layoutIfNeeded()
         progressCardView.showSkeletonBlocks()
@@ -299,7 +276,6 @@ final class MG2ScheduleStartViewController: UIViewController {
         addJogakButton.isHidden = !isToday
         renderProgress()
         scheduleTableView.reloadData()
-        loadNativeAdIfNeeded()
         view.setNeedsLayout()
     }
 
@@ -311,35 +287,6 @@ final class MG2ScheduleStartViewController: UIViewController {
             progressCardView.isHidden = true
         }
         view.setNeedsLayout()
-    }
-
-    /// 네이티브 광고는 홈 목록 맨 끝 1개. 못 불러오면 자리째 숨긴다.
-    private func loadNativeAdIfNeeded() {
-        guard viewModel.canShowNativeAd else {
-            nativeAdContainer.isHidden = true
-            return
-        }
-        nativeAdContainer.isHidden = false
-        guard nativeAdContainer.subviews.isEmpty else { return }
-        refreshNativeAd()
-    }
-
-    /// 새 광고로 바꾼다. 처음에 못 불러오면 자리째 숨기고, 새로 고침이 실패하면 지금 광고를 그대로 둔다.
-    private func refreshNativeAd() {
-        guard viewModel.canShowNativeAd else { return }
-        coordinator?.loadNativeAd(from: self) { [weak self] adView in
-            guard let self else { return }
-            guard let adView else {
-                if nativeAdContainer.subviews.isEmpty { nativeAdContainer.isHidden = true }
-                return
-            }
-            nativeAdContainer.subviews.forEach { $0.removeFromSuperview() }
-            // 기다리는 사이 지난 날 · 빈 목록 · 스켈레톤으로 바뀌었으면 숨긴 채 둔다.
-            nativeAdContainer.isHidden = !viewModel.canShowNativeAd || isShowingPlaceholders
-            nativeAdContainer.addSubview(adView)
-            adView.snp.makeConstraints { $0.edges.equalToSuperview() }
-            view.setNeedsLayout()
-        }
     }
 
     /// 테이블 머리 · 꼬리 뷰는 오토레이아웃 높이로 다시 맞춰 넣어야 한다.
@@ -445,10 +392,13 @@ final class MG2ScheduleStartViewController: UIViewController {
         case .readOnly:
             MG2ToastView.show(in: view, title: "지난 날 기록은 볼 수만 있어요")
         case .rewardRequired:
-            coordinator?.presentRewardedUnlock(from: self) { [weak self] in
-                self?.viewModel.unlockSelectedDay()
-                self?.toggleJogak(at: indexPath)
-            }
+            // TODO(ads): 지난 날(2~7일 전)은 보상형 광고를 본 뒤에 연다. 광고가 없는 동안은 광고 없이 바로 연다.
+            // coordinator?.presentRewardedUnlock(from: self) { [weak self] in
+            //     self?.viewModel.unlockSelectedDay()
+            //     self?.toggleJogak(at: indexPath)
+            // }
+            viewModel.unlockSelectedDay()
+            toggleJogak(at: indexPath)
         case nil:
             break
         }
@@ -461,9 +411,11 @@ final class MG2ScheduleStartViewController: UIViewController {
             guard let self else { return }
             if viewModel.shouldOfferReminder {
                 coordinator?.presentReminderOffer(from: self, onAccept: { [weak self] in self?.viewModel.enableReminder() }, onDecline: { [weak self] in self?.viewModel.declineReminder() })
-            } else if viewModel.canShowInterstitial {
-                coordinator?.presentInterstitial(from: self) { [weak self] shown in if shown { self?.viewModel.didShowInterstitial() } }
             }
+            // TODO(ads): 알림 권유가 없을 때는 축하 카드를 닫은 뒤 전면 광고.
+            // else if viewModel.canShowInterstitial {
+            //     coordinator?.presentInterstitial(from: self) { [weak self] shown in if shown { self?.viewModel.didShowInterstitial() } }
+            // }
         }
     }
 

@@ -132,8 +132,4 @@ final class MG2ScheduleStartCoordinator {
     func presentInterstitial(from source: UIViewController, completion: @escaping (Bool) -> Void) {
         adProvider.presentInterstitial(from: source, completion: completion)
     }
-
-    func loadNativeAd(from source: UIViewController, completion: @escaping (UIView?) -> Void) {
-        adProvider.loadNativeAd(rootViewController: source, completion: completion)
-    }
 }

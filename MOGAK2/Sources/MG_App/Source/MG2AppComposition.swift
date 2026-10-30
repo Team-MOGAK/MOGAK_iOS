@@ -39,7 +39,10 @@ final class MG2AppComposition {
     /// 시스템 권한 창이 닫히면 앱이 다시 활성화되므로 여러 번 불려도 각 권한은 한 번만 묻는다.
     func requestStartupPermissions() async {
         await todayUseCase.requestReminderPermissionIfNeeded()
-        adProvider.start()
+        // TODO(ads): 광고 SDK 시작 (추적 허용 · 동의 창도 이때 뜬다).
+        // 되살릴 때 Info.plist에 NSUserTrackingUsageDescription(추적 허용 문구)을 꼭 넣는다. 없으면 추적 허용 창을 띄우는 순간 앱이 종료된다.
+        // GADApplicationIdentifier · 광고 단위 ID도 테스트 값이라 실제 값으로 바꾼다.
+        // adProvider.start()
     }
 
     func connectPieceIntents() {

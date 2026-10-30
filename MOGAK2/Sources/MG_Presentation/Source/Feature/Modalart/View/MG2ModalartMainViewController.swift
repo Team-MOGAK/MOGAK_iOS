@@ -51,6 +51,12 @@ final class MG2ModalartMainViewController: UIViewController {
     private var nameTopConstraint: Constraint?
     /// 다른 판을 불러오는 중. 9칸을 빈 칸으로 그리고 제목 · 9칸을 덩어리로 덮는다.
     private var isLoadingBoard = false
+    // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.
+    // /// 네이티브 광고 자리: 판 아래 · 탭 바 위. 광고가 없으면 높이 0이라 판이 자리를 다 쓴다.
+    // private let nativeAdContainer = UIStackView()
+    // /// 네이티브 광고 60초 새로 고침. 화면이 보일 때만 돈다.
+    // private static let nativeAdRefreshInterval: TimeInterval = 60
+    // private var nativeAdRefreshTimer: Timer?
 
     init(viewModel: MG2ModalartMainViewModel) {
         self.viewModel = viewModel
@@ -77,6 +83,24 @@ final class MG2ModalartMainViewController: UIViewController {
         if !isLoadingBoard, !viewModel.isGuest, !viewModel.state.hasModalart { loadModalart() }
     }
 
+    // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.
+    // override func viewDidAppear(_ animated: Bool) {
+        // super.viewDidAppear(animated)
+        // if nativeAdContainer.arrangedSubviews.isEmpty { loadNativeAd() }
+        // nativeAdRefreshTimer?.invalidate()
+        // nativeAdRefreshTimer = Timer.scheduledTimer(withTimeInterval: Self.nativeAdRefreshInterval, repeats: true) { [weak self] _ in
+            // // 목록 · 81칸이 판을 덮고 있으면 보이지 않는 광고는 바꾸지 않는다.
+            // guard let self, presentedViewController == nil else { return }
+            // loadNativeAd()
+        // }
+    // }
+
+    // override func viewWillDisappear(_ animated: Bool) {
+        // super.viewWillDisappear(animated)
+        // nativeAdRefreshTimer?.invalidate()
+        // nativeAdRefreshTimer = nil
+    // }
+
 
     private func configureCollectionView() {
         modalartCollectionView.register(MG2EmptyMogakCell.self, forCellWithReuseIdentifier: MG2EmptyMogakCell.identifier)
@@ -88,6 +112,8 @@ final class MG2ModalartMainViewController: UIViewController {
 
     private func configureLayout() {
         view.addSubviews(modalartNameLabel, showModalartListButton, fullBoardButton, modalartMenuButton, modalartCollectionView)
+        // TODO(ads): 판 아래 · 탭 바 위 광고 자리.
+        // view.addSubview(nativeAdContainer)
         modalartNameLabel.snp.makeConstraints {
             $0.leading.equalTo(view.safeAreaLayoutGuide).offset(DS.Space.gutter)
             nameTopConstraint = $0.top.equalTo(view.safeAreaLayoutGuide).inset(12).constraint
@@ -115,8 +141,15 @@ final class MG2ModalartMainViewController: UIViewController {
             $0.centerX.equalTo(view.safeAreaLayoutGuide)
             $0.centerY.equalTo(view.safeAreaLayoutGuide).offset(20).priority(.high)
             $0.top.greaterThanOrEqualTo(modalartNameLabel.snp.bottom).offset(20)
+            // TODO(ads): 판이 광고 위 12에서 멈춘다.
+            // $0.bottom.lessThanOrEqualTo(nativeAdContainer.snp.top).offset(-12)
             $0.width.height.equalTo(0)
         }
+        // TODO(ads): 광고는 좌우 여백 안 · 탭 바 위 12.
+        // nativeAdContainer.snp.makeConstraints {
+        //     $0.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(DS.Space.gutter)
+        //     $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(12)
+        // }
     }
 
     override func viewDidLayoutSubviews() {
@@ -125,6 +158,8 @@ final class MG2ModalartMainViewController: UIViewController {
         nameTopConstraint?.update(inset: view.bounds.height <= 667 ? 20 : 12)
         let safeFrame = view.safeAreaLayoutGuide.layoutFrame
         let boardWidth = min(safeFrame.width - DS.Space.gutter * 2, MG2MandalaGrid.maxBoardWidth)
+        // TODO(ads): 광고가 있으면 광고 높이와 위아래 간격만큼 판을 줄인다. 되살릴 때 아래 줄 끝에 `- adSpace`를 붙인다.
+        // let adSpace = nativeAdContainer.arrangedSubviews.isEmpty ? 0 : nativeAdContainer.frame.height + 24
         let availableHeight = safeFrame.maxY - modalartNameLabel.frame.maxY - 20
         let size = MG2MandalaGrid.boardCellSize(boardWidth: boardWidth, availableHeight: availableHeight)
         // 처음 불러올 때는 판 크기가 잡힌 뒤에야 칸이 생기니 그때 덮는다.
@@ -214,6 +249,17 @@ final class MG2ModalartMainViewController: UIViewController {
         let sourceCell = viewModel.state.mogaks.firstIndex { $0.mogakId == mogak.mogakId }.flatMap { modalartCollectionView.cellForItem(at: IndexPath(item: MG2MandalaGrid.gridIndex(forContent: $0), section: 0)) }
         coordinator.routeToMogakDetail(mogaks: viewModel.state.mogaks, selectedMogak: mogak, modalartID: modalartID, modalartTitle: viewModel.state.title, sourceView: sourceCell, onExit: { [weak self] in self?.reloadSelectedModalart() }, from: self)
     }
+
+    // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.
+    // /// 새 광고로 바꾼다. 처음에 못 불러오면 자리 없이 두고, 새로 고침이 실패하면 지금 광고를 그대로 둔다.
+    // private func loadNativeAd() {
+        // coordinator?.loadNativeAd(from: self) { [weak self] adView in
+            // guard let self, let adView else { return }
+            // nativeAdContainer.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            // nativeAdContainer.addArrangedSubview(adView)
+            // view.setNeedsLayout()
+        // }
+    // }
 
     @objc private func modalartListButtonTapped() {
         guard !viewModel.isGuest else {

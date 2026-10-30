@@ -175,6 +175,13 @@ final class MG2ModalartCoordinator {
         }
     }
 
+    // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.
+    // /// 판 아래 네이티브 광고 (설치 2일째부터).
+    // func loadNativeAd(from source: UIViewController, completion: @escaping (UIView?) -> Void) {
+        // guard adPolicyUseCase.canShowNativeAd else { return completion(nil) }
+        // adProvider.loadNativeAd(rootViewController: source, completion: completion)
+    // }
+
     func presentError(_ error: Error, from source: UIViewController) {
         alertCoordinator.presentError(error, from: source)
     }

@@ -108,7 +108,6 @@ final class MG2ScheduleStartViewModel {
 
     var isGuest: Bool { userState.loginState == .guest }
     var isSelectedDateToday: Bool { isToday(state.selectedDate) }
-    var canShowNativeAd: Bool { isSelectedDateToday && !state.isEmpty && adPolicyUseCase.canShowNativeAd }
     var canShowInterstitial: Bool { adPolicyUseCase.canShowInterstitial }
     var shouldOfferReminder: Bool { todayUseCase.shouldOfferReminder }
     var completedPieceCount: Int { state.occurrences.reduce(0) { $0 + $1.achievements } }

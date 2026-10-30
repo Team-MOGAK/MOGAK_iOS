@@ -96,7 +96,8 @@ final class MG2MyPageViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        loadBannerIfNeeded()
+        // TODO(ads): 마이페이지 맨 아래 배너.
+        // loadBannerIfNeeded()
     }
 
     private func configureLayout() {

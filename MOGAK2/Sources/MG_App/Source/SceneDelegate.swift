@@ -48,10 +48,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        guard currentRoute == .main, composition.adPolicyUseCase.canShowAppOpenAd, let root = window?.rootViewController as? MG2MainTabViewController, root.allowsFullScreenAd else { return }
-        composition.adProvider.presentAppOpen(from: root, isAllowed: { [weak root] in root?.allowsFullScreenAd == true }) { [composition] shown in
-            if shown { composition.adPolicyUseCase.didShowAppOpenAd() }
-        }
+        // TODO(ads): 4시간 넘게 쉬다 돌아오면 앱 열기 광고.
+        // guard currentRoute == .main, composition.adPolicyUseCase.canShowAppOpenAd, let root = window?.rootViewController as? MG2MainTabViewController, root.allowsFullScreenAd else { return }
+        // composition.adProvider.presentAppOpen(from: root, isAllowed: { [weak root] in root?.allowsFullScreenAd == true }) { [composition] shown in
+        //     if shown { composition.adPolicyUseCase.didShowAppOpenAd() }
+        // }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {

@@ -167,8 +167,10 @@ final class MG2FullBoardViewController: UIViewController {
     }
 
     private func close() {
-        let viewModel = viewModel
-        coordinator?.closeFullBoard(self, showsInterstitial: viewModel.canShowInterstitial) { viewModel.didShowInterstitial() }
+        // TODO(ads): 81칸을 닫은 뒤 전면 광고.
+        // let viewModel = viewModel
+        // coordinator?.closeFullBoard(self, showsInterstitial: viewModel.canShowInterstitial) { viewModel.didShowInterstitial() }
+        coordinator?.closeFullBoard(self, showsInterstitial: false) {}
     }
 }
 
