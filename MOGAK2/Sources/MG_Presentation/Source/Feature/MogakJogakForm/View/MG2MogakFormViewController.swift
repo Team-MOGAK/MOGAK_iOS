@@ -204,18 +204,15 @@ final class MG2MogakFormViewController: UIViewController {
         }
     }
 
-    /// 불러오는 동안 자리 표시 분류 칩을 칩마다 덩어리로 덮는다. 나머지 칸은 그대로. 오면 겹쳐 바꾸고 처음 분류를 고른다.
+    /// 분류가 몇 개인지 모르므로 가짜 칩 없이 비워 둔 채 불러오고, 오면 처음 분류를 고른다.
     private func loadCategories() {
         isShowingPlaceholders = true
         categoryCollectionView.reloadData()
-        view.layoutIfNeeded()
-        categoryCollectionView.showSkeletonBlocks()
         viewModel.loadCategories { [weak self] result in
             guard let self else { return }
             // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
             afterTransition { [weak self] in
                 guard let self else { return }
-                categoryCollectionView.hideSkeletonBlocks()
                 self.isShowingPlaceholders = false
                 self.categoryCollectionView.reloadData()
                 if let index = self.viewModel.selectedCategoryIndex {
@@ -285,15 +282,14 @@ extension MG2MogakFormViewController: UITextFieldDelegate {
 extension MG2MogakFormViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard collectionView.tag == 1 else { return viewModel.colors.count }
-        // 불러오는 동안은 이름 없는 자리 표시 칩.
-        return isShowingPlaceholders ? 6 : viewModel.categories.count
+        return isShowingPlaceholders ? 0 : viewModel.categories.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView.tag == 1 {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2SelectionChipCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2SelectionChipCell else { return reusableCell }
-            cell.configure(title: isShowingPlaceholders ? "" : viewModel.categories[indexPath.item].name, style: .category, selectedColor: DS.Moak.from(hex: viewModel.state.color).deep)
+            cell.configure(title: viewModel.categories[indexPath.item].name, style: .category, selectedColor: DS.Moak.from(hex: viewModel.state.color).deep)
             return cell
         }
 
@@ -323,7 +319,7 @@ extension MG2MogakFormViewController: UICollectionViewDelegate {
 extension MG2MogakFormViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard collectionView.tag == 1 else { return CGSize(width: DS.Size.touch, height: DS.Size.touch) }
-        return MG2SelectionChipCell.size(for: isShowingPlaceholders ? "분류 이름" : viewModel.categories[indexPath.item].name)
+        return MG2SelectionChipCell.size(for: viewModel.categories[indexPath.item].name)
     }
 }
 

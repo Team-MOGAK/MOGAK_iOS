@@ -137,13 +137,11 @@ final class MG2ChooseJobViewController: UIViewController {
         isShowingPlaceholders = true
         tableView.reloadData()
         view.layoutIfNeeded()
-        tableView.showSkeletonBlocks()
         viewModel.loadJobs { [weak self] result in
             guard let self else { return }
             // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
             afterTransition { [weak self] in
                 guard let self else { return }
-                tableView.hideSkeletonBlocks()
                 self.isShowingPlaceholders = false
                 self.viewModel.updateSections(matching: self.searchField.text ?? "")
                 self.tableView.reloadData()
@@ -186,9 +184,9 @@ extension MG2ChooseJobViewController: UITextFieldDelegate {
 }
 
 extension MG2ChooseJobViewController: UITableViewDelegate, UITableViewDataSource {
-    /// 불러오는 동안은 이름 없는 자리 표시 한 묶음.
+    /// 불러오는 동안은 가짜 행 없이 비워 둔다.
     private var sections: [MG2JobSection] {
-        isShowingPlaceholders ? [MG2JobSection(title: "", jobs: Array(repeating: "", count: 6))] : viewModel.sections
+        isShowingPlaceholders ? [] : viewModel.sections
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {

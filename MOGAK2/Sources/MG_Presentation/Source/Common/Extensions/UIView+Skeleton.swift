@@ -1,13 +1,9 @@
 import SkeletonView
 import UIKit
 
-/// 칸 안에 카드가 따로 있는 셀. 칸 사이 여백까지 덮지 않게 그 카드를 덩어리로 알려 준다.
-protocol MG2SkeletonBlockCell: UIView {
-    var skeletonBlock: UIView { get }
-}
-
 /// 스켈레톤은 SkeletonView 라이브러리가 그린다.
 /// API에서 오는 내용 자리를 글자 하나하나가 아니라 칸 · 카드 · 글 상자 하나씩 통째로 덮는다. API와 상관없는 뷰에는 부르지 않는다.
+/// 실제로 있는 칸에만 쓴다 (판 9칸 · 모각 9칸 · 81칸 · 판 제목). 몇 개인지 모르는 목록에 가짜 칸을 만들어 덮지 않는다 — 그런 목록은 비워 둔 채 불러온다.
 /// 순서: 화면 전환 동안은 제자리에 멈춘 덩어리 → 전환이 끝나면 반짝임 → 데이터가 오면(전환이 끝난 뒤, `afterTransition`) 내용으로 겹쳐 바뀐다.
 extension UIView {
     /// 반짝이지 않는 한 가지 색. 전환 중에는 이것만 보인다.
@@ -69,8 +65,7 @@ private extension UIView {
         return nil
     }
 
-    /// 덮을 덩어리. 이름을 프로토콜의 `skeletonBlock`과 같게 두면 아래 줄이 프로토콜 대신 이 속성을 다시 불러 끝없이 돌다 터진다.
     var skeletonTarget: UIView {
-        (self as? MG2SkeletonBlockCell)?.skeletonBlock ?? (self as? UITableViewCell)?.contentView ?? (self as? UICollectionViewCell)?.contentView ?? self
+        (self as? UITableViewCell)?.contentView ?? (self as? UICollectionViewCell)?.contentView ?? self
     }
 }

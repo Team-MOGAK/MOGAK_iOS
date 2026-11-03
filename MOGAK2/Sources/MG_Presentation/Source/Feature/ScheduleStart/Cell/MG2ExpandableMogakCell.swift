@@ -3,14 +3,13 @@ import UIKit
 import SnapKit
 
 /// 조각 가져오기: 모각 머리 줄. 모각 색 태그 · 펼침 셰브론.
-final class MG2ExpandableMogakCell: UITableViewCell, MG2SkeletonBlockCell {
+final class MG2ExpandableMogakCell: UITableViewCell {
     static let reuseIdentifier = "MG2ExpandableMogakCell"
 
     private let tagLabel = MG2TagLabel()
     private let chevronImageView = UIImageView()
     /// 줄 하나를 스켈레톤 한 덩어리로. 위아래 4씩 띄워 줄마다 따로 보이게 한다.
     private let rowView = UIView().then { $0.roundCorners(DS.Radius.field) }
-    var skeletonBlock: UIView { rowView }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

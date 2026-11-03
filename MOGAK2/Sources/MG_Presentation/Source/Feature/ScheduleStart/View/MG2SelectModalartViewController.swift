@@ -8,7 +8,6 @@ final class MG2SelectModalartViewController: UIViewController {
     private let onJogaksAdded: () -> Void
     /// 목록이 올 때까지 자리 표시 행에 스켈레톤을 씌운다.
     private var isShowingPlaceholders = true
-    private static let placeholderCount = 4
 
     private let headerView = MG2SheetHeaderView(title: "조각 가져오기")
     private let subtitleLabel: UILabel = {
@@ -78,17 +77,14 @@ final class MG2SelectModalartViewController: UIViewController {
         }
     }
 
-    /// 목록 자리만 스켈레톤으로 덮고 불러온 뒤 교차 페이드. 머리 · 안내 문구는 그대로 둔다.
+    /// 모다라트가 몇 개인지 모르므로 가짜 행 없이 비워 둔 채 불러온다. 머리 · 안내 문구는 그대로.
     private func loadModalarts() {
         tableView.reloadData()
-        view.layoutIfNeeded()
-        tableView.showSkeletonBlocks()
         viewModel.loadModalarts { [weak self] result in
             guard let self else { return }
             // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
             afterTransition { [weak self] in
                 guard let self else { return }
-                tableView.hideSkeletonBlocks()
                 self.isShowingPlaceholders = false
                 self.tableView.reloadData()
                 if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
@@ -99,13 +95,11 @@ final class MG2SelectModalartViewController: UIViewController {
 
 extension MG2SelectModalartViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        isShowingPlaceholders ? Self.placeholderCount : viewModel.modalarts.count
+        isShowingPlaceholders ? 0 : viewModel.modalarts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2ModalartOptionCell.reuseIdentifier, for: indexPath) as? MG2ModalartOptionCell else { return UITableViewCell() }
-        // 자리 표시 행은 빈 타일.
-        guard !isShowingPlaceholders else { return cell }
         cell.configure(with: viewModel.modalarts[indexPath.row])
         return cell
     }

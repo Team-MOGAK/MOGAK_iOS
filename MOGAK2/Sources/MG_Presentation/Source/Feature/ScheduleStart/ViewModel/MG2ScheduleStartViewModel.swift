@@ -15,9 +15,6 @@ struct MG2JogakOccurrenceItem {
 
     var isCompleted: Bool { status == .success }
 
-    /// 스켈레톤 자리 표시용 행. 글자 폭만 잡아 주면 된다.
-    static let placeholder = MG2JogakOccurrenceItem(key: MG2JogakOccurrenceKey(jogakID: 0, scheduledDate: Date()), title: "오늘의 조각 이름", mogakTitle: "모각", color: nil, status: .pending, isRoutine: false, achievements: 0)
-    static let placeholderCount = 3
     var detail: String {
         guard isRoutine else { return "오늘만" }
         let days = routineDays.sorted { $0.rawValue < $1.rawValue }.map(\.shortKoreanTitle)
@@ -32,8 +29,6 @@ struct MG2TodayProgress {
     let pose: MG2MoakPose
     let line: String
 
-    /// 스켈레톤 자리 표시용.
-    static let placeholder = MG2TodayProgress(done: 0, total: 5, pose: .wave, line: "오늘의 조각을 불러오고 있어요")
 
     var isAllDone: Bool { total > 0 && done >= total }
     var percent: Int { total == 0 ? 0 : Int((Double(done) / Double(total) * 100).rounded()) }

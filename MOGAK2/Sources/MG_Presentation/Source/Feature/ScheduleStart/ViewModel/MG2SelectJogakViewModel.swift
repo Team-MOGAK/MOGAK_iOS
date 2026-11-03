@@ -16,8 +16,6 @@ struct MG2MogakJogakSection {
     let color: String
     var jogaks: [MG2JogakSelectionItem]
 
-    /// 스켈레톤 자리 표시용 모각 머리 줄. 태그 폭만 잡아 주면 된다.
-    static let placeholder = MG2MogakJogakSection(title: "모각 이름을 불러오는 중", color: "", jogaks: [])
 }
 
 @MainActor

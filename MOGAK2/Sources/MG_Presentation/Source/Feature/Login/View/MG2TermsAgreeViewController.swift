@@ -84,17 +84,13 @@ final class MG2TermsAgreeViewController: UIViewController {
         }
     }
 
-    /// 불러오는 동안 자리 표시 약관 줄을 한 줄씩 덩어리로 덮는다. 제목 · 전체 동의 · 버튼은 그대로. 오면 겹쳐 바꾼다.
+    /// 약관이 몇 개인지 모르므로 가짜 줄 없이 불러온 뒤 실제 약관 줄을 만든다. 제목 · 전체 동의 · 버튼은 그대로.
     private func loadConsentItems() {
-        (0..<4).forEach { _ in agreementStackView.addArrangedSubview(MG2AgreementRowView(title: "약관 항목에 동의해요")) }
-        view.layoutIfNeeded()
-        agreementStackView.arrangedSubviews.forEach { $0.showSkeletonBlocks() }
         viewModel.loadConsentItems { [weak self] result in
             guard let self else { return }
             // 화면 전환 중이면 끝난 뒤에 바꾼다 (전환과 겹쳐 움직이지 않게).
             afterTransition { [weak self] in
                 guard let self else { return }
-                agreementStackView.arrangedSubviews.forEach { $0.hideSkeletonBlocks() }
                 self.configureAgreementRows()
                 self.renderAgreements()
                 // 약관 화면은 첫 화면이라 뒤로 갈 곳이 없다. 실패하면 다시 불러올 수 있게 한다.

@@ -224,9 +224,8 @@ final class MG2ScheduleStartViewController: UIViewController {
         scheduleTableView.register(MG2JogakOccurrenceCell.self, forCellReuseIdentifier: MG2JogakOccurrenceCell.reuseIdentifier)
     }
 
-    /// 처음 보는 날만 스켈레톤을 띄우고, 이미 보여 준 날은 조용히 새로 고친다.
     /// 전에 본 날은 그때 모습을 바로 보여 주고 조용히 새로 고친다.
-    /// 처음 보는 날만 스켈레톤으로 덮고, 오면 걷고 내용을 그린다 (따로 움직이는 효과 없음).
+    /// 처음 보는 날은 조각이 몇 개인지(있는지조차) 모르므로 가짜 행 · 카드를 만들지 않고 비워 둔 채 불러온다.
     private func loadJogakOccurrences(date: Date) {
         if viewModel.select(date) {
             renderOccurrences()
@@ -240,7 +239,7 @@ final class MG2ScheduleStartViewController: UIViewController {
             case .success:
                 renderOccurrences()
             case .failure(let error):
-                // 스켈레톤을 걷는다. 다른 날로 바꾸다 실패했으면 빈 목록, 보던 날을 새로 고치다 실패하면 그대로.
+                // 다른 날로 바꾸다 실패했으면 빈 목록, 보던 날을 새로 고치다 실패하면 그대로.
                 if isShowingPlaceholders { renderOccurrences() }
                 afterTransition { [weak self] in
                     guard let self else { return }
@@ -250,28 +249,18 @@ final class MG2ScheduleStartViewController: UIViewController {
         }
     }
 
-    /// 불러올 날의 진척 카드 · 조각 행을 자리 표시로 바꿔 덩어리 스켈레톤으로 덮는다. 달력 · 머리 · 아래 버튼은 그대로.
-    /// 진척 카드는 오늘만 있으니 오늘일 때만 자리를 둔다 (다른 날에 카드 자리가 생겼다 사라지며 목록이 튀지 않게).
+    /// 처음 보는 날: 진척 카드 · 조각 행 · 빈 상태를 모두 감추고 비워 둔다. 달력 · 머리 · 아래 버튼은 그대로.
     private func showPlaceholders(for date: Date) {
-        let isToday = viewModel.isToday(date)
         isShowingPlaceholders = true
-        progressCardView.render(.placeholder, modalartTitle: nil)
-        progressCardView.isHidden = !isToday
+        progressCardView.isHidden = true
         emptyView.isHidden = true
-        addJogakButton.isHidden = !isToday
+        addJogakButton.isHidden = !viewModel.isToday(date)
         scheduleTableView.reloadData()
         view.layoutIfNeeded()
-        if isToday { progressCardView.showSkeletonBlocks() }
-        scheduleTableView.showSkeletonBlocks()
     }
 
-    /// 스켈레톤이 떠 있으면 걷고 내용을 그린다.
     private func renderOccurrences() {
-        if isShowingPlaceholders {
-            isShowingPlaceholders = false
-            progressCardView.hideSkeletonBlocks()
-            scheduleTableView.hideSkeletonBlocks()
-        }
+        isShowingPlaceholders = false
         applyOccurrences()
         view.layoutIfNeeded()
     }
@@ -300,7 +289,7 @@ final class MG2ScheduleStartViewController: UIViewController {
     private func sizeTableAccessory(_ accessory: UIView, assign: (UIView) -> Void) {
         let width = scheduleTableView.bounds.width
         guard width > 0 else { return }
-        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden && emptyView.isHidden && !isShowingPlaceholders
+        let isHeaderHidden = accessory === headerContainer && progressCardView.isHidden && emptyView.isHidden
         let height = isHeaderHidden ? Self.listTopInset : accessory.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
         guard accessory.frame.size != CGSize(width: width, height: height) else { return }
         accessory.frame = CGRect(x: 0, y: 0, width: width, height: height)
@@ -465,7 +454,7 @@ final class MG2ScheduleStartViewController: UIViewController {
 
 extension MG2ScheduleStartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        isShowingPlaceholders ? MG2JogakOccurrenceItem.placeholderCount : viewModel.state.occurrences.count
+        isShowingPlaceholders ? 0 : viewModel.state.occurrences.count
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -475,10 +464,6 @@ extension MG2ScheduleStartViewController: UITableViewDelegate, UITableViewDataSo
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MG2JogakOccurrenceCell.reuseIdentifier, for: indexPath) as? MG2JogakOccurrenceCell else { return UITableViewCell() }
 
-        guard !isShowingPlaceholders else {
-            cell.configure(item: .placeholder) {}
-            return cell
-        }
         let item = viewModel.state.occurrences[indexPath.row]
         cell.configure(item: item) { [weak self] in self?.showJogakOptions(for: item) }
         return cell
