@@ -109,7 +109,7 @@ final class MG2FullBoardViewController: UIViewController {
             afterTransition { [weak self] in
                 guard let self else { return }
                 coveredLabels.forEach { $0.hideSkeletonBlocks() }
-                UIView.transition(with: boardView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) { self.render() }
+                self.render()
                 if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
             }
         }

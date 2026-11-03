@@ -216,12 +216,10 @@ final class MG2MogakFormViewController: UIViewController {
             afterTransition { [weak self] in
                 guard let self else { return }
                 categoryCollectionView.hideSkeletonBlocks()
-                UIView.transition(with: categoryCollectionView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                    self.isShowingPlaceholders = false
-                    self.categoryCollectionView.reloadData()
-                    if let index = self.viewModel.selectedCategoryIndex {
-                        self.categoryCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: [])
-                    }
+                self.isShowingPlaceholders = false
+                self.categoryCollectionView.reloadData()
+                if let index = self.viewModel.selectedCategoryIndex {
+                    self.categoryCollectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: [])
                 }
                 if case .failure(let error) = result {
                     coordinator?.presentError(error, from: self)

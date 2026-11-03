@@ -89,10 +89,8 @@ final class MG2SelectModalartViewController: UIViewController {
             afterTransition { [weak self] in
                 guard let self else { return }
                 tableView.hideSkeletonBlocks()
-                UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                    self.isShowingPlaceholders = false
-                    self.tableView.reloadData()
-                }
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
                 if case .failure(let error) = result { coordinator?.presentError(error, from: self) }
             }
         }

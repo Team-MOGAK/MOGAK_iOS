@@ -125,10 +125,8 @@ final class MG2SelectJogakViewController: UIViewController {
             afterTransition { [weak self] in
                 guard let self else { return }
                 tableView.hideSkeletonBlocks()
-                UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                    self.isShowingPlaceholders = false
-                    self.tableView.reloadData()
-                }
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
 
                 // 실패하면 보이는 목록(앞 판)의 이름으로 되돌린다.
                 modalartButton.setTitle((viewModel.selectedModalart ?? viewModel.initialModalart).title, for: .normal)

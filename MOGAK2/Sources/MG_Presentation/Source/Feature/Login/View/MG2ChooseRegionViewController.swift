@@ -109,10 +109,8 @@ final class MG2ChooseRegionViewController: UIViewController {
             afterTransition { [weak self] in
                 guard let self else { return }
                 tableView.hideSkeletonBlocks()
-                UIView.transition(with: tableView, duration: 0.25, options: [.transitionCrossDissolve, .allowUserInteraction]) {
-                    self.isShowingPlaceholders = false
-                    self.tableView.reloadData()
-                }
+                self.isShowingPlaceholders = false
+                self.tableView.reloadData()
                 switch result {
                 case .success:
                     renderSelection()
