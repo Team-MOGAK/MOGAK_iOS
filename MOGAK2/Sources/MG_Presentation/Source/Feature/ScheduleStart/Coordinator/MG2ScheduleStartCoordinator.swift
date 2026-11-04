@@ -99,8 +99,8 @@ final class MG2ScheduleStartCoordinator {
         presentFittingSheet(viewController, from: source)
     }
 
-    func presentCelebration(done: Int, completedCount: Int, from source: UIViewController, onConfirmed: @escaping () -> Void) {
-        let viewController = MG2CelebrationModal(done: done, completedCount: completedCount)
+    func presentCelebration(done: Int, weeklyPercent: Int?, completedCount: Int, from source: UIViewController, onConfirmed: @escaping () -> Void) {
+        let viewController = MG2CelebrationModal(done: done, weeklyPercent: weeklyPercent, completedCount: completedCount)
         viewController.onConfirm = { [weak viewController] in viewController?.dismiss(animated: true, completion: onConfirmed) }
         source.present(viewController, animated: true)
     }

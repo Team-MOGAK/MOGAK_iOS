@@ -64,7 +64,7 @@ final class MG2FullBoardViewModel {
         isLoadingJogaks = true
         Task {
             do {
-                jogakTitlesByMogakID = try await useCase.loadJogakTitles(for: mogaks, from: Date())
+                jogakTitlesByMogakID = try await useCase.loadJogakTitles(for: mogaks)
                 isLoadingJogaks = false
                 completion(.success(()))
             } catch {

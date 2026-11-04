@@ -7,6 +7,8 @@ struct MG2JogakOccurrencePageDTO: Decodable {
 
 struct MG2JogakOccurrenceDTO: Decodable {
     let jogakID: Int
+    let mogakID: Int
+    let modalartID: Int
     let scheduledDate: String
     let mogakTitle: String
     let category: MG2MogakCategoryDTO
@@ -14,16 +16,39 @@ struct MG2JogakOccurrenceDTO: Decodable {
     let color: String?
     let status: MG2JogakOccurrenceStatusDTO
     let isRoutine: Bool
+    let days: [String]
     let achievements: Int
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
-        case scheduledDate, mogakTitle, category, title, color, status, isRoutine, achievements
+        case mogakID = "mogakId"
+        case modalartID = "modaratId"
+        case scheduledDate, mogakTitle, category, title, color, status, isRoutine, days, achievements
     }
 
     func toDomain() throws -> MG2JogakOccurrenceEntity {
         guard let date = MG2APIDateCoding.decode(scheduledDate) else { throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [CodingKeys.scheduledDate], debugDescription: "Invalid date: \(scheduledDate)")) }
-        return MG2JogakOccurrenceEntity(key: MG2JogakOccurrenceKey(jogakID: jogakID, scheduledDate: date), mogakTitle: mogakTitle, category: category.toEntity(), title: title, color: color.map(MG2APIColorCoding.decode), status: status.toDomain(), isRoutine: isRoutine, achievements: achievements)
+        return MG2JogakOccurrenceEntity(key: MG2JogakOccurrenceKey(jogakID: jogakID, scheduledDate: date), mogakID: mogakID, modalartID: modalartID, mogakTitle: mogakTitle, category: category.toEntity(), title: title, color: color.map(MG2APIColorCoding.decode), status: status.toDomain(), isRoutine: isRoutine, days: MG2APIWeekdayCoding.decode(days), achievements: achievements)
+    }
+}
+
+/// `date` 없이 부른 모각 조각 목록. `scheduledDate` · `status`는 null이라 읽지 않는다.
+struct MG2MogakJogakDTO: Decodable {
+    let jogakID: Int
+    let title: String
+    let isRoutine: Bool
+    let days: [String]
+    let startDate: String
+    let endDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case jogakID = "jogakId"
+        case title, isRoutine, days, startDate, endDate
+    }
+
+    func toEntity() throws -> MG2MogakJogakEntity {
+        guard let start = MG2APIDateCoding.decode(startDate) else { throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [CodingKeys.startDate], debugDescription: "Invalid date: \(startDate)")) }
+        return MG2MogakJogakEntity(jogakID: jogakID, title: title, isRoutine: isRoutine, days: MG2APIWeekdayCoding.decode(days), startDate: start, endDate: MG2APIDateCoding.decode(endDate))
     }
 }
 

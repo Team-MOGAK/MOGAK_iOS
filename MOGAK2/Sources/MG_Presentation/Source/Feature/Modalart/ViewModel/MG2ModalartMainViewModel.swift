@@ -7,12 +7,22 @@ struct MG2ModalartMainViewState {
     var title = ""
     var color = DesignSystemPalette.neutralGrayHex
     var mogaks = [MG2ModalartMogakItemEntity]()
+    /// 이번 주 진척. 보조 정보라 못 불러오면 nil이고 판은 % 없이 보인다.
+    var weeklyProgress: MG2WeeklyProgress?
 
     var hasModalart: Bool { selectedID != nil }
     var needsTitle: Bool { MG2ModalartDefaultTitle.isDefault(title) }
     var centerTitle: String { needsTitle ? "최종 목표\n정하기" : title }
     var centerColor: String {
         needsTitle ? DesignSystemPalette.neutralGrayHex : color
+    }
+    /// 이번 주 회차가 있을 때만 가운데 % 캡슐.
+    var weeklyPercent: Int? {
+        weeklyProgress.flatMap { $0.plannedCount > 0 ? $0.percent : nil }
+    }
+
+    func weeklyPercent(of mogak: MG2ModalartMogakItemEntity) -> Int? {
+        weeklyProgress?.mogaks.first { $0.mogakID == mogak.mogakId && $0.plannedCount > 0 }?.percent
     }
 }
 
@@ -142,7 +152,8 @@ final class MG2ModalartMainViewModel {
         let request = latestSelectionRequest
         async let detail = useCase.getModalartDetail(modalartId: id)
         async let mogaks = useCase.getModalartMogaks(modalartId: id)
-        let (modalart, loadedMogaks) = try await (detail, mogaks)
+        async let progress = try? useCase.getWeeklyProgress(modalartId: id, date: Date())
+        let (modalart, loadedMogaks, weeklyProgress) = try await (detail, mogaks, progress)
         guard request == latestSelectionRequest else { throw CancellationError() }
 
         state.selectedID = id
@@ -150,6 +161,7 @@ final class MG2ModalartMainViewModel {
         state.title = modalart?.title ?? state.modalarts.first { $0.id == id }?.title ?? state.title
         state.color = modalart?.color ?? DesignSystemPalette.neutralGrayHex
         state.mogaks = loadedMogaks
+        state.weeklyProgress = weeklyProgress
     }
 
     private func createDefaultModalart() async throws {
@@ -160,6 +172,7 @@ final class MG2ModalartMainViewModel {
         state.title = created.title
         state.color = created.color
         state.mogaks = []
+        state.weeklyProgress = nil
     }
 
     private var guestMogaks: [MG2ModalartMogakItemEntity] {

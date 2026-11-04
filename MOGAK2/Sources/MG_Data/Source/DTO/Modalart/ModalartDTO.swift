@@ -64,3 +64,20 @@ struct MG2ModalartUpsertDTO: Decodable {
         MG2ModalartUpsertEntity(id: id, title: title, color: MG2APIColorCoding.decode(color))
     }
 }
+
+struct MG2WeeklyProgressDTO: Decodable {
+    struct Mogak: Decodable {
+        let mogakId: Int
+        let percent: Int
+        let plannedCount: Int
+    }
+
+    let percent: Int
+    let doneCount: Int
+    let plannedCount: Int
+    let mogaks: [Mogak]
+
+    func toEntity() -> MG2WeeklyProgress {
+        MG2WeeklyProgress(percent: percent, doneCount: doneCount, plannedCount: plannedCount, mogaks: mogaks.map { MG2WeeklyProgress.Mogak(mogakID: $0.mogakId, percent: $0.percent, plannedCount: $0.plannedCount) })
+    }
+}

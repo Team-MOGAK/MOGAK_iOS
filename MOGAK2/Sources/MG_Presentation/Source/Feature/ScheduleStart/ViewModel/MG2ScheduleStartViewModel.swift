@@ -3,6 +3,7 @@ import Foundation
 
 struct MG2JogakOccurrenceItem {
     let key: MG2JogakOccurrenceKey
+    let modalartID: Int
     let title: String
     let mogakTitle: String
     let color: String?
@@ -10,8 +11,7 @@ struct MG2JogakOccurrenceItem {
     let isRoutine: Bool
     /// 이 조각을 완료한 횟수. 체크하면 바로 1 더하고 풀면 뺀다 (축하 카드 "완료한 조각 n회").
     var achievements: Int
-    /// 루틴 반복 요일. 못 불러오면 비어 있고 "루틴"만 보인다.
-    var routineDays = [MG2Weekday]()
+    let routineDays: [MG2Weekday]
 
     var isCompleted: Bool { status == .success }
 
@@ -28,7 +28,8 @@ struct MG2TodayProgress {
     let total: Int
     let pose: MG2MoakPose
     let line: String
-
+    /// 오늘 조각이 속한 판들의 이번 주 %. 모르면 nil.
+    let weeklyPercent: Int?
 
     var isAllDone: Bool { total > 0 && done >= total }
     var percent: Int { total == 0 ? 0 : Int((Double(done) / Double(total) * 100).rounded()) }
@@ -169,12 +170,10 @@ final class MG2ScheduleStartViewModel {
             }
             throw error
         }
-        // 요일은 보조 정보라 못 불러와도 목록은 보여 준다.
-        let routineDays = (try? await useCase.routineWeekdays(for: occurrences)) ?? [:]
         // 이 불러오기를 보내기 전에 서버가 받은 체크는 응답에 들어 있다. 그 뒤 것만 내 쪽 상태로 덮는다.
         localToggles = localToggles.filter { ($0.value.settledAt ?? .max) >= loadNumber }
         let items = occurrences.map { entity in
-            var item = MG2JogakOccurrenceItem(key: entity.key, title: entity.title, mogakTitle: entity.mogakTitle, color: entity.color, status: entity.status, isRoutine: entity.isRoutine, achievements: entity.achievements, routineDays: routineDays[entity.key.jogakID] ?? [])
+            var item = MG2JogakOccurrenceItem(key: entity.key, modalartID: entity.modalartID, title: entity.title, mogakTitle: entity.mogakTitle, color: entity.color, status: entity.status, isRoutine: entity.isRoutine, achievements: entity.achievements, routineDays: entity.days)
             if let local = localToggles[entity.key]?.item {
                 item.status = local.status
                 item.achievements = local.achievements
@@ -281,9 +280,9 @@ final class MG2ScheduleStartViewModel {
     private func publishToday(_ items: [MG2JogakOccurrenceItem], date: Date) async -> MG2TodayProgress? {
         guard isToday(date) else { return nil }
         let pieces = items.map {
-            MG2TodaySnapshot.Piece(jogakID: $0.key.jogakID, scheduledDate: $0.key.scheduledDate, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, isRoutine: $0.isRoutine, isDone: $0.isCompleted)
+            MG2TodaySnapshot.Piece(jogakID: $0.key.jogakID, scheduledDate: $0.key.scheduledDate, modalartID: $0.modalartID, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, isRoutine: $0.isRoutine, isDone: $0.isCompleted)
         }
         let snapshot = await todayUseCase.publish(pieces)
-        return MG2TodayProgress(done: snapshot.done, total: snapshot.total, pose: MG2MoakPose(rawValue: snapshot.pose) ?? .wave, line: snapshot.line)
+        return MG2TodayProgress(done: snapshot.done, total: snapshot.total, pose: MG2MoakPose(rawValue: snapshot.pose) ?? .wave, line: snapshot.line, weeklyPercent: snapshot.weeklyPercent)
     }
 }

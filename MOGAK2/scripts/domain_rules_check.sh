@@ -31,6 +31,27 @@ assert(MG2Mood(done: 2, total: 5, raceAhead: true).pose(done: 2, total: 5) == .t
 assert(MG2Mood(done: 2, total: 5, raceAhead: false).pose(done: 2, total: 5) == .sweat)
 assert(MG2Mood(done: 2, total: 5, isTimerRunning: true, raceAhead: true).pose(done: 2, total: 5) == .hurry)
 
+func board(_ done: Int, _ planned: Int) -> MG2WeeklyProgress {
+    MG2WeeklyProgress(percent: 0, doneCount: done, plannedCount: planned, mogaks: [])
+}
+
+assert(MG2WeeklyProgress.combinedPercent([]) == nil)
+assert(MG2WeeklyProgress.combinedPercent([board(0, 0)]) == nil)
+assert(MG2WeeklyProgress.combinedPercent([board(9, 25)]) == 36)
+assert(MG2WeeklyProgress.combinedPercent([board(1, 2), board(0, 2)]) == 25)
+
+let today = Calendar.current.startOfDay(for: Date())
+let yesterday = today.addingTimeInterval(-86_400)
+func jogak(routine: Bool, start: Date, end: Date? = nil) -> MG2MogakJogakEntity {
+    MG2MogakJogakEntity(jogakID: 1, title: "", isRoutine: routine, days: [], startDate: start, endDate: end)
+}
+
+assert(jogak(routine: false, start: today).isCurrentOrFuture(on: today))
+assert(!jogak(routine: false, start: yesterday).isCurrentOrFuture(on: today))
+assert(jogak(routine: true, start: yesterday).isCurrentOrFuture(on: today))
+assert(jogak(routine: true, start: yesterday, end: today).isCurrentOrFuture(on: today))
+assert(!jogak(routine: true, start: yesterday.addingTimeInterval(-86_400), end: yesterday).isCurrentOrFuture(on: today))
+
 final class Store: AdPolicyStorage {
     var installDate: Date?
     var interstitialDates = [Date]()
@@ -85,6 +106,9 @@ sed -i '' '1s/^/import Foundation\n/' "$TMP_DIR/stubs.swift"
 
 xcrun swiftc -Onone -o "$TMP_DIR/check" \
   "$DOMAIN/Entity/Today/MG2Mood.swift" \
+  "$DOMAIN/Entity/Jogak/MG2WeeklyProgress.swift" \
+  "$DOMAIN/Entity/Jogak/MG2MogakJogakEntity.swift" \
+  "$DOMAIN/Entity/Common/MG2Weekday.swift" \
   "$DOMAIN/Usecase/AdPolicyUseCase.swift" \
   "$TMP_DIR/stubs.swift" \
   "$TMP_DIR/main.swift"

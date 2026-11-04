@@ -25,7 +25,7 @@ final class MG2AppComposition {
     private lazy var modalartUseCase = ModalartUseCase(repository: modalartRepository, jogakRepository: scheduleStartRepository)
     private lazy var mogakEditingUseCase = MogakEditingUseCase(repository: mogakEditingRepository)
     private lazy var scheduleStartUseCase = ScheduleStartUseCase(repository: scheduleStartRepository, modalartRepository: modalartRepository)
-    private lazy var todayUseCase = TodayUseCase(repository: scheduleStartRepository, snapshotStorage: MG2TodaySnapshotStore(), surfaces: MG2TodaySurfaceRefresher(), reminder: MG2ReminderScheduler())
+    private lazy var todayUseCase = TodayUseCase(repository: scheduleStartRepository, modalartRepository: modalartRepository, snapshotStorage: MG2TodaySnapshotStore(), surfaces: MG2TodaySurfaceRefresher(), reminder: MG2ReminderScheduler())
 
     /// 광고 노출 규칙과 AdMob 어댑터. SceneDelegate가 앱 열기 광고에 같이 쓴다.
     lazy var adPolicyUseCase = AdPolicyUseCase(storage: MG2AdPolicyStore())

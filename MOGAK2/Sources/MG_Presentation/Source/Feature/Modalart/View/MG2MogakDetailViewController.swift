@@ -47,7 +47,7 @@ final class MG2MogakDetailViewController: UIViewController {
         configureLayout()
         configureCollectionViews()
         render()
-        reload(showsSkeleton: true, viewModel.reloadOccurrences)
+        reload(showsSkeleton: true, viewModel.reloadJogaks)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -135,7 +135,7 @@ final class MG2MogakDetailViewController: UIViewController {
     }
 
     private func editJogak(_ jogak: MG2JogakDetailEntity) {
-        coordinator?.routeToJogakEditing(jogak: jogak, path: viewModel.mogakPath, from: self) { [weak self] in self?.reloadOccurrences() }
+        coordinator?.routeToJogakEditing(jogak: jogak, path: viewModel.mogakPath, from: self) { [weak self] in self?.reloadJogaks() }
     }
 
     private func confirmJogakDeletion(_ jogak: MG2JogakDetailEntity) {
@@ -151,8 +151,8 @@ final class MG2MogakDetailViewController: UIViewController {
     }
 
     /// 조각 만들기 · 수정 뒤.
-    private func reloadOccurrences() {
-        reload(showsSkeleton: false, viewModel.reloadOccurrences)
+    private func reloadJogaks() {
+        reload(showsSkeleton: false, viewModel.reloadJogaks)
     }
 
     /// 모각 수정 뒤.
@@ -197,9 +197,9 @@ final class MG2MogakDetailViewController: UIViewController {
         jogakCollectionView.showSkeletonBlocks(where: { $0.item != MG2MandalaGrid.centerIndex })
     }
 
-    private func showJogakActions(for occurrence: MG2JogakOccurrenceEntity) {
+    private func showJogakActions(for jogak: MG2MogakJogakEntity) {
         let finish = beginPendingTransition()
-        viewModel.loadJogakActionContext(for: occurrence) { [weak self] result in
+        viewModel.loadJogakActionContext(for: jogak) { [weak self] result in
             finish()
             guard let self else { return }
             switch result {
@@ -243,25 +243,25 @@ extension MG2MogakDetailViewController: UICollectionViewDataSource {
         }
 
         // 불러오는 동안 조각 자리는 빈 칸 (스켈레톤 자리).
-        guard !isLoadingJogaks, let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.occurrences.indices.contains(jogakIndex) else { return emptyCell(collectionView, at: indexPath) }
-        let occurrence = viewModel.state.occurrences[jogakIndex]
-        if occurrence.isRoutine {
+        guard !isLoadingJogaks, let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item), viewModel.state.jogaks.indices.contains(jogakIndex) else { return emptyCell(collectionView, at: indexPath) }
+        let jogak = viewModel.state.jogaks[jogakIndex]
+        if jogak.isRoutine {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2RoutineJogakCell.routineIdentifier, for: indexPath)
             guard let cell = reusableCell as? MG2RoutineJogakCell else { return reusableCell }
-            cell.configure(badgeText: viewModel.routineDaysText(for: occurrence), title: occurrence.title, color: selectedMogak.color ?? DesignSystemPalette.signatureHex)
+            cell.configure(badgeText: viewModel.routineDaysText(for: jogak), title: jogak.title, color: selectedMogak.color ?? DesignSystemPalette.signatureHex)
             return cell
         }
 
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2JogakCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2JogakCell else { return reusableCell }
-        cell.configure(title: occurrence.title)
+        cell.configure(title: jogak.title)
         return cell
     }
 
     /// 빈 칸: 다음에 채울 칸 하나만 "조각 추가"로 강조.
     private func emptyCell(_ collectionView: UICollectionView, at indexPath: IndexPath) -> UICollectionViewCell {
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2EmptyMogakCell.identifier, for: indexPath)
-        let isNext = !isLoadingJogaks && MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.occurrences.count && viewModel.state.selectedMogak != nil
+        let isNext = !isLoadingJogaks && MG2MandalaGrid.contentIndex(for: indexPath.item) == viewModel.state.jogaks.count && viewModel.state.selectedMogak != nil
         (reusableCell as? MG2EmptyMogakCell)?.configure(isSuggested: isNext, label: "조각 추가")
         return reusableCell
     }
@@ -282,12 +282,12 @@ extension MG2MogakDetailViewController: UICollectionViewDelegate {
         }
 
         guard let jogakIndex = MG2MandalaGrid.contentIndex(for: indexPath.item) else { return }
-        guard viewModel.state.occurrences.indices.contains(jogakIndex) else {
-            coordinator?.routeToJogakCreation(mogak: selectedMogak, path: viewModel.jogakCreationPath, from: self) { [weak self] in self?.reloadOccurrences() }
+        guard viewModel.state.jogaks.indices.contains(jogakIndex) else {
+            coordinator?.routeToJogakCreation(mogak: selectedMogak, path: viewModel.jogakCreationPath, from: self) { [weak self] in self?.reloadJogaks() }
             return
         }
 
-        showJogakActions(for: viewModel.state.occurrences[jogakIndex])
+        showJogakActions(for: viewModel.state.jogaks[jogakIndex])
     }
 }
 

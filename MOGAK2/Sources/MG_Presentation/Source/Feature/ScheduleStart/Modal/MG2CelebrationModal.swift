@@ -6,12 +6,14 @@ final class MG2CelebrationModal: UIViewController {
     var onConfirm: (() -> Void)?
 
     private let done: Int
+    private let weeklyPercent: Int?
     private let completedCount: Int
     private let mascot = MG2MascotView(size: 104)
     private let titleLabel = UILabel()
 
-    init(done: Int, completedCount: Int) {
+    init(done: Int, weeklyPercent: Int?, completedCount: Int) {
         self.done = done
+        self.weeklyPercent = weeklyPercent
         self.completedCount = completedCount
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .overFullScreen
@@ -48,8 +50,8 @@ final class MG2CelebrationModal: UIViewController {
         subLabel.textAlignment = .center
         subLabel.numberOfLines = 0
 
-        // TODO(server): 이번 주 % 통계는 주간 진척 API가 생기면 추가.
-        let stats = UIStackView(arrangedSubviews: [stat(value: "\(done)/\(done)", label: "오늘"), stat(value: "\(completedCount)회", label: "완료한 조각")])
+        // 이번 주 %를 못 불러오면 그 칸만 뺀다.
+        let stats = UIStackView(arrangedSubviews: [stat(value: "\(done)/\(done)", label: "오늘"), weeklyPercent.map { stat(value: "\($0)%", label: "이번 주") }, stat(value: "\(completedCount)회", label: "완료한 조각")].compactMap { $0 })
         stats.distribution = .fillEqually
         stats.backgroundColor = DS.Color.listTile
         stats.roundCorners(16)

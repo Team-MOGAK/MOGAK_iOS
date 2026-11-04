@@ -5,6 +5,8 @@ protocol ModalartRepository {
     func getModalartDetail(modalartId: Int) async throws -> MG2ModalartDetailEntity?
     func getModalartMogaks(modalartId: Int) async throws -> [MG2ModalartMogakItemEntity]
     func getMogakOccurrences(mogakId: Int, date: Date) async throws -> [MG2JogakOccurrenceEntity]
+    func getMogakJogaks(mogakId: Int) async throws -> [MG2MogakJogakEntity]
+    func getWeeklyProgress(modalartId: Int, date: Date) async throws -> MG2WeeklyProgress
     func createModalart(title: String, color: String) async throws -> MG2ModalartUpsertEntity
     func editModalart(id: Int, title: String, color: String) async throws -> MG2ModalartUpsertEntity
     func deleteModalart(id: Int) async throws

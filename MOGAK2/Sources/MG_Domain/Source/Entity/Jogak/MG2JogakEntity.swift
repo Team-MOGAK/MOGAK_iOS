@@ -15,12 +15,16 @@ struct MG2JogakOccurrenceKey: Hashable {
 
 struct MG2JogakOccurrenceEntity {
     let key: MG2JogakOccurrenceKey
+    let mogakID: Int
+    let modalartID: Int
     let mogakTitle: String
     let category: MG2MogakCategoryEntity
     let title: String
     let color: String?
     let status: MG2JogakOccurrenceStatus
     let isRoutine: Bool
+    /// 반복 요일. 일회성 조각은 비어 있다.
+    let days: [MG2Weekday]
     let achievements: Int
 }
 

@@ -79,8 +79,10 @@ final class MG2ModalartMainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        guard !isLoadingBoard, !viewModel.isGuest else { return }
         // 처음 불러오기가 실패했으면 탭에 다시 들어올 때 다시 부른다. 판 없이 두면 아무것도 누를 수 없다.
-        if !isLoadingBoard, !viewModel.isGuest, !viewModel.state.hasModalart { loadModalart() }
+        // 판이 있으면 홈에서 체크한 만큼 이번 주 %가 바뀌니 조용히 새로 고친다.
+        if viewModel.state.hasModalart { reloadSelectedModalart() } else { loadModalart() }
     }
 
     // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.
@@ -310,7 +312,7 @@ extension MG2ModalartMainViewController: UICollectionViewDataSource {
         if indexPath.item == MG2MandalaGrid.centerIndex {
             let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2ModalartMainCell.identifier, for: indexPath)
             guard let cell = reusableCell as? MG2ModalartMainCell else { return reusableCell }
-            cell.configure(title: viewModel.state.centerTitle, color: viewModel.state.centerColor, caption: viewModel.state.needsTitle ? nil : "최종 목표")
+            cell.configure(title: viewModel.state.centerTitle, color: viewModel.state.centerColor, caption: viewModel.state.needsTitle ? nil : "최종 목표", percent: viewModel.state.weeklyPercent)
             return cell
         }
 
@@ -323,7 +325,7 @@ extension MG2ModalartMainViewController: UICollectionViewDataSource {
         let reusableCell = collectionView.dequeueReusableCell(withReuseIdentifier: MG2MogakCell.identifier, for: indexPath)
         guard let cell = reusableCell as? MG2MogakCell else { return reusableCell }
         let mogak = viewModel.state.mogaks[mogakIndex]
-        cell.configure(with: mogak) { [weak self] in self?.showMogakSettings(mogak) }
+        cell.configure(with: mogak, weeklyPercent: viewModel.state.weeklyPercent(of: mogak)) { [weak self] in self?.showMogakSettings(mogak) }
         return cell
     }
 }

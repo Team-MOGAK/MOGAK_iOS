@@ -17,8 +17,7 @@ struct MG2JogakActionContext {
 struct MG2MogakDetailViewState {
     var mogaks: [MG2ModalartMogakItemEntity]
     var selectedMogakID: Int
-    var occurrences: [MG2JogakOccurrenceEntity]
-    var routineDaysTextByJogakID: [Int: String]
+    var jogaks: [MG2MogakJogakEntity]
 
     var selectedMogak: MG2ModalartMogakItemEntity? {
         mogaks.first { $0.mogakId == selectedMogakID }
@@ -49,7 +48,7 @@ final class MG2MogakDetailViewModel {
         self.useCase = useCase
         self.modalartID = modalartID
         self.modalartTitle = modalartTitle
-        state = MG2MogakDetailViewState(mogaks: mogaks, selectedMogakID: selectedMogak.mogakId, occurrences: [], routineDaysTextByJogakID: [:])
+        state = MG2MogakDetailViewState(mogaks: mogaks, selectedMogakID: selectedMogak.mogakId, jogaks: [])
     }
 
     /// 만들기 · 수정 화면 위 경로: 판 › 모각.
@@ -60,20 +59,20 @@ final class MG2MogakDetailViewModel {
 
     /// 판 › 모각 › 조각 n/8.
     var jogakCreationPath: [MG2PathItem] {
-        mogakPath + [MG2PathItem(label: "조각 \(state.occurrences.count + 1)/8")]
+        mogakPath + [MG2PathItem(label: "조각 \(state.jogaks.count + 1)/8")]
     }
 
     func selectMogak(at index: Int, completion: @escaping (Result<Void, Error>) -> Void) {
         guard state.mogaks.indices.contains(index) else { return completion(.success(())) }
         select(mogakID: state.mogaks[index].mogakId)
-        reloadOccurrences(completion: completion)
+        reloadJogaks(completion: completion)
     }
 
-    func reloadOccurrences(completion: @escaping (Result<Void, Error>) -> Void) {
+    func reloadJogaks(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let mogakID = state.selectedMogak?.mogakId else { return completion(.success(())) }
         Task {
             do {
-                try await reloadOccurrences(mogakID: mogakID)
+                try await reloadJogaks(mogakID: mogakID)
                 completion(.success(()))
             } catch {
                 completion(.failure(error))
@@ -84,7 +83,7 @@ final class MG2MogakDetailViewModel {
     func reloadMogaks(completion: @escaping (Result<Void, Error>) -> Void) {
         Task {
             do {
-                try await reloadMogaksAndOccurrences()
+                try await reloadMogaksAndJogaks()
                 completion(.success(()))
             } catch {
                 completion(.failure(error))
@@ -97,7 +96,7 @@ final class MG2MogakDetailViewModel {
         Task {
             do {
                 try await useCase.deleteMogak(mogakId: selectedMogak.mogakId)
-                try await reloadMogaksAndOccurrences()
+                try await reloadMogaksAndJogaks()
                 completion(.success(state.mogaks.isEmpty ? .noMogaksRemaining : .reloaded))
             } catch {
                 completion(.failure(error))
@@ -110,7 +109,7 @@ final class MG2MogakDetailViewModel {
             do {
                 try await useCase.deleteJogak(jogakId: id)
                 if let selectedMogak = state.selectedMogak {
-                    try await reloadOccurrences(mogakID: selectedMogak.mogakId)
+                    try await reloadJogaks(mogakID: selectedMogak.mogakId)
                 }
                 completion(.success(()))
             } catch {
@@ -119,14 +118,15 @@ final class MG2MogakDetailViewModel {
         }
     }
 
-    func routineDaysText(for occurrence: MG2JogakOccurrenceEntity) -> String {
-        state.routineDaysTextByJogakID[occurrence.key.jogakID] ?? "0회"
+    func routineDaysText(for jogak: MG2MogakJogakEntity) -> String {
+        let days = localizedDays(from: jogak.days)
+        return days.isEmpty ? "0회" : days.joined(separator: ",")
     }
 
-    func loadJogakActionContext(for occurrence: MG2JogakOccurrenceEntity, completion: @escaping (Result<MG2JogakActionContext, Error>) -> Void) {
+    func loadJogakActionContext(for jogak: MG2MogakJogakEntity, completion: @escaping (Result<MG2JogakActionContext, Error>) -> Void) {
         Task {
             do {
-                let detail = try await useCase.getJogakDetail(jogakId: occurrence.key.jogakID)
+                let detail = try await useCase.getJogakDetail(jogakId: jogak.jogakID)
                 completion(.success(makeActionContext(detail: detail)))
             } catch {
                 completion(.failure(error))
@@ -134,42 +134,31 @@ final class MG2MogakDetailViewModel {
         }
     }
 
-    private func reloadMogaksAndOccurrences() async throws {
+    private func reloadMogaksAndJogaks() async throws {
         state.mogaks = try await useCase.getModalartMogaks(modalartId: modalartID)
         guard !state.mogaks.isEmpty else {
-            state.occurrences = []
-            state.routineDaysTextByJogakID = [:]
+            state.jogaks = []
             return
         }
 
         // 기다리는 사이 다른 모각 칩을 눌렀을 수 있으니 지금 고른 모각을 기준으로 한다.
         let selection = state.mogaks.first { $0.mogakId == state.selectedMogakID } ?? state.mogaks[0]
         select(mogakID: selection.mogakId)
-        try await reloadOccurrences(mogakID: selection.mogakId)
+        try await reloadJogaks(mogakID: selection.mogakId)
     }
 
     /// 다른 모각으로 바꾸면 앞 모각의 조각을 비운다. 불러오다 실패해도 앞 모각 조각이 새 모각 아래 남지 않는다.
     private func select(mogakID: Int) {
         guard state.selectedMogakID != mogakID else { return }
         state.selectedMogakID = mogakID
-        state.occurrences = []
-        state.routineDaysTextByJogakID = [:]
+        state.jogaks = []
     }
 
-    private func reloadOccurrences(mogakID: Int) async throws {
-        let occurrences = try await useCase.getMogakOverview(mogakId: mogakID, from: Date())
-        let routineDaysText = try await loadRoutineDaysText(for: occurrences)
+    private func reloadJogaks(mogakID: Int) async throws {
+        let jogaks = try await useCase.getMogakJogaks(mogakId: mogakID)
         // 그사이 다른 모각을 골랐으면 늦게 온 결과는 버린다.
         guard state.selectedMogakID == mogakID else { return }
-        state.occurrences = occurrences
-        state.routineDaysTextByJogakID = routineDaysText
-    }
-
-    private func loadRoutineDaysText(for occurrences: [MG2JogakOccurrenceEntity]) async throws -> [Int: String] {
-        try await useCase.routineWeekdays(for: occurrences).mapValues { weekdays in
-            let days = localizedDays(from: weekdays)
-            return days.isEmpty ? "0회" : days.joined(separator: ",")
-        }
+        state.jogaks = jogaks
     }
 
     private func makeActionContext(detail: MG2JogakDetailEntity) -> MG2JogakActionContext {
