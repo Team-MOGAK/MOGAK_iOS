@@ -238,7 +238,6 @@ final class MG2ScheduleStartViewModel {
         return .toggled(isCompleted: isCompleted, remaining: remaining)
     }
 
-    /// 축하 카드의 이번 주 %.
     func loadWeeklyPercent(completion: @escaping (Result<Int, Error>) -> Void) {
         let modalartIDs = Set(state.occurrences.map(\.modalartID))
         let date = state.selectedDate

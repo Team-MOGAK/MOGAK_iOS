@@ -32,7 +32,6 @@ struct MG2JogakOccurrenceDTO: Decodable {
     }
 }
 
-/// `date` 없이 부른 모각 조각 목록. `scheduledDate` · `status`는 null이라 읽지 않는다.
 struct MG2MogakJogakDTO: Decodable {
     let jogakID: Int
     let title: String

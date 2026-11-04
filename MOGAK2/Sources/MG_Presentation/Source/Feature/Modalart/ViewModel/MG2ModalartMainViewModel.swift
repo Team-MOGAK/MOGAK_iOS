@@ -7,7 +7,6 @@ struct MG2ModalartMainViewState {
     var title = ""
     var color = DesignSystemPalette.neutralGrayHex
     var mogaks = [MG2ModalartMogakItemEntity]()
-    /// 이번 주 진척. 둘러보기와 새로 만든 판은 nil.
     var weeklyProgress: MG2WeeklyProgress?
 
     var hasModalart: Bool { selectedID != nil }
@@ -16,7 +15,6 @@ struct MG2ModalartMainViewState {
     var centerColor: String {
         needsTitle ? DesignSystemPalette.neutralGrayHex : color
     }
-    /// 이번 주 회차가 있을 때만 가운데 % 캡슐.
     var weeklyPercent: Int? {
         weeklyProgress.flatMap { $0.plannedCount > 0 ? $0.percent : nil }
     }

@@ -23,9 +23,15 @@ struct MG2JogakOccurrenceEntity {
     let color: String?
     let status: MG2JogakOccurrenceStatus
     let isRoutine: Bool
-    /// 반복 요일. 일회성 조각은 비어 있다.
     let days: [MG2Weekday]
     let achievements: Int
+}
+
+struct MG2MogakJogakEntity {
+    let jogakID: Int
+    let title: String
+    let isRoutine: Bool
+    let days: [MG2Weekday]
 }
 
 struct MG2MogakOccurrences {

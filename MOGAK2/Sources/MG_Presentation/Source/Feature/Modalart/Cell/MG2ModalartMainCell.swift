@@ -42,7 +42,6 @@ final class MG2ModalartMainCell: UICollectionViewCell {
         label.textColor = DS.Color.surface
         label.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         label.clipsToBounds = true
-        label.isHidden = true
         return label
     }()
 

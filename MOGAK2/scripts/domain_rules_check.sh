@@ -93,7 +93,7 @@ sed -i '' '1s/^/import Foundation\n/' "$TMP_DIR/stubs.swift"
 
 xcrun swiftc -Onone -o "$TMP_DIR/check" \
   "$DOMAIN/Entity/Today/MG2Mood.swift" \
-  "$DOMAIN/Entity/Jogak/MG2WeeklyProgress.swift" \
+  "$DOMAIN/Entity/Modalart/MG2WeeklyProgress.swift" \
   "$DOMAIN/Usecase/AdPolicyUseCase.swift" \
   "$TMP_DIR/stubs.swift" \
   "$TMP_DIR/main.swift"

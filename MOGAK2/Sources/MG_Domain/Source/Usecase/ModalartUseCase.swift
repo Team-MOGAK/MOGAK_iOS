@@ -34,7 +34,7 @@ final class ModalartUseCase {
         try await repository.getModalartMogaks(modalartId: modalartId)
     }
 
-    /// 모각의 조각 전체. 판 칸 순서가 바뀌지 않게 만든 순서로 둔다.
+    /// 판 칸 순서가 바뀌지 않게 만든 순서로 둔다.
     func getMogakJogaks(mogakId: Int) async throws -> [MG2MogakJogakEntity] {
         try await repository.getMogakJogaks(mogakId: mogakId).sorted { $0.jogakID < $1.jogakID }
     }

@@ -405,13 +405,13 @@ final class MG2ScheduleStartViewController: UIViewController {
         viewModel.loadWeeklyPercent { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success(let weeklyPercent): presentCelebration(weeklyPercent: weeklyPercent)
+            case .success(let weeklyPercent): showCelebration(weeklyPercent: weeklyPercent)
             case .failure(let error): coordinator?.presentError(error, from: self)
             }
         }
     }
 
-    private func presentCelebration(weeklyPercent: Int) {
+    private func showCelebration(weeklyPercent: Int) {
         let done = viewModel.state.occurrences.count
         coordinator?.presentCelebration(done: done, weeklyPercent: weeklyPercent, completedCount: viewModel.completedPieceCount, from: self) { [weak self] in
             guard let self else { return }
