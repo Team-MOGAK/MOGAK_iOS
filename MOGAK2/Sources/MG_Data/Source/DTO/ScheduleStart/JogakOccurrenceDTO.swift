@@ -38,17 +38,14 @@ struct MG2MogakJogakDTO: Decodable {
     let title: String
     let isRoutine: Bool
     let days: [String]
-    let startDate: String
-    let endDate: String?
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
-        case title, isRoutine, days, startDate, endDate
+        case title, isRoutine, days
     }
 
-    func toEntity() throws -> MG2MogakJogakEntity {
-        guard let start = MG2APIDateCoding.decode(startDate) else { throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [CodingKeys.startDate], debugDescription: "Invalid date: \(startDate)")) }
-        return MG2MogakJogakEntity(jogakID: jogakID, title: title, isRoutine: isRoutine, days: MG2APIWeekdayCoding.decode(days), startDate: start, endDate: MG2APIDateCoding.decode(endDate))
+    func toEntity() -> MG2MogakJogakEntity {
+        MG2MogakJogakEntity(jogakID: jogakID, title: title, isRoutine: isRoutine, days: MG2APIWeekdayCoding.decode(days))
     }
 }
 

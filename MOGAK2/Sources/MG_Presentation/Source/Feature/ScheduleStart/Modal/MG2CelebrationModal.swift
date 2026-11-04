@@ -6,12 +6,12 @@ final class MG2CelebrationModal: UIViewController {
     var onConfirm: (() -> Void)?
 
     private let done: Int
-    private let weeklyPercent: Int?
+    private let weeklyPercent: Int
     private let completedCount: Int
     private let mascot = MG2MascotView(size: 104)
     private let titleLabel = UILabel()
 
-    init(done: Int, weeklyPercent: Int?, completedCount: Int) {
+    init(done: Int, weeklyPercent: Int, completedCount: Int) {
         self.done = done
         self.weeklyPercent = weeklyPercent
         self.completedCount = completedCount
@@ -50,8 +50,7 @@ final class MG2CelebrationModal: UIViewController {
         subLabel.textAlignment = .center
         subLabel.numberOfLines = 0
 
-        // 이번 주 %를 못 불러오면 그 칸만 뺀다.
-        let stats = UIStackView(arrangedSubviews: [stat(value: "\(done)/\(done)", label: "오늘"), weeklyPercent.map { stat(value: "\($0)%", label: "이번 주") }, stat(value: "\(completedCount)회", label: "완료한 조각")].compactMap { $0 })
+        let stats = UIStackView(arrangedSubviews: [stat(value: "\(done)/\(done)", label: "오늘"), stat(value: "\(weeklyPercent)%", label: "이번 주"), stat(value: "\(completedCount)회", label: "완료한 조각")])
         stats.distribution = .fillEqually
         stats.backgroundColor = DS.Color.listTile
         stats.roundCorners(16)

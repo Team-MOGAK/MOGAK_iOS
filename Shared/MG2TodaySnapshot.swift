@@ -5,8 +5,6 @@ struct MG2TodaySnapshot: Codable, Equatable {
     struct Piece: Codable, Equatable {
         let jogakID: Int
         let scheduledDate: Date
-        /// 이전 버전이 저장한 요약에는 없다.
-        let modalartID: Int?
         let title: String
         let mogakTitle: String
         /// 모각 색 RRGGBB. 화면에서 모각 색 팔레트로 바꿔 그린다.
@@ -20,8 +18,6 @@ struct MG2TodaySnapshot: Codable, Equatable {
     /// MG2MoakPose.rawValue
     var pose: String
     var line: String
-    /// 오늘 조각이 속한 판들의 이번 주 %. 모르면 nil.
-    var weeklyPercent: Int? = nil
 
     var done: Int { pieces.filter(\.isDone).count }
     var total: Int { pieces.count }

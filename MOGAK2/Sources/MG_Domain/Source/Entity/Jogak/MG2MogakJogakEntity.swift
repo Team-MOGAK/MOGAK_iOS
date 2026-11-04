@@ -6,12 +6,4 @@ struct MG2MogakJogakEntity {
     let title: String
     let isRoutine: Bool
     let days: [MG2Weekday]
-    let startDate: Date
-    let endDate: Date?
-
-    /// 끝나지 않은 조각인지. 서버가 모각당 8개 제한을 셀 때와 같은 기준이다 (일회성의 endDate는 늘 nil).
-    /// today는 그날 0시.
-    func isCurrentOrFuture(on today: Date) -> Bool {
-        isRoutine ? (endDate ?? today) >= today : startDate >= today
-    }
 }

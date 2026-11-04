@@ -65,6 +65,8 @@ final class MG2ModalartMainCell: UICollectionViewCell {
         captionLabel.isHidden = caption == nil
         percentLabel.text = percent.map { "\($0)%" }
         percentLabel.isHidden = percent == nil
+        // 셀 layoutSubviews 때는 라벨 크기가 아직 없어서, 글자 높이 + 위아래 안쪽 2로 정한다.
+        percentLabel.layer.cornerRadius = (percentLabel.font.lineHeight + 4) / 2
         contentView.backgroundColor = DS.Moak.displayColor(forServerHex: color)
         contentView.isAccessibilityElement = true
         contentView.accessibilityLabel = [caption, title.replacingOccurrences(of: "\n", with: " "), percent.map { "이번 주 \($0)퍼센트" }].compactMap { $0 }.joined(separator: ", ")
@@ -85,10 +87,5 @@ final class MG2ModalartMainCell: UICollectionViewCell {
         }
         goalLabel.snp.makeConstraints { $0.width.equalTo(stack) }
         captionLabel.snp.makeConstraints { $0.width.equalTo(stack) }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        percentLabel.layer.cornerRadius = percentLabel.bounds.height / 2
     }
 }

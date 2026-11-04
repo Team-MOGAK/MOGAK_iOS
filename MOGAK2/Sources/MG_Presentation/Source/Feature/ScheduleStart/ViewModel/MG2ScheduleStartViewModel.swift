@@ -28,8 +28,7 @@ struct MG2TodayProgress {
     let total: Int
     let pose: MG2MoakPose
     let line: String
-    /// 오늘 조각이 속한 판들의 이번 주 %. 모르면 nil.
-    let weeklyPercent: Int?
+
 
     var isAllDone: Bool { total > 0 && done >= total }
     var percent: Int { total == 0 ? 0 : Int((Double(done) / Double(total) * 100).rounded()) }
@@ -239,6 +238,19 @@ final class MG2ScheduleStartViewModel {
         return .toggled(isCompleted: isCompleted, remaining: remaining)
     }
 
+    /// 축하 카드의 이번 주 %.
+    func loadWeeklyPercent(completion: @escaping (Result<Int, Error>) -> Void) {
+        let modalartIDs = Set(state.occurrences.map(\.modalartID))
+        let date = state.selectedDate
+        Task {
+            do {
+                completion(.success(try await useCase.getWeeklyPercent(modalartIDs: modalartIDs, date: date)))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+
     func unlockSelectedDay() {
         adPolicyUseCase.unlockPastDay(state.selectedDate)
     }
@@ -280,9 +292,9 @@ final class MG2ScheduleStartViewModel {
     private func publishToday(_ items: [MG2JogakOccurrenceItem], date: Date) async -> MG2TodayProgress? {
         guard isToday(date) else { return nil }
         let pieces = items.map {
-            MG2TodaySnapshot.Piece(jogakID: $0.key.jogakID, scheduledDate: $0.key.scheduledDate, modalartID: $0.modalartID, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, isRoutine: $0.isRoutine, isDone: $0.isCompleted)
+            MG2TodaySnapshot.Piece(jogakID: $0.key.jogakID, scheduledDate: $0.key.scheduledDate, title: $0.title, mogakTitle: $0.mogakTitle, color: $0.color, isRoutine: $0.isRoutine, isDone: $0.isCompleted)
         }
         let snapshot = await todayUseCase.publish(pieces)
-        return MG2TodayProgress(done: snapshot.done, total: snapshot.total, pose: MG2MoakPose(rawValue: snapshot.pose) ?? .wave, line: snapshot.line, weeklyPercent: snapshot.weeklyPercent)
+        return MG2TodayProgress(done: snapshot.done, total: snapshot.total, pose: MG2MoakPose(rawValue: snapshot.pose) ?? .wave, line: snapshot.line)
     }
 }

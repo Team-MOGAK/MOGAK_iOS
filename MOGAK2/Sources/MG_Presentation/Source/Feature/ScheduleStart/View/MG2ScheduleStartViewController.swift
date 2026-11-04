@@ -402,8 +402,18 @@ final class MG2ScheduleStartViewController: UIViewController {
 
     /// 확인 → 처음 한 번은 알림 권유, 그 뒤로는 전면 광고 규칙 확인.
     private func presentCelebration() {
+        viewModel.loadWeeklyPercent { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let weeklyPercent): presentCelebration(weeklyPercent: weeklyPercent)
+            case .failure(let error): coordinator?.presentError(error, from: self)
+            }
+        }
+    }
+
+    private func presentCelebration(weeklyPercent: Int) {
         let done = viewModel.state.occurrences.count
-        coordinator?.presentCelebration(done: done, weeklyPercent: viewModel.state.progress?.weeklyPercent, completedCount: viewModel.completedPieceCount, from: self) { [weak self] in
+        coordinator?.presentCelebration(done: done, weeklyPercent: weeklyPercent, completedCount: viewModel.completedPieceCount, from: self) { [weak self] in
             guard let self else { return }
             if viewModel.shouldOfferReminder {
                 coordinator?.presentReminderOffer(from: self, onAccept: { [weak self] in self?.viewModel.enableReminder() }, onDecline: { [weak self] in self?.viewModel.declineReminder() })

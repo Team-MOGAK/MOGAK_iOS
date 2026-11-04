@@ -34,12 +34,9 @@ final class ModalartUseCase {
         try await repository.getModalartMogaks(modalartId: modalartId)
     }
 
-    /// 판에 놓을 조각. 끝난 조각은 8칸 제한에 들지 않으니 빼고, 칸 순서가 바뀌지 않게 만든 순서로 둔다.
+    /// 모각의 조각 전체. 판 칸 순서가 바뀌지 않게 만든 순서로 둔다.
     func getMogakJogaks(mogakId: Int) async throws -> [MG2MogakJogakEntity] {
-        let today = Calendar.current.startOfDay(for: Date())
-        return try await repository.getMogakJogaks(mogakId: mogakId)
-            .filter { $0.isCurrentOrFuture(on: today) }
-            .sorted { $0.jogakID < $1.jogakID }
+        try await repository.getMogakJogaks(mogakId: mogakId).sorted { $0.jogakID < $1.jogakID }
     }
 
     /// 81칸 전체 보기: 모각마다 조각 이름(모각 상세와 같은 순서). 모각마다 한 번씩 차례로 불러온다.

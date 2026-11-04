@@ -4,7 +4,6 @@ import Foundation
 /// 오늘의 조각 진척 · 모각이 상태를 만들고 위젯 · 라이브 액티비티 · 알림까지 맞춘다.
 final class TodayUseCase {
     private let repository: ScheduleStartRepository
-    private let modalartRepository: ModalartRepository
     private let snapshotStorage: TodaySnapshotStorage
     private let surfaces: TodaySurfaceRefreshing
     private let reminder: ReminderScheduling
@@ -15,9 +14,8 @@ final class TodayUseCase {
     /// 앱 밖(위젯 · 라이브 액티비티 버튼)에서 조각이 바뀌면 알린다. 홈은 이걸 듣고 다시 불러온다.
     let externalChanges = PassthroughSubject<Void, Never>()
 
-    init(repository: ScheduleStartRepository, modalartRepository: ModalartRepository, snapshotStorage: TodaySnapshotStorage, surfaces: TodaySurfaceRefreshing, reminder: ReminderScheduling, calendar: Calendar = .current, now: @escaping () -> Date = Date.init) {
+    init(repository: ScheduleStartRepository, snapshotStorage: TodaySnapshotStorage, surfaces: TodaySurfaceRefreshing, reminder: ReminderScheduling, calendar: Calendar = .current, now: @escaping () -> Date = Date.init) {
         self.repository = repository
-        self.modalartRepository = modalartRepository
         self.snapshotStorage = snapshotStorage
         self.surfaces = surfaces
         self.reminder = reminder
@@ -33,12 +31,11 @@ final class TodayUseCase {
     @discardableResult
     func publish(_ pieces: [MG2TodaySnapshot.Piece]) async -> MG2TodaySnapshot {
         async let nextDay = nextDaySnapshot()
-        async let weekly = weeklyPercent(of: pieces)
         let missed = await missedYesterday()
         let done = pieces.filter(\.isDone).count
         // TODO(server): 조각 타이머(isTimerRunning)와 지난주 레이스(raceAhead)는 서버 API가 생기면 넘긴다.
         let mood = MG2Mood(done: done, total: pieces.count, isEvening: calendar.component(.hour, from: now()) >= MG2Mood.eveningHour, missedYesterday: missed)
-        let snapshot = MG2TodaySnapshot(date: calendar.startOfDay(for: now()), pieces: pieces, pose: mood.pose(done: done, total: pieces.count).rawValue, line: mood.line(done: done, total: pieces.count), weeklyPercent: await weekly)
+        let snapshot = MG2TodaySnapshot(date: calendar.startOfDay(for: now()), pieces: pieces, pose: mood.pose(done: done, total: pieces.count).rawValue, line: mood.line(done: done, total: pieces.count))
         snapshotStorage.save(snapshot)
         if let nextDay = await nextDay { snapshotStorage.saveNextDay(nextDay) }
         surfaces.refresh(with: snapshot)
@@ -101,7 +98,7 @@ final class TodayUseCase {
     }
 
     static func piece(from entity: MG2JogakOccurrenceEntity) -> MG2TodaySnapshot.Piece {
-        MG2TodaySnapshot.Piece(jogakID: entity.key.jogakID, scheduledDate: entity.key.scheduledDate, modalartID: entity.modalartID, title: entity.title, mogakTitle: entity.mogakTitle, color: entity.color, isRoutine: entity.isRoutine, isDone: entity.status == .success)
+        MG2TodaySnapshot.Piece(jogakID: entity.key.jogakID, scheduledDate: entity.key.scheduledDate, title: entity.title, mogakTitle: entity.mogakTitle, color: entity.color, isRoutine: entity.isRoutine, isDone: entity.status == .success)
     }
 
     private func todayPieces() async throws -> [MG2TodaySnapshot.Piece] {
@@ -118,20 +115,6 @@ final class TodayUseCase {
         pieces[index].isDone = isDone
         await publish(pieces)
         externalChanges.send()
-    }
-
-    /// 오늘 조각이 속한 판들의 이번 주 %. 보조 정보라 못 불러오면 nil(화면은 오늘 진척만 보인다).
-    private func weeklyPercent(of pieces: [MG2TodaySnapshot.Piece]) async -> Int? {
-        let modalartIDs = Set(pieces.compactMap(\.modalartID))
-        guard !modalartIDs.isEmpty else { return nil }
-        let date = now()
-        let boards = try? await withThrowingTaskGroup(of: MG2WeeklyProgress.self) { group in
-            for modalartID in modalartIDs {
-                group.addTask { [modalartRepository] in try await modalartRepository.getWeeklyProgress(modalartId: modalartID, date: date) }
-            }
-            return try await group.reduce(into: [MG2WeeklyProgress]()) { $0.append($1) }
-        }
-        return boards.flatMap(MG2WeeklyProgress.combinedPercent)
     }
 
     /// 내일 조각. 위젯이 자정에 이걸로 넘어간다. 못 불러오면 nil(위젯은 빈 상태로).

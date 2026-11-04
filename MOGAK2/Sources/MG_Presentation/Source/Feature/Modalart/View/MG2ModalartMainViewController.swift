@@ -79,10 +79,8 @@ final class MG2ModalartMainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
-        guard !isLoadingBoard, !viewModel.isGuest else { return }
         // 처음 불러오기가 실패했으면 탭에 다시 들어올 때 다시 부른다. 판 없이 두면 아무것도 누를 수 없다.
-        // 판이 있으면 홈에서 체크한 만큼 이번 주 %가 바뀌니 조용히 새로 고친다.
-        if viewModel.state.hasModalart { reloadSelectedModalart() } else { loadModalart() }
+        if !isLoadingBoard, !viewModel.isGuest, !viewModel.state.hasModalart { loadModalart() }
     }
 
     // TODO(ads): 광고는 업데이트 때 넣는다. 아래 주석을 풀면 그대로 동작한다.

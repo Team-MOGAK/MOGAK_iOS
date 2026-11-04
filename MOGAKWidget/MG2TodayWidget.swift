@@ -99,10 +99,10 @@ private struct MiniBoard: View {
                 }
             }
             HStack(spacing: 4) {
-                Text(snapshot.weeklyPercent == nil ? "오늘의 조각" : "이번 주").foregroundStyle(MG2WidgetStyle.ink).minimumScaleFactor(0.8)
+                Text("오늘의 조각").foregroundStyle(MG2WidgetStyle.ink).minimumScaleFactor(0.8)
                 Spacer(minLength: 0)
-                // 이번 주 %를 모르면 오늘 n/m을 둔다.
-                Text(snapshot.weeklyPercent.map { "\($0)%" } ?? "\(snapshot.done)/\(snapshot.total)").monospacedDigit()
+                // 아티팩트는 판 이름 + 이번 주 %. 둘 다 아직 데이터가 없어 오늘 n/m을 둔다 (TODO(server): 주간 진척).
+                Text("\(snapshot.done)/\(snapshot.total)").monospacedDigit()
                     .foregroundStyle(MG2WidgetStyle.accent)
                     .contentTransition(.numericText())
                     .layoutPriority(1)
@@ -111,7 +111,7 @@ private struct MiniBoard: View {
             .lineLimit(1)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(["오늘의 조각 \(snapshot.done) / \(snapshot.total)", snapshot.weeklyPercent.map { "이번 주 \($0)퍼센트" }].compactMap { $0 }.joined(separator: ", "))
+        .accessibilityLabel("오늘의 조각 \(snapshot.done) / \(snapshot.total)")
     }
 
     @ViewBuilder
@@ -156,12 +156,8 @@ private struct TodayList: View {
                         }
                     }
                 Spacer(minLength: 0)
-                // 이번 주 %를 모르면 모각이를 둔다.
-                if let weeklyPercent = snapshot.weeklyPercent {
-                    Text("이번 주 \(weeklyPercent)%").font(.pretendard(12, .bold, relativeTo: .caption)).foregroundStyle(MG2WidgetStyle.accent).monospacedDigit()
-                } else {
-                    MG2WidgetStyle.poseImage(snapshot.pose).frame(maxWidth: 52, maxHeight: 52)
-                }
+                // 디자인의 "이번 주 n%" 자리. 주간 진척은 서버 값이 없어 모각이를 둔다.
+                MG2WidgetStyle.poseImage(snapshot.pose).frame(maxWidth: 52, maxHeight: 52)
             }
             .lineLimit(1)
             .minimumScaleFactor(0.7)

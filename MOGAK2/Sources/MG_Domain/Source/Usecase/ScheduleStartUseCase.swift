@@ -29,6 +29,15 @@ final class ScheduleStartUseCase {
         }
     }
 
+    /// 오늘 조각이 속한 판들의 이번 주 % (축하 카드). 판마다 API를 불러야 해서 하나씩 요청한다.
+    func getWeeklyPercent(modalartIDs: Set<Int>, date: Date) async throws -> Int {
+        var boards = [MG2WeeklyProgress]()
+        for modalartID in modalartIDs {
+            boards.append(try await modalartRepository.getWeeklyProgress(modalartId: modalartID, date: date))
+        }
+        return MG2WeeklyProgress.combinedPercent(boards)
+    }
+
     func getModalartList() async throws -> [MG2ModalartListItemEntity] {
         try await modalartRepository.getModalartList()
     }

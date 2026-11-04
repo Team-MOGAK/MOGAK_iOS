@@ -29,7 +29,7 @@ final class DefaultModalartRepository: ModalartRepository {
 
     func getMogakJogaks(mogakId: Int) async throws -> [MG2MogakJogakEntity] {
         let response: MG2ResponseDTO<[MG2MogakJogakDTO]> = try await networkProvider.request(target: MG2ModalartRouter.mogakJogaks(mogakId: mogakId))
-        return try response.result.map { try $0.toEntity() }
+        return response.result.map { $0.toEntity() }
     }
 
     func getWeeklyProgress(modalartId: Int, date: Date) async throws -> MG2WeeklyProgress {

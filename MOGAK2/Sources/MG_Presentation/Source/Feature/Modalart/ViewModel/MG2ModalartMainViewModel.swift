@@ -7,7 +7,7 @@ struct MG2ModalartMainViewState {
     var title = ""
     var color = DesignSystemPalette.neutralGrayHex
     var mogaks = [MG2ModalartMogakItemEntity]()
-    /// 이번 주 진척. 보조 정보라 못 불러오면 nil이고 판은 % 없이 보인다.
+    /// 이번 주 진척. 둘러보기와 새로 만든 판은 nil.
     var weeklyProgress: MG2WeeklyProgress?
 
     var hasModalart: Bool { selectedID != nil }
@@ -152,7 +152,7 @@ final class MG2ModalartMainViewModel {
         let request = latestSelectionRequest
         async let detail = useCase.getModalartDetail(modalartId: id)
         async let mogaks = useCase.getModalartMogaks(modalartId: id)
-        async let progress = try? useCase.getWeeklyProgress(modalartId: id, date: Date())
+        async let progress = useCase.getWeeklyProgress(modalartId: id, date: Date())
         let (modalart, loadedMogaks, weeklyProgress) = try await (detail, mogaks, progress)
         guard request == latestSelectionRequest else { throw CancellationError() }
 

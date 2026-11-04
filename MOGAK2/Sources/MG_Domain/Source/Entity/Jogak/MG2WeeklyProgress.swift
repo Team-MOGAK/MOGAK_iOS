@@ -13,10 +13,9 @@ struct MG2WeeklyProgress: Equatable {
     let plannedCount: Int
     let mogaks: [Mogak]
 
-    /// 여러 판을 합친 %. 이번 주 회차가 하나도 없으면 nil.
-    static func combinedPercent(_ boards: [MG2WeeklyProgress]) -> Int? {
+    /// 여러 판을 합친 %.
+    static func combinedPercent(_ boards: [MG2WeeklyProgress]) -> Int {
         let planned = boards.reduce(0) { $0 + $1.plannedCount }
-        guard planned > 0 else { return nil }
-        return Int((Double(boards.reduce(0) { $0 + $1.doneCount }) / Double(planned) * 100).rounded())
+        return Int((Double(boards.reduce(0) { $0 + $1.doneCount }) / Double(max(planned, 1)) * 100).rounded())
     }
 }
