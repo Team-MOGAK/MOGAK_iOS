@@ -99,7 +99,7 @@ final class MG2ScheduleStartViewController: UIViewController {
         return stack
     }()
 
-    /// 처음 보는 날을 불러오는 동안은 자리 표시 행에 스켈레톤을 씌운다.
+    /// 다른 날을 불러오는 동안은 진척 카드 · 조각 행 · 빈 상태를 비워 둔다.
     private var isShowingPlaceholders = false
 
     private let scheduleTableView: UITableView = {
@@ -224,14 +224,10 @@ final class MG2ScheduleStartViewController: UIViewController {
         scheduleTableView.register(MG2JogakOccurrenceCell.self, forCellReuseIdentifier: MG2JogakOccurrenceCell.reuseIdentifier)
     }
 
-    /// 전에 본 날은 그때 모습을 바로 보여 주고 조용히 새로 고친다.
-    /// 처음 보는 날은 조각이 몇 개인지(있는지조차) 모르므로 가짜 행 · 카드를 만들지 않고 비워 둔 채 불러온다.
+    /// 보고 있는 날은 조용히 새로 고친다.
+    /// 다른 날은 조각이 몇 개인지(있는지조차) 모르므로 가짜 행 · 카드를 만들지 않고 비워 둔 채 불러온다.
     private func loadJogakOccurrences(date: Date) {
-        if viewModel.select(date) {
-            renderOccurrences()
-        } else {
-            showPlaceholders(for: date)
-        }
+        if !viewModel.hasLoaded(date) { showPlaceholders(for: date) }
         viewModel.loadJogakOccurrences(date: date) { [weak self] result in
             guard let self else { return }
             // 표 줄 수가 목록과 어긋나지 않게 바로 그린다.
@@ -249,7 +245,7 @@ final class MG2ScheduleStartViewController: UIViewController {
         }
     }
 
-    /// 처음 보는 날: 진척 카드 · 조각 행 · 빈 상태를 모두 감추고 비워 둔다. 달력 · 머리 · 아래 버튼은 그대로.
+    /// 다른 날로 바꿀 때: 진척 카드 · 조각 행 · 빈 상태를 모두 감추고 비워 둔다. 달력 · 머리 · 아래 버튼은 그대로.
     private func showPlaceholders(for date: Date) {
         isShowingPlaceholders = true
         progressCardView.isHidden = true

@@ -74,18 +74,13 @@ final class MG2ScheduleStartViewModel {
     private let adPolicyUseCase: AdPolicyUseCase
     private let userState: MG2UserState
     private(set) var state = MG2ScheduleStartViewState()
-    /// 한 번 불러온 날의 목록 · 진척. 그 날을 다시 고르면 스켈레톤 없이 이걸 먼저 보여 주고 조용히 새로 고친다.
-    private var loadedDays = [Date: LoadedDay]()
+    /// 지금 목록이 어느 날 것인지. 같은 날을 다시 부르면 조용히 새로 고친다.
+    private var loadedDate: Date?
     /// 지금까지 보낸 불러오기 수.
     private var loadCount = 0
     /// 체크 · 해제한 조각의 내 쪽 상태. 서버 반영 전이거나 반영 전에 보낸 불러오기 응답이면 이걸로 덮어 체크가 풀려 보이지 않게 한다.
     private var localToggles = [MG2JogakOccurrenceKey: LocalToggle]()
     private var toggleVersion = 0
-
-    private struct LoadedDay {
-        var occurrences: [MG2JogakOccurrenceItem]
-        var progress: MG2TodayProgress?
-    }
 
     private struct LocalToggle {
         let item: MG2JogakOccurrenceItem
@@ -133,25 +128,13 @@ final class MG2ScheduleStartViewModel {
         }
     }
 
-    /// 날을 고른다. 전에 불러온 날이면 그 목록 · 진척으로 바로 바꾸고 true (화면은 곧바로 다시 그린다), 처음이면 false.
-    func select(_ date: Date) -> Bool {
-        let leaving = Self.calendar.startOfDay(for: state.selectedDate)
-        // 떠나는 날의 지금 모습(그사이 체크한 것 포함)을 남겨 둔다.
-        if loadedDays[leaving] != nil { loadedDays[leaving] = LoadedDay(occurrences: state.occurrences, progress: state.progress) }
-        state.selectedDate = date
-        guard let loaded = loadedDays[Self.calendar.startOfDay(for: date)] else { return false }
-        state.occurrences = loaded.occurrences
-        state.progress = loaded.progress
-        return true
-    }
-
     /// 그날 조각을 불러온다. 앱을 켤 때는 스플래시가 기다리는 동안 미리 부른다.
     func load(date: Date) async throws {
         state.selectedDate = date
         guard !isGuest else {
             state.occurrences = []
             state.progress = nil
-            loadedDays[Self.calendar.startOfDay(for: date)] = LoadedDay(occurrences: [], progress: nil)
+            loadedDate = date
             return
         }
         loadCount += 1
@@ -166,6 +149,7 @@ final class MG2ScheduleStartViewModel {
             if !hasLoaded(date) {
                 state.occurrences = []
                 state.progress = nil
+                loadedDate = nil
             }
             throw error
         }
@@ -185,12 +169,11 @@ final class MG2ScheduleStartViewModel {
         // 목록은 기다림이 다 끝난 뒤 한 번에 바꾼다. 중간에 바꾸면 표가 예전 줄 수로 빈 목록을 읽다가 터진다.
         state.occurrences = items
         state.progress = progress
-        // ponytail: 본 날만큼 쌓인다(하루 몇 줄). 홈 화면이 새로 만들어지면(다시 로그인) 비워진다.
-        loadedDays[Self.calendar.startOfDay(for: date)] = LoadedDay(occurrences: items, progress: progress)
+        loadedDate = date
     }
 
     func hasLoaded(_ date: Date) -> Bool {
-        loadedDays[Self.calendar.startOfDay(for: date)] != nil
+        loadedDate.map { Self.calendar.isDate($0, inSameDayAs: date) } ?? false
     }
 
     /// 지난 날은 읽기 전용, 어제는 무료, 7일 안은 보상형 광고를 본 뒤에 체크한다.
@@ -280,11 +263,7 @@ final class MG2ScheduleStartViewModel {
     private func updateProgress(_ toggled: [MG2JogakOccurrenceItem], date: Date) async {
         let isSameDay = Self.calendar.isDate(state.selectedDate, inSameDayAs: date)
         let progress = await publishToday(isSameDay ? state.occurrences : toggled, date: date)
-        if Self.calendar.isDate(state.selectedDate, inSameDayAs: date) {
-            state.progress = progress
-        } else {
-            loadedDays[Self.calendar.startOfDay(for: date)]?.progress = progress
-        }
+        if Self.calendar.isDate(state.selectedDate, inSameDayAs: date) { state.progress = progress }
     }
 
     /// 오늘 조각이면 위젯 · 라이브 액티비티를 맞추고 진척 카드 내용을 돌려준다. 다른 날은 nil.
