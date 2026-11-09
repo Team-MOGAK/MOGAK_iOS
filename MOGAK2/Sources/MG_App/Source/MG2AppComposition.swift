@@ -40,7 +40,7 @@ final class MG2AppComposition {
     func requestStartupPermissions() async {
         await todayUseCase.requestReminderPermissionIfNeeded()
         // TODO(ads): 광고 SDK 시작 (추적 허용 · 동의 창도 이때 뜬다).
-        // 되살릴 때 Info.plist에 NSUserTrackingUsageDescription(추적 허용 문구)을 꼭 넣는다. 없으면 추적 허용 창을 띄우는 순간 앱이 종료된다.
+        // 되살릴 때 Info.plist에 NSUserTrackingUsageDescription(추적 허용 문구)을 꼭 넣는다. 없으면 추적 허용 창을 띄우는 순간 앱이 종료된다. 전에 쓰던 문구: "맞춤 광고를 보여 드리는 데만 사용해요. 허용하지 않아도 모든 기능을 쓸 수 있어요."
         // GADApplicationIdentifier · 광고 단위 ID도 테스트 값이라 실제 값으로 바꾼다.
         // adProvider.start()
     }
